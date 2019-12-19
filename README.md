@@ -77,4 +77,4 @@ I2C
 
 ---
 
-![](sdcard-spi.jpg) [sdcard-spi](spcard-spi)
+![](sdcard-spi.jpg) [sdcard-spi](sdcard-spi)
