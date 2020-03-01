@@ -31,12 +31,13 @@ Reference information:
 * [atlast](atlast): a Forth for mcus based on Walker's Forth
 * blinky85: directory containing code for blinking an ATTiny85 from RPi - consider it a baseline for making projects using C++, and not the IDE
 * [blinkt](blinkt).
-* [clockesp](clockesp) IN PROGRESS
+* [clockesp](clockesp)
 * [dev01](dev01): meditation timer
 * [dev02](dev02): projects for the DEV02 home-made board: green_red and mhz85
 * ~~[dev04](dev04): Programming an ATTiny85 from the Pi~~
 * [dev05](dev05): ATTiny85 programmer for the Pi
 * [dev06](8x8/dev06): 8x8, nano
+* [dev07](dev07): clock DS1307, MAX7219 8-segment display
 * [minitone85](minitone): working version of tone() for ATtiny85
 * [mins30-85](mins30-85): 30 minute timer for ATTiny85, programmable from the Pi (`DEV01`). 
 * [pills](pills): remember to take your pills
