@@ -73,6 +73,9 @@ If necessary, comment out the line:
 Upload the sketch onto the Arduino. The device should light up.
 
 
+Aletrnatively (and better), use the blinktlow sketch. The device is highly flexible as to which pins to use.
+
+
 ## ATTiny85
 
 Ensure you have the  Adafruit_Dotstart library installed, as detailed in section "Arduino".
@@ -83,3 +86,6 @@ Wire up according to this diagram:
 
 ![blinkt85](blinkt85.svg)
 
+WROOM
+
+Use D2 and D4, as in the Wiring section above for the Uno. Test using sketch blinktlow.
