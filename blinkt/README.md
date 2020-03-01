@@ -26,15 +26,15 @@ sudo systemctl start  blinkt.service
 
 ## Wiring
 
-The Blinkt uses the SPI interface. Orient the device so that the bevelled edge is closest to the case of the RPi.
+The Blinkt claims to use the SPI interface, but it does not. Orient the device so that the bevelled edge is closest to the case of the RPi.
 
 Pinout diagram:
 ```
 UNO BLI  Notes
 5V    2  5V
 GND   6  GND
-D4   16  BCM23 (data)
-D5   18  BCM24 (clock)
+D2   16  BCM23 (data)
+D4   18  BCM24 (clock)
 
 Legend:
 BLI: Blinkt pin

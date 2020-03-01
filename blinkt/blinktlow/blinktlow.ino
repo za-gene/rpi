@@ -4,8 +4,8 @@
 
 // A bit-banging approach is used to talk to blinkt
 
-const int dataPin = 4; // Blinkt pin 16
-const int clockPin = 5; // blinkt pin 18
+const int dataPin = 2; // Blinkt pin 16
+const int clockPin = 4; // blinkt pin 18
 const int numLEDs = 8;
 uint8_t pixels[numLEDs * 3];
 
