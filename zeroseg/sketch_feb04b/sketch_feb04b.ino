@@ -4,11 +4,11 @@
 
   Wire the Arduino and the MAX7219/MAX7221 together as follows:
 
-  | Arduino   | MAX7219/MAX7221 |
-  | --------- | --------------- |
-  | MOSI (11) | DIN (1)         |
-  | SCK (13)  | CLK (13)        |
-  | I/O (7)*  | LOAD/CS (12)    |
+  | Arduino   | MAX7219/MAX7221 | WROOM |
+  | --------- | --------------- | ----- |
+  | MOSI (11) | DIN (1)         | D23   |
+  | SCK (13)  | CLK (13)        | D18   |
+  | I/O (7)*  | LOAD/CS (12)    | D5    |
 
     * - This should match the LOAD_PIN constant defined below.
   
@@ -23,7 +23,11 @@
 #include <SPI.h>
 
 // What pin on the Arduino connects to the LOAD/CS pin on the MAX7219/MAX7221
+#ifdef ESP32 // includes WROOM
+#define LOAD_PIN 5
+#else
 #define LOAD_PIN 10
+#endif
 
 /**
  * Transfers data to a MAX7219/MAX7221 register.
