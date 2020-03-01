@@ -15,7 +15,6 @@ Reference information:
 ## Arduino Nano/Uno
 
 * [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
-* sketch_feb05a : RTC clock + zeroseg (0seg) to create a digital clock
 
 ## General
 
@@ -48,7 +47,7 @@ Reference information:
 
 * [Enclosures](https://www.banggood.com/10pcs-75-x-54-x-27mm-DIY-Plastic-Project-Housing-Electronic-Junction-Case-Power-Supply-Box-p-1168741.html?cur_warehouse=CN) 10pcs 75 x 54 x 27mm DIY Plastic Project Housing Electronic Junction Case Power Supply Box 
 * [Mini USB nano](https://www.ebay.co.uk/sch/i.html?_from=R40&_trksid=m570.l1313&_nkw=mini+usb+nano&_sacat=0). Amazon also has good deals on these
-* [ZeroSeg](zeroseg/README.md)
+* [ZeroSeg](zeroseg)
 
 ---
 ![](1306/1306.jpg) [1306](1306) I2C, WROOM 
