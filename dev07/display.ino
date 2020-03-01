@@ -51,37 +51,43 @@ void maxTransfer(uint8_t address, uint8_t value) {
 }
   
 
-void init_led() {
+void init_display() {
 
   //Serial.begin(9600);
   // Set load pin to output
   pinMode(LOAD_PIN, OUTPUT);
 
   // Reverse the SPI transfer to send the MSB first  
-  SPI.setBitOrder(MSBFIRST);
-  
-  // Start SPI
+  SPI.setBitOrder(MSBFIRST);  
   SPI.begin();
 
   maxTransfer(0x0F, 0x00);
-  
-  // Enable mode B
-  maxTransfer(0x09, 0xFF);
-  
-  maxTransfer(0x0A, 0x0F); // set intensity (page 9)
-  
+  maxTransfer(0x09, 0xFF); // enable mode B 
+  maxTransfer(0x0A, 0x0F); // set intensity (page 9)  
   maxTransfer(0x0B, 0x07); // use all pins
-  
-  // Turn on chip
-  maxTransfer(0x0C, 0x01);
-
-
-
-  
-  
-  
+  maxTransfer(0x0C, 0x01); // activate chip
 }
 
+void set_display(int8_t arr[4])
+{
+  //int sec = arr[3];
+  uint8_t lo, hi;
+  for(uint8_t i = 0; i<4; i++) {
+    int8_t n = arr[i];
+    if(n == -1) { // blankify
+        hi = 0b1111;
+        lo = 0b1111;
+    } else {
+      hi = n %10;
+      lo = int(n/10);
+    }
+    if(i==2) 
+      hi |= (1<<7); // decimal point
+  
+    maxTransfer(7-2*i, hi);
+    maxTransfer(8-2*i, lo);
+  }
+}
 /*
 void loop() {
 
