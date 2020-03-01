@@ -24,7 +24,6 @@ Reference information:
 
 ## Projects
 
-* [0clock](0clock): clock made with nano, 0seg, and tiny RTC.
 * [abaclock](abaclock): clock made with a RTC clock and an Arduino LED backpack
 * [alacrity](alacrity): pills reminder and warnings raised by alarm
 * [alarm](alarm): raises a panic call to alacrity
