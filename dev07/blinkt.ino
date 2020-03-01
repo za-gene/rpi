@@ -9,6 +9,8 @@ const int clockPin = 4; // blinkt pin 18
 const int numLEDs = 8;
 uint8_t pixels[numLEDs * 3];
 
+//enum BlinktPin { alive=0, npt, ds1307};
+
 void spi_out(uint8_t n) {
   for (uint8_t i = 8; i--; n <<= 1) {
     if (n & 0x80) digitalWrite(dataPin, HIGH);
@@ -34,6 +36,14 @@ void show() {
   for (i = 0; i < ((numLEDs + 15) / 16); i++) spi_out(0xFF); // end-frame marker
 }
 
+void  set_blinkt(uint8_t n, bool ok)
+{
+  uint8_t r = 0, g = 0;
+  if(ok) {g = 5;} else {r = 5;}  
+  setPixelColour(n, r, g, 0);
+  show();
+}
+
 void setPixelColour(uint8_t pos , uint8_t r, uint8_t g, uint8_t b) {
   
     pos *= 3;
@@ -42,17 +52,21 @@ void setPixelColour(uint8_t pos , uint8_t r, uint8_t g, uint8_t b) {
     pixels[pos] = r;
 }
 
-void setup() {
+void init_blinkt() {
 
   pinMode(dataPin , OUTPUT);
   pinMode(clockPin, OUTPUT);
   digitalWrite(dataPin , LOW);
   digitalWrite(clockPin, LOW);
   
-  show();
+  //show();
+  set_blinkt(0, true);
+  //setPixelColour(0, 0, 5, 0);
+  //show();
 
 }
 
+/*
 void loop() {
   static uint8_t red = 0;
   red = 10 - red; // switch between on and off
@@ -63,3 +77,4 @@ void loop() {
   }
 
 }
+*/

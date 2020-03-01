@@ -30,61 +30,38 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 
 void TaskUpdateRTC( void *pvParameters )
 {
-  //int sec = 0;
   for (;;) {
-    bool ntp_good_update = timeClient.update();
-    Serial.print("Is the NTP up to date:");
-    Serial.println(ntp_good_update);
-    Serial.println(timeClient.getFormattedTime());
-    //delay(1000);
-
-    //time_t utc = now();
     time_t utc = timeClient.getEpochTime();
-    if (ntp_good_update) {
-      RTC.set(utc);
-    }
+    bool ntp_good_update = timeClient.update();
+    set_blinkt(1, ntp_good_update);
+    if (ntp_good_update) { RTC.set(utc);}
 
-    if (RTC.chipPresent()) {
-      Serial.println("RTC chip present");
-      //utc = RTC.get();
-    } else {
-      Serial.println("RTC chip missing");
-    }
-
-    //time_t local = myTZ.toLocal(utc, &tcr);
-    //Serial.println();
-    //printDateTime(utc, "UTC");
-    //printDateTime(local, tcr -> abbrev);
-    //printDateTime(RTC.get(), tcr -> abbrev);
-    //set_display(sec++);
-    
     vTaskDelay(10000 / portTICK_PERIOD_MS);
   }
 }
 
 void TaskUpdateDisplay(void *pvParameters)
 {
-  int8_t arr[] = {-1, -1, -1, -1};
+  int8_t arr[] = { -1, -1, -1, -1};
   //int8_t sec = 0;
   //int8_t day = 1, hr = 14, min = 14, sec = 0;
-  for(;;){
-        time_t tim = RTC.get();
-        tim = myTZ.toLocal(tim, &tcr);
-        arr[0] = day(tim);
-        arr[2] = hour(tim);
-        arr[3] = minute(tim);
-        //hour(t), minute(t), second(t), dayShortStr(weekday(t)), day(t), m, year(t)
-        //arr[3] = sec();
-        set_display(arr);
-        
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+  for (;;) {
+    set_blinkt(2, RTC.chipPresent());
+    time_t tim = RTC.get();
+    tim = myTZ.toLocal(tim, &tcr);
+    arr[0] = day(tim);
+    arr[2] = hour(tim);
+    arr[3] = minute(tim);
+    set_display(arr);
+
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
-  
 }
 void setup()
 {
   Serial.begin(115200);
   init_display();
+  init_blinkt();
 
   WiFi.begin(ssid, password);
   while ( WiFi.status() != WL_CONNECTED ) {
@@ -106,7 +83,7 @@ void setup()
 void loop()
 {
 
- 
+
 }
 
 // format and print a time_t value, with a time zone appended.
