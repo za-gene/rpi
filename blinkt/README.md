@@ -30,11 +30,15 @@ The Blinkt uses the SPI interface. Orient the device so that the bevelled edge i
 
 Pinout diagram:
 ```
-PIN Notes
-2   5V
-6   GND
-16  BCM23 (data)
-18  BCM24 (clock)
+UNO BLI  Notes
+5V    2  5V
+GND   6  GND
+D4   16  BCM23 (data)
+D5   18  BCM24 (clock)
+
+Legend:
+BLI: Blinkt pin
+UNO: Arduino Uno (inc. nano)
 ```
 
 [Reference](https://pinout.xyz/pinout/blinkt#)
@@ -64,19 +68,6 @@ To test the device, open up the file: `~/Arduino/libraries/Adafruit_DotStar-1.0.
 If necessary, comment out the line:
 ```
 #include <Adafruit_CircuitPlayground.h>
-```
-
-Wire up the device as follows:
-```
-ARD BLI Notes
-5V  2
-GND 6
-4   16  data
-5   18  clock
-
-Legend:
-ARD: Arduino pin
-BLI: Blinkt pin. See wiring section above for pin numbering
 ```
 
 Upload the sketch onto the Arduino. The device should light up.
