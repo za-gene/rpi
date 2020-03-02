@@ -58,12 +58,11 @@ void init_blinkt() {
   pinMode(clockPin, OUTPUT);
   digitalWrite(dataPin , LOW);
   digitalWrite(clockPin, LOW);
-  
-  //show();
-  set_blinkt(0, true);
-  //setPixelColour(0, 0, 5, 0);
-  //show();
 
+  for(int i=0; i<8; i++) {
+    setPixelColour(i, 0, 0, 0);
+  }
+  show();  
 }
 
 /*
