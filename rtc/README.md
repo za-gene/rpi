@@ -27,6 +27,8 @@ SDA       A4     D2 (GPIO04)
 SDL       A5     D1 (GPIO05)
 ```
 
+For **WROOM** see project ds1307
+
 ![](rtc.jpg)
 
 ## See also
