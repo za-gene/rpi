@@ -15,3 +15,7 @@ WROOM - GPIO PINOUT ON ESP32-WROOM (VSPI and HSPI)
 BRD3  - PINOUTS ON PI3 PHYSICAL BOARD PINS
 DUP   - SUGGESTED DUPONT COLOURS
 ```
+
+## Links to other sites
+
+* [Basics of SPI](https://www.electronicshub.org/basics-serial-peripheral-interface-spi/)
