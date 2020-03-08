@@ -24,9 +24,11 @@
 
 // What pin on the Arduino connects to the LOAD/CS pin on the MAX7219/MAX7221
 #ifdef ESP32 // includes WROOM
-#define LOAD_PIN 5
+  #define LOAD_PIN 5
+  #define BAUD 112500
 #else
-#define LOAD_PIN 10
+  #define LOAD_PIN 10
+  #define BAUD 9600
 #endif
 
 /**
@@ -53,7 +55,7 @@ void maxTransfer(uint8_t address, uint8_t value) {
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(BAUD);
   // Set load pin to output
   pinMode(LOAD_PIN, OUTPUT);
 
