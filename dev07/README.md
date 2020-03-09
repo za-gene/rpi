@@ -1,5 +1,19 @@
 # dev07 - WROOM clock with NTP client and DS1307
 
+**Schematics ** at DB5.148
+
+## BLINKT STATUS LIGHTS
+
+Read left-to-right, starting at index 0:
+```
+0 blinkt active
+1 DS1307 (external clock) inserted
+2 Wifi available
+3 NTP working
+```
+
+## Building
+
 Ignore WARNING about library Timezone class
 
 ## Implementation notes
