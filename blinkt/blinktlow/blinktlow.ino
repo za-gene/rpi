@@ -3,9 +3,11 @@
 // not realy true.
 
 // A bit-banging approach is used to talk to blinkt
-
+#ifdef ESP32
 const int dataPin = 2; // Blinkt pin 16
 const int clockPin = 4; // blinkt pin 18
+#endif
+
 const int numLEDs = 8;
 uint8_t pixels[numLEDs * 3];
 
