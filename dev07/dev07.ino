@@ -44,43 +44,34 @@ void delay_min(int n) {
 
 void TaskWifi( void *pvParameters )
 {
-  WiFi.begin(ssid, password);
   for (;;) {
     bool ok = WiFi.status() == WL_CONNECTED;
     set_blinkt(wifi, ok);
     if (ok) {
-      Serial.print("Begin ntpClient ...");
-      ntpClient.begin();
-      Serial.println("OK");
       delay_min(2);
+    } else {
+      WiFi.begin(ssid, password);
+      delay_ms(500);
     }
-    delay_ms(500);
   }
 }
 void TaskNtp( void *pvParameters )
 {
-  for (;;) {
-    ntpClient.update();
-    time_t utc = ntpClient.getEpochTime(); // might return bad value
-    bool ok = utc > 1583161881/2; // an approximate midpoint beterrn 1970 and 2020 to detect junk utc
-    set_blinkt(ntp, ok);
-    if(ok) {
+  ntpClient.begin();
+  for (;;) {   
+    bool updated = ntpClient.update();
+    set_blinkt(ntp, updated);
+    if(updated) {
+      time_t utc = ntpClient.getEpochTime(); // might return bad value
+      //bool ok = utc > 1583161881 / 2; // an approximate midpoint beterrn 1970 and 2020 to detect junk utc
+      //set_blinkt(ntp, ok);
+    //if (ok) {
       DS.set(utc);
       delay_min(10);
     }
-    delay_sec(10);
+    //delay_sec(10);
 
-    /*
-    Serial.print("TaskNtp UTC:"); Serial.println(utc);
-    bool ntp_good_update = ntpClient.update();
-    set_blinkt(ntp, ntp_good_update);
-    if (ntp_good_update) {
-      DS.set(utc);
-      delay_min(10);
-    } else {
-      delay_sec(10);
-    }
-    */
+
   }
 }
 
@@ -107,15 +98,6 @@ void setup()
   init_display();
   init_blinkt();
   set_blinkt(alive, true);
-
-
-/*
-  setSyncProvider(DS.get);   // the function to get the time from the DS1307
-  if (timeStatus() != timeSet)
-    Serial.println("Unable to sync with the RTC");
-  else
-    Serial.println("RTC has set the system time");
-*/
 
   xTaskCreate(TaskWifi, "TaskWifi", 4096, 0, tskIDLE_PRIORITY, 0);
   xTaskCreate(TaskUpdateDisplay, "TaskUpdateDisplay", 4096, 0, tskIDLE_PRIORITY, 0);
