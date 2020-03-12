@@ -231,7 +231,7 @@ def do_connect(delay_ms = 100):
 def use_local():
     try:
         s = socket.socket()
-        addr = socket.getaddrinfo("192.168.0.17", 1762)[0][-1]
+        addr = socket.getaddrinfo("192.168.0.27", 1762)[0][-1]
         s.connect(addr)
         data = s.recv(100)
     finally:
