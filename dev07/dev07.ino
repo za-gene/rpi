@@ -92,16 +92,26 @@ void TaskUpdateDisplay(void *pvParameters)
     delay_sec(1);
   }
 }
+
+void TaskAlive(void *pvParameters) 
+{
+  set_blinkt(alive, false);
+  delay_sec(5);
+  set_blinkt(alive, true);
+  vTaskDelete(NULL);  
+}
+#define create_task(task) xTaskCreate(task, #task, 4096, 0, tskIDLE_PRIORITY, 0);
 void setup()
 {
   Serial.begin(115200);
   init_display();
   init_blinkt();
-  set_blinkt(alive, true);
+  
 
-  xTaskCreate(TaskWifi, "TaskWifi", 4096, 0, tskIDLE_PRIORITY, 0);
-  xTaskCreate(TaskUpdateDisplay, "TaskUpdateDisplay", 4096, 0, tskIDLE_PRIORITY, 0);
-  xTaskCreate(TaskNtp, "TaskNtp", 4096, 0, tskIDLE_PRIORITY, 0);
+  create_task(TaskAlive);
+  create_task(TaskWifi);
+  create_task(TaskUpdateDisplay);
+  create_task(TaskNtp);
 }
 
 void loop() { }

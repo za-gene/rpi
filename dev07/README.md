@@ -12,9 +12,15 @@ Read left-to-right, starting at index 0:
 3 NTP working
 ```
 
+`Blinkt active` is red on power-up, turning green after 5 secs. If it is red
+for longer than that, then it indicates likely power/brown-out or other reset
+issues.
+
+
 ## BUILDING
 
 Ignore WARNING about library Timezone class
+
 
 ## IMPLEMENTATION NOTES
 
