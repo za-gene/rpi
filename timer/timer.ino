@@ -26,7 +26,7 @@ void  init_timer2(unsigned int f)
 }
 
 int toggle  = 0;
-ISR(TIMER2_COMPA_vect) { //timer0 interrupt 2kHz toggles pin 8
+ISR(TIMER2_COMPA_vect) { //toggle speaker on/off
   digitalWrite(SPKR, toggle);
   toggle = 1 - toggle;
 }
