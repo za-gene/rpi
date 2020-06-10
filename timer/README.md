@@ -1,6 +1,8 @@
 # timer
 
-Produces a tone of 440Hz using timer2 CTC, no PWM. It shows generalised calculation for the prescaler and OCR register to produce any frequnecy.
+Produces a tone of 440Hz using timer2 CTC, no PWM. It shows generalised calculation for the prescaler and OCR register to produce any frequency.
+
+This project is useful for learning how to set timers to yield a required frequency. Ultimately, I intend to use it together with a DOC and an SD card to create a media player.
 
 **Timers and uses:**
 ```
@@ -148,5 +150,6 @@ You can check that the frequencies are correct by comparing them to an online sy
 
 * [Arduino Timer Interrupts](https://www.instructables.com/id/Arduino-Timer-Interrupts/) : gives the formulae used above, and some code for setting the registers
 * [AVR Timers - TIMER2](http://maxembedded.com/2011/06/avr-timers-timer2/) : excellent overview, including what the registers do
-* [Pnline Tone Generator](http://onlinetonegenerator.com/) : play a note of a given frequency. Use the square wave generator for the best comparison 
+* [Online Tone Generator](http://onlinetonegenerator.com/) : play a note of a given frequency. Use the square wave generator for the best comparison 
+* [Reddit](https://www.reddit.com/r/arduino/comments/h0i9va/tutorial_calculating_prescalers_and_match/?ref=share&ref_source=link) discussion
 
