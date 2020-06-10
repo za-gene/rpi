@@ -15,6 +15,7 @@ Reference information:
 ## Arduino Nano/Uno
 
 * [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
+* [timer](timer) : setting up timer2 prescaler to produce a tone
 
 ## General
 
