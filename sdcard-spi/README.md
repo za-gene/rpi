@@ -13,6 +13,7 @@ Files : Examples : SD : listfiles
 MOSI=D11, MISO=D12, CLK=D13, SS=D4
 
 
+* [sketch_jun18c](sketch_jun18c) - SD card speed test on nano
 
 
 ## Wroom + IDE
@@ -43,4 +44,5 @@ rshell --buffer-size=30 -p /dev/ttyU* cp sdcard.py /pyboard
 ```
 
 Run `wroom-micropython-example.ipynb` . 
+
 
