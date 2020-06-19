@@ -14,6 +14,11 @@
 
 **Built-in blue LED**: GPIO2 (confirmed)
 
+**Ubuntu 20.04***
+```
+sudo apt install python-is-python3 python3-serial
+```
+
 **Upload program** whilst avoiding having to press Boot: 
 put a 10uF cap between EN and GND (1-3uF was the one I saw 
 recommended, though)
