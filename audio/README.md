@@ -1,6 +1,7 @@
 # audio
 
 * [sketch_jun9a](sketch_jun9a) - Arduino emulating DAC using PWM - poor output quality
+* [sketch_jun18](sketch_jun18) - Arduino slave with 5v SD card communicating via I2C with ESP32 master using built-in DAC. Uses a level shifter. 
 
 
 ## Music Tracks
