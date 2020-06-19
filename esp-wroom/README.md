@@ -14,7 +14,7 @@
 
 **Built-in blue LED**: GPIO2 (confirmed)
 
-**Ubuntu 20.04***
+**Ubuntu 20.04**
 ```
 sudo apt install python-is-python3 python3-serial
 ```
