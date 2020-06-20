@@ -6,6 +6,27 @@ Programming an Attiny85 from an Arduino, esp. wrt ATTiny85.
 
 File : Preferences : Settings. Uncheck "Check for updates on startup"
 
+## Board Detection `define`s
+
+This is how you detect what board you compiling for.
+
+The upshot is:
+```
+BOARD  DEFINE
+-----  ------------------
+WROOM  ARDUINO_ARCH_ESP32 
+...
+```
+
+More generally, do something like
+```
+cd ~/.arduino15/packages/esp32/hardware/esp32/1.0.4
+grep board= boards.txt | cut -f2 -d= | sort -u
+```
+
+
+
+
 
 ## Setup
 ```
