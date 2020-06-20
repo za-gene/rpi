@@ -1,6 +1,5 @@
 # 4 device
 
-![](../4.jpg)
 
 Install libraries:
 ```
@@ -13,10 +12,28 @@ Low-level controllers:
 * `lcdpi.py` - RPi3. Use this is as a baseline
 
 
+## Layout
+
+![](4.jpg)
+
+Pins are labelled C1, C2, ... C6 left to right in the diagram above.
+
+```
+DEV  DESC 8266
+C1   5V   VIN
+C2   RS[1]   
+C3   CS  D5
+C4   CLK D18
+C5   MOSI D23
+C6   GND  GND
+```
+
+**MISO** is not used. **RS** is set low to issue a command, high to issue an ASCII. DO NOT use a regular MISO on ESP8266, use an alternative pin like D4 (GPIO2).
+
+
 ## See also
 
 * [Datasheet](https://www.lcd-module.com/eng/pdf/doma/dog-me.pdf) EA DOGM163W-A
 * [Display-O-Tron LCD](https://shop.pimoroni.com/products/display-o-tron-lcd?gclid=EAIaIQobChMI1qe7iZmU4gIVQpnVCh2DhA0rEAQYAiABEgK1HfD_BwE&utm_campaign=google+shopping&utm_medium=cpc&utm_source=google&variant=2662374913)
-* <li><a href="https://gist.github.com/blippy/ea7709597cae84c3bcde02d2bc18b1e5">lcd-clock-esp.py</a> includes fancy LCD commands</li>
-
-<li><a href="https://github.com/blippy/lcddogmspi">lcddogmspi</a> -  for Arduino (a working fork of the original)</li>
+* [lcd-clock-esp.py](https://gist.github.com/blippy/ea7709597cae84c3bcde02d2bc18b1e5) includes fancy LCD commands
+* [lcddogmspi](https://github.com/blippy/lcddogmspi) -  for Arduino (a working fork of the original)
