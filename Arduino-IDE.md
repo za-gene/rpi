@@ -18,6 +18,14 @@ WROOM  ARDUINO_ARCH_ESP32
 ...
 ```
 
+So you would use it in your code like so:
+```
+#ifdef ARDUINO_ARCH_ESP32
+#pragma message "Compiling for WROOM"
+// etc
+#endif
+```
+
 More generally, do something like
 ```
 cd ~/.arduino15/packages/esp32/hardware/esp32/1.0.4
