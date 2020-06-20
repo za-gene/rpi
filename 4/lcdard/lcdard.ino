@@ -1,7 +1,13 @@
 #include <SPI.h>
 
+#ifdef ARDUINO_ARCH_ESP32 // ESP32-WROOM
+// Connect as per parent directory
+constexpr int rs_pin = 4;
+constexpr int cs_pin = 5;
+#else // Assume Nano
 constexpr int rs_pin = 12;
 constexpr int cs_pin = 10;
+#endif
 
 /* rs_val = LOW to send command, HIGH to send ASCII char 
  */

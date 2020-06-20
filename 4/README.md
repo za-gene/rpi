@@ -7,7 +7,7 @@ git clone git@github.com:blippy/lcddogmspi.git
 ```
 
 Low-level controllers:
-* `lcdard` - Nano/Uno
+* `lcdard` - Nano/Uno/WROOM. Connect as per Layout section
 * `lcdesp.py` - ESP8266
 * `lcdpi.py` - RPi3. Use this is as a baseline
 
