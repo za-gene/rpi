@@ -54,15 +54,11 @@ Reference information:
 ![](1306/1306.jpg) [1306](1306) I2C, WROOM 
 ___
 
-![](4/4.jpg) [4](4)
-
-SPI
+![](4/4.jpg) [4](4) SPI
 
 ___
 
-![](8x8.jpg) [8x8](8x8)
-
-I2C
+![](8x8.jpg) [8x8](8x8) I2C
 
 ---
 
@@ -71,9 +67,9 @@ Underside shown.
 
 ---
 
-![](rtc/rtc.jpg) [rtc](rtc)
+![](mcp4921/mcp4921.jpg) [mcp4921](mcp4921) 12-bit DAC. SPI
 
-I2C
+![](rtc/rtc.jpg) [rtc](rtc) I2C
 
 ---
 
