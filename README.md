@@ -69,6 +69,8 @@ Underside shown.
 
 ![](mcp4921/mcp4921.jpg) [mcp4921](mcp4921) 12-bit DAC. SPI
 
+---
+
 ![](rtc/rtc.jpg) [rtc](rtc) I2C
 
 ---
