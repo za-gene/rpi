@@ -8,10 +8,10 @@
 
 
 
-![](physical.jpg)
+![](physical.jpg | width=400)
 
 ## See also
 
-* [https://youtu.be/sXhWhjDb8Fk](Youtube video) of device in action
+* [Youtube video](https://youtu.be/sXhWhjDb8Fk) of device in action
 
 
