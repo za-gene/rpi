@@ -8,7 +8,7 @@
 
 
 
-<img src="physical.jpg"  width="400")
+<img src="physical.jpg"  width="400">
 
 ## See also
 
