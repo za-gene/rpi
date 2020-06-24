@@ -22,6 +22,7 @@ Reference information:
 * [audio](audio)
 * [debounce](https://gist.github.com/blippy/430cc73cb50b9e44c3423c2717ab22ee) a button
 * [picocom](picocom.md)
+* telnet server: [dev03-2](dev03/dev03-2)
 * [Twiddle-factor FFT for mcus](https://blog.podkalicki.com/twiddle-factor-based-fft-for-microcontrollers/)
 
 ## Projects
@@ -32,9 +33,9 @@ Reference information:
 * [atlast](atlast): a Forth for mcus based on Walker's Forth
 * blinky85: directory containing code for blinking an ATTiny85 from RPi - consider it a baseline for making projects using C++, and not the IDE
 * [blinkt](blinkt).
-* [clockesp](clockesp)
 * [dev01](dev01): meditation timer
 * [dev02](dev02): projects for the DEV02 home-made board: green_red and mhz85
+* [dev03](dev03)
 * [dev05](dev05): ATTiny85 programmer for the Pi
 * [dev06](8x8/dev06): 8x8, nano
 * [dev07](dev07): clock DS1307, MAX7219 8-segment display
