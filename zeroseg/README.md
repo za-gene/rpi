@@ -13,3 +13,8 @@ to `sketch_feb04b`.
 
 * db5.105
 * db5.110 - switches (although they don't seem to work
+
+## Links to other sites
+
+* [datasheet](https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf) PDF
+* [letter representation](https://en.wikichip.org/wiki/seven-segment_display/representing_letters)
