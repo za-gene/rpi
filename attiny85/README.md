@@ -20,6 +20,11 @@ Notes:
 * PB5 requires a "fuse" to be set in order to use it.
 ```
 
+## In this directory
+
+* [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
+
+
 ## See also
 
 * [clock](clock.md) - setting the clock frequency
