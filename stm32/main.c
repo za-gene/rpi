@@ -12,6 +12,7 @@
 #define RCC_IOPCEN   (1<<4)
 #define GPIOC13      (1UL<<13)
 
+//static int j = 666; // this seems to cause problems
 
 void main(void)
 {
@@ -19,12 +20,14 @@ void main(void)
     GPIOC_CRH   &= 0xFF0FFFFF;
     GPIOC_CRH   |= 0x00200000;
 
+    int i = 666;
     while(1)
     {
         GPIOC_ODR |=  GPIOC13;
-        for (int i = 0; i < 500000; i++); // arbitrary delay
+	//int i = 666; // so we can play around with debugging
+        for (i = 0; i < 500000; i++); // arbitrary delay
         GPIOC_ODR &= ~GPIOC13;
-        for (int i = 0; i < 500000; i++); // arbitrary delay
+        for (i = 0; i < 500000; i++); // arbitrary delay
     }
 }
 

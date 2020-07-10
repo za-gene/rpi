@@ -3,7 +3,7 @@ AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
-CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb
+CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0
 
 all: app.bin
 

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?> 
+<!DOCTYPE svg PUBLIC "-//W3C//Dtd SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/Dtd/svg11.dtd">
+<svg width="137.0" height="131.0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Created by FidoCadJ ver. 0.24.7, export filter by Davide Bucci -->
+<g transform="translate(62.0,34.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">4</text>
+</g>
+<g transform="translate(72.0,34.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">8</text>
+</g>
+<g transform="translate(55.0,36.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">7</text>
+</g>
+<g transform="translate(79.0,46.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">3</text>
+</g>
+<g transform="translate(55.0,51.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">6</text>
+</g>
+<g transform="translate(55.0,56.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">2</text>
+</g>
+<g transform="translate(79.0,56.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">5</text>
+</g>
+<g transform="translate(67.0,58.0) scale(1.1515151515151516,1) "><text x="0" y="3.0" font-family="DejaVu Sans" font-size="3.0" font-style="" font-weigth="bold" fill="#000000">1</text>
+</g>
+<line x1="63.0" y1="28.0" x2="63.0" y2="33.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="73.0" y1="28.0" x2="73.0" y2="33.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="53.0" y1="38.0" x2="48.0" y2="38.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="48.0" y1="53.0" x2="53.0" y2="53.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="48.0" y1="58.0" x2="53.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="68.0" y1="63.0" x2="68.0" y2="68.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="88.0" y1="58.0" x2="83.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="83.0" y1="48.0" x2="88.0" y2="48.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<g transform="translate(64.0,45.0) scale(1.2954545454545454,1) "><text x="0" y="4.0" font-family="DejaVu Sans" font-size="4.0" font-style="" font-weigth="bold" fill="#000000">555</text>
+</g>
+<line x1="53.0" y1="33.0" x2="53.0" y2="63.0" style="stroke:#000000;stroke-linejoin:round;stroke-linecap:round;stroke-width:1"/>
+<line x1="53.0" y1="63.0" x2="83.0" y2="63.0" style="stroke:#000000;stroke-linejoin:round;stroke-linecap:round;stroke-width:1"/>
+<line x1="53.0" y1="33.0" x2="83.0" y2="33.0" style="stroke:#000000;stroke-linejoin:round;stroke-linecap:round;stroke-width:1"/>
+<line x1="83.0" y1="33.0" x2="83.0" y2="63.0" style="stroke:#000000;stroke-linejoin:round;stroke-linecap:round;stroke-width:1"/>
+<g transform="translate(98.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">5</text>
+</g>
+<g transform="translate(98.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">Vin</text>
+</g>
+<ellipse cx="98.0" cy="98.0" rx="5.0" ry="5.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<g transform="translate(83.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">4</text>
+</g>
+<g transform="translate(83.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">-</text>
+</g>
+<ellipse cx="83.0" cy="98.0" rx="5.0" ry="5.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<g transform="translate(68.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">3</text>
+</g>
+<g transform="translate(68.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">GND</text>
+</g>
+<ellipse cx="68.0" cy="98.0" rx="5.0" ry="5.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<g transform="translate(53.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">2</text>
+</g>
+<g transform="translate(53.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">-</text>
+</g>
+<ellipse cx="53.0" cy="98.0" rx="5.0" ry="5.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<g transform="translate(38.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">1</text>
+</g>
+<g transform="translate(38.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">Vout</text>
+</g>
+<ellipse cx="38.0" cy="98.0" rx="5.0" ry="5.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<rect x="3.0" y="3.0" rx="0" ry="0" width="130.0" height="110.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="63.0" cy="23.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<line x1="73.0" y1="23.0" x2="98.0" y2="23.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="98.0" y1="23.0" x2="98.0" y2="93.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="63.0" y1="23.0" x2="73.0" y2="23.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="73.0" cy="23.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<rect x="36.0" y="46.0" rx="0" ry="0" width="4.0" height="9.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="43.0" x2="38.0" y2="46.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="55.0" x2="38.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<g transform="translate(28.0,48.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">R2</text>
+</g>
+<rect x="36.0" y="26.0" rx="0" ry="0" width="4.0" height="9.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="23.0" x2="38.0" y2="26.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="35.0" x2="38.0" y2="38.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<g transform="translate(28.0,28.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">R1</text>
+</g>
+<line x1="103.0" y1="48.0" x2="103.0" y2="88.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="68.0" y1="78.0" x2="38.0" y2="78.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="68.0" y1="68.0" x2="68.0" y2="93.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="48.0" y1="58.0" x2="38.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="48.0" y1="38.0" x2="38.0" y2="38.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="38.0" x2="38.0" y2="43.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="92.0" y1="64.0" x2="84.0" y2="64.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="84.0" y1="67.0" x2="92.0" y2="67.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="88.0" y1="67.0" x2="88.0" y2="73.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="88.0" y1="64.0" x2="88.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<g transform="translate(93.0,63.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">C2</text>
+</g>
+<line x1="42.0" y1="64.0" x2="34.0" y2="64.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="34.0" y1="67.0" x2="42.0" y2="67.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="67.0" x2="38.0" y2="73.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="64.0" x2="38.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="48.0" y1="53.0" x2="48.0" y2="58.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="48.0" cy="58.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<line x1="38.0" y1="23.0" x2="63.0" y2="23.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="63.0" y1="23.0" x2="63.0" y2="28.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="73.0" y1="23.0" x2="73.0" y2="28.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="68.0" cy="73.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<circle cx="38.0" cy="58.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<line x1="103.0" y1="88.0" x2="38.0" y2="88.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="88.0" y1="48.0" x2="103.0" y2="48.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<line x1="38.0" y1="88.0" x2="38.0" y2="93.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="38.0" cy="38.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<g transform="translate(28.0,63.0) scale(1.2954545454545454,1) "><text x="0" y="4.0" font-family="Courier New" font-size="4.0" font-style="" font-weigth="" fill="#000000">C1</text>
+</g>
+<g transform="translate(93.0,8.0) scale(1.2954545454545454,1) "><text x="0" y="4.0" font-family="Courier New" font-size="4.0" font-style="" font-weigth="bold" fill="#000000">DEV06</text>
+</g>
+<g transform="translate(58.0,123.0) scale(1.2954545454545454,1) "><text x="0" y="4.0" font-family="Courier New" font-size="4.0" font-style="" font-weigth="" fill="#000000">Created with Fidocadj</text>
+</g>
+<line x1="38.0" y1="78.0" x2="38.0" y2="73.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<circle cx="68.0" cy="78.0" r="1.0" style="stroke:#000000;stroke-width:0.33" fill="#000000"/>
+<line x1="88.0" y1="73.0" x2="68.0" y2="73.0" style="stroke:#000000;stroke-width:0.5;fill-rule: evenodd;" fill="none"/>
+<g transform="translate(98.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">5</text>
+</g>
+<g transform="translate(98.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">Vin</text>
+</g>
+<circle cx="98.0" cy="98.0" r="2.5" style="stroke:white;stroke-width:0.33" fill="white"/>
+<g transform="translate(83.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">4</text>
+</g>
+<g transform="translate(83.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">-</text>
+</g>
+<circle cx="83.0" cy="98.0" r="2.5" style="stroke:white;stroke-width:0.33" fill="white"/>
+<g transform="translate(68.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">3</text>
+</g>
+<g transform="translate(68.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">GND</text>
+</g>
+<circle cx="68.0" cy="98.0" r="2.5" style="stroke:white;stroke-width:0.33" fill="white"/>
+<g transform="translate(53.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">2</text>
+</g>
+<g transform="translate(53.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">-</text>
+</g>
+<circle cx="53.0" cy="98.0" r="2.5" style="stroke:white;stroke-width:0.33" fill="white"/>
+<g transform="translate(38.0,103.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">1</text>
+</g>
+<g transform="translate(38.0,108.0) scale(1.0363636363636364,1) "><text x="0" y="5.0" font-family="Courier New" font-size="5.0" font-style="" font-weigth="" fill="#000000">Vout</text>
+</g>
+<circle cx="38.0" cy="98.0" r="2.5" style="stroke:white;stroke-width:0.33" fill="white"/>
+</svg>
