@@ -1,3 +1,7 @@
+<script type="text/javascript" async
+src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"
+</script>
+
 # dev08 
 
 Squarewave generator designed for 440Hz output, but actually appears to be around 390Hz. Uses an **NE555** 
@@ -37,4 +41,4 @@ Here's an example of how you might hook-up the generator
 
 The frequency of oscillation off the 555 timer is:
 
-f = \frac{1.44}{C1(R1+2R2)}
+$$f = \frac{1.44}{C1(R1+2R2)}$$
