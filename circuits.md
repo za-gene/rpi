@@ -2,7 +2,7 @@
 
 ## RC circuit
 
-<img src="rc.svg">
+<img src="rc.svg" width="400">
 
 
 ## See also
