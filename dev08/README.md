@@ -2,4 +2,11 @@
 
 Frequency generator
 
-<img src="dev08.svg" width="800">
+## Schematics
+
+<img src="dev08.svg" width="600">
+
+## Example connection
+
+<img src="dev08eg.svg" width="400">
+

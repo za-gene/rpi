@@ -1,0 +1,30 @@
+[FIDOCAD]
+SA 115 75 0
+PA 100 40 10 10 5 0 0
+FCJ
+TY 95 30 4 3 0 0 0 * 1
+TY 95 25 4 3 0 0 0 * Vout
+PA 115 40 10 10 5 0 0
+FCJ
+TY 110 30 4 3 0 0 0 * 3
+TY 110 25 4 3 0 0 0 * GND
+PA 130 40 10 10 5 0 0
+FCJ
+TY 125 30 4 3 0 0 0 * 5
+TY 125 25 4 3 0 0 0 * Vin
+MC 100 50 1 0 ey_libraries.pasres7
+FCJ
+TY 95 60 4 3 0 0 0 * 
+TY 85 50 4 3 0 0 0 * 220
+MC 100 60 0 0 970
+MC 130 65 0 0 ey_libraries.gendcb0
+FCJ
+TY 140 70 4 3 0 0 0 * 
+TY 140 65 4 3 0 0 0 * 9V
+LI 130 45 130 60 0
+LI 100 75 130 75 0
+LI 115 45 115 75 0
+RV 140 45 90 15 0
+TY 105 15 4 3 0 0 0 * DEV08
+TY 160 -5 4 3 0 0 0 * Example circuit
+TY 95 5 4 3 0 0 0 * Example Circuit
