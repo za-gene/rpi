@@ -20,6 +20,7 @@ Reference information:
 ## General
 
 * [audio](audio)
+* [circuits](circuits.md) - various electrical circuits
 * [debounce](https://gist.github.com/blippy/430cc73cb50b9e44c3423c2717ab22ee) a button
 * [picocom](picocom.md)
 * [software](software.md)

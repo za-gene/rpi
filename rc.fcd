@@ -1,0 +1,21 @@
+[FIDOCAD]
+MC 50 15 0 0 ey_libraries.pasres7
+FCJ
+TY 50 5 4 3 0 0 0 * R
+TY 60 25 4 3 0 0 0 * 
+MC 60 20 0 0 ey_libraries.pascap0
+FCJ
+TY 65 20 4 3 0 0 0 * C
+TY 70 30 4 3 0 0 0 * 
+TY 75 20 4 3 0 0 0 * Vout
+LI 60 15 75 15 0
+LI 45 30 75 30 0
+SA 40 15 0
+SA 40 30 0
+SA 75 30 0
+SA 75 15 0
+TY 30 20 4 3 0 0 0 * Vin
+LI 45 15 40 15 0
+LI 40 30 45 30 0
+TY 45 0 4 3 0 0 0 * RC circuit
+TY 30 35 4 3 0 0 0 * Produced using fidocadj
