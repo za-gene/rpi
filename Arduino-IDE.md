@@ -45,6 +45,13 @@ sudo chmod a+rw /dev/ttyUSB0
 
 IDE 1.8.7 Default programmer is: AVRISP mkll
 
+## Unclassified
+
+There is a `String` class, which behaves a little like `std::string`. See
+```
+~/tools/arduino-1.8.10/hardware/arduino/avr/cores/arduino/WString.cpp
+```
+
 
 ## Also on this site
 
