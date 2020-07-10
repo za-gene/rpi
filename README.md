@@ -22,6 +22,7 @@ Reference information:
 * [audio](audio)
 * [debounce](https://gist.github.com/blippy/430cc73cb50b9e44c3423c2717ab22ee) a button
 * [picocom](picocom.md)
+* [software](software.md)
 * [stm32](stm32) - blinker sketch
 * telnet server: [dev03-2](dev03/dev03-2)
 * [Twiddle-factor FFT for mcus](https://blog.podkalicki.com/twiddle-factor-based-fft-for-microcontrollers/)
