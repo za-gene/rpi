@@ -24,6 +24,10 @@ Upload stlink
 confirmed working 2020-07-04.
 
 
+## Also in this directory
+
+* [debugging](debugging.txt)
+
 ## Links to other sites
 
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
