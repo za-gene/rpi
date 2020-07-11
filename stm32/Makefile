@@ -22,7 +22,10 @@ app.bin: app.elf
 clean:
 	rm -f *.o *.elf *.bin
 
-flash: app.bin
+.flash: app.bin
+	touch .flash
+
+flash : .flash
 	$(STL) write app.bin 0x8000000
 
 erase:
