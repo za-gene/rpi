@@ -38,8 +38,9 @@ grep board= boards.txt | cut -f2 -d= | sort -u
 
 ## Setup
 ```
-sudo usermod -a -G dialout <username>
+sudo usermod -a -G dialout $USER
 sudo chmod a+rw /dev/ttyACM0
+./arduino-linux-setup.sh $USER
 sudo chmod a+rw /dev/ttyUSB0
 ```
 
