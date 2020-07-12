@@ -1,11 +1,12 @@
 import timeit
 from time import sleep
+import time
 import spidev
 spi = spidev.SpiDev()
 #spi.open(0, CHIP_SELECT_0_OR_1)
 spi.open(0, 0)
 #spi.max_speed_hz = 1000000
-spi.max_speed_hz = 1000000
+spi.max_speed_hz = 10000
 
 def fetch():
     #to_send = [0x01]
@@ -17,5 +18,20 @@ def fetch():
     #print(val)
     return val
 
-print(timeit.timeit(fetch, number=10000))
+nsamples = 1000
+xs = []
+ys = []
 
+for i in range(nsamples):
+    xs.append(time.monotonic_ns())
+    ys.append(fetch())
+
+x0 = xs[0]
+for i in range(nsamples):
+    xs[i] = (xs[i] - x0)/1000
+
+fp = open("capture.dat", "w")
+for i in range(nsamples):
+    fp.write(f'{xs[i]}\t{ys[i]}\n')
+fp.close()    
+print("Capture finished")
