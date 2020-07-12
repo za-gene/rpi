@@ -40,8 +40,8 @@ grep board= boards.txt | cut -f2 -d= | sort -u
 ```
 sudo usermod -a -G dialout $USER
 sudo chmod a+rw /dev/ttyACM0
-./arduino-linux-setup.sh $USER
 sudo chmod a+rw /dev/ttyUSB0
+./arduino-linux-setup.sh $USER
 ```
 
 IDE 1.8.7 Default programmer is: AVRISP mkll
@@ -57,3 +57,4 @@ There is a `String` class, which behaves a little like `std::string`. See
 ## Also on this site
 
 * [ATTiny85](attiny85/Arduino-IDE.md) setup and programming instructions
+* [stm32](../stm32/README.md) setup and programming instructions
