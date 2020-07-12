@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import timeit
 from time import sleep
 import time

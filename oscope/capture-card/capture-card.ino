@@ -7,15 +7,8 @@
 #include <SPI.h>
 //#include <cstdint>
 
-#define AIN PB1
-
-void setupSPI(void)
-{
-  // The clock value is not used
-  // SPI1 is selected by default
-  // MOSI, MISO, SCK and NSS PINs are set by the library
-  SPI.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
-}
+#define AIN     PB1
+#define PIN_440 PA0
 
 void setup()
 {
@@ -23,8 +16,14 @@ void setup()
     Serial.begin(115200);
     delay(100);
   */
-  setupSPI();
-  pinMode(AIN, INPUT);
+  // The clock value is not used
+  // SPI1 is selected by default
+  // MOSI, MISO, SCK and NSS PINs are set by the library
+  SPI.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
+  pinMode(AIN, INPUT_ANALOG);
+  pinMode(PIN_440, OUTPUT);
+  tone(PIN_440, 440); // emit a tone on this pin
+  
 }
 
 uint8_t countr = 0;
@@ -35,13 +34,7 @@ void loop()
   msg = SPI.transfer(0xFF);
   uint16_t reading = analogRead(AIN);
   SPI.transfer16(reading);
+  //SPI.transfer16(0xFFFF);
   //SPI.transfer(reading & 0xFF);
-  /*
-    Serial.print("Received = 0b");
-    Serial.print(msg, BIN);
-    Serial.print(", 0x");
-    Serial.print(msg, HEX);
-    Serial.print(", ");
-    Serial.println(msg);
-  */
+
 }

@@ -4,7 +4,7 @@ Attempts to make an oscilloscope for Raspberry Pi.
 
 ## Setup
 
-* For data capture, set up the STM32 [slave unit ](../spi/stm-spi-slave)
+* For data capture, set up the STM32 [capture card](capture-card)
 
 ## Running
 
