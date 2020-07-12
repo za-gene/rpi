@@ -16,6 +16,10 @@ BRD3  - PINOUTS ON PI3 PHYSICAL BOARD PINS
 DUP   - SUGGESTED DUPONT COLOURS
 ```
 
+## In this directory
+
+* [rpi-master-spi.py](rpi-master-spi.py) - example which has been proven to work
+
 ## Links to other sites
 
 * [Basics of SPI](https://www.electronicshub.org/basics-serial-peripheral-interface-spi/)
