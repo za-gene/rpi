@@ -10,6 +10,15 @@
 
 ![Diagram](wroom-pins.png)
 
+
+## Speed tests
+
+10,000 `digitalWrite()` took 1,435us
+
+10,000 `analogRead()` took 109,849us (ouch!), so about 11us ea.
+
+10,000 `digitalRead()` took 1,894us.
+
 ## Unclassified
 
 **Built-in blue LED**: GPIO2 (confirmed)
