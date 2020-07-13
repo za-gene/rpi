@@ -12,10 +12,10 @@
 
 void setup()
 {
-  /*
-    Serial.begin(115200);
-    delay(100);
-  */
+
+  Serial1.begin(9600);
+  Serial1.println("Capture Card setup");
+
   // The clock value is not used
   // SPI1 is selected by default
   // MOSI, MISO, SCK and NSS PINs are set by the library
@@ -23,7 +23,7 @@ void setup()
   pinMode(AIN, INPUT_ANALOG);
   pinMode(PIN_440, OUTPUT);
   tone(PIN_440, 440); // emit a tone on this pin
-  
+
 }
 
 uint8_t countr = 0;
@@ -31,7 +31,7 @@ void loop()
 {
   uint8_t msg;
   // Blocking call to read SPI message
-  msg = SPI.transfer(0xFF);
+  //msg = SPI.transfer(0xFF);
   uint16_t reading = analogRead(AIN);
   SPI.transfer16(reading);
   //SPI.transfer16(0xFFFF);
