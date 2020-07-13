@@ -7,29 +7,29 @@ spi = spidev.SpiDev()
 #spi.open(0, CHIP_SELECT_0_OR_1)
 spi.open(0, 0)
 #spi.max_speed_hz = 1000000
-spi.max_speed_hz = 10000
+spi.max_speed_hz = 200000
 
 def fetch():
     #to_send = [0x01]
-    spi.xfer([0x01])
+    hi, lo = spi.xfer([0x01, 0x02])
     dt = 20e-6
-    sleep(dt)
-    hi, lo = spi.readbytes(2)
+    #sleep(dt)
+    #hi, lo = spi.readbytes(2)
     val = (hi << 8) + lo
     #print(val)
     return val
 
-nsamples = 1000
+nsamples = 100
 xs = []
 ys = []
 
 for i in range(nsamples):
-    xs.append(time.monotonic_ns())
+    xs.append(time.monotonic_ns()/1000)
     ys.append(fetch())
 
 x0 = xs[0]
 for i in range(nsamples):
-    xs[i] = (xs[i] - x0)/1000
+    xs[i] = (xs[i] - x0)
 
 fp = open("capture.dat", "w")
 for i in range(nsamples):
