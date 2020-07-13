@@ -33,10 +33,15 @@ put a 10uF cap between EN and GND (1-3uF was the one I saw
 recommended, though)
 
 
-## Also on this site
+## In this directory
+
+* [FreeRTOS](FreeRTOS)
+* [tone-440](tone-440) - produce a tone of 440Hz
+
+
+## Elsewhere on this site
 
 * [1306](../1306) OLED display
-* [FreeRTOS](FreeRTOS)
 
 ## Links to other sites
 
