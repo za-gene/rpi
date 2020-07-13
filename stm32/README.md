@@ -26,6 +26,7 @@ confirmed working 2020-07-04.
 
 ## Also in this directory
 
+* [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
 
 ## Links to other sites
