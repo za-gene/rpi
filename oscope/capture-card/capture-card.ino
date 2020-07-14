@@ -10,11 +10,12 @@
 #define AIN     PB1
 #define PIN_440 PA0
 
+auto& ser = Serial1;
 void setup()
 {
 
-  Serial1.begin(9600);
-  Serial1.println("Capture Card setup");
+  ser.begin(9600);
+  ser.println("Capture Card setup");
 
   // The clock value is not used
   // SPI1 is selected by default
@@ -22,11 +23,13 @@ void setup()
   SPI.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
   pinMode(AIN, INPUT_ANALOG);
   pinMode(PIN_440, OUTPUT);
-  tone(PIN_440, 440); // emit a tone on this pin
+  //tone(PIN_440, 440); // emit a tone on this pin
+  for(int i = 0; i<100; i++)
+    ser.println(analogRead(AIN));
 
 }
 
-uint8_t countr = 0;
+//uint8_t countr = 0;
 void loop()
 {
   uint8_t msg;
