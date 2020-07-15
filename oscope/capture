@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#rm *dat && ./capture.py && nh ./plot.py
+rm *dat ; picocom /dev/ttyUSB0 -b 115200 -l | tee capture.dat
+# might be able to use something like 
+#	screen /dev/ttyUSB0 115200
