@@ -30,6 +30,7 @@ confirmed working 2020-07-04.
 
 ## Also in this directory
 
+* [adc-interrupts](adc-interrupts) - how to do analog reads using interrupts
 * [adc-simple](adc-simple) - just uses the analogRead() function
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
