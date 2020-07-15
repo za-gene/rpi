@@ -30,6 +30,7 @@ confirmed working 2020-07-04.
 
 ## Also in this directory
 
+* [adc-simple](adc-simple) - just uses the analogRead() function
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
 
