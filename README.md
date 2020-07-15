@@ -4,14 +4,13 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 ## Arduino IDE
 
 * [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
-* [timer](timer) : setting up timer2 prescaler to produce a tone
 
 ## Boards
 
 * [ATTiny85](attiny85)
 * [ESP8266](esp8266)
 * [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
-* [nano](nano)
+* [nano](nano) - benchmarks, timer
 * [stm32](stm32) - blinker sketch
 * [wroom](wroom)
 
