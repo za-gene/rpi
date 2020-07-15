@@ -1,14 +1,6 @@
 # rpi
 My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) projects
 
-Reference information:
-
-
-* [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
-* [i2c](i2c): Arduino and RPi3 master, ATTiny85 slave
-* [i2s](i2s)
-* [spi](spi)
-
 ## Arduino IDE
 
 * [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
@@ -18,6 +10,7 @@ Reference information:
 
 * [ATTiny85](attiny85)
 * [ESP8266](esp8266)
+* [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
 * [nano](nano)
 * [stm32](stm32) - blinker sketch
 * [wroom](wroom)
@@ -53,6 +46,13 @@ Reference information:
 * [pills](pills): remember to take your pills
 * [synth](synth): sound synthesizer/tone-maker
 * [sleep85](sleep85): conserving power by putting the ATTiny85 to sleep
+
+## Protocols
+
+* [i2c](i2c): Arduino and RPi3 master, ATTiny85 slave
+* [i2s](i2s)
+* [spi](spi)
+
 
 ## Hardware
 
