@@ -1,5 +1,5 @@
 # rpi
-My Arduino, ATTiny85, ESP8266/32 and RPi (Raspberry Pi) projects
+My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) projects
 
 Reference information:
 
@@ -18,9 +18,9 @@ Reference information:
 
 * [ATTiny85](attiny85)
 * [ESP8266](esp8266)
-* [esp-wroom](esp-wroom)
 * [nano](nano)
 * [stm32](stm32) - blinker sketch
+* [wroom](wroom)
 
 
 ## General
