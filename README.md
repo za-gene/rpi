@@ -4,18 +4,24 @@ My Arduino, ATTiny85, ESP8266/32 and RPi (Raspberry Pi) projects
 Reference information:
 
 
-* [ATTiny85](attiny85)
-* [ESP8266](esp8266)
-* [esp-wroom](esp-wroom)
 * [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
 * [i2c](i2c): Arduino and RPi3 master, ATTiny85 slave
 * [i2s](i2s)
 * [spi](spi)
 
-## Arduino Nano/Uno
+## Arduino IDE
 
 * [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
 * [timer](timer) : setting up timer2 prescaler to produce a tone
+
+## Boards
+
+* [ATTiny85](attiny85)
+* [ESP8266](esp8266)
+* [esp-wroom](esp-wroom)
+* [nano](nano)
+* [stm32](stm32) - blinker sketch
+
 
 ## General
 
@@ -24,7 +30,6 @@ Reference information:
 * [debounce](https://gist.github.com/blippy/430cc73cb50b9e44c3423c2717ab22ee) a button
 * [picocom](picocom.md)
 * [software](software.md)
-* [stm32](stm32) - blinker sketch
 * telnet server: [dev03-2](dev03/dev03-2)
 * [Twiddle-factor FFT for mcus](https://blog.podkalicki.com/twiddle-factor-based-fft-for-microcontrollers/)
 
