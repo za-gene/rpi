@@ -36,31 +36,34 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define NUMFLAKES     10 // Number of snowflakes in the animation example
 
-/*
-  #define LOGO_HEIGHT   16
-  #define LOGO_WIDTH    16
-  static const unsigned char PROGMEM logo_bmp[] =
-  { B00000000, B11000000,
-  B00000001, B11000000,
-  B00000001, B11000000,
-  B00000011, B11100000,
-  B11110011, B11100000,
-  B11111110, B11111000,
-  B01111110, B11111111,
-  B00110011, B10011111,
-  B00011111, B11111100,
-  B00001101, B01110000,
-  B00011011, B10100000,
-  B00111111, B11100000,
-  B00111111, B11110000,
-  B01111100, B11110000,
-  B01110000, B01110000,
-  B00000000, B00110000
+template<int N, typename T>
+struct Buffer {
+  int capacity = N;
+  int size = 0;
+  T data[N];
+  void push(T value) {
+    if (size < capacity) data[size++] = value;
   };
-*/
+  void zap() {
+    for(int i =0; i<capacity; ++i) data[i] =0;
+    size = 0;
+  }
+};
+
+
+Buffer<20, char> input;
+void serialise() {
+  if (!Serial.available()) return;
+  char c = Serial.read();
+  input.push(c);
+  if(c != '\r') return;
+  // TODO
+  input.zap();
+}
+
 
 void display_text(const String& str, int col = 0, int row = 0) {
-    //display.clearDisplay();
+  //display.clearDisplay();
 
   display.setTextSize(2); // Draw 2X-scale text
   display.setTextColor(SSD1306_WHITE);
@@ -92,75 +95,22 @@ void setup() {
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
   display.display();
-  delay(200); // Pause for 2 seconds
-
-  // Clear the buffer
-  //display.clearDisplay();
-
-  display_text("Hello");
-  goto skip;
-again:
-  if (Serial.available()) {
-    char c = Serial.read();
-    display_char(c);
-  }
-  goto again;
-skip:
-  return;
-
-#if 0
-  // Draw a single pixel in white
-  display.drawPixel(10, 10, SSD1306_WHITE);
-
-  // Show the display buffer on the screen. You MUST call display() after
-  // drawing commands to make them visible on screen!
-  display.display();
-  delay(2000);
-  // display.display() is NOT necessary after every single drawing command,
-  // unless that's what you want...rather, you can batch up a bunch of
-  // drawing operations and then update the screen all at once by calling
-  // display.display(). These examples demonstrate both approaches...
-
-  testdrawline();      // Draw many lines
-  testdrawrect();      // Draw rectangles (outlines)
-  testfillrect();      // Draw rectangles (filled)
-  testdrawcircle();    // Draw circles (outlines)
-  testfillcircle();    // Draw circles (filled)
-  testdrawroundrect(); // Draw rounded rectangles (outlines)
-  testfillroundrect(); // Draw rounded rectangles (filled)
-  testdrawtriangle();  // Draw triangles (outlines)
-  testfilltriangle();  // Draw triangles (filled)
-  testdrawchar();      // Draw characters of the default font
-  testdrawstyles();    // Draw 'stylized' characters
-  testscrolltext();    // Draw scrolling text
-  testdrawbitmap();    // Draw a small bitmap image
-
-  // Invert and restore display, pausing in-between
-  display.invertDisplay(true);
-  delay(1000);
-  display.invertDisplay(false);
-  delay(1000);
-
-  testanimate(logo_bmp, LOGO_WIDTH, LOGO_HEIGHT); // Animate bitmaps
-#endif
+  delay(200); 
 }
+
+
 
 void loop() {
   char hms[10];
+
   DateTime dt = rtc.now();
-  //auto sec = now.second();
-//sprintf(hms, 
+  serialise();
   display.clearDisplay();
   display.setTextSize(2);
-  //display.setCursor(0, 0); // col then row
-  //display.println(sec, DEC);
-  //display.println(now.timestamp(DateTime::TIMESTAMP_TIME));
   display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-  //display.setCursor(0, 0); 
-  //display.println(now.timestamp(DateTime::TIMESTAMP_DATE));
   display_text(dt.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
   display.display();
-  delay(500);
+  delay(250);
 }
 
 
@@ -204,90 +154,3 @@ void testdrawstyles(void) {
   display.display();
   delay(2000);
 }
-
-void testscrolltext(void) {
-  display.clearDisplay();
-
-  display.setTextSize(2); // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(10, 0);
-  display.println(F("scroll"));
-  display.display();      // Show initial text
-  delay(100);
-
-  // Scroll in various directions, pausing in-between:
-  display.startscrollright(0x00, 0x0F);
-  delay(2000);
-  display.stopscroll();
-  delay(1000);
-  display.startscrollleft(0x00, 0x0F);
-  delay(2000);
-  display.stopscroll();
-  delay(1000);
-  display.startscrolldiagright(0x00, 0x07);
-  delay(2000);
-  display.startscrolldiagleft(0x00, 0x07);
-  delay(2000);
-  display.stopscroll();
-  delay(1000);
-}
-
-/*
-  void testdrawbitmap(void) {
-  display.clearDisplay();
-
-  display.drawBitmap(
-    (display.width()  - LOGO_WIDTH ) / 2,
-    (display.height() - LOGO_HEIGHT) / 2,
-    logo_bmp, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  display.display();
-  delay(1000);
-  }
-
-
-
-#define XPOS   0 // Indexes into the 'icons' array in function below
-#define YPOS   1
-#define DELTAY 2
-
-void testanimate(const uint8_t *bitmap, uint8_t w, uint8_t h) {
-  int8_t f, icons[NUMFLAKES][3];
-
-  // Initialize 'snowflake' positions
-  for (f = 0; f < NUMFLAKES; f++) {
-    icons[f][XPOS]   = random(1 - LOGO_WIDTH, display.width());
-    icons[f][YPOS]   = -LOGO_HEIGHT;
-    icons[f][DELTAY] = random(1, 6);
-    Serial.print(F("x: "));
-    Serial.print(icons[f][XPOS], DEC);
-    Serial.print(F(" y: "));
-    Serial.print(icons[f][YPOS], DEC);
-    Serial.print(F(" dy: "));
-    Serial.println(icons[f][DELTAY], DEC);
-  }
-
-  for (;;) { // Loop forever...
-    display.clearDisplay(); // Clear the display buffer
-
-    // Draw each snowflake:
-    for (f = 0; f < NUMFLAKES; f++) {
-      display.drawBitmap(icons[f][XPOS], icons[f][YPOS], bitmap, w, h, SSD1306_WHITE);
-    }
-
-    display.display(); // Show the display buffer on the screen
-    delay(200);        // Pause for 1/10 second
-
-    // Then update coordinates of each flake...
-    for (f = 0; f < NUMFLAKES; f++) {
-      icons[f][YPOS] += icons[f][DELTAY];
-      // If snowflake is off the bottom of the screen...
-      if (icons[f][YPOS] >= display.height()) {
-        // Reinitialize to a random position, just off the top
-        icons[f][XPOS]   = random(1 - LOGO_WIDTH, display.width());
-        icons[f][YPOS]   = -LOGO_HEIGHT;
-        icons[f][DELTAY] = random(1, 6);
-      }
-    }
-  }
-}
-*/
