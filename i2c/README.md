@@ -2,11 +2,11 @@
 
 ## Connection guide
 ```
-ARDUINO | RPI      | ATTINY85
-   3V3  | 1 3V3    | 8 VCC
-A4 SDA  | 3 SDA.1  | 5 PB0
-A5 SCL  | 5 SCL.1  | 7 PB2
-   GND  | 6 GND    | 4 GND
+I2C | NANO | RPI      | TINY85 | ESP32
++   |  3V3 | 1 3V3    | 8 VCC  | 
+SDA |   A4 | 3 SDA.1  | 5 PB0  |   D21
+SCL |   A5 | 5 SCL.1  | 7 PB2  |   D22
+-   |      |          |        |
 ```
 
 ## ATTiny85 slave
