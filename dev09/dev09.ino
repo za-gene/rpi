@@ -148,8 +148,10 @@ void setup() {
 }
 
 
+char* day_names[] = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
 
 void loop() {
+  char text[11];
   serialise();
   static Periodic regular(250);
   if (regular.expired()) {
@@ -161,7 +163,12 @@ void loop() {
     display.setTextSize(2);
     //display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
     display_text(dt_local.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-    display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+    //display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+    float degf = rtc.getTemperature();
+    char* day_name = day_names[dt_local.dayOfTheWeek()];
+    snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
+    display_text(text, 0, 17);
+    
     display.display();
 
   }
