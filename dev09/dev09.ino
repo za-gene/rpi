@@ -28,7 +28,8 @@
 #include "RTClib.h"
 
 typedef unsigned long ulong;
-typedef unsigned long micros_t;
+//typedef unsigned long micros_t;
+typedef ulong ms_t;
 
 TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
 TimeChangeRule mySTD = {"GMT", Last, Sun, Nov, 2, 0};
@@ -43,8 +44,6 @@ RTC_DS3231 rtc;
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-//#define NUMFLAKES     10 // Number of snowflakes in the animation example
 
 template<int N, typename T>
 struct Buffer {
@@ -61,13 +60,14 @@ struct Buffer {
 };
 
 
+
 struct Periodic {
   //bool active = false;
-  micros_t _started;
+  ms_t _started;
   //bool _periodic = false;
-  micros_t _period;
-  Periodic(micros_t period) : _period(period) {
-    _started = micros();
+  ms_t _period;
+  Periodic(ms_t period) : _period(period) {
+    _started = millis();
 
   }
   /*
@@ -78,7 +78,7 @@ struct Periodic {
     }
   */
   bool expired() {
-    micros_t ms = micros();
+    ms_t ms = millis();
     if (ms - _started < _period) return false;
     //active = false;
     _started = ms;
@@ -133,6 +133,9 @@ void setup() {
 //#pragma message __TIME__
 
   Serial.begin(9600);
+  Serial.print("Sizeof ulong (ms_t) = ");
+  Serial.println(sizeof(ulong));
+  
   rtc.begin(); // this is important
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -144,7 +147,7 @@ void setup() {
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
   display.display();
-  delay(200);
+  delay(100);
 }
 
 
@@ -170,7 +173,11 @@ void loop() {
     display_text(text, 0, 17);
     
     display.display();
+  }
 
+  static Periodic debouncer(20);
+  if(debouncer.expired()) {
+    // TODO
   }
 }
 
