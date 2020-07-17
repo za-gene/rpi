@@ -22,11 +22,18 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Timezone.h> // https://github.com/JChristensen/Timezone
+
 
 #include "RTClib.h"
 
 typedef unsigned long ulong;
 typedef unsigned long micros_t;
+
+TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
+TimeChangeRule mySTD = {"GMT", Last, Sun, Nov, 2, 0};
+Timezone myTZ(myBST, mySTD);
+TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
 
 RTC_DS3231 rtc;
 
@@ -122,25 +129,11 @@ void display_char(char c) {
 
 void setup() {
   //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-#pragma message __DATE__
-#pragma message __TIME__
+//#pragma message __DATE__
+//#pragma message __TIME__
 
   Serial.begin(9600);
-  rtc.begin();
-  //do_set("SET Jul 17 2020 08:46:20");
-  //rtc.adjust(DateTime("Jul 17 2020","08:46:20"));
-  //rtc.adjust(DateTime(1594976774));
-  //DateTime dt = DateTime(F("2020-01-01"), F("02:00:00"));
-  //DateTime dt = DateTime(F("Jul 10 2020"), F("02:00:00"));
-  //Serial.println(dt);
-  //rtc.adjust(DateTime(F("2021-07-01"), F("02:00:00")));
-  //rtc.adjust(DateTime(F("2021-07-01T02:00:00")));
-  //rtc.adjust(dt);
-  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  //rtc.adjust(DateTime(F("Jul 02 2021"), F("03:00:00")));
-
-  //do_set("SET Jul 03 2010 05:05:05");
-
+  rtc.begin(); // this is important
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
@@ -162,10 +155,15 @@ void loop() {
   if (regular.expired()) {
     DateTime dt = rtc.now();
     display.clearDisplay();
+    auto tim = dt.unixtime();
+    tim = myTZ.toLocal(tim, &tcr);
+    DateTime dt_local{tim};
     display.setTextSize(2);
-    display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-    display_text(dt.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+    //display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
+    display_text(dt_local.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
+    display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
     display.display();
+
   }
 }
 
