@@ -25,7 +25,10 @@
 
 #include "RTClib.h"
 
-RTC_DS1307 rtc;
+typedef unsigned long ulong;
+typedef unsigned long micros_t;
+
+RTC_DS3231 rtc;
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -34,7 +37,7 @@ RTC_DS1307 rtc;
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define NUMFLAKES     10 // Number of snowflakes in the animation example
+//#define NUMFLAKES     10 // Number of snowflakes in the animation example
 
 template<int N, typename T>
 struct Buffer {
@@ -45,19 +48,55 @@ struct Buffer {
     if (size < capacity) data[size++] = value;
   };
   void zap() {
-    for(int i =0; i<capacity; ++i) data[i] =0;
+    for (int i = 0; i < capacity; ++i) data[i] = 0;
     size = 0;
   }
 };
 
 
-Buffer<20, char> input;
+struct Periodic {
+  //bool active = false;
+  micros_t _started;
+  //bool _periodic = false;
+  micros_t _period;
+  Periodic(micros_t period) : _period(period) {
+    _started = micros();
+
+  }
+  /*
+    void begin(bool periodic = true) {
+    started = micros();
+    active = true;
+    _periodic = periodic;
+    }
+  */
+  bool expired() {
+    micros_t ms = micros();
+    if (ms - _started < _period) return false;
+    //active = false;
+    _started = ms;
+    return true;
+  }
+
+};
+
+void do_set(char *buf) {
+  buf[15] = 0;
+  buf[24] = 0;
+  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  rtc.adjust(DateTime(buf + 4, buf + 16));
+  Serial.println(buf + 4);
+  Serial.println(buf + 16);
+
+}
+Buffer<30, char> input;
 void serialise() {
   if (!Serial.available()) return;
   char c = Serial.read();
   input.push(c);
-  if(c != '\r') return;
-  // TODO
+  if (c != '\r') return;
+  if (strncmp("SET", input.data, 3) != 0) return;
+  do_set(input.data);
   input.zap();
 }
 
@@ -83,8 +122,25 @@ void display_char(char c) {
 
 void setup() {
   //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+#pragma message __DATE__
+#pragma message __TIME__
 
   Serial.begin(9600);
+  rtc.begin();
+  //do_set("SET Jul 17 2020 08:46:20");
+  //rtc.adjust(DateTime("Jul 17 2020","08:46:20"));
+  //rtc.adjust(DateTime(1594976774));
+  //DateTime dt = DateTime(F("2020-01-01"), F("02:00:00"));
+  //DateTime dt = DateTime(F("Jul 10 2020"), F("02:00:00"));
+  //Serial.println(dt);
+  //rtc.adjust(DateTime(F("2021-07-01"), F("02:00:00")));
+  //rtc.adjust(DateTime(F("2021-07-01T02:00:00")));
+  //rtc.adjust(dt);
+  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  //rtc.adjust(DateTime(F("Jul 02 2021"), F("03:00:00")));
+
+  //do_set("SET Jul 03 2010 05:05:05");
+
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
@@ -95,22 +151,22 @@ void setup() {
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
   display.display();
-  delay(200); 
+  delay(200);
 }
 
 
 
 void loop() {
-  char hms[10];
-
-  DateTime dt = rtc.now();
   serialise();
-  display.clearDisplay();
-  display.setTextSize(2);
-  display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-  display_text(dt.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
-  display.display();
-  delay(250);
+  static Periodic regular(250);
+  if (regular.expired()) {
+    DateTime dt = rtc.now();
+    display.clearDisplay();
+    display.setTextSize(2);
+    display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
+    display_text(dt.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+    display.display();
+  }
 }
 
 
