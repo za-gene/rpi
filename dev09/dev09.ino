@@ -31,6 +31,9 @@ typedef unsigned long ulong;
 //typedef unsigned long micros_t;
 typedef ulong ms_t;
 
+#define BUT 4
+#define LED 3
+
 TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
 TimeChangeRule mySTD = {"GMT", Last, Sun, Nov, 2, 0};
 Timezone myTZ(myBST, mySTD);
@@ -62,31 +65,38 @@ struct Buffer {
 
 
 struct Periodic {
-  //bool active = false;
   ms_t _started;
-  //bool _periodic = false;
   ms_t _period;
   Periodic(ms_t period) : _period(period) {
     _started = millis();
 
   }
-  /*
-    void begin(bool periodic = true) {
-    started = micros();
-    active = true;
-    _periodic = periodic;
-    }
-  */
   bool expired() {
     ms_t ms = millis();
     if (ms - _started < _period) return false;
-    //active = false;
     _started = ms;
     return true;
   }
 
 };
 
+struct Delay {
+  bool _active = false;
+  ms_t _started;
+  ms_t _len;
+  void begin(ms_t len_ms) {
+    _len = len_ms;
+    _active = true;
+    _started = millis();
+  }
+  bool expired() {
+    if (!_active) return false;
+    ms_t ms = millis();
+    if (ms - _started < _len) return false;
+    _active = false;
+    return true;
+  }
+};
 void do_set(char *buf) {
   buf[15] = 0;
   buf[24] = 0;
@@ -129,13 +139,16 @@ void display_char(char c) {
 
 void setup() {
   //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-//#pragma message __DATE__
-//#pragma message __TIME__
+  //#pragma message __DATE__
+  //#pragma message __TIME__
+
+  pinMode(LED, OUTPUT);
+  pinMode(BUT, INPUT_PULLUP);
 
   Serial.begin(9600);
   Serial.print("Sizeof ulong (ms_t) = ");
   Serial.println(sizeof(ulong));
-  
+
   rtc.begin(); // this is important
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -154,71 +167,50 @@ void setup() {
 char* day_names[] = {"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
 
 void loop() {
-  char text[11];
   serialise();
   static Periodic regular(250);
-  if (regular.expired()) {
-    DateTime dt = rtc.now();
-    display.clearDisplay();
-    auto tim = dt.unixtime();
-    tim = myTZ.toLocal(tim, &tcr);
-    DateTime dt_local{tim};
-    display.setTextSize(2);
-    //display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-    display_text(dt_local.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
-    //display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
-    float degf = rtc.getTemperature();
-    char* day_name = day_names[dt_local.dayOfTheWeek()];
-    snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
-    display_text(text, 0, 17);
-    
-    display.display();
+  if (regular.expired()) update_display();
+
+  static Periodic debouncer(25);
+  static bool prev_but = HIGH;
+  if (debouncer.expired()) {
+    bool cur_but = digitalRead(BUT);
+    if (cur_but == LOW && prev_but == HIGH) but_falling();
+    prev_but = cur_but;
   }
 
-  static Periodic debouncer(20);
-  if(debouncer.expired()) {
-    // TODO
-  }
+  beeper(false);
 }
 
-
-
-
-
-void testdrawchar(void) {
+void update_display() {
+  char text[11];
+  DateTime dt = rtc.now();
   display.clearDisplay();
-
-  display.setTextSize(1);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(0, 0);     // Start at top-left corner
-  display.cp437(true);         // Use full 256 char 'Code Page 437' font
-
-  // Not all the characters will fit on the display. This is normal.
-  // Library will draw what it can and the rest will be clipped.
-  for (int16_t i = 0; i < 256; i++) {
-    if (i == '\n') display.write(' ');
-    else          display.write(i);
-  }
+  auto tim = dt.unixtime();
+  tim = myTZ.toLocal(tim, &tcr);
+  DateTime dt_local{tim};
+  display.setTextSize(2);
+  //display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
+  display_text(dt_local.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
+  //display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+  float degf = rtc.getTemperature();
+  char* day_name = day_names[dt_local.dayOfTheWeek()];
+  snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
+  display_text(text, 0, 17);
 
   display.display();
-  delay(2000);
 }
 
-void testdrawstyles(void) {
-  display.clearDisplay();
-
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
-  display.setCursor(0, 0);            // Start at top-left corner
-  display.println(F("Hello, world!"));
-
-  display.setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-  display.println(3.141592);
-
-  display.setTextSize(2);             // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.print(F("0x")); display.println(0xDEADBEEF, HEX);
-
-  display.display();
-  delay(2000);
+void beeper(bool activate) {
+  static Delay dly;
+  if(activate) {
+    digitalWrite(LED, HIGH);
+    dly.begin(1000);
+  }
+  if(dly.expired()) digitalWrite(LED, LOW);
+  
+}
+void but_falling() {
+  beeper(true);
+  //digitalWrite(LED, 1 - digitalRead(LED));
 }
