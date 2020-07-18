@@ -179,6 +179,7 @@ void loop() {
     prev_but = cur_but;
   }
 
+  //digitalWrite(LED, random(2));
   mins30(false);
 }
 
@@ -196,18 +197,30 @@ void update_display() {
 
   // decide what to display on second line
   int timer = mins30(false);
-  if(timer>0) {
-    snprintf(text, sizeof(text), "%02dm %02ds   ", timer / 60, timer %60);
+  if (timer > 0) {
+    snprintf(text, sizeof(text), "%02dm %02ds   ", timer / 60, timer % 60);
   } else {
-  float degf = rtc.getTemperature();
-  char* day_name = day_names[dt_local.dayOfTheWeek()];
-  snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
+    float degf = rtc.getTemperature();
+    char* day_name = day_names[dt_local.dayOfTheWeek()];
+    snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
   }
-  
+
   display_text(text, 0, 17);
   display.display();
 }
 
+void sound(bool on) {
+  goto foo;
+  digitalWrite(LED, on);
+  return;
+foo:
+  if (on) {
+    //tone(LED, 2525);
+    tone(LED, 1000);
+  } else {
+    noTone(LED);
+  }
+}
 /*
    toggle:
    false: poll
@@ -223,7 +236,7 @@ int mins30(bool toggle) {
   static ms_t start_time;
 
   if (state == idle) {
-    digitalWrite(LED, LOW);
+    sound(LOW);
     if (toggle) state = start;
     return 0;
   }
@@ -235,11 +248,11 @@ int mins30(bool toggle) {
       start_time = millis();
       state = timing; //fallthrough
     case timing:
-      digitalWrite(LED, segment < 250);
+      sound(segment < 250);
       if (millis() - start_time > 1800000) state = expired; // i.e. 30 mins
-      return 1800 - (millis()-start_time)/1000; // i.e. seconds
+      return 1800 - (millis() - start_time) / 1000; // i.e. seconds
     case expired:
-      digitalWrite(LED, segment < 250 || ( 500 < segment && segment <750)); // double-beeping
+      sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
       return 0;
   }
 }
