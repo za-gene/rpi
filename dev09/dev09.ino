@@ -32,7 +32,7 @@ typedef unsigned long ulong;
 typedef ulong ms_t;
 
 #define BUT 4
-#define LED 3
+#define LED 2
 
 TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
 TimeChangeRule mySTD = {"GMT", Last, Sun, Nov, 2, 0};
@@ -179,7 +179,7 @@ void loop() {
     prev_but = cur_but;
   }
 
-  beeper(false);
+  mins30(false);
 }
 
 void update_display() {
@@ -193,24 +193,57 @@ void update_display() {
   //display_text(dt.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
   display_text(dt_local.timestamp(DateTime::TIMESTAMP_TIME), 0, 0);
   //display_text(dt_local.timestamp(DateTime::TIMESTAMP_DATE), 0, 17);
+
+  // decide what to display on second line
+  int timer = mins30(false);
+  if(timer>0) {
+    snprintf(text, sizeof(text), "%02dm %02ds   ", timer / 60, timer %60);
+  } else {
   float degf = rtc.getTemperature();
   char* day_name = day_names[dt_local.dayOfTheWeek()];
   snprintf(text, sizeof(text), "%s %2d %dc     ", day_name, dt_local.day(), (int) degf);
+  }
+  
   display_text(text, 0, 17);
-
   display.display();
 }
 
-void beeper(bool activate) {
+/*
+   toggle:
+   false: poll
+   true: toggle on/off
+
+   returns: number of seconds left
+*/
+int mins30(bool toggle) {
+  enum states {idle, start, timing, expired};
   static Delay dly;
-  if(activate) {
-    digitalWrite(LED, HIGH);
-    dly.begin(1000);
+  //static active = false;
+  static int state = idle;
+  static ms_t start_time;
+
+  if (state == idle) {
+    digitalWrite(LED, LOW);
+    if (toggle) state = start;
+    return 0;
   }
-  if(dly.expired()) digitalWrite(LED, LOW);
-  
+  if (toggle) state = idle;
+
+  ms_t segment = (millis() - start_time) % 5000; // break up the timing into 5 second chunks
+  switch (state) {
+    case start:
+      start_time = millis();
+      state = timing; //fallthrough
+    case timing:
+      digitalWrite(LED, segment < 250);
+      if (millis() - start_time > 1800000) state = expired; // i.e. 30 mins
+      return 1800 - (millis()-start_time)/1000; // i.e. seconds
+    case expired:
+      digitalWrite(LED, segment < 250 || ( 500 < segment && segment <750)); // double-beeping
+      return 0;
+  }
 }
 void but_falling() {
-  beeper(true);
+  mins30(true);
   //digitalWrite(LED, 1 - digitalRead(LED));
 }
