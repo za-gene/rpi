@@ -14,7 +14,7 @@ python3 settime.py
 
 ## Schematics
 
-<img src="schematics-3.svg" width="600">
+<img src="0clock-3/schematics-3.svg" width="600">
 
 ```
 Zeroseg
