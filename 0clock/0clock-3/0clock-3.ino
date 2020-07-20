@@ -265,7 +265,7 @@ void sound(bool on) {
     tone(BZR, 2525);// quindar
     //tone(BZR, 1000);
   } else {
-    //noTone(BZR);
+    noTone(BZR);
     digitalWrite(BZR, LOW);
   }
 #endif
