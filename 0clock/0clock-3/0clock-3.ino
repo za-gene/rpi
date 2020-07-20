@@ -89,8 +89,7 @@ struct Periodic {
   ms_t _started;
   ms_t _period;
   Periodic(ms_t period) : _period(period) {
-    _started = millis();
-
+    _started = millis() - period; // subtract the period so that we get an immediate reset
   }
   bool expired() {
     ms_t ms = millis();
@@ -121,20 +120,48 @@ struct Delay {
 
 typedef void (*funcptr)();
 struct Button { // gets called on falling
+  using bstate = enum states {start, ignore1, seek_high, ignore2};
+  
   funcptr _func ;
   int _pin;
-  bool _prev = HIGH;
-  Periodic _debouncer = Periodic(25);
+  //bool _prev = HIGH;
+  bstate _state = start;
+  //Periodic _debouncer = Periodic(25);
+  ms_t _ms;
   Button(int pin, funcptr func) {
     _pin = pin;
     pinMode(pin, INPUT_PULLUP);
     _func = func;
   }
   void update() {
-    if (!_debouncer.expired()) return;
-    bool cur = digitalRead(_pin);
-    if (cur == LOW && _prev == HIGH) _func();
-    _prev = cur;
+    const int DT = 35; //debounce time
+    //bool cur = digitalRead(_pin);
+    switch (_state) {
+      case start:
+        if (digitalRead(_pin) == HIGH) return; // ignore the pin whilst unpressed
+        _ms = millis();
+        _func();
+        _state = ignore1;
+        break;
+      case ignore1: // don't do anything for 25ms
+        if (millis() - _ms > DT) _state = seek_high;
+        break;
+      case seek_high: // wait for pin to go high
+        if (digitalRead(_pin) == LOW) return;
+        _ms = millis();
+        _state = ignore2;
+        break;
+      case ignore2: // don't process button for 25ms
+        if (millis() - _ms < DT) return;
+        if(digitalRead(_pin) == HIGH) _state = start;
+        break;
+    }
+    /*
+      if (!_debouncer.expired()) return;
+      bool cur = digitalRead(_pin);
+      if (cur == LOW && _prev == HIGH) _func();
+      _prev = cur;
+    */
   }
 
 };
@@ -205,14 +232,14 @@ void update_regular_display() {
 void update_counter_display(int remaining_secs) {
   show_dec(1, remaining_secs % 60);
   show_dec(3, remaining_secs / 60, true);
-  for(int i =5; i< 9; i++) {
+  for (int i = 5; i < 9; i++) {
     transfer_7219(i, 0b1111); // blank
-  }  
+  }
 }
 
 void loop() {
   serialise();
-  
+
   sw0.update();
   sw1.update();
   sw2.update();
@@ -238,7 +265,8 @@ void sound(bool on) {
     tone(BZR, 2525);// quindar
     //tone(BZR, 1000);
   } else {
-    noTone(BZR);
+    //noTone(BZR);
+    digitalWrite(BZR, LOW);
   }
 #endif
 }
