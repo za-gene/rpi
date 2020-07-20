@@ -230,12 +230,13 @@ void loop() {
 }
 
 void sound(bool on) {
-#if 1
+  // tones seem to sound so much better than a straight-forward bussing
+#if 0
   digitalWrite(BZR, on);
 #else
   if (on) {
-    //tone(LED, 2525);
-    tone(BZR, 1000);
+    tone(BZR, 2525);// quindar
+    //tone(BZR, 1000);
   } else {
     noTone(BZR);
   }
@@ -262,7 +263,7 @@ int mins30(bool toggle) {
       start_time = millis();
       state = timing; //fallthrough
     case timing:
-      sound(segment < 250);
+      //sound(segment < 250); // decided to turn sound off for now 2020-07-20
       if (millis() - start_time > 1800000) state = expired; // i.e. 30 mins
       return 1800 - (millis() - start_time) / 1000; // i.e. seconds
     case expired:
