@@ -26,7 +26,7 @@ DUP	- SUGGESTED DUPONT COLOURS
 ## Unclassified
 
 * MODE 0: data is sampled at the leading rising edge
->>>>>>> b32fe611f43c24ea1657ca5b8332708ae327f420
+
 
 ## Links to other sites
 
