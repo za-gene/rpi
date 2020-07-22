@@ -7,14 +7,14 @@ spi = spidev.SpiDev()
 #spi.open(0, CHIP_SELECT_0_OR_1)
 spi.open(0, 0)
 spi.max_speed_hz = 1000000
-spi.max_speed_hz =  50000
+spi.max_speed_hz =  500000
 
 def fetch():
     #to_send = [0x01]
     hi, lo = spi.xfer([0x01, 0x02])
-    dt = 1e-6
-    dt = 0
-    sleep(dt)
+    #dt = 1e-6
+    #dt = 0
+    #sleep(dt)
     #hi, lo = spi.readbytes(2)
     val = (hi << 8) + lo
     #print(val)
@@ -28,6 +28,7 @@ fetch() # discard buffered reading
 for i in range(nsamples):
     xs.append(time.monotonic_ns()/1000)
     ys.append(fetch())
+    #sleep(1e-6)
 
 x0 = xs[0]
 for i in range(nsamples):
