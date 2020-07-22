@@ -23,9 +23,15 @@ Upload stlink
 
 confirmed working 2020-07-04.
 
+## Unclassified
+
+**2020-07-15** I think I **fried** some of the circuits on the board. Both 3.3V out pins near the STLink connectors seems broken. use the one near the USB port instead. I also suspect some of the SPI pins don't work properly.
+
 
 ## Also in this directory
 
+* [adc-interrupts](adc-interrupts) - how to do analog reads using interrupts
+* [adc-simple](adc-simple) - just uses the analogRead() function
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
 

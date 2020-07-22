@@ -1,35 +1,33 @@
 # rpi
-My Arduino, ATTiny85, ESP8266/32 and RPi (Raspberry Pi) projects
+My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) projects
 
-Reference information:
+## Arduino IDE
 
+* [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
+
+## Boards
 
 * [ATTiny85](attiny85)
 * [ESP8266](esp8266)
-* [esp-wroom](esp-wroom)
 * [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
-* [i2c](i2c): Arduino and RPi3 master, ATTiny85 slave
-* [i2s](i2s)
-* [spi](spi)
+* [nano](nano) - benchmarks, timer
+* [stm32](stm32) - blinker sketch
+* [wroom](wroom)
 
-## Arduino Nano/Uno
-
-* [IDE](Arduino-IDE.md) : general setup, particularly about ATTiny85 setup.
-* [timer](timer) : setting up timer2 prescaler to produce a tone
 
 ## General
 
 * [audio](audio)
 * [circuits](circuits.md) - various electrical circuits
 * [debounce](https://gist.github.com/blippy/430cc73cb50b9e44c3423c2717ab22ee) a button
-* [picocom](picocom.md)
+* [serial](serial)
 * [software](software.md)
-* [stm32](stm32) - blinker sketch
 * telnet server: [dev03-2](dev03/dev03-2)
 * [Twiddle-factor FFT for mcus](https://blog.podkalicki.com/twiddle-factor-based-fft-for-microcontrollers/)
 
 ## Projects
 
+* [0clock](0clock): nano, ds3231, zeroseg clock with timer
 * [abaclock](abaclock): clock made with a RTC clock and an Arduino LED backpack
 * [alacrity](alacrity): pills reminder and warnings raised by alarm
 * [alarm](alarm): raises a panic call to alacrity
@@ -48,6 +46,13 @@ Reference information:
 * [pills](pills): remember to take your pills
 * [synth](synth): sound synthesizer/tone-maker
 * [sleep85](sleep85): conserving power by putting the ATTiny85 to sleep
+
+## Protocols
+
+* [i2c](i2c): Arduino and RPi3 master, ATTiny85 slave
+* [i2s](i2s)
+* [spi](spi)
+
 
 ## Hardware
 
