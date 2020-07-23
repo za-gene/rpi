@@ -18,3 +18,8 @@ Plot the data:
 ```
 python3 plot.py
 ```
+
+## Links to other sites
+
+* [Let's build an oscilloscope](https://mcturra2000.wordpress.com/2020/07/22/lets-build-an-oscilloscope-with-raspberrypi-and-stm32/) - useful instructions in using this project
+
