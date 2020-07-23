@@ -1,2 +1,5 @@
 cap : capture.cc
-	g++ $^ -o $@ -lwiringPi
+	g++ -Wall -std=gnu++17 $^ -o $@ -lwiringPi
+
+clean :
+	rm -f cap
