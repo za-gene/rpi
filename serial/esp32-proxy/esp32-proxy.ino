@@ -1,13 +1,13 @@
 
 
-auto& ser = Serial2;
+auto& pc = Serial; // the USB
+auto& xdev = Serial2;  // external device
 void setup() {
-  Serial.begin(9600);
-  ser.begin(9600);
+  pc.begin(9600);
+  xdev.begin(9600);
 }
 
 void loop() {
-  while(ser.available()) {
-    Serial.print((char)ser.read());
-  }
+  if(pc.available()) { xdev.print((char) pc.read()); }
+  if(xdev.available()) { pc.print((char) xdev.read()); }
 }
