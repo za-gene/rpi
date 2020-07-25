@@ -41,6 +41,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [dev06](8x8/dev06): 8x8, nano
 * [dev07](dev07): clock DS1307, MAX7219 8-segment display
 * [dev08](dev08): 555 fixed tone generator
+* [kernel8](kernel8): start of a unikernel for Raspberry Pi 3
 * [minitone85](minitone85): working version of tone() for ATtiny85
 * [mins30-85](mins30-85): 30 minute timer for ATTiny85, programmable from the Pi (`DEV01`). 
 * [pills](pills): remember to take your pills
