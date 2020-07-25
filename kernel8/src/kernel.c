@@ -1,5 +1,6 @@
 #include "mini_uart.h"
 #include "delays.h"
+#include "gpio.h"
 
 #define uart_puts uart_send_string
 
@@ -27,7 +28,15 @@ void kernel_main(void)
 	uart_init(9600);
 	uart_send_string("Hello, world!\r\n");
 
-	test_delay();
+	//test_delay();
+
+	// set BCM23 to output (physical pin 16)
+	GPFSEL2 &= ~(0b111<<9);
+	GPFSEL2 |= (0b001<<9);
+	GPSET0 |= (1<<23); // turn it on
+	wait_msec_st(2000000);
+	GPCLR0 |= (1<<23); // turn it off
+
 
 	uart_send_string("I will now echo what you type\r\n");
 	while (1) {
