@@ -16,26 +16,39 @@ BUILD_DIR = ../build
 
 
 
-C_FILES = $(wildcard $(LIB_DIR)/*.c)
-ASM_FILES = $(wildcard $(LIB_DIR)/*.S)
-OBJ_FILES = $(C_FILES:$(LIB_DIR)/%.c=$(BUILD_DIR)/%_c.o)
-OBJ_FILES += $(ASM_FILES:$(LIB_DIR)/%.S=$(BUILD_DIR)/%_s.o)
+#C_FILES = $(wildcard $(LIB_DIR)/*.c)
+#ASM_FILES = $(wildcard $(LIB_DIR)/*.S)
+#OBJ_FILES = $(C_FILES:$(LIB_DIR)/%.c=$(BUILD_DIR)/%_c.o)
+#OBJ_FILES += $(ASM_FILES:$(LIB_DIR)/%.S=$(BUILD_DIR)/%_s.o)
 
 
-DEP_FILES = $(OBJ_FILES:%.o=%.d)
--include $(DEP_FILES)
+#DEP_FILES = $(OBJ_FILES:%.o=%.d)
+#-include $(DEP_FILES)
 
 
+all : kernel8.img
 
-OBJS = blink.o delays.o gpio.o utils.o
+clean:
+	rm -f *d *o *elf *img
+
+OBJS = blink.o delays.o gpio.o utils.o mini_uart.o boot.o mm.o
 
 kernel8.img: $(LIB_DIR)/linker.ld $(OBJS)
 	$(ARMGNU)-ld -T $(SRC_DIR)/linker.ld -o kernel8.elf  $(OBJS) # $(OBJ_FILES)
 	$(ARMGNU)-objcopy kernel8.elf -O binary kernel8.img
 
 
-utils.o : ../src/utils.S
+mini_uart.o : ../src/mini_uart.c
 	$(ARMGNU)-gcc -I../include $(COPS) -MMD -c $< -o $@
+
+boot.o : ../src/boot.S
+	$(ARMGNU)-gcc -I../include -MMD -c $< -o $@
+
+mm.o : ../src/mm.S
+	$(ARMGNU)-gcc -I../include -MMD -c $< -o $@
+
+utils.o : ../src/utils.S
+	$(ARMGNU)-gcc -I../include -MMD -c $< -o $@
 
 gpio.o : ../src/gpio.c
 	$(ARMGNU)-gcc -I../include $(COPS) -MMD -c $< -o $@
