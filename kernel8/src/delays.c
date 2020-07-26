@@ -79,3 +79,16 @@ void wait_msec_st(unsigned int n)
     // system timer, and returning constant zero would mean infinite loop
     if(t) while(get_system_timer() < t+n);
 }
+
+void delay_ms(int ms)
+{
+        for(int i=0; i<ms; ++i)
+                wait_msec_st(1000);
+}
+
+void delay_s(int secs)
+{
+        for(int i=0; i<secs; ++i)
+                delay_ms(1000);
+}
+

@@ -24,15 +24,6 @@
  *
  */
 
-#include "base.h"
-/*
-#define GPFSEL1         (PBASE+0x00200004)
-#define GPSET0          (PBASE+0x0020001C)
-#define GPCLR0          (PBASE+0x00200028)
-#define GPPUD           (PBASE+0x00200094)
-#define GPPUDCLK0       (PBASE+0x00200098)
-*/
-
 #define MMIO_BASE       0x3F000000
 
 #define GPFSEL0         *((volatile unsigned int*)(MMIO_BASE+0x00200000))
@@ -53,4 +44,13 @@
 #define GPPUD           *((volatile unsigned int*)(MMIO_BASE+0x00200094))
 #define GPPUDCLK0       *((volatile unsigned int*)(MMIO_BASE+0x00200098))
 #define GPPUDCLK1       *((volatile unsigned int*)(MMIO_BASE+0x0020009C))
+
+
+#define INPUT 0b000
+#define OUTPUT 0b001
+
+void gpio_sel(int bcm_pin, int mode);
+void gpio_clr(int bcm_pin);
+void gpio_set(int bcm_pin);
+
 
