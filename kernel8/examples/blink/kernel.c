@@ -6,7 +6,7 @@
 void kernel_main(void)
 {
 	uart_init(9600);
-	uart_send_string("Hello from from blinky sketch\r\n");
+	uart_puts("Hello from from blinky sketch\r\n");
 	const int bcm_pin = 20;
 	gpio_sel(bcm_pin, OUTPUT); // set its pin mode to OUTPUT
 	while(1) {
