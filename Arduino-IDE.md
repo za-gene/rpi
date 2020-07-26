@@ -58,3 +58,7 @@ There is a `String` class, which behaves a little like `std::string`. See
 
 * [ATTiny85](attiny85/Arduino-IDE.md) setup and programming instructions
 * [stm32](../stm32/README.md) setup and programming instructions
+
+## Links to other sites
+
+* [Reference](file:///home/pi/tools/arduino-1.8.10/reference/www.arduino.cc/en/Reference/HomePage.html)
