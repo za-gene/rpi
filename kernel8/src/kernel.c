@@ -4,48 +4,11 @@
 
 #define uart_puts uart_send_string
 
-void test_delay()
-{
-	uart_puts("Waiting 1000000 CPU cycles (ARM CPU): ");
-	wait_cycles(1000000);
-	uart_puts("OK\r\n");
-
-	uart_puts("Waiting 1000000 microsec (ARM CPU): ");
-	wait_msec(1000000);
-	uart_puts("OK\r\n");
-
-	uart_puts("Waiting 1000000 microsec (BCM System Timer): ");
-	if(get_system_timer()==0) {
-		uart_puts("Not available\r\n");
-	} else {
-		wait_msec_st(1000000);
-		uart_puts("OK\r\n");
-	}
-}
 
 void kernel_main(void)
 {
 	uart_init(9600);
 	uart_send_string("Hello, world!\r\n");
-
-	//test_delay();
-
-	const int bcm_pin = 21;
-	gpio_sel(bcm_pin, OUTPUT);
-	while(1) {
-		gpio_set(bcm_pin);
-		delay_ms(500);
-		gpio_clr(bcm_pin);
-		delay_ms(1000);
-	}
-
-
-	// set BCM23 to output (physical pin 16)
-	GPFSEL2 &= ~(0b111<<9);
-	GPFSEL2 |= (0b001<<9);
-	GPSET0 |= (1<<23); // turn it on
-	wait_msec_st(2000000);
-	GPCLR0 |= (1<<23); // turn it off
 
 
 	uart_send_string("I will now echo what you type\r\n");
