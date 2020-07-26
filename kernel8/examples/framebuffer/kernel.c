@@ -30,7 +30,12 @@
 
 unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
-volatile unsigned int mbox[36];
+
+/* Make sure the property tag buffer is aligned to a 16-byte boundary because
+ *    we only have 28-bits available in the property interface protocol to pass
+ *       the address of the buffer to the VC. */
+// ... according to https://www.valvers.com/open-software/raspberry-pi/bare-metal-programming-in-c-part-5/
+static int mbox[8192] __attribute__((aligned(16)));
 
 
 
