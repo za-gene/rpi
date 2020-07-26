@@ -1,6 +1,8 @@
 #pragma once
 
-#include "base.h"
+//#include "base.h"
+
+#define PBASE 0x3F000000
 
 #define AUX_ENABLES     (PBASE+0x00215004)
 #define AUX_MU_IO_REG   (PBASE+0x00215040)
@@ -19,5 +21,6 @@
 void uart_init ( int baud );
 char uart_recv ( void );
 void uart_send ( char c );
-void uart_send_string(char* str);
+void uart_puts(char* str);
+
 
