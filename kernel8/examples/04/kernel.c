@@ -1,5 +1,6 @@
 #include "delays.h"
 #include "gpio.h"
+#include "mini_uart.h"
 
 //-------------------------------------------------------------------------
 //              6 is IN, 16 is OUT
@@ -50,17 +51,43 @@ extern void enable_irq ( void );
 
 #define TIME_INT 1000000        		// in microsec
 
+const int pin = 19;
+
+volatile int toggle = 0;
+void __attribute__((interrupt("IRQ"))) toggle_led()
+{
+	//toggle = 1 - toggle;
+	if(toggle == 0) {
+		toggle = 1;
+		gpio_set(pin);
+		uart_puts("1");
+	} else {
+		toggle = 0;
+		gpio_clr(pin);
+		uart_puts("0");
+	}
+	//uart_puts("toggle_led:called\r\n");
+	uart_puts(".");
+}
+
 void kernel_main ( void )
 {
 
-	const int pin = 19;
 	gpio_sel(pin, OUTPUT);
+	gpio_clr(pin);
+	uart_init(9600);
+	uart_puts("timer example using interrupts hopefully\r\n");
+
+	//while(1) uart_puts(".");
+
+	/*
 	while(1) {
 		gpio_set(pin);
 		delay_s(1);
 		gpio_clr(pin);
 		delay_s(1);
 	}
+	*/
 
 #if 0
 
@@ -88,6 +115,7 @@ void kernel_main ( void )
 
 	PUT32(IRQ_ENABLE_2, 1<<17);     	// enabling interrupts
 	PUT32(IRQ_ENABLE_BASIC,1);			
+#endif
 
 	PUT32(ARM_TIMER_CTL,0x003E0000);	// 0x3E is the reset for the counter
 	PUT32(ARM_TIMER_LOD,TIME_INT-1);	// 1000000 is equal to 1 second
@@ -100,6 +128,4 @@ void kernel_main ( void )
 	enable_irq();
 	while(1) continue;
 
-	return(0);
-#endif
 }

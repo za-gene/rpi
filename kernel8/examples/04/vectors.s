@@ -94,6 +94,15 @@ enable_irq:
 
 irq:
     push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+
+@ added by mcarter
+bl toggle_led
+	LDR    R0, =ARM_TIMER_CLI  	;@ reading from memory
+	LDR    R1, [R0]           
+	
+    ORR    R2, R1, #0      		;@ clearing timer interrupt
+	STR    R2, [R0] 
+b END_INT
 	
 	LDR    R0, =GPEDS0         	;@ loading entry from memory
 	LDR    R1, [R0]            	;@ loading value pointed by R0

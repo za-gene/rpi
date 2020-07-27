@@ -27,13 +27,13 @@ void gpio_sel(int bcm_pin, int mode)
 void gpio_clr(int bcm_pin)
 {
         //volatile unsigned int* addr = (bcm_pin/32)*4 + MMIO_BASE + 0x200028;
-        uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x200028;
+        volatile uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x200028;
         put32(addr, 1 << (bcm_pin%32));
 }
 
 void gpio_set(int bcm_pin)
 {
-        uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x20001C;
+        volatile uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x20001C;
         put32(addr, 1 << (bcm_pin%32));
 }
 
