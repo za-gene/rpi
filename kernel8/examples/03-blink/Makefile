@@ -2,7 +2,7 @@
 ARMGNU ?= arm-none-eabi
 
 AOPS = --warn --fatal-warnings 
-COPS = -Wall -Werror  -nostdlib -nostartfiles -ffreestanding 
+COPS = -Wall -Werror  -O3 -nostdlib -nostartfiles -ffreestanding 
 
 IMG = kernel7.img
 ELF = kernel7.elf

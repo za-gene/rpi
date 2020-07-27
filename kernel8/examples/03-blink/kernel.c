@@ -50,12 +50,6 @@ extern void enable_irq ( void );
 
 #define TIME_INT 1000000        		// in microsec
 
-void pause()
-{
-	volatile int i = 2147483647;
-	while(i-- > 0);
-}
-
 void kernel_main ( void )
 {
 
@@ -70,42 +64,42 @@ void kernel_main ( void )
 
 #if 0
 
-    unsigned int temp;
+	unsigned int temp;
 
-    temp=GET32(GPFSEL1);              	// 16 is OUT
-    temp&=~(7<<18);
-    temp|=1<<18;
-    PUT32(GPFSEL1,temp);
+	temp=GET32(GPFSEL1);              	// 16 is OUT
+	temp&=~(7<<18);
+	temp|=1<<18;
+	PUT32(GPFSEL1,temp);
 
-    temp=GET32(GPFSEL1);              	// 19 is OUT
-    temp&=~(7<<27);
-    temp|=1<<27;
-    PUT32(GPFSEL1,temp);
-    PUT32(GPSET0,1<<19);
-    
-    while(1);
+	temp=GET32(GPFSEL1);              	// 19 is OUT
+	temp&=~(7<<27);
+	temp|=1<<27;
+	PUT32(GPFSEL1,temp);
+	PUT32(GPSET0,1<<19);
 
-    temp=GET32(GPFSEL0);              	// 6 is IN
-    temp&=~(7<<18);
-    temp = GET32(GPAREN0);
-    temp|=1<<6;
-    
-    PUT32(GPAREN0, temp);
-    
-    PUT32(IRQ_ENABLE_2, 1<<17);     	// enabling interrupts
-    PUT32(IRQ_ENABLE_BASIC,1);			
-	
-    PUT32(ARM_TIMER_CTL,0x003E0000);	// 0x3E is the reset for the counter
-    PUT32(ARM_TIMER_LOD,TIME_INT-1);	// 1000000 is equal to 1 second
-    PUT32(ARM_TIMER_RLD,TIME_INT-1);	// RLD is copied tO LOD when it reaches 0
-    PUT32(ARM_TIMER_DIV,0x000000F9);	// dividing APB_CLK by 0xF9 + 1 (250) -> 1 MHz (this signal is timer_clk)
-    PUT32(ARM_TIMER_CLI,0);				// writing here clears the interrupt (write only)
-    PUT32(ARM_TIMER_CTL,0x003E00A2);	// 23bit counting mode, no timer_clk prescaling, enabling interrupts and the timer
-    PUT32(IRQ_ENABLE_BASIC,1);			// enabling interrupts
-    
-    enable_irq();
-    while(1) continue;
-	
-    return(0);
+	while(1);
+
+	temp=GET32(GPFSEL0);              	// 6 is IN
+	temp&=~(7<<18);
+	temp = GET32(GPAREN0);
+	temp|=1<<6;
+
+	PUT32(GPAREN0, temp);
+
+	PUT32(IRQ_ENABLE_2, 1<<17);     	// enabling interrupts
+	PUT32(IRQ_ENABLE_BASIC,1);			
+
+	PUT32(ARM_TIMER_CTL,0x003E0000);	// 0x3E is the reset for the counter
+	PUT32(ARM_TIMER_LOD,TIME_INT-1);	// 1000000 is equal to 1 second
+	PUT32(ARM_TIMER_RLD,TIME_INT-1);	// RLD is copied tO LOD when it reaches 0
+	PUT32(ARM_TIMER_DIV,0x000000F9);	// dividing APB_CLK by 0xF9 + 1 (250) -> 1 MHz (this signal is timer_clk)
+	PUT32(ARM_TIMER_CLI,0);				// writing here clears the interrupt (write only)
+	PUT32(ARM_TIMER_CTL,0x003E00A2);	// 23bit counting mode, no timer_clk prescaling, enabling interrupts and the timer
+	PUT32(IRQ_ENABLE_BASIC,1);			// enabling interrupts
+
+	enable_irq();
+	while(1) continue;
+
+	return(0);
 #endif
 }
