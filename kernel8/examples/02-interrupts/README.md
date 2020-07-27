@@ -26,6 +26,10 @@ The processor will indefinitely run this piece of code, due to the final [while(
 - Rename the *.bin file to kernel7.img, otherwise the Pi won't boot it.
 - You also need 'start.elf' and 'bootcode.bin' in the microSD root. Get them from here https://github.com/raspberrypi/firmware/tree/master/boot
 
+# EFFECTS
+
+Turns on physical pin 35
+
 # FILES
 
 Yourr SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course the generated kernel.img. Exclude config.txt
