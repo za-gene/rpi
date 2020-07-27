@@ -1,11 +1,12 @@
-
-MEMORY
-{
-    ram : ORIGIN = 0x8000, LENGTH = 0x1000
-}
-
 SECTIONS
-{
-    .text : { *(.text*) } > ram
-    .bss : { *(.bss*) } > ram
+{ 
+        .text.boot 0x8000 : { *(.text.boot) }
+        .text : { *(.text) }
+        .rodata : { *(.rodata) }
+        .data : { *(.data) }
+        . = ALIGN(0x8);
+        bss_begin = .;
+        .bss : { *(.bss*) }
+        bss_end = .;
 }
+

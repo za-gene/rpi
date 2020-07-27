@@ -1,6 +1,7 @@
 ;@-------------------------------------------------------------------------
 ;@-------------------------------------------------------------------------
 
+.section .text.boot
 .globl _start
 _start:
     ldr pc,reset_handler
@@ -69,7 +70,7 @@ reset:
     ;@mov r0,#0x53
     ;@msr cpsr_c, r0
     
-    bl notmain
+    bl kernel_main
     
     
 hang: b hang

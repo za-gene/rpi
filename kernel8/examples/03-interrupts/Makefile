@@ -2,13 +2,15 @@
 ARMGNU ?= arm-none-eabi
 
 AOPS = --warn --fatal-warnings 
-COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding 
+COPS = -Wall -Werror  -nostdlib -nostartfiles -ffreestanding 
 
 IMG = kernel7.img
 ELF = kernel7.elf
 HEX = kernel.hex
 
 gcc : $(HEX) $(IMG)
+
+OBJS = kernel.o vectors.o gpio.o delays.o
 
 all : gcc clang
 
@@ -25,11 +27,14 @@ clean :
 vectors.o : vectors.s
 	$(ARMGNU)-as vectors.s -o vectors.o
 
-kernel.o : kernel.c
+%.o : %.c
 	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
-$(ELF) : linker.ld vectors.o kernel.o 
-	$(ARMGNU)-ld vectors.o kernel.o -T linker.ld -o $@
+#kernel.o : kernel.c
+#	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
+
+$(ELF) : linker.ld $(OBJS)
+	$(ARMGNU)-ld $(OBJS) -T linker.ld -o $@
 	$(ARMGNU)-objdump -D $@ > kernel.list
 
 $(IMG) : $(ELF)

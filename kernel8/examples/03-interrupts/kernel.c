@@ -1,3 +1,5 @@
+#include "delays.h"
+#include "gpio.h"
 
 //-------------------------------------------------------------------------
 //              6 is IN, 16 is OUT
@@ -18,10 +20,13 @@ extern void enable_irq ( void );
 #define ARM_TIMER_CNT 0x3F00B420
 
 #define SYSTIMERCLO 0x3F003004
+
 #define GPFSEL0 0x3F200000
 #define GPFSEL1 0x3F200004
 #define GPSET0  0x3F20001C
 #define GPCLR0  0x3F200028
+
+
 
 #define GPAREN0 0x3F20007C      		//Asynchronous Detect
 #define GPAREN1 0x3F200080
@@ -45,8 +50,26 @@ extern void enable_irq ( void );
 
 #define TIME_INT 1000000        		// in microsec
 
-int notmain ( void )
+void pause()
 {
+	volatile int i = 2147483647;
+	while(i-- > 0);
+}
+
+void kernel_main ( void )
+{
+
+	const int pin = 19;
+	gpio_sel(pin, OUTPUT);
+	while(1) {
+		gpio_set(pin);
+		delay_s(1);
+		gpio_clr(pin);
+		delay_s(1);
+	}
+
+#if 0
+
     unsigned int temp;
 
     temp=GET32(GPFSEL1);              	// 16 is OUT
@@ -84,4 +107,5 @@ int notmain ( void )
     while(1) continue;
 	
     return(0);
+#endif
 }
