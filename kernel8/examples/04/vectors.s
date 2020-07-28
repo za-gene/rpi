@@ -21,15 +21,7 @@ unused_handler:     .word hang
 irq_handler:        .word irq
 fiq_handler:        .word hang
 
-.equ GPEDS0, 0x3F200040
-.equ GPCLR0, 0x3F200028
-.equ GPSET0, 0x3F20001C
-.equ GPFSEL1, 0x3F200004
-.equ IRQ_BASIC, 0x3F00B200
 .equ ARM_TIMER_CLI, 0x3F00B40C
-.equ GPLVL0,    0x3F200034
-.equ GPLVL1,    0x3F200038
-
 
 reset:
 	
@@ -71,8 +63,6 @@ reset:
     ;@msr cpsr_c, r0
     
     bl kernel_main
-    
-    
 hang: b hang
 
 .globl PUT32
@@ -93,79 +83,15 @@ enable_irq:
     bx lr
 
 irq:
-    push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    	push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 
-@ added by mcarter
-bl toggle_led
+	BL 	IRQ_handler		;@ you are expected to supply this in your C code
+
 	LDR    R0, =ARM_TIMER_CLI  	;@ reading from memory
 	LDR    R1, [R0]           
 	
-    ORR    R2, R1, #0      		;@ clearing timer interrupt
+    	ORR    R2, R1, #0      		;@ clearing timer interrupt
 	STR    R2, [R0] 
-b END_INT
-	
-	LDR    R0, =GPEDS0         	;@ loading entry from memory
-	LDR    R1, [R0]            	;@ loading value pointed by R0
-	AND    R2, R1, #0x40       	;@ interrupt from pin 6?
-	CMP    R2, #0	           	;@ if not, branch to TIMER_INT			
-	BLE    TIMER_INT
-	
-GPIO_INT:
 
-	ORR    R2, R1, #0x40       	;@ clearing GPIO interrupt, pin 6
-	STR    R2, [R0]                
-	
-	LDR    R4, =GPLVL0         	;@ getting pin level for toggling
-	LDR    R3, [R4]
-	AND    R3, #0x10000        	;@ targeting pin 16
-	CMP    R3, #0              	;@ branching to toggle
-	BEQ    SET_16
-
-CLR_16:
-	LDR    R5, =GPCLR0         	;@ reading from memory
-	LDR    R6, [R5]		       
-	ORR    R6, #0x10000	       	;@ targeting pin 16
-	STR    R6, [R5]                
-	B      END_INT		       	;@ end
-	
-SET_16:
-	LDR    R5, =GPSET0
-	LDR    R6, [R5]    	       	;@ reading from memory
-	ORR    R6, #0x10000			
-	STR    R6, [R5]
-    B      END_INT
-        
-        
-        
-TIMER_INT:
-	
-	LDR    R0, =ARM_TIMER_CLI  	;@ reading from memory
-	LDR    R1, [R0]           
-	
-    ORR    R2, R1, #0      		;@ clearing timer interrupt
-	STR    R2, [R0] 
-	
-    LDR    R4, =GPLVL0     		;@ getting pin level for toggling
-	LDR    R3, [R4]
-	AND    R3, #0x80000        	;@ targeting pin 19
-	CMP    R3, #0              	;@ branching to toggle
-	BEQ    SET_19
-	
-CLR_19:
-	LDR    R5, =GPCLR0         	;@ reading from memory
-	LDR    R6, [R5]		       
-	ORR    R6, #0x80000	       	;@ targeting pin 16
-	STR    R6, [R5]                
-	B      END_INT		       	;@ end
-	
-SET_19:
-	LDR    R5, =GPSET0
-	LDR    R6, [R5]		       	;@ reading from memory
-	ORR    R6, #0x80000			
-	STR    R6, [R5]
-    B      END_INT
-
-END_INT:
-
-    pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-    subs pc,lr,#4
+    	pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    	subs pc,lr,#4

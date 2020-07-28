@@ -56,61 +56,24 @@ const int pin = 19;
 volatile int toggle = 0;
 void IRQ_handler()
 {
-	toggle = 1 - toggle;
-	if(toggle) 
+	//toggle = 1 - toggle; // this line probably won't work
+	if(toggle == 0) {
+		toggle =1;
 		gpio_set(pin);
-	else
+	} else {
+		toggle = 0;
 		gpio_clr(pin);
+	}
 
 	uart_puts(".");
 }
 
 void kernel_main ( void )
 {
-
 	gpio_sel(pin, OUTPUT);
 	gpio_clr(pin);
 	uart_init(9600);
 	uart_puts("timer example using interrupts hopefully\r\n");
-
-	//while(1) uart_puts(".");
-
-	/*
-	while(1) {
-		gpio_set(pin);
-		delay_s(1);
-		gpio_clr(pin);
-		delay_s(1);
-	}
-	*/
-
-#if 0
-
-	unsigned int temp;
-
-	temp=GET32(GPFSEL1);              	// 16 is OUT
-	temp&=~(7<<18);
-	temp|=1<<18;
-	PUT32(GPFSEL1,temp);
-
-	temp=GET32(GPFSEL1);              	// 19 is OUT
-	temp&=~(7<<27);
-	temp|=1<<27;
-	PUT32(GPFSEL1,temp);
-	PUT32(GPSET0,1<<19);
-
-	while(1);
-
-	temp=GET32(GPFSEL0);              	// 6 is IN
-	temp&=~(7<<18);
-	temp = GET32(GPAREN0);
-	temp|=1<<6;
-
-	PUT32(GPAREN0, temp);
-
-	PUT32(IRQ_ENABLE_2, 1<<17);     	// enabling interrupts
-	PUT32(IRQ_ENABLE_BASIC,1);			
-#endif
 
 	PUT32(ARM_TIMER_CTL,0x003E0000);	// 0x3E is the reset for the counter
 	PUT32(ARM_TIMER_LOD,TIME_INT-1);	// 1000000 is equal to 1 second
@@ -121,6 +84,4 @@ void kernel_main ( void )
 	PUT32(IRQ_ENABLE_BASIC,1);			// enabling interrupts
 
 	enable_irq();
-	while(1) continue;
-
 }
