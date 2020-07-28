@@ -54,19 +54,14 @@ extern void enable_irq ( void );
 const int pin = 19;
 
 volatile int toggle = 0;
-void __attribute__((interrupt("IRQ"))) toggle_led()
+void IRQ_handler()
 {
-	//toggle = 1 - toggle;
-	if(toggle == 0) {
-		toggle = 1;
+	toggle = 1 - toggle;
+	if(toggle) 
 		gpio_set(pin);
-		uart_puts("1");
-	} else {
-		toggle = 0;
+	else
 		gpio_clr(pin);
-		uart_puts("0");
-	}
-	//uart_puts("toggle_led:called\r\n");
+
 	uart_puts(".");
 }
 
