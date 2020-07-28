@@ -71,7 +71,10 @@ void uart_init ( int baud )
 	//int baudrate_reg = 250000000/8/baud -1; // TODO Assumes 250Mhz system_clock_freq
 	//put32(AUX_MU_BAUD_REG,270);             //Set baud rate to 115200
 	//put32(AUX_MU_BAUD_REG,baudrate_reg);             //Set baud rate to 9600 mc
-	put32(AUX_MU_BAUD_REG, 3254); // baud 9600
+	int baudrate_reg;
+	baudrate_reg = 270; // for baud 115200
+	baudrate_reg = 3254; // for baud 9600
+	put32(AUX_MU_BAUD_REG, baudrate_reg); // baud 9600
 
 	put32(AUX_MU_CNTL_REG,3);               //Finally, enable transmitter and receiver
 }

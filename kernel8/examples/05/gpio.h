@@ -83,4 +83,4 @@ void gpio_set(int bcm_pin);
 #define MBOX_FULL       0x80000000
 #define MBOX_EMPTY      0x40000000
 
-int mbox_call(unsigned char ch, volatile unsigned int* mbox);
+//int mbox_call(unsigned char ch, volatile unsigned int* mbox);

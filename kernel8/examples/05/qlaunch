@@ -15,4 +15,5 @@ case $1 in
 esac
 
 #qemu-system-arm -M raspi2 -kernel kernel7.img -serial stdio
-qemu-system-arm -M raspi2  -kernel kernel7.img -serial stdio -append "console=ttyS0"
+#qemu-system-arm -M raspi3  -kernel kernel7.img -serial stdio 
+qemu-system-aarch64 -M raspi3  -kernel kernel7.img -serial stdio 

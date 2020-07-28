@@ -2,9 +2,10 @@
 
 auto& pc = Serial; // the USB
 auto& xdev = Serial2;  // external device
+#define BAUD 115200
 void setup() {
-  pc.begin(9600);
-  xdev.begin(9600);
+  pc.begin(BAUD);
+  xdev.begin(BAUD);
 }
 
 void loop() {
