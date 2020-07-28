@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+#The build is good, I think, but for some reason the serial isn't connecting
+
+function print_help {
+cat <<EOF
+Description here
+etc
+EOF
+}
+ 
+
+case $1 in
+    h) print_help ; exit ;;
+esac
+
+#qemu-system-arm -M raspi2 -kernel kernel7.img -serial stdio
+qemu-system-arm -M raspi2  -kernel kernel7.img -serial stdio -append "console=ttyS0"
