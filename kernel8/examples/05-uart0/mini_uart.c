@@ -73,7 +73,7 @@ void uart_init ( int baud )
 	//put32(AUX_MU_BAUD_REG,baudrate_reg);             //Set baud rate to 9600 mc
 	int baudrate_reg;
 	baudrate_reg = 270; // for baud 115200
-	baudrate_reg = 3254; // for baud 9600
+	//baudrate_reg = 3254; // for baud 9600
 	put32(AUX_MU_BAUD_REG, baudrate_reg); // baud 9600
 
 	put32(AUX_MU_CNTL_REG,3);               //Finally, enable transmitter and receiver
