@@ -14,4 +14,4 @@ Yourr SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course 
 ## REFERENCES
 
 
-* [bztsrc](https://github.com/bztsrc/raspi3-tutorial/tree/master/05_uart0) partial source for this project
+* [bztsrc](https://github.com/bztsrc/raspi3-tutorial.git)  does most of the heavy lifting for this project. Fonts were also obtained from that repo.
