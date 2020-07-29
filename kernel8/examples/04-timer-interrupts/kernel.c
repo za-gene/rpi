@@ -1,6 +1,7 @@
 #include "delays.h"
 #include "gpio.h"
 #include "mini_uart.h"
+#include "interrupts.h"
 
 //-------------------------------------------------------------------------
 //              6 is IN, 16 is OUT
@@ -53,8 +54,11 @@ extern void enable_irq ( void );
 
 const int pin = 19;
 
+#define ARM_TIMER_CLI 0x3F00B40C
+
+
 volatile int toggle = 0;
-void IRQ_handler()
+void blink_led()
 {
 	//toggle = 1 - toggle; // this line probably won't work
 	if(toggle == 0) {
@@ -66,6 +70,7 @@ void IRQ_handler()
 	}
 
 	uart_puts(".");
+	PUT32(ARM_TIMER_CLI, 0); // clear the timer interrupt
 }
 
 void kernel_main ( void )
@@ -83,5 +88,6 @@ void kernel_main ( void )
 	PUT32(ARM_TIMER_CTL,0x003E00A2);	// 23bit counting mode, no timer_clk prescaling, enabling interrupts and the timer
 	PUT32(IRQ_ENABLE_BASIC,1);			// enabling interrupts
 
+	set_irq_handler(blink_led);
 	enable_irq();
 }

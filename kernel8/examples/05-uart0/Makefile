@@ -10,7 +10,7 @@ HEX = kernel.hex
 
 gcc : $(HEX) $(IMG)
 
-OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o
+OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o
 
 all : gcc clang
 

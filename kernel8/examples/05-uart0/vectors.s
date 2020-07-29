@@ -18,10 +18,8 @@ swi_handler:        .word hang
 prefetch_handler:   .word hang
 data_handler:       .word hang
 unused_handler:     .word hang
-irq_handler:        .word irq
+irq_handler:        .word IRQ_handler
 fiq_handler:        .word hang
-
-.equ ARM_TIMER_CLI, 0x3F00B40C
 
 reset:
 	
@@ -82,17 +80,3 @@ enable_irq:
     msr cpsr_c,r0
     bx lr
 
-irq:
-    	push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-
-	@ uncomment the following line if you actually need a handler
-	@BL 	IRQ_handler		;@ you are expected to supply this in your C code
-
-	LDR    R0, =ARM_TIMER_CLI  	;@ reading from memory
-	LDR    R1, [R0]           
-	
-    	ORR    R2, R1, #0      		;@ clearing timer interrupt
-	STR    R2, [R0] 
-
-    	pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
-    	subs pc,lr,#4
