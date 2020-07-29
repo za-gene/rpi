@@ -2,7 +2,10 @@
 
 Outputs to uart0 at 115200 baud. Confirmed working on a Pi3 although qemu still doesn't seem to like it. 
 
-kernel_5 uart0 test. UART0 is the "main" uart
+* kernel_5 uart0 test. UART0 is the "main" uart
+* kernel_6 framebuffer test. Displays pic of Homer Simpson
+* kernel framebuffer font test
+
 
 ## SD CARD
 

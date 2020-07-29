@@ -23,7 +23,19 @@
  *
  */
 
-void lfb_init();
-void lfb_showpicture();
-void lfb_print(int x, int y, char *s);
-void lfb_proprint(int x, int y, char *s);
+#include "uart.h"
+#include "lfb.h"
+
+void kernel_main()
+{
+    // set up serial console and linear frame buffer
+    uart0_init();
+    uart0_puts("framebuffer test\r\n");
+    lfb_init();
+
+    // display a pixmap
+    lfb_showpicture();
+
+    // echo everything back
+    while(1) { uart0_send(uart0_getc()); }
+}
