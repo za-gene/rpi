@@ -8,11 +8,11 @@ IMG = kernel7.img
 ELF = kernel7.elf
 HEX = kernel.hex
 
-gcc : $(HEX) $(IMG)
+$(IMG) : $(HEX)
 
-OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o
+OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
 
-all : gcc clang
+all : $(IMG)
 
 clean :
 	rm -f *.o
