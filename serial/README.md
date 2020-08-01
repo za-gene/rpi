@@ -1,5 +1,11 @@
 # serial
 
+*Logging*
+```
+picocom /dev/ttyUSB1 -b 115200 -l | tee my.log
+```
+
+
 ## stm32
 
 [serial-out](https://ide.mbed.com/compiler/#nav:/serial-out;) contains mbed code for producing serial out, using PA_9 for TX, and PA_10 for RX
