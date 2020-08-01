@@ -2,8 +2,6 @@
 
 [Hardware](https://uk.banggood.com/Micro-TF-Card-Memory-Shield-Module-SPI-Micro-Storage-Card-Adapter-p-919914.html?akmClientCountry=GB&rmmds=myorder&cur_warehouse=CN): SD Card using SPI interface. 
 
-Attach VCC on device to 5V, not 3V3, even on ESP32.
-
 ## Nano + IDE
 
 Confirmed working. For example:
@@ -19,9 +17,13 @@ MOSI=D11, MISO=D12, CLK=D13, SS=D4
 ## STM32 + IDE
 
 Confirmed working. See [st32-arduino-dumpfile](st32-arduino-dumpfile) for test and hookup
+
+See also: [stm32f103-sdcard](https://github.com/NimaMX/STM32F103-SDCARD) for an interesting possibility.
+
 ## Wroom + IDE
 
 Confirmed working.
+
 
 Files : Examples : SD(esp32) : SD_Test
 
