@@ -1,6 +1,6 @@
 # serial
 
-*Logging*
+**Logging**
 ```
 picocom /dev/ttyUSB1 -b 115200 -l | tee my.log
 ```
