@@ -4,6 +4,10 @@
 ```
 picocom /dev/ttyUSB1 -b 115200 -l | tee my.log
 ```
+or
+```
+picocom -b 115200 /dev/ttyUSB0 -g my_picocom_logfile.txt
+```
 
 
 ## stm32
