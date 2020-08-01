@@ -16,6 +16,9 @@ MOSI=D11, MISO=D12, CLK=D13, SS=D4
 * [sketch_jun18c](sketch_jun18c) - SD card speed test on nano
 
 
+## STM32 + IDE
+
+Confirmed working. See [st32-arduino-dumpfile](st32-arduino-dumpfile) for test and hookup
 ## Wroom + IDE
 
 Confirmed working.

@@ -35,6 +35,10 @@ confirmed working 2020-07-04.
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
 
+## Elsewhere in this site
+
+* [sdcard-spi](../sdcard-spi)
+
 ## Links to other sites
 
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
