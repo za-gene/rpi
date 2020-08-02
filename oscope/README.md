@@ -21,5 +21,6 @@ python3 plot.py
 
 ## Links to other sites
 
+* [Arduino_Scope](https://github.com/Grumpy-Mike/Mikes-Pi-Bakery/tree/master/Arduino_Scope)
 * [Let's build an oscilloscope](https://mcturra2000.wordpress.com/2020/07/22/lets-build-an-oscilloscope-with-raspberrypi-and-stm32/) - useful instructions in using this project
 
