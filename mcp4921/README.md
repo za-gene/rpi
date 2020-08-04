@@ -52,5 +52,6 @@ Some of the details are a little fuzzy in my mind, but what I have should work.
 
 ## In this directory
 
+* esp32-led: basic check on MCP4921 using an LED on the device's output pin (i.e. pin 8)
 * [nano-sdcard](nano-sdcard) Arduino Nano (or Uno), SD card, interrupt-driven, using MC4921. **Recommended** Works better than the WROOM
 * [sketch_jun13b](sketch_jun13b) WROOM, hard-coded, interrupt-driven, using both MCP4921 and internal DAC.
