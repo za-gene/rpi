@@ -9,7 +9,8 @@ It is a 12-bit audio DAC interfacing with SPI at max rate of 20MHz.
 The `dac_write()` function can be typically implemented as follows:
 ```
 void dac_write(uint16_t value) {
-  value &= 0b0000111111111111;
+  //value &= 0b0000111111111111;
+  if(value>4095) value=4095;
   value |= 0b0011000000000000;
   SPI.beginTransaction(dac_spi_settings);
   digitalWrite(DAC_CS, LOW);
@@ -52,6 +53,8 @@ Some of the details are a little fuzzy in my mind, but what I have should work.
 
 ## In this directory
 
-* esp32-led: basic check on MCP4921 using an LED on the device's output pin (i.e. pin 8)
+* `esp32-led`: basic check on MCP4921 using an LED on the device's output pin (i.e. pin 8)
 * [nano-sdcard](nano-sdcard) Arduino Nano (or Uno), SD card, interrupt-driven, using MC4921. **Recommended** Works better than the WROOM
 * [sketch_jun13b](sketch_jun13b) WROOM, hard-coded, interrupt-driven, using both MCP4921 and internal DAC.
+* `stm-led`: as esp32-led, but for STM32, and using alternate SPI
+* `stm-white`: modified `stm-led` to produce white noise
