@@ -34,6 +34,7 @@ confirmed working 2020-07-04.
 * [adc-simple](adc-simple) - just uses the analogRead() function
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
+* song-player - 3V3 SD card, MCP4921 and LED confirmation. Plays raw song.
 * stm32-timer-led - using a timer to blink an LED once per second using a timer set a frequency of 8kHz
 
 ## Elsewhere in this site
