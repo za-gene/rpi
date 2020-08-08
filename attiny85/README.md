@@ -20,9 +20,17 @@ Notes:
 * PB5 requires a "fuse" to be set in order to use it.
 ```
 
+## setup AVR g++
+
+```
+sudo apt install gcc-avr avr-libc avrdude
+```
+
+
 ## In this directory
 
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
+* [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6)
 
 
 ## See also
