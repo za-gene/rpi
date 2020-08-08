@@ -89,5 +89,5 @@ void tmr_handler() {
   } else {
     dataFile.seek(0);
   }
-  tmr_led();
+  //tmr_led();
 }
