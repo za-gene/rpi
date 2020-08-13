@@ -61,4 +61,5 @@ There is a `String` class, which behaves a little like `std::string`. See
 
 ## Links to other sites
 
+* [HeliOS](https://github.com/MannyPeterson/HeliOS) - embedded OS
 * [Reference](file:///home/pi/tools/arduino-1.8.10/reference/www.arduino.cc/en/Reference/HomePage.html)
