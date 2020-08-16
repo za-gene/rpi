@@ -79,7 +79,7 @@ Underside shown.
 
 ---
 
-![gps](gps/gps.jpg)
+![](gps/gps.jpg) [gps](gps)
 
 ---
 
