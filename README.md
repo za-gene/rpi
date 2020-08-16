@@ -79,6 +79,10 @@ Underside shown.
 
 ---
 
+![gps](gps/gps.jpg)
+
+---
+
 ![](mcp4921/mcp4921.jpg) [mcp4921](mcp4921) 12-bit DAC. SPI
 
 ---
