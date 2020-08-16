@@ -11,6 +11,11 @@ Low-level controllers:
 * `lcdesp.py` - ESP8266
 * `lcdpi.py` - RPi3. Use this is as a baseline
 
+**Better**: use DogLcd. `lcddomspi` has problems with cursors.
+
+```
+git clone git@github.com:blippy/DogLcd.git
+```
 
 ## Layout
 
