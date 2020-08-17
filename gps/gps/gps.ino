@@ -28,7 +28,7 @@ void display(char* buff) {
   dtostrf(deg, 7, 5, str); // Arduino sprintf doesn't support doubles
   str[8] = 0;
   sprintf(str1, "LAT %s%c  ", str, (char)buff[18]);
-  Serial.println(str1);
+  Serial.print(str1);
   lcd.setCursor(0, 0);
   lcd.print(str1);
 
@@ -40,6 +40,8 @@ void display(char* buff) {
   sprintf(str1, "LON %s%c  ", str, (char)buff[32]);
   lcd.setCursor(0, 1);
   lcd.print(str1);
+  //Serial.print("  ");
+  Serial.println(str1);
 
 }
 
@@ -64,6 +66,7 @@ void setup() {
   Serial.begin(9600);
   ss.begin(9600);
   lcd.begin(DOG_LCD_M163);
+  lcd.print("Searching");
 }
 
 void loop() {
