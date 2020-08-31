@@ -4,6 +4,10 @@
 #include <DogLcd.h>
 
 DogLcd lcd(11, 13, 12, 10); // MOSI, CLK, RS, CS
+
+// The serial connection to the GPS module
+SoftwareSerial ss(4, 3); // connect TX to Nano D4, RX to Nano D3
+
 static char buff[100];
 
 typedef double num_t;
@@ -59,11 +63,11 @@ void gps_char(char c) {
 }
 
 
-// The serial connection to the GPS module
-SoftwareSerial ss(4, 3); // connect TX to Nano D4, RX to Nano D3
+
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("Serial started");
   ss.begin(9600);
   lcd.begin(DOG_LCD_M163);
   lcd.print("Searching");

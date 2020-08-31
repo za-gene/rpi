@@ -50,6 +50,12 @@ The ¬LDAC pin (pin 5) also seems related to buffering. We tie it to GND so that
 
 Some of the details are a little fuzzy in my mind, but what I have should work.
 
+## Pinout
+
+MCP4921 connections are in [nano-sdcard](nano-sdcard).
+
+See also db5.177 for stm32
+
 
 ## In this directory
 
