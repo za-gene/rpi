@@ -30,13 +30,17 @@ sudo apt install gcc-avr avr-libc avrdude
 ## In this directory
 
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
-* [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6)
+* [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6). See also [audio](../audio)
 
 
-## See also
+## Also on this site
 
 * [clock](clock.md) - setting the clock frequency
-* [carcoleptic](https://github.com/brabl2/narcoleptic) - 
-reduced power consumption
+
+
+## Links to other sites
+
 * [megaphone](https://www.youtube.com/watch?v=__ECzxnvEg8)
+* [narcoleptic](https://github.com/brabl2/narcoleptic) - 
+reduced power consumption
 

@@ -1,7 +1,10 @@
 # audio
 
+## in this directory
+
 * [sketch_jun09a](sketch_jun09a) - Arduino emulating DAC using PWM - poor output quality
 * [sketch_jun18](sketch_jun18) - Arduino slave with 5v SD card communicating via I2C with ESP32 master using built-in DAC. Uses a level shifter. 
+
 
 
 ## Music Tracks
@@ -11,3 +14,8 @@ A good song that I used for `sketch_jun9a` is available for download [here](http
 ## Unclassified
 
 **YX5300** is an MP3 player with SD card and audio jack. Some have volume controls
+
+## Also on this site
+
+* [tone440](../attiny85/tone440) - squarewave on attiny85
+
