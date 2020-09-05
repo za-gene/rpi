@@ -16,3 +16,7 @@ setv 4096
 ```
 to set the voltage output to maximum.
 
+
+## See also
+
+* db05.193 for circuit laout. Signal comes out on left connector. GND is on right.
