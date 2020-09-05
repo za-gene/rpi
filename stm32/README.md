@@ -23,6 +23,13 @@ Upload stlink
 
 confirmed working 2020-07-04.
 
+## `stlink-tools`
+
+Consists of st-flash, st-info, st-util. To flash a sketch:
+```
+st-flash write whatever.bin 0x8000000
+```
+
 ## Unclassified
 
 **2020-07-15** I think I **fried** some of the circuits on the board. Both 3.3V out pins near the STLink connectors seems broken. use the one near the USB port instead. I also suspect some of the SPI pins don't work properly.
