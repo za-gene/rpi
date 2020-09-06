@@ -32,12 +32,12 @@ st-flash write whatever.bin 0x8000000
 
 If flashing not working:
 
-* unplug stm
-* set BOOT0 jumper high (the top one)
-* plug in stm
-* `stm-flash erase`
-* ??
-* profit
+1. unplug stm
+2. set BOOT0 jumper high (the top one)
+3. plug in stm
+4. `stm-flash erase`
+5. ??
+6. profit
 
 
 ## Unclassified
