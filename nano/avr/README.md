@@ -29,5 +29,4 @@ picocom -b 9600 /dev/ttyUSB0
 
 ## In this directory
 
-* [hello](hello): simple program to print hello to the serial port 
-
+Nada
