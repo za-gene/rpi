@@ -30,3 +30,7 @@ picocom -b 9600 /dev/ttyUSB0
 ## In this directory
 
 Nada
+
+## Links to other sites
+
+* [documentation](https://www.nongnu.org/avr-libc/)
