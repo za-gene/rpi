@@ -1,5 +1,6 @@
 #include <debounce.h> // a project here that does falling buttons
 
+
 ///////////////////////////////////////////////////////////
 // DS3231
 
@@ -113,9 +114,7 @@ void setup() {
   rtc.begin();
   Serial.begin(9600);
   update_regular_display();
-
   pinMode(BZR, OUTPUT);
-
 }
 
 void show_dec(int pos, int val, bool dp = false) {
@@ -157,18 +156,12 @@ void loop() {
 }
 
 void sound(bool on) {
-  // tones seem to sound so much better than a straight-forward bussing
-#if 0
-  digitalWrite(BZR, on);
-#else
   if (on) {
     tone(BZR, 2525);// quindar
-    //tone(BZR, 1000);
   } else {
     noTone(BZR);
     digitalWrite(BZR, LOW);
   }
-#endif
 }
 
 int mins30(bool toggle) {
