@@ -1,3 +1,5 @@
+#include <debounce.h> // a project here that does falling buttons
+
 ///////////////////////////////////////////////////////////
 // DS3231
 
@@ -80,46 +82,6 @@ struct Buffer {
 
 
 
-typedef void (*funcptr)();
-struct Button { // gets called on falling
-  using bstate = enum states {start, ignore1, seek_high, ignore2};
-
-  funcptr _func ;
-  int _pin;
-  //bool _prev = HIGH;
-  bstate _state = start;
-  ms_t _ms;
-  Button(int pin, funcptr func) {
-    _pin = pin;
-    pinMode(pin, INPUT_PULLUP);
-    _func = func;
-  }
-  void update() {
-    const int DT = 35; //debounce time
-    switch (_state) {
-      case start:
-        if (digitalRead(_pin) == HIGH) return; // ignore the pin whilst unpressed
-        _ms = millis();
-        _func();
-        _state = ignore1;
-        break;
-      case ignore1: // don't do anything for 25ms
-        if (millis() - _ms > DT) _state = seek_high;
-        break;
-      case seek_high: // wait for pin to go high
-        if (digitalRead(_pin) == LOW) return;
-        _ms = millis();
-        _state = ignore2;
-        break;
-      case ignore2: // don't process button for 25ms
-        if (millis() - _ms < DT) return;
-        if (digitalRead(_pin) == HIGH) _state = start;
-        break;
-    }
-  }
-
-};
-
 // COMMON COMPONENTS end
 ///////////////////////////////////////////////////////////
 void do_set(char *buf) {
@@ -143,15 +105,7 @@ void serialise() {
 }
 
 
-void sw0_falling() {
-  mins30(true);
-}
-void sw1_falling() {}
-void sw2_falling() {}
-
-Button sw0(3, sw0_falling);
-Button sw1(A2, sw1_falling);
-Button sw2{A4, sw2_falling};
+FallingButton sw0(3); // 0seg left button is A2, right button is A4
 
 #define BZR 8
 void setup() {
@@ -191,10 +145,8 @@ void update_counter_display(int remaining_secs) {
 void loop() {
   serialise();
 
-  sw0.update();
-  sw1.update();
-  sw2.update();
-
+  if (sw0.falling())
+    mins30(true);
 
   int timer = mins30(false);
   if (timer == 0) {
@@ -237,7 +189,6 @@ int mins30(bool toggle) {
       start_time = millis();
       state = timing; //fallthrough
     case timing:
-      //sound(segment < 250); // decided to turn sound off for now 2020-07-20
       if (millis() - start_time > 1800000) state = expired; // i.e. 30 mins
       return 1800 - (millis() - start_time) / 1000; // i.e. seconds
     case expired:
