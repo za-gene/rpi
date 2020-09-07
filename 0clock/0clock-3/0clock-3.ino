@@ -55,11 +55,6 @@ void init_7219() {
   transfer_7219(0x0C, 0x01); // Turn on chip
 }
 
-/*
-  struct Max7219 {
-  Max7219() { init_7219(); }
-  }
-*/
 
 // MAX7219 end
 ///////////////////////////////////////////////////////////
@@ -85,48 +80,14 @@ struct Buffer {
 
 
 
-struct Periodic {
-  ms_t _started;
-  ms_t _period;
-  Periodic(ms_t period) : _period(period) {
-    _started = millis() - period; // subtract the period so that we get an immediate reset
-  }
-  bool expired() {
-    ms_t ms = millis();
-    if (ms - _started < _period) return false;
-    _started = ms;
-    return true;
-  }
-
-};
-
-struct Delay {
-  bool _active = false;
-  ms_t _started;
-  ms_t _len;
-  void begin(ms_t len_ms) {
-    _len = len_ms;
-    _active = true;
-    _started = millis();
-  }
-  bool expired() {
-    if (!_active) return false;
-    ms_t ms = millis();
-    if (ms - _started < _len) return false;
-    _active = false;
-    return true;
-  }
-};
-
 typedef void (*funcptr)();
 struct Button { // gets called on falling
   using bstate = enum states {start, ignore1, seek_high, ignore2};
-  
+
   funcptr _func ;
   int _pin;
   //bool _prev = HIGH;
   bstate _state = start;
-  //Periodic _debouncer = Periodic(25);
   ms_t _ms;
   Button(int pin, funcptr func) {
     _pin = pin;
@@ -135,7 +96,6 @@ struct Button { // gets called on falling
   }
   void update() {
     const int DT = 35; //debounce time
-    //bool cur = digitalRead(_pin);
     switch (_state) {
       case start:
         if (digitalRead(_pin) == HIGH) return; // ignore the pin whilst unpressed
@@ -153,15 +113,9 @@ struct Button { // gets called on falling
         break;
       case ignore2: // don't process button for 25ms
         if (millis() - _ms < DT) return;
-        if(digitalRead(_pin) == HIGH) _state = start;
+        if (digitalRead(_pin) == HIGH) _state = start;
         break;
     }
-    /*
-      if (!_debouncer.expired()) return;
-      bool cur = digitalRead(_pin);
-      if (cur == LOW && _prev == HIGH) _func();
-      _prev = cur;
-    */
   }
 
 };
@@ -200,14 +154,12 @@ Button sw1(A2, sw1_falling);
 Button sw2{A4, sw2_falling};
 
 #define BZR 8
-//#define SW A2
 void setup() {
   init_7219();
   rtc.begin();
   Serial.begin(9600);
   update_regular_display();
 
-  //pinMode(SW, INPUT_PULLUP);
   pinMode(BZR, OUTPUT);
 
 }
@@ -216,7 +168,6 @@ void show_dec(int pos, int val, bool dp = false) {
   int v = val % 10;
   if (dp) v |= 1 << 7; // add in the decimal point
   transfer_7219(pos, v);
-  //int v1 = val/10;
   transfer_7219(pos + 1, val / 10);
 }
 
@@ -245,14 +196,11 @@ void loop() {
   sw2.update();
 
 
-  static Periodic regular(250);
-  if (regular.expired()) {
-    int timer = mins30(false);
-    if (timer == 0) {
-      update_regular_display();
-    } else {
-      update_counter_display(timer);
-    }
+  int timer = mins30(false);
+  if (timer == 0) {
+    update_regular_display();
+  } else {
+    update_counter_display(timer);
   }
 }
 
@@ -273,8 +221,6 @@ void sound(bool on) {
 
 int mins30(bool toggle) {
   enum states {idle, start, timing, expired};
-  static Delay dly;
-  //static active = false;
   static int state = idle;
   static ms_t start_time;
 
