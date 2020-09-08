@@ -28,6 +28,23 @@ void do_setv(cmd* c) {
   dac_write(v);  
 }
 
+hw_timer_t* timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
+typedef uint16_t u16;
+#define NSINE 64
+uint16_t sine[NSINE];
+
+void IRAM_ATTR onTime() {
+  static volatile int idx = 0;
+  portENTER_CRITICAL_ISR(&timerMux);
+  portEXIT_CRITICAL_ISR(&timerMux);
+  dac_write(sine[idx++]);
+  if(idx>=NSINE) idx=0;
+  //Serial.println(idx++);
+}
+
+
 void setup() {
   Serial.begin(115200);
   pinMode(DAC_CS, OUTPUT);
@@ -36,9 +53,28 @@ void setup() {
 
   cmdSetv = cli.addSingleArgCmd("setv", do_setv);
   cmdSetv.setDescription("Set voltage (0-4096) 0-3V3");
+
+ for(int i = 0; i<NSINE; i++) {
+  float i1 = (float)i;
+  float v = (sin(i1 * 2.0 * 3.1412/(float)NSINE)+1.0)*4096.0/2.0;
+  if(v>=4095.0) v = 4095.0;
+  if(v<0) v=0;
+  //Serial.println(v>0);
+  //v = clamp(v, 0.0, 4095.0);
+  sine[i] = (uint16_t)v;
+  //Serial.println(sine[i]);
+ }
+
+ timer = timerBegin(0, 80, true); // prescale so that 1e6 ticks / second
+ timerAttachInterrupt(timer, &onTime, true);
+ timerAlarmWrite(timer, 1e6 /(440*NSINE), true);
+ timerAlarmEnable(timer);
 }
 
 void loop() {
+  portENTER_CRITICAL(&timerMux);
+  portEXIT_CRITICAL(&timerMux);
+  
   if(Serial.available()) {
     String input = Serial.readStringUntil('\n');
     cli.parse(input);
