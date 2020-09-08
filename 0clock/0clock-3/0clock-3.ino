@@ -14,8 +14,17 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 
 RTC_DS3231 rtc;
 DateTime get_time() {
-  DateTime dt = rtc.now();
-  auto tim = dt.unixtime();
+  // only call the RTC occasionally to prevent peculiar noise coming from module
+  static DateTime dt = rtc.now();
+  static auto snap = millis();
+  if(millis() - snap > (unsigned long)1000*60) {
+    Serial.println("Refreshing RTC");
+    dt = rtc.now();
+    snap = millis();
+  }
+  
+  
+  auto tim = dt.unixtime() + (millis()-snap)/1000;
   tim = myTZ.toLocal(tim, &tcr);
   DateTime dt_local{tim};
   return dt_local;
@@ -112,7 +121,7 @@ FallingButton sw0(3); // 0seg left button is A2, right button is A4
 void setup() {
   init_7219();
   rtc.begin();
-  Serial.begin(9600);
+  Serial.begin(115200);
   update_regular_display();
   pinMode(BZR, OUTPUT);
 }
@@ -156,11 +165,14 @@ void loop() {
 }
 
 void sound(bool on) {
+  Serial.print("sound ");
   if (on) {
     tone(BZR, 2525);// quindar
+    Serial.println("on");
   } else {
     noTone(BZR);
     digitalWrite(BZR, LOW);
+    Serial.println("off");
   }
 }
 
@@ -170,11 +182,14 @@ int mins30(bool toggle) {
   static ms_t start_time;
 
   if (state == idle) {
-    sound(LOW);
+    //sound(LOW);
     if (toggle) state = start;
     return 0;
   }
-  if (toggle) state = idle;
+  if (toggle) {
+    state = idle;
+    sound(false);
+  }
 
   ms_t segment = (millis() - start_time) % 5000; // break up the timing into 5 second chunks
   switch (state) {
