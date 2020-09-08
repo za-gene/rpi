@@ -1,5 +1,9 @@
+/*
+ * For a normal setup with the default prescaler, 1024 samples takes ~65,000us.
+ * So each sample takes ~63us (=65000us/1024), for a sampling frequency of ~15.8kHz (= 1/63e-6)
+ */
 #define AIN A0
-#define PIN_440 2
+//#define PIN_440 2
 
 template<int N>
 struct Buffer {
@@ -16,25 +20,30 @@ struct Buffer {
   }
 };
 
-Buffer<128> buff;
+Buffer<512> buff;
 
 void setup() {
   Serial.begin(115200);
   pinMode(AIN, INPUT);
-  tone(PIN_440, 440);
+  bool diagnostics = false;
+
+  //tone(PIN_440, 440);
+
+  if (diagnostics) {
+    Serial.println("+OK OSCOPE Service Ready");
+    Serial.println("+OK Capturing. Wait.");
+  }
+  //while(analogRead(AIN) < 100);
+  
   auto ms = micros();
-
-  Serial.println("+OK OSCOPE Service Ready");
-
-  Serial.println("+OK Capturing. Wait.");
   while (buff.avail()) buff.write(analogRead(AIN));
   ms = micros() - ms;
   String str = "Took " + String(ms) + " us";
-  Serial.println(str);
+  if (diagnostics) Serial.println(str);
   for (int i = 0; i < buff.size; ++ i)
     Serial.println(buff.data[i]);
-  Serial.println(".");
-  Serial.flush();
+  //Serial.println(".");
+  //Serial.flush();
 
 }
 

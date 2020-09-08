@@ -1,0 +1,2 @@
+flash:
+	flash-stm32

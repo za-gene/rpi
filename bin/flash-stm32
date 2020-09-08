@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+BIN=`ls -t *bin | head -n 1`
+echo "Flashing $BIN"
+st-flash write $BIN 0x8000000

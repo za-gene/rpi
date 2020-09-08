@@ -30,6 +30,7 @@ Consists of st-flash, st-info, st-util. To flash a sketch:
 ```
 st-flash write whatever.bin 0x8000000
 ```
+or use `flash-stm32` in the `bin` directory to achieve the same effect. 
 
 If flashing not working:
 
