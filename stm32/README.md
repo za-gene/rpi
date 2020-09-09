@@ -1,13 +1,5 @@
-# STM32F103C8T6 (Blue Pill) blinker sketch
+# STM32F103C8T6
 
-
-## setup
-
-```
-sudo apt install stlink-tools stlink-gui
-sudo apt install gcc-arm-none-eabi
-```
-ARM provide a [toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) that includes a debugger. However, it might be possible to use `gdb-multiarch` instead. It is possible that debugger compatability is tied to the compiler version
 
 ## Arduino IDE
 
@@ -24,24 +16,6 @@ Upload stlink
 
 confirmed working 2020-07-04.
 
-## `stlink-tools`
-
-Consists of st-flash, st-info, st-util. To flash a sketch:
-```
-st-flash write whatever.bin 0x8000000
-```
-or use `flash-stm32` in the `bin` directory to achieve the same effect. 
-
-If flashing not working:
-
-1. unplug stm
-2. set BOOT0 jumper high (the top one)
-3. plug in stm
-4. `stm-flash erase`
-5. ??
-6. profit
-
-
 ## Unclassified
 
 **2020-07-15** I think I **fried** some of the circuits on the board. Both 3.3V out pins near the STLink connectors seems broken. use the one near the USB port instead. I also suspect some of the SPI pins don't work properly.
@@ -51,6 +25,7 @@ If flashing not working:
 
 * [adc-interrupts](adc-interrupts) - how to do analog reads using interrupts
 * [adc-simple](adc-simple) - just uses the analogRead() function
+* [bare-metal](bare) - low-level stuff
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
 * song-player - 3V3 SD card, MCP4921 and LED confirmation. Plays raw song.
@@ -62,7 +37,6 @@ If flashing not working:
 
 ## Links to other sites
 
-* [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
 * [GPIO as output](https://www.gadgetronicx.com/stm32-microcontroller-gpio-output/)
 * [GPIO insights](http://embedded-lab.com/blog/stm32-gpio-ports-insights/)
 * [interrupts](https://www.electronicshub.org/working-with-interrupts-in-stm32f103c8t6/)
