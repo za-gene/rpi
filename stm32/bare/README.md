@@ -31,6 +31,8 @@ If flashing not working:
 ## Also in this directory
 
 * [blink](blink) - blinky sketch
+* [uart](uart.md)
 
 ## Links to other sites
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
+* [Vivonomicon blog](https://vivonomicon.com/) - contains many STM32 bare metal posts, including the one for UART.
