@@ -12,4 +12,5 @@ case $1 in
     h) print_help ; exit ;;
 esac
 
-picocom -b 115200 /dev/ttyUSB0
+# --omap arg below converts \r to \r\n for better outputting on console
+picocom -b 115200 /dev/ttyUSB0 --omap crcrlf
