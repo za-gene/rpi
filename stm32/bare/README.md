@@ -23,9 +23,8 @@ If flashing not working:
 1. unplug stm
 2. set BOOT0 jumper high (the top one)
 3. plug in stm
-4. `stm-flash erase`
-5. ??
-6. profit
+4. `st-flash erase`
+5. set BOOT0 jumper low
 
 
 ## Also in this directory
