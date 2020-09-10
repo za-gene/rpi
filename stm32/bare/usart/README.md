@@ -1,4 +1,6 @@
-# uart.md
+# usart
+
+This is a simplified version of the github repo described below.
 
 See [examples](https://github.com/WRansohoff/STM32_UART_Examples). The `echo` project is known to work. In `Makefile`, uncomment:
 ```
