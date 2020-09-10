@@ -52,6 +52,12 @@
 #define USART2_BRR *(volatile uint32_t *)(USART2_BASE+USART_BRR)
 #define USART2_CR1 *(volatile uint32_t *)(USART2_BASE+USART_CR1)
 
+void putc2(char c)
+{
+	while( !( USART2_SR & USART_SR_TXE ) ) {};
+	USART2_DR = c;
+}
+
 /**
  * Main program.
  */
@@ -89,6 +95,7 @@ int main( void ) {
 
 	// Main loop: wait for a new byte, then echo it back.
 	char rxb = '\0';
+	putc2('\a'); // beep
 	while ( 1 ) {
 		// Receive a byte of data.
 		while( !( USART2_SR & USART_SR_RXNE ) ) {};
