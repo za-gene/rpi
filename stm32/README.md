@@ -1,5 +1,6 @@
 # STM32F103C8T6
 
+Arm Cortex M3, max clock 72MHz, 64KiB flash, 20KiB SRAM
 
 ## Arduino IDE
 
