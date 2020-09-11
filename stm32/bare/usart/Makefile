@@ -31,3 +31,5 @@ flash : .flash
 erase:
 	$(STL) erase
 
+dump:
+	arm-none-eabi-objdump -d app.elf

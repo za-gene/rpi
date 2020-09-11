@@ -54,7 +54,7 @@ void puts2(const char* s)
 	putc2('\n');
 }
 
-int main( void ) {
+void main() {
 	// Copy initialized data from .sidata (Flash) to .data (RAM)
 	//memcpy( &_sdata, &_sidata, ( ( void* )&_edata - ( void* )&_sdata ) );
 	// Clear the .bss section in RAM.
