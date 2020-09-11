@@ -78,8 +78,9 @@ int main( void ) {
 			( 0x0 << GPIO_CRL_MODE3_Pos ) |
 			( 0x1 << GPIO_CRL_CNF3_Pos ) );
 
-	// Set the baud rate to 9600.
-	uint16_t uartdiv = SystemCoreClock / 9600;
+	// Set the baud rate
+	uint32_t baud_rate = 115200;
+	uint16_t uartdiv = SystemCoreClock / baud_rate;
 	USART2->BRR = ( ( ( uartdiv / 16 ) << USART_BRR_DIV_Mantissa_Pos ) |
 			( ( uartdiv % 16 ) << USART_BRR_DIV_Fraction_Pos ) );
 
