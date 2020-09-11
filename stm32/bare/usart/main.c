@@ -1,20 +1,9 @@
-// Standard library includes.
-#include <stdint.h>
-/*
-#include <stdio.h>
-#include <string.h>
-*/
-
-//uint32_t SystemCoreClock = 8000000;
-//extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
-
-//#define VVC_F1
+#include "../blue.h"
 
 // cribbed from blink sketch
 #define RCC_BASE      	0x40021000
 // reference page 51
-#define GPIOA_BASE    	0x40010800
-#define USART2_BASE	0x40004400
+//#define GPIOA_BASE    	0x40010800
 
 #define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
 #define RCC_APB1ENR_USART2EN	(1<<17)
@@ -38,29 +27,33 @@
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
 
-// page 827
-#define USART_SR 0x00
-#define USART_DR 0x04
-#define USART_BRR 0x08
-#define USART_CR1 0x0C
-#define USART_CR2 0x10
-#define USART_CR3 0x14
-#define USART_GTPR 0x18
+// USART register map: page 827
+typedef struct {
+	__IO uint32_t SR; // 0x00
+	__IO uint32_t DR; // 0x04
+	__IO uint32_t BRR; // 0x08
+	__IO uint32_t CR1; // 0x0C
+	__IO uint32_t CR2; // 0x10
+	__IO uint32_t CR3; // 0x14
+	__IO uint32_t GTPT; // 0x18
+} USART_t;
 
+#define USART2	((USART_t*) 0x40004400)
+
+/*
 #define USART2_SR *(volatile uint32_t *)(USART2_BASE+USART_SR)
 #define USART2_DR *(volatile uint32_t *)(USART2_BASE+USART_DR)
 #define USART2_BRR *(volatile uint32_t *)(USART2_BASE+USART_BRR)
 #define USART2_CR1 *(volatile uint32_t *)(USART2_BASE+USART_CR1)
+*/
 
 void putc2(char c)
 {
-	while( !( USART2_SR & USART_SR_TXE ) ) {};
-	USART2_DR = c;
+	while( !( USART2->SR & USART_SR_TXE ) ) {};
+	USART2->DR = c;
 }
 
-/**
- * Main program.
- */
+
 int main( void ) {
 	// Copy initialized data from .sidata (Flash) to .data (RAM)
 	//memcpy( &_sdata, &_sidata, ( ( void* )&_edata - ( void* )&_sdata ) );
@@ -76,33 +69,33 @@ int main( void ) {
 	RCC_APB1ENR  |=  ( RCC_APB1ENR_USART2EN );
 	RCC_APB2ENR  |=  ( RCC_APB2ENR_IOPAEN );
 	// Configure pins A2, A3 for USART2.
-	GPIOA_CRL    &= ~( GPIO_CRL_MODE2 |
+	GPIOA->CRL    &= ~( GPIO_CRL_MODE2 |
 			GPIO_CRL_CNF2 |
 			GPIO_CRL_MODE3 |
 			GPIO_CRL_CNF3 );
-	GPIOA_CRL    |= ( ( 0x1 << GPIO_CRL_MODE2_Pos ) |
+	GPIOA->CRL    |= ( ( 0x1 << GPIO_CRL_MODE2_Pos ) |
 			( 0x2 << GPIO_CRL_CNF2_Pos ) |
 			( 0x0 << GPIO_CRL_MODE3_Pos ) |
 			( 0x1 << GPIO_CRL_CNF3_Pos ) );
 
 	// Set the baud rate to 9600.
 	uint16_t uartdiv = SystemCoreClock / 9600;
-	USART2_BRR = ( ( ( uartdiv / 16 ) << USART_BRR_DIV_Mantissa_Pos ) |
+	USART2->BRR = ( ( ( uartdiv / 16 ) << USART_BRR_DIV_Mantissa_Pos ) |
 			( ( uartdiv % 16 ) << USART_BRR_DIV_Fraction_Pos ) );
 
 	// Enable the USART peripheral.
-	USART2_CR1 |= ( USART_CR1_RE | USART_CR1_TE | USART_CR1_UE );
+	USART2->CR1 |= ( USART_CR1_RE | USART_CR1_TE | USART_CR1_UE );
 
 	// Main loop: wait for a new byte, then echo it back.
 	char rxb = '\0';
 	putc2('\a'); // beep
 	while ( 1 ) {
 		// Receive a byte of data.
-		while( !( USART2_SR & USART_SR_RXNE ) ) {};
-		rxb = USART2_DR;
+		while( !( USART2->SR & USART_SR_RXNE ) ) {};
+		rxb = USART2->DR;
 
 		// Re-transmit the byte of data once the peripheral is ready.
-		while( !( USART2_SR & USART_SR_TXE ) ) {};
-		USART2_DR = rxb;
+		while( !( USART2->SR & USART_SR_TXE ) ) {};
+		USART2->DR = rxb;
 	}
 }
