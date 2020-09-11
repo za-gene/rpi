@@ -34,4 +34,5 @@ If flashing not working:
 
 ## Links to other sites
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
+* [STM32F10x standard peripheral library](https://www.st.com/content/st_com/en/products/embedded-software/mcu-mpu-embedded-software/stm32-embedded-software/stm32-standard-peripheral-libraries/stsw-stm32054.html)
 * [Vivonomicon blog](https://vivonomicon.com/) - contains many STM32 bare metal posts, including the one for UART.
