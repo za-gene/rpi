@@ -94,8 +94,6 @@ int main( void ) {
 		while( !( USART2->SR & USART_SR_RXNE ) ) {};
 		rxb = USART2->DR;
 
-		// Re-transmit the byte of data once the peripheral is ready.
-		while( !( USART2->SR & USART_SR_TXE ) ) {};
-		USART2->DR = rxb;
+		putc2(rxb); // retransmit it
 	}
 }
