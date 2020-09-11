@@ -40,12 +40,6 @@ typedef struct {
 
 #define USART2	((USART_t*) 0x40004400)
 
-/*
-#define USART2_SR *(volatile uint32_t *)(USART2_BASE+USART_SR)
-#define USART2_DR *(volatile uint32_t *)(USART2_BASE+USART_DR)
-#define USART2_BRR *(volatile uint32_t *)(USART2_BASE+USART_BRR)
-#define USART2_CR1 *(volatile uint32_t *)(USART2_BASE+USART_CR1)
-*/
 
 void putc2(char c)
 {
@@ -53,6 +47,12 @@ void putc2(char c)
 	USART2->DR = c;
 }
 
+void puts2(const char* s)
+{
+	while(s && *s) putc2(*s++);
+	putc2('\r');
+	putc2('\n');
+}
 
 int main( void ) {
 	// Copy initialized data from .sidata (Flash) to .data (RAM)
@@ -90,6 +90,8 @@ int main( void ) {
 	// Main loop: wait for a new byte, then echo it back.
 	char rxb = '\0';
 	putc2('\a'); // beep
+	char greeting[] = "Hello from bare metal usart";
+	puts2(greeting);
 	while ( 1 ) {
 		// Receive a byte of data.
 		while( !( USART2->SR & USART_SR_RXNE ) ) {};
