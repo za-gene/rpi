@@ -11,6 +11,11 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 // reference page 51
 //#define GPIOA_BASE    	0x40010800
 
+struct TIMx_t;
+
+//#define TIM4 *(volatile uint32_t *)(0x40000800)
+#define TIM4	((TIMx_t*) 0x40000800)
+
 #define RTC_BASE 0x40028000
 #define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
 #define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
@@ -22,6 +27,7 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04) 
 #define RCC_CFGR_SW (1<<0)
 #define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
+#define RCC_APB1ENR_TIM4EN (1<<2)
 #define RCC_APB1ENR_USART2EN	(1<<17)
 #define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
 #define RCC_APB2ENR_IOPAEN	(1<<2)
@@ -42,6 +48,25 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define USART_CR1_UE (1<<13)
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
+
+// section 15.4.18 TIMx register map page 423
+typedef struct {
+	__IO uint32_t CR1; // 0x00
+	__IO uint32_t CR2; // 0x04
+	__IO uint32_t SMCR; // 0x08
+	__IO uint32_t DIER; // 0x0C
+	__IO uint32_t SR; // 0x10
+	__IO uint32_t EGR; // 0x14
+	__IO uint32_t CCMR1; // 0x18
+	__IO uint32_t CCMR2; // 0x1C
+	__IO uint32_t CCER; // 0x20
+	__IO uint32_t CNT; // 0x24
+	__IO uint32_t PSC; // 0x28
+	__IO uint32_t ARR; // 0x2C
+	// ... more ... incomplete
+} TIMx_t;
+
+#define TIM_CR1_CEN (1<<0)
 
 // see video https://youtu.be/o6ZWD0PAoJk
 
@@ -229,7 +254,7 @@ void nop()
 uint32_t rtc_cnt()
 {
 	// The clock, although 32-bit, is implemented in 2 32-bit registers with the lower half of the word containing low and high values
-	
+
 	// TODO buggy because of potential timer overflow during middle of computation
 	//static int i = 0;
 	uint32_t hi = 0;
@@ -240,6 +265,21 @@ uint32_t rtc_cnt()
 	ret = (hi<<16) | lo ;
 	return ret;
 }
+
+void delay(uint16_t ms)
+{
+	/*
+	uint16_t start = TIM4->CNT;
+	while(1) {
+		uint16_t now = TIM4->CNT;
+		if(now-start>=ms) break;
+	}
+	*/
+
+	TIM4->CNT =0;
+	while(TIM4->CNT < ms);
+}
+
 
 void main() 
 {
@@ -272,6 +312,14 @@ void main()
 	// Enable the USART peripheral.
 	USART2->CR1 |= ( USART_CR1_RE | USART_CR1_TE | USART_CR1_UE );
 
+	// timer setup
+	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
+	TIM4->PSC=7200;
+	TIM4->ARR=9999;
+	//TIM4->PSC=7199;
+	//TIM4->ARR=10000;
+	TIM4->CR1 |= TIM_CR1_CEN;
+
 	char life[40];
 	itoa(42, life, 10);
 	puts2(life);
@@ -281,17 +329,10 @@ void main()
 	char rxb = '\0';
 	putc2('\a'); // beep
 	puts2(greeting);
+	int secs = 0;
 	while ( 1 ) {
-		int i = rtc_cnt();
-		//itoa(rtc_cnt(), life, 10);
-		puts2("X");
+		itoa(secs++, life, 10);
 		puts2(life);
-		for(int i=0; i< 500000; i++) nop();
-
-		// Receive a byte of data.
-		//while( !( USART2->SR & USART_SR_RXNE ) ) {};
-		//rxb = USART2->DR;
-
-		//putc2(rxb); // retransmit it
+		delay(1000);
 	}
 }
