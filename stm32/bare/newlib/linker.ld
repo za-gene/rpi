@@ -104,6 +104,7 @@ SECTIONS
   {
     . = ALIGN(4);
     _ssystem_ram = .;
+    __ssystem_ram__ = _ssystem_ram;
     . = . + _Min_Leftover_RAM;
     . = ALIGN(4);
     _esystem_ram = .;

@@ -3,7 +3,9 @@ AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
-CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0
+CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 
+CFLAGS += -nostdlib
+#CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 -nostdlib --specs=nano.specs
 
 all: app.bin
 
@@ -14,8 +16,9 @@ main.o: main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 app.elf: linker.ld crt.o main.o
-	#$(LD) -T linker.ld -o app.elf crt.o main.o -L/usr/lib/arm-none-eabi/newlib -lc
+	#$(LD) -T linker.ld  -o app.elf main.o -L/usr/lib/arm-none-eabi/newlib/thumb  -lc_nano
 	$(LD) -T linker.ld -o app.elf crt.o main.o
+	#$(LD) -T linker.ld -o app.elf crt.o main.o -lc
 
 app.bin: app.elf
 	$(BIN) -O binary app.elf app.bin

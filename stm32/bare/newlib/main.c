@@ -1,5 +1,7 @@
-//#include <string.h>
+#include <string.h>
 #include <stddef.h> // for size_t
+#include <stdio.h>
+#include <stdbool.h>
 #include "../blue.h"
 
 extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
@@ -8,6 +10,10 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define RCC_BASE      	0x40021000
 // reference page 51
 //#define GPIOA_BASE    	0x40010800
+
+#define RTC_BASE 0x40028000
+#define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
+#define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
 
 #define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
 #define RCC_APB1ENR_USART2EN	(1<<17)
@@ -45,6 +51,8 @@ typedef struct {
 #define USART2	((USART_t*) 0x40004400)
 
 
+// stub for newlib nano - apparently required by nano-vfprintf_i
+
 void putc2(char c)
 {
 	while( !( USART2->SR & USART_SR_TXE ) ) {};
@@ -58,6 +66,37 @@ void puts2(const char* s)
 	putc2('\n');
 }
 
+unsigned int _div(unsigned int a, unsigned int b)
+{
+	return a/b;
+}
+unsigned int _mod(unsigned int a, unsigned int b)
+{
+	return a%b;
+}
+////struct {unsigned int quot; unsigned int rem} __aeabi_uidivmod(unsigned int a, unsigned int b)
+void  __aeabi_uidivmod(unsigned int a, unsigned int b)
+{
+	putc2('U');
+	unsigned int c = _div(a,  b);
+	unsigned int d = _mod(a, b); /* Likely uses the result of the division. */
+	//#pragma asm(@r0=c, @r1 = d)
+	//#pragma endasm
+	asm("mov r0, %0\t\n" : "=r"(c));
+	asm("mov r1, %0\t\n" : "=r"(d));
+	//return ; // TODO
+}
+
+// stub for newlib nano
+extern uint32_t __ssystem_ram__;
+void *_sbrk(int incr) {
+	//static unsigned char *heap = HEAP_START;
+	static unsigned char *heap = (unsigned char*) &__ssystem_ram__;
+	putc2('S');
+	unsigned char *prev_heap = heap;
+	heap += incr;
+	return prev_heap;
+}
 char greeting[] = "Hello from bare metal usart 8";
 
 void* memcpy_usr(void* dst, const void* src, size_t n) {
@@ -101,6 +140,86 @@ void init_mem()
 	memset_usr( &_sbss, 0x00, ( ( void* )&_ebss - ( void* )&_sbss ) );
 }
 
+/* reverse() and itoa() from https://www.geeksforgeeks.org/implement-itoa/
+*/
+
+
+/* A utility function to reverse a string  */
+void reverse(char str[], int length) 
+{ 
+	int start = 0; 
+	int end = length -1; 
+	while (start < end) 
+	{ 
+		//swap(*(str+start), *(str+end)); 
+		int c = *(str+start);
+		*(str+start) = *(str+end);
+		*(str+end) = c;
+
+		start++; 
+		end--; 
+	} 
+} 
+
+// Implementation of itoa() 
+char* itoa(int num, char* str, int base) 
+{ 
+	int i = 0; 
+	bool isNegative = false; 
+
+	/* Handle 0 explicitely, otherwise empty string is printed for 0 */
+	if (num == 0) 
+	{ 
+		str[i++] = '0'; 
+		str[i] = '\0'; 
+		return str; 
+	} 
+
+	// In standard itoa(), negative numbers are handled only with  
+	// base 10. Otherwise numbers are considered unsigned. 
+	if (num < 0 && base == 10) 
+	{ 
+		isNegative = true; 
+		num = -num; 
+	} 
+
+	// Process individual digits 
+	while (num != 0) 
+	{ 
+		int rem = num % base; 
+		str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
+		num = num/base; 
+	} 
+
+	// If number is negative, append '-' 
+	if (isNegative) 
+		str[i++] = '-'; 
+
+	str[i] = '\0'; // Append string terminator 
+
+	// Reverse the string 
+	reverse(str, i); 
+
+	return str; 
+} 
+
+void nop()
+{
+
+}
+uint32_t rtc_cnt()
+{
+	// The clock, although 32-bit, is implemented in 2 32-bit registers with the lower half of the word containing low and high values
+	
+	// TODO buggy because of potential timer overflow during middle of computation
+	//static int i = 0;
+	uint32_t hi = 0;
+	hi = RTC_CNTH;
+	uint32_t lo = 0; // RTC_CNTL;
+	uint32_t ret = (hi<<16) | lo ;
+	return ret;
+}
+
 void main() {
 
 
@@ -131,15 +250,26 @@ void main() {
 	// Enable the USART peripheral.
 	USART2->CR1 |= ( USART_CR1_RE | USART_CR1_TE | USART_CR1_UE );
 
+	char life[40];
+	itoa(42, life, 10);
+	puts2(life);
+	//sprintf(life, "Meaning of life is %d", 42);
+
 	// Main loop: wait for a new byte, then echo it back.
 	char rxb = '\0';
 	putc2('\a'); // beep
 	puts2(greeting);
 	while ( 1 ) {
-		// Receive a byte of data.
-		while( !( USART2->SR & USART_SR_RXNE ) ) {};
-		rxb = USART2->DR;
+		int i = rtc_cnt();
+		//itoa(rtc_cnt(), life, 10);
+		puts2("X");
+		puts2(life);
+		for(int i=0; i< 500000; i++) nop();
 
-		putc2(rxb); // retransmit it
+		// Receive a byte of data.
+		//while( !( USART2->SR & USART_SR_RXNE ) ) {};
+		//rxb = USART2->DR;
+
+		//putc2(rxb); // retransmit it
 	}
 }
