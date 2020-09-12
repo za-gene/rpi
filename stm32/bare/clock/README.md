@@ -14,8 +14,8 @@ void main()
 {
        // timer setup
         RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
-        TIM4->PSC=7200;
-        TIM4->ARR=9999;
+        TIM4->PSC=7999;
+        TIM4->ARR=10000;
         TIM4->CR1 |= TIM_CR1_CEN;
 
 	// looping
@@ -28,8 +28,13 @@ void main()
 }
 ```
 
-Assuming a clock frequency of 72MHz, I use a prescaler of 7200, and ARR (Auto-Reload Register) of 9999 for a counter clock frequency
-CK_CNT - f_CK_PSC/(PSC[15:0]+1) so the frequency is 72MHz/7200/(9999+1), which is 1Hz. So my thinking is a little wrong somewhere.
+The system clock frequency is 8MHz. Setting PSC to 7999 therefore increments CNT with a frequency of
+```
+CK_CNT = f_CK_PSC/(PSC[15:0]+1) = 8,000,000/(7,999+1) = 1kHz
+```
 
-The secs count of 50 took about 45secs on clock using a delay of 1000.
+SO `CNT` is updated every 1ms, and is reset when it reaches the ARR (Auto-Reload Register) value.
 
+Note that `PSC`, `CNT` and `ARR` have 16-bit values (0-65,535) even though they are 32-bit registers.
+
+Timing reveals that the `delay(1000)` produced the expected delay of 1s. It seems that the other processing in the loop did not throw the calcs out.

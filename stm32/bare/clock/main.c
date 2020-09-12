@@ -314,10 +314,10 @@ void main()
 
 	// timer setup
 	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
-	TIM4->PSC=7200;
-	TIM4->ARR=9999;
-	//TIM4->PSC=7199;
-	//TIM4->ARR=10000;
+	//TIM4->PSC=7200;
+	//TIM4->ARR=9999;
+	TIM4->PSC=7999;
+	TIM4->ARR=10000;
 	TIM4->CR1 |= TIM_CR1_CEN;
 
 	char life[40];
