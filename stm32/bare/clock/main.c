@@ -15,6 +15,12 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
 #define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
 
+// section 7.3.11 RCC register map page 121
+#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00) 
+#define RCC_CR_HSION (1<<0)
+#define RCC_CR_HSIRDY (1<<1)
+#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04) 
+#define RCC_CFGR_SW (1<<0)
 #define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
 #define RCC_APB1ENR_USART2EN	(1<<17)
 #define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
@@ -37,6 +43,19 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
 
+// see video https://youtu.be/o6ZWD0PAoJk
+
+void system_clock_init()
+{
+	RCC_CR |= RCC_CR_HSION;
+	RCC_CFGR &= ~RCC_CFGR_SW;
+	while((RCC_CR && RCC_CR_HSIRDY) == 0);
+	//RCC_CR &= ~RCC_CR_MSI_RANGE;
+	//RCC_CR != RCC_CR_MSI_RANGE;
+
+	//RCC_CR |= RCC_CR_HSIROSEL;
+	while((RCC_CR & RCC_CR_HSIRDY) == 0);
+}
 // USART register map: page 827
 typedef struct {
 	__IO uint32_t SR; // 0x00
@@ -214,14 +233,17 @@ uint32_t rtc_cnt()
 	// TODO buggy because of potential timer overflow during middle of computation
 	//static int i = 0;
 	uint32_t hi = 0;
-	hi = RTC_CNTH;
-	uint32_t lo = 0; // RTC_CNTL;
-	uint32_t ret = (hi<<16) | lo ;
+	//hi = RTC_CNTH;
+	uint32_t lo = 0; 
+	//lo = RTC_CNTL;
+	uint32_t ret = 0;
+	ret = (hi<<16) | lo ;
 	return ret;
 }
 
-void main() {
-
+void main() 
+{
+	system_clock_init();
 
 	// Set the core system clock speed.
 	// Default clock source is the 8MHz internal oscillator.
