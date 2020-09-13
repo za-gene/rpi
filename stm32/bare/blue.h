@@ -99,3 +99,4 @@ typedef struct {
 } USART_t;
 
 void init_serial();
+char* itoa(int num, char* str, int base);

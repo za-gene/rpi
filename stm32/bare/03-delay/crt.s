@@ -18,7 +18,7 @@ _reset:
 	ldr r2, =edata
 	//ldr r2, [r2]
 	sub r2, r2, r0
-	bl memcpy_usr
+	//bl memcpy_usr
 skip:
 	bl init_mem
 	bl main
