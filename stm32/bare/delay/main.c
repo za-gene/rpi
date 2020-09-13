@@ -8,14 +8,9 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 
 // cribbed from blink sketch
 #define RCC_BASE      	0x40021000
-// reference page 51
-//#define GPIOA_BASE    	0x40010800
 
-struct TIMx_t;
 
-#define TIM4	((TIMx_t*) 0x40000800)
-
-#define RTC_BASE 0x40028000
+#define RTC_BASE 0x40002800
 #define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
 #define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
 
@@ -47,25 +42,6 @@ struct TIMx_t;
 #define USART_CR1_UE (1<<13)
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
-
-// section 15.4.18 TIMx register map page 423
-typedef struct {
-	__IO uint32_t CR1; // 0x00
-	__IO uint32_t CR2; // 0x04
-	__IO uint32_t SMCR; // 0x08
-	__IO uint32_t DIER; // 0x0C
-	__IO uint32_t SR; // 0x10
-	__IO uint32_t EGR; // 0x14
-	__IO uint32_t CCMR1; // 0x18
-	__IO uint32_t CCMR2; // 0x1C
-	__IO uint32_t CCER; // 0x20
-	__IO uint32_t CNT; // 0x24
-	__IO uint32_t PSC; // 0x28
-	__IO uint32_t ARR; // 0x2C
-	// ... more ... incomplete
-} TIMx_t;
-
-#define TIM_CR1_CEN (1<<0)
 
 // see video https://youtu.be/o6ZWD0PAoJk
 
