@@ -1,7 +1,7 @@
-#include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "../blue.h"
+
+#include <blue.h>
 
 
 void delay(uint16_t ms)

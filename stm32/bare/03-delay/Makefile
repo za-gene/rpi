@@ -5,6 +5,7 @@ BIN = arm-none-eabi-objcopy
 STL = st-flash
 CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 
 CFLAGS += -nostdlib
+CFLAGS += -I..
 #CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 -nostdlib --specs=nano.specs
 
 all: app.bin
