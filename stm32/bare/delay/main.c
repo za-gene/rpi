@@ -6,43 +6,6 @@
 
 extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 
-// cribbed from blink sketch
-#define RCC_BASE      	0x40021000
-
-
-#define RTC_BASE 0x40002800
-#define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
-#define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
-
-// section 7.3.11 RCC register map page 121
-#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00) 
-#define RCC_CR_HSION (1<<0)
-#define RCC_CR_HSIRDY (1<<1)
-#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04) 
-#define RCC_CFGR_SW (1<<0)
-#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
-#define RCC_APB1ENR_TIM4EN (1<<2)
-#define RCC_APB1ENR_USART2EN	(1<<17)
-#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
-#define RCC_APB2ENR_IOPAEN	(1<<2)
-#define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
-
-#define GPIO_CRL_CNF2_Pos 10 // page 171
-#define GPIO_CRL_CNF3_Pos 14
-#define GPIO_CRL_MODE2_Pos 8
-#define GPIO_CRL_MODE3_Pos 12
-#define GPIO_CRL_CNF2 (0x3<<GPIO_CRL_CNF2_Pos)
-#define GPIO_CRL_CNF3 (0x3<<GPIO_CRL_CNF3_Pos)
-#define GPIO_CRL_MODE2 (0x3<<GPIO_CRL_MODE2_Pos)
-#define GPIO_CRL_MODE3 (0x3<<GPIO_CRL_MODE3_Pos)
-#define USART_BRR_DIV_Fraction_Pos 0 // page 820
-#define USART_BRR_DIV_Mantissa_Pos 4
-#define USART_CR1_RE (1<<2) // page 821
-#define USART_CR1_TE (1<<3)
-#define USART_CR1_UE (1<<13)
-#define USART_SR_RXNE (1 << 5) // page 818
-#define USART_SR_TXE (1 << 7)
-
 // see video https://youtu.be/o6ZWD0PAoJk
 
 void system_clock_init()
@@ -56,34 +19,8 @@ void system_clock_init()
 	//RCC_CR |= RCC_CR_HSIROSEL;
 	while((RCC_CR & RCC_CR_HSIRDY) == 0);
 }
-// USART register map: page 827
-typedef struct {
-	__IO uint32_t SR; // 0x00
-	__IO uint32_t DR; // 0x04
-	__IO uint32_t BRR; // 0x08
-	__IO uint32_t CR1; // 0x0C
-	__IO uint32_t CR2; // 0x10
-	__IO uint32_t CR3; // 0x14
-	__IO uint32_t GTPT; // 0x18
-} USART_t;
-
-#define USART2	((USART_t*) 0x40004400)
 
 
-// stub for newlib nano - apparently required by nano-vfprintf_i
-
-void putc2(char c)
-{
-	while( !( USART2->SR & USART_SR_TXE ) ) {};
-	USART2->DR = c;
-}
-
-void puts2(const char* s)
-{
-	while(s && *s) putc2(*s++);
-	putc2('\r');
-	putc2('\n');
-}
 
 unsigned int _div(unsigned int a, unsigned int b)
 {
@@ -96,7 +33,7 @@ unsigned int _mod(unsigned int a, unsigned int b)
 ////struct {unsigned int quot; unsigned int rem} __aeabi_uidivmod(unsigned int a, unsigned int b)
 void  __aeabi_uidivmod(unsigned int a, unsigned int b)
 {
-	putc2('U');
+	putchar('U');
 	unsigned int c = _div(a,  b);
 	unsigned int d = _mod(a, b); /* Likely uses the result of the division. */
 	//#pragma asm(@r0=c, @r1 = d)
@@ -111,12 +48,12 @@ extern uint32_t __ssystem_ram__;
 void *_sbrk(int incr) {
 	//static unsigned char *heap = HEAP_START;
 	static unsigned char *heap = (unsigned char*) &__ssystem_ram__;
-	putc2('S');
+	putchar('S');
 	unsigned char *prev_heap = heap;
 	heap += incr;
 	return prev_heap;
 }
-char greeting[] = "Hello from bare metal usart 9";
+char greeting[] = "Hello from bare metal usart 1";
 
 void* memcpy_usr(void* dst, const void* src, size_t n) {
 	// Copies n bytes from src to dst
@@ -299,19 +236,20 @@ void main()
 	//TIM4->ARR=10000;
 	TIM4->CR1 |= TIM_CR1_CEN;
 
+	puts("Test of delay");
 	char life[40];
 	itoa(42, life, 10);
-	puts2(life);
+	puts(life);
 	//sprintf(life, "Meaning of life is %d", 42);
 
 	// Main loop: wait for a new byte, then echo it back.
 	char rxb = '\0';
-	putc2('\a'); // beep
-	puts2(greeting);
+	putchar('\a'); // beep
+	puts(greeting);
 	int secs = 0;
 	while ( 1 ) {
 		itoa(secs++, life, 10);
-		puts2(life);
+		puts(life);
 		delay(1000);
 	}
 }

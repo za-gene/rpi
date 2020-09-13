@@ -5,15 +5,57 @@
 
 #define __IO volatile
 
+
+#define RCC_BASE      	0x40021000
+
+
+#define RTC_BASE 0x40002800
+#define RTC_CNTH *(volatile uint32_t *)(RTC_BASE   + 0x18)
+#define RTC_CNTL *(volatile uint32_t *)(RTC_BASE   + 0x1C)
+
+
+
 // section 3.3 Memory map page 50
 
+// forward declarations
 struct GPIO_t;
+struct TIMx_t;
+struct USART_t;
+
 #define GPIOC ((GPIO_t*)   0x40011000)
 #define GPIOB ((GPIO_t*)   0x40010C00)
 #define GPIOA ((GPIO_t*)   0x40010800)
-struct TIMx_t;
+#define USART2 ((USART_t*) 0x40004400)
 #define TIM4	((TIMx_t*) 0x40000800)
 
+// section 7.3.11 RCC register map page 121
+#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00) 
+#define RCC_CR_HSION (1<<0)
+#define RCC_CR_HSIRDY (1<<1)
+#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04) 
+#define RCC_CFGR_SW (1<<0)
+#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
+#define RCC_APB1ENR_TIM4EN (1<<2)
+#define RCC_APB1ENR_USART2EN	(1<<17)
+#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
+#define RCC_APB2ENR_IOPAEN	(1<<2)
+#define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
+
+#define GPIO_CRL_CNF2_Pos 10 // page 171
+#define GPIO_CRL_CNF3_Pos 14
+#define GPIO_CRL_MODE2_Pos 8
+#define GPIO_CRL_MODE3_Pos 12
+#define GPIO_CRL_CNF2 (0x3<<GPIO_CRL_CNF2_Pos)
+#define GPIO_CRL_CNF3 (0x3<<GPIO_CRL_CNF3_Pos)
+#define GPIO_CRL_MODE2 (0x3<<GPIO_CRL_MODE2_Pos)
+#define GPIO_CRL_MODE3 (0x3<<GPIO_CRL_MODE3_Pos)
+#define USART_BRR_DIV_Fraction_Pos 0 // page 820
+#define USART_BRR_DIV_Mantissa_Pos 4
+#define USART_CR1_RE (1<<2) // page 821
+#define USART_CR1_TE (1<<3)
+#define USART_CR1_UE (1<<13)
+#define USART_SR_RXNE (1 << 5) // page 818
+#define USART_SR_TXE (1 << 7)
 // page 194
 typedef struct
 {
@@ -44,4 +86,15 @@ typedef struct {
 } TIMx_t;
 
 #define TIM_CR1_CEN (1<<0)
+
+// USART register map: page 827
+typedef struct {
+	__IO uint32_t SR; // 0x00
+	__IO uint32_t DR; // 0x04
+	__IO uint32_t BRR; // 0x08
+	__IO uint32_t CR1; // 0x0C
+	__IO uint32_t CR2; // 0x10
+	__IO uint32_t CR3; // 0x14
+	__IO uint32_t GTPT; // 0x18
+} USART_t;
 
