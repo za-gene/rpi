@@ -1,5 +1,6 @@
-//#include <string.h>
+#include <string.h>
 #include <stddef.h> // for size_t
+#include <stdio.h>
 #include "../blue.h"
 
 extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
@@ -31,32 +32,9 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
 
-// USART register map: page 827
-typedef struct {
-	__IO uint32_t SR; // 0x00
-	__IO uint32_t DR; // 0x04
-	__IO uint32_t BRR; // 0x08
-	__IO uint32_t CR1; // 0x0C
-	__IO uint32_t CR2; // 0x10
-	__IO uint32_t CR3; // 0x14
-	__IO uint32_t GTPT; // 0x18
-} USART_t;
 
 #define USART2	((USART_t*) 0x40004400)
 
-
-void putc2(char c)
-{
-	while( !( USART2->SR & USART_SR_TXE ) ) {};
-	USART2->DR = c;
-}
-
-void puts2(const char* s)
-{
-	while(s && *s) putc2(*s++);
-	putc2('\r');
-	putc2('\n');
-}
 
 char greeting[] = "Hello from bare metal usart 8";
 
@@ -132,14 +110,12 @@ void main() {
 	USART2->CR1 |= ( USART_CR1_RE | USART_CR1_TE | USART_CR1_UE );
 
 	// Main loop: wait for a new byte, then echo it back.
-	char rxb = '\0';
-	putc2('\a'); // beep
-	puts2(greeting);
+	//char rxb = '\0';
+	putchar('\a'); // beep
+	puts(greeting);
+	puts("You type, I echo.");
 	while ( 1 ) {
-		// Receive a byte of data.
-		while( !( USART2->SR & USART_SR_RXNE ) ) {};
-		rxb = USART2->DR;
-
-		putc2(rxb); // retransmit it
+		int c = getchar();
+		putchar(c);
 	}
 }

@@ -13,9 +13,9 @@ crt.o: crt.s
 main.o: main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-app.elf: linker.ld crt.o main.o
+app.elf: linker.ld crt.o main.o ../libblue.a
 	#$(LD) -T linker.ld -o app.elf crt.o main.o -L/usr/lib/arm-none-eabi/newlib -lc
-	$(LD) -T linker.ld -o app.elf crt.o main.o
+	$(LD) -T linker.ld -o app.elf crt.o main.o -L .. -lblue
 
 app.bin: app.elf
 	$(BIN) -O binary app.elf app.bin
