@@ -30,6 +30,7 @@ If flashing not working:
 ## Also in this directory
 
 * [blink](blink) - blinky sketch
+* [de;ay](delay) - uses TIM4
 * [usart](usart)
 
 ## Links to other sites
