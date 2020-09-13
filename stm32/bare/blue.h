@@ -98,3 +98,4 @@ typedef struct {
 	__IO uint32_t GTPT; // 0x18
 } USART_t;
 
+void init_serial();
