@@ -13,7 +13,6 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 
 struct TIMx_t;
 
-//#define TIM4 *(volatile uint32_t *)(0x40000800)
 #define TIM4	((TIMx_t*) 0x40000800)
 
 #define RTC_BASE 0x40028000
@@ -141,7 +140,7 @@ void *_sbrk(int incr) {
 	heap += incr;
 	return prev_heap;
 }
-char greeting[] = "Hello from bare metal usart 8";
+char greeting[] = "Hello from bare metal usart 9";
 
 void* memcpy_usr(void* dst, const void* src, size_t n) {
 	// Copies n bytes from src to dst
@@ -268,16 +267,20 @@ uint32_t rtc_cnt()
 
 void delay(uint16_t ms)
 {
-	/*
-	uint16_t start = TIM4->CNT;
+	/* According to https://bit.ly/2GXlmxd 
+	 * you must define start and now as 32-bit integers rather than 16- or 8-,
+	 * otherwise the bridge creates duplications
+	 */
+#if 1	
+	uint32_t start = TIM4->CNT;
 	while(1) {
-		uint16_t now = TIM4->CNT;
+		uint32_t now = TIM4->CNT;
 		if(now-start>=ms) break;
 	}
-	*/
-
+#else	
 	TIM4->CNT =0;
 	while(TIM4->CNT < ms);
+#endif
 }
 
 
@@ -314,10 +317,10 @@ void main()
 
 	// timer setup
 	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
-	//TIM4->PSC=7200;
-	//TIM4->ARR=9999;
 	TIM4->PSC=7999;
-	TIM4->ARR=10000;
+	TIM4->ARR=65535;
+	//TIM4->ARR=30000;
+	//TIM4->ARR=10000;
 	TIM4->CR1 |= TIM_CR1_CEN;
 
 	char life[40];

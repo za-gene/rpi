@@ -9,13 +9,12 @@ void delay(uint16_t ms)
         while(TIM4->CNT < ms);
 }
 
-
 void main()
 {
        // timer setup
         RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
         TIM4->PSC=7999;
-        TIM4->ARR=10000;
+        TIM4->ARR=65535;
         TIM4->CR1 |= TIM_CR1_CEN;
 
 	// looping
@@ -38,3 +37,5 @@ SO `CNT` is updated every 1ms, and is reset when it reaches the ARR (Auto-Reload
 Note that `PSC`, `CNT` and `ARR` have 16-bit values (0-65,535) even though they are 32-bit registers.
 
 Timing reveals that the `delay(1000)` produced the expected delay of 1s. It seems that the other processing in the loop did not throw the calcs out.
+
+The selected value for ARR of 65535 just maximises our count to 65536ms. so the maximum delay is ~65.5s if the current implementation is used.
