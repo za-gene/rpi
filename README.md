@@ -11,6 +11,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [ESP8266](esp8266)
 * [GPIO-pi3](GPIO-pi3.md): pin diagram for RPi3.
 * [nano](nano) - benchmarks, timer
+* [stm8s103f3p6](stm8s103f3p6)
 * [stm32](stm32) - blinker sketch
 * [wroom](wroom)
 
