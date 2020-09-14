@@ -3,8 +3,11 @@
  * These days, most "64KB" C8 chips actually have 128KB of Flash.
  */
 
+/* Enforce emmition of the vector table. */
+EXTERN(vector_table)
+
 /* Label for the program's entry point */
-/* ENTRY(reset_handler) */
+ENTRY(Reset_Handler)
 
 /* End of RAM/Start of stack */
 /* (20KB SRAM) */
@@ -25,19 +28,23 @@ MEMORY
 SECTIONS
 {
   /* The vector table goes to the start of flash. */
-  .vector_table :
+	/*
+  .isr_vector :
   {
     . = ALIGN(4);
-    KEEP (*(.vector_table))
+    KEEP (*(.isr_vector))
     . = ALIGN(4);
   } >FLASH
+  */
 
   /* The 'text' section contains the main program code. */
   .text :
   {
     . = ALIGN(4);
-    *(.text)
+    *(.vectors)
+    //*(.text)
     *(.text*)
+    . = ALIGN(4);
     KEEP (*(.init))
     KEEP (*(.fini))
     KEEP (*(.eh_frame))
