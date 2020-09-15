@@ -1,5 +1,9 @@
 # circuits
 
+## opamp
+
+* [amplify and offset voltage](https://electronics.stackexchange.com/questions/93423/how-to-amplify-and-offset-the-voltage-in-an-opamp)
+
 ## RC circuit
 
 <img src="rc.svg" width="400">
