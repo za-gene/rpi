@@ -15,8 +15,12 @@
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
 #define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
 
-
-
+/*
+#define disable_interrupts() \
+	__asm \
+	sim \
+	__disasm; 
+*/
 
 #define TIM4_ISR                23
 void timer4_millis_isr() __interrupt(TIM4_ISR)
@@ -45,11 +49,13 @@ void delay(u16 ms)
 }
 
 
-void enable_interrupts();
-void disable_interrupts();
-void foo();
+#define  enable_interrupts() __asm__("rim");
+#define disable_interrupts() __asm__("sim");
+
+//void foo();
 int main()
 {
+	//__asm__("rim");
 	//foo();
 	disable_interrupts();
 	PORTB->DDR |= LED; // PB5 is now output

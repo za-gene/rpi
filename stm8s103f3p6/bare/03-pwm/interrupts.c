@@ -1,24 +1,19 @@
-
-void enable_interrupts()
+void enable_interrupts_X()
 {
 	__asm
-		rim
-		__endasm;
+	rim
+	__endasm;
 }
 
-void disable_interrupts()
+void disable_interrupts_X()
 {
 	__asm
-		sim
-		__endasm;
+	sim
+	__endasm;
 }
 
-
-/*
-void foo()
+int foo() 
 {
-	enable_interrupts();
-	enable_interrupts();
-	//disable_interrupts();
+	int c= 5;
+	return c;
 }
-*/
