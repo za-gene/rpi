@@ -11,27 +11,34 @@
 
 #define LED (1<<5) // inbuilt led
 
-int main()
+void delay(u16 ms)
 {
-
+	//initialise timer (it doesn't really matter if we do it multiple times
 	// Default clock is HSI/8 = 2MHz
-
-	PORTB->DDR |= LED; // PB5 is now output
-	PORTB->CR1 |= LED; // PB5 is now pushpull
-
 	TIM2_PSCR = 0b00000111; //  Prescaler = 128
 	// Generate an update event so prescaler value will be taken into account.
 	TIM2_EGR |= TIM2_EGR_UG;
 	TIM2_CR1 |= TIM2_CR1_CEN; // Enable TIM2
 
-	while (1) {
+	// Reset counter back to 0
+	TIM2_CNTRH = 0;
+	TIM2_CNTRL = 0;
+	while(1) {
 		u16 tim = ((u16)TIM2_CNTRH << 8)+ (u16)TIM2_CNTRL;
-		if ( tim >= 15625 ) {
-			// Reset counter back to 0
-			TIM2_CNTRH = 0;
-			TIM2_CNTRL = 0;
+		// each tick is 64us long. 1/2MHz = 0.5us. 0.5us*128 = 64us
+		// Therefore 1ms takes 1000/64us ticks
+		if(tim >= ms * (1000/64)) break;
+	}
+}
 
-			PORTB->ODR ^= LED; // toggle
-		}
+
+int main()
+{
+	PORTB->DDR |= LED; // PB5 is now output
+	PORTB->CR1 |= LED; // PB5 is now pushpull
+
+	while (1) {
+		PORTB->ODR ^= LED; // toggle
+		delay(1000);
 	}
 }
