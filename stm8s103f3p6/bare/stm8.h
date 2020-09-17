@@ -25,3 +25,9 @@ typedef struct {
 	uchar CR2;
 } PORT_t;
 
+#define  enable_interrupts() __asm__("rim");
+#define disable_interrupts() __asm__("sim");
+#define set_bit(register_8, bit) (register_8 |= (1 << bit))
+#define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
+#define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
+

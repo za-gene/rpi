@@ -3,7 +3,7 @@ CFLAGS = -lstm8 -mstm8
 
 HEX = app.ihx
 
-RELS = main.rel interrupts.rel
+RELS = main.rel 
 
 all : $(HEX)
 

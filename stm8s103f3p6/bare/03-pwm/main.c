@@ -9,60 +9,65 @@
 #define TIM2_CR1_CEN (1<<0) // counter enable
 #define TIM2_EGR_UG (1<<0) // update generation
 
-#define LED (1<<5) // inbuilt led
+#define TIM2_ARRH *(uint8_t*)0x530F // Auto reload register high
+#define TIM2_ARRL *(uint8_t*)0x5310 // Auto reload register high
+#define TIM2_CCR1H *(uint8_t*)0x5311  // Capture compare register 1 high
+#define TIM2_CCR1L *(uint8_t*)0x5312  // Capture compare register 1 low
+#define TIM2_CCER1 *(uint8_t*)0x530A // apture compare enable register 1
+#define TIM2_CCER1_CC1P (1<<1)
+#define TIM2_CCER1_CC1E (1<<0)
+#define TIM2_CCMR1 *(uint8_t*)0x5307  // Capture/compare mod register 1
 
-#define set_bit(register_8, bit) (register_8 |= (1 << bit))
-#define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
-#define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
+
+
+// #define LED (1<<5) // inbuilt led
+
 
 /*
-#define disable_interrupts() \
-	__asm \
-	sim \
-	__disasm; 
-*/
-
 #define TIM4_ISR                23
 void timer4_millis_isr() __interrupt(TIM4_ISR)
 {
 }
+*/
 
 
-void delay(u16 ms)
-{
-	//initialise timer (it doesn't really matter if we do it multiple times
-	// Default clock is HSI/8 = 2MHz
-	TIM2_PSCR = 0b00000111; //  Prescaler = 128
-	// Generate an update event so prescaler value will be taken into account.
-	TIM2_EGR |= TIM2_EGR_UG;
-	TIM2_CR1 |= TIM2_CR1_CEN; // Enable TIM2
-
-	// Reset counter back to 0
-	TIM2_CNTRH = 0;
-	TIM2_CNTRL = 0;
-	while(1) {
-		u16 tim = ((u16)TIM2_CNTRH << 8)+ (u16)TIM2_CNTRL;
-		// each tick is 64us long. 1/2MHz = 0.5us. 0.5us*128 = 64us
-		// Therefore 1ms takes 1000/64us ticks
-		if(tim >= ms * (1000/64)) break;
-	}
-}
+const uint16_t timer2_arr = 999; // PWM with 2kHz frequency
+const uint16_t timer2_ccr1 = 249; // 25% duty cycle
 
 
-#define  enable_interrupts() __asm__("rim");
-#define disable_interrupts() __asm__("sim");
-
-//void foo();
 int main()
 {
-	//__asm__("rim");
-	//foo();
 	disable_interrupts();
-	PORTB->DDR |= LED; // PB5 is now output
-	PORTB->CR1 |= LED; // PB5 is now pushpull
 
-	while (1) {
-		PORTB->ODR ^= LED; // toggle
-		//delay(1000);
-	}
+	// As per datasheet of stm8s103f3 PD4 pin is timer 2 channel 1.
+	set_bit(PORTD->DDR, 4); // 0b00010000 PD4 is now output
+	set_bit(PORTD->CR1, 4); // 0b00010000 PD4 is now pushpull
+
+	TIM2_PSCR = 0x00; // Prescaler = 1
+
+	// Fill 16 bit timer2_arr to two 8 bit registers.
+	// MSB register to be filled first.
+	TIM2_ARRH = timer2_arr >> 8;
+	TIM2_ARRL = timer2_arr & 0x00FF;
+
+	// Fill 16 bit timer2_ccr1 to two 8 bit registers.
+	// MSB register to be filled first.
+	TIM2_CCR1H = timer2_ccr1 >> 8;
+	TIM2_CCR1L = timer2_ccr1 & 0x00FF;
+
+	//set_bit(TIM2_CCER1, TIM2_CCER1_CC1P); // channel 1 active low
+	TIM2_CCER1 |= TIM2_CCER1_CC1P;
+	//set_bit(TIM2_CCER1, TIM2_CCER1_CC1E); // Enable channel 1 output
+	TIM2_CCER1 |= TIM2_CCER1_CC1E;
+
+	// PWM mode 1.
+	set_bit(TIM2_CCMR1, 6); // Set output compare mode as 6 (0b110)
+	set_bit(TIM2_CCMR1, 5); // So channel 1 will be active while counter
+	clear_bit(TIM2_CCMR1, 4);  // is lower than compare value.
+
+	//set_bit(TIM2_CR1, TIM2_CR1_CEN); // Enable counter
+	TIM2_CR1 |= TIM2_CR1_CEN; // enable counter
+
+	enable_interrupts();
+	while(1); // do nothing forever
 }
