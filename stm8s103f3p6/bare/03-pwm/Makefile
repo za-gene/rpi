@@ -17,4 +17,4 @@ flash:
 	stm8flash -cstlinkv2 -pstm8s103f3 -w$(HEX)
 
 clean:
-	rm -f .ihx *.lst *.asm *.sym *.rst *.rel *.cdb *.ihx *.lk *.map
+	rm -f .ihx *.lst *.asm *.sym *.rst *.rel *.cdb *.ihx *.lk *.map *.mem
