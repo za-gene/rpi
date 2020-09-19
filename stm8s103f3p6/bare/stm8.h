@@ -44,11 +44,6 @@ struct PORT_t;
 #define TIM2_CCER1 *(uint8_t*)0x530A // apture compare enable register 1
 
 
-#define UART1_SR_TXE            (1<<7)
-#define UART1_SR_TC             (1<<6)
-#define UART1_SR_RXNE           (1<<5)
-#define UART1_CR2_TEN           (1<<3)
-#define UART1_CR2_REN           (1<<2)
 
 
 typedef struct {
@@ -68,6 +63,22 @@ typedef struct {
 #define TIM2_SR1_UIF (1<<0) // Update Interrupt Flag
 #define TIM2_IER_UIE (1<<0) 
 
+
+#define UART1_CR1_M (1<<4)
+#define UART1_CR1_PCEN (1<<2)
+
+#define UART1_CR2_TEN           (1<<3)
+#define UART1_CR2_REN           (1<<2)
+
+#define UART1_CR3_STOP 4
+#define UART1_CR3_CPOL (1<<2)
+#define UART1_CR3_CPHA (1<<1)
+#define UART1_CR3_LBCL (1<<0)
+#define UART1_CR3_CLKEN (1<<3)
+
+#define UART1_SR_TXE            (1<<7)
+#define UART1_SR_TC             (1<<6)
+#define UART1_SR_RXNE           (1<<5)
 
 
 

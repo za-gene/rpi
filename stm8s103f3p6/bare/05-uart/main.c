@@ -28,28 +28,30 @@ void init_uart()
 	//
 	//  Now setup the port to 115200,n,8,1.
 	//
+	/*
 	UART1_CR1_M = 0;        //  8 Data bits.
 	UART1_CR1_PCEN = 0;     //  Disable parity.
 	UART1_CR3_STOP = 0;     //  1 stop bit.
+	*/
 	UART1_BRR2 = 0x0a;      //  Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 	//
 	//  Disable the transmitter and receiver.
 	//
-	UART1_CR2_TEN = 0;      //  Disable transmit.
-	UART1_CR2_REN = 0;      //  Disable receive.
+	//UART1_CR2_TEN = 0;      //  Disable transmit.
+	//UART1_CR2_REN = 0;      //  Disable receive.
 	//
 	//  Set the clock polarity, lock phase and last bit clock pulse.
 	//
-	UART1_CR3_CPOL = 1;
-	UART1_CR3_CPHA = 1;
-	UART1_CR3_LBCL = 1;
+	UART1_CR3 |= UART1_CR3_CPOL;
+	UART1_CR3 |= UART1_CR3_CPHA;
+	UART1_CR3 |= UART1_CR3_LBCL;
 	//
 	//  Turn on the UART transmit, receive and the UART clock.
 	//
-	UART1_CR2_TEN = 1;
-	UART1_CR2_REN = 1;
-	UART1_CR3_CKEN = 1;
+	UART1_CR2 |= UART1_CR2_TEN;
+	UART1_CR2 |= UART1_CR2_REN;
+	UART1_CR3 |= UART1_CR3_CLKEN;
 }
 
 
@@ -73,12 +75,12 @@ void UARTPrintf(char *message)
 void main()
 {
 	disable_interrupts();
-	InitialiseSystemClock();
+	//InitialiseSystemClock();
 	init_uart();
 	enable_interrupts();
 	while (1)
 	{
-		UARTPrintF("Hello from my microcontroller....\n\r");
+		UARTPrintf("Hello from my microcontroller....\n\r");
 		for (long counter = 0; counter < 250000; counter++);
 	}
 }
