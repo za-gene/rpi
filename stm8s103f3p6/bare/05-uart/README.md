@@ -1,5 +1,6 @@
 # stm8 uart
 
+Prints out a message, and echos user input
 
 
 ## See also

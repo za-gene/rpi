@@ -7,9 +7,9 @@
 void InitialiseSystemClock()
 {
 	CLK_ICKR = 0;                       //  Reset the Internal Clock Register.
-	CLK_ICKR |= CLK_ICKR_HSIEN ;                 //  Enable the HSI.
+	//CLK_ICKR |= CLK_ICKR_HSIEN ;                 //  Enable the HSI.
 	CLK_ECKR = 0;                       //  Disable the external clock.
-	while ((CLK_ICKR & CLK_ICKR_HSIRDY) == 0);       //  Wait for the HSI to be ready for use.
+	//while ((CLK_ICKR & CLK_ICKR_HSIRDY) == 0);       //  Wait for the HSI to be ready for use.
 	CLK_CKDIVR = 0;                     //  Ensure the clocks are running at full speed.
 	CLK_PCKENR1 = 0xff;                 //  Enable all peripheral clocks.
 	CLK_PCKENR2 = 0xff;                 //  Ditto.
@@ -34,8 +34,8 @@ void init_uart()
 	//  Clear the Idle Line Detected bit in the status register by a read
 	//  to the UART1_SR register followed by a Read to the UART1_DR register.
 	//
-	//unsigned char tmp = UART1_SR;
-	//tmp = UART1_DR;
+	unsigned char tmp = UART1_SR;
+	tmp = UART1_DR;
 
 	//UART1_SR = 0xC0; // mcarter set to default value
 
@@ -64,8 +64,8 @@ void init_uart()
 	//UART1_CR3 &= ~UART1_CR3_STOP;     //  1 stop bit.
 
 #if 1 //115200 baud
-	//UART1_BRR2 = 0x0a;      //  given in original example
-	UART1_BRR2 = 0x0b;      //  Set the baud rate registers to 115200 baud
+	UART1_BRR2 = 0x0a;      //  given in original example
+	//UART1_BRR2 = 0x0b;      //  Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 #else // 9600 baud, but seems to be worse than 115200
 	UART1_BRR2 = 0x03;
@@ -86,16 +86,17 @@ void init_uart()
 
 	UART1_CR2 |= UART1_CR2_TEN; // enable transmit
 	UART1_CR2 |= UART1_CR2_REN; // enable receive
-	UART1_CR3 |= UART1_CR3_CLKEN; // unable uart clock
+	//UART1_CR3 |= UART1_CR3_CLKEN; // enable uart clock - this pesky link seemed to cause a lot of problems
 }
 
 
 char uart_getc()
 {
 	while((UART1_SR & UART1_SR_RXNE)==0); //  Block until char rec'd
-	//char c =  UART1_DR;
-	//return c;
-	return UART1_DR;
+	char c =  UART1_DR;
+	//UART1_SR &= ~UART1_SR_RXNE; // necessary??
+	return c;
+	//return UART1_DR;
 }
 
 void uart_putc(char c)
