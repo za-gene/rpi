@@ -6,20 +6,20 @@
 //
 void InitialiseSystemClock()
 {
-    CLK_ICKR = 0;                       //  Reset the Internal Clock Register.
-    CLK_ICKR |= CLK_ICKR_HSIEN ;                 //  Enable the HSI.
-    CLK_ECKR = 0;                       //  Disable the external clock.
-    while ((CLK_ICKR & CLK_ICKR_HSIRDY) == 0);       //  Wait for the HSI to be ready for use.
-    CLK_CKDIVR = 0;                     //  Ensure the clocks are running at full speed.
-    CLK_PCKENR1 = 0xff;                 //  Enable all peripheral clocks.
-    CLK_PCKENR2 = 0xff;                 //  Ditto.
-    CLK_CCOR = 0;                       //  Turn off CCO.
-    CLK_HSITRIMR = 0;                   //  Turn off any HSIU trimming.
-    CLK_SWIMCCR = 0;                    //  Set SWIM to run at clock / 2.
-    CLK_SWR = 0xe1;                     //  Use HSI as the clock source.
-    CLK_SWCR = 0;                       //  Reset the clock switch control register.
-    CLK_SWCR |= CLK_SWCR_SWEN;                  //  Enable switching.
-    while ((CLK_SWCR & CLK_SWCR_SWBSY) != 0);        //  Pause while the clock switch is busy.
+	CLK_ICKR = 0;                       //  Reset the Internal Clock Register.
+	CLK_ICKR |= CLK_ICKR_HSIEN ;                 //  Enable the HSI.
+	CLK_ECKR = 0;                       //  Disable the external clock.
+	while ((CLK_ICKR & CLK_ICKR_HSIRDY) == 0);       //  Wait for the HSI to be ready for use.
+	CLK_CKDIVR = 0;                     //  Ensure the clocks are running at full speed.
+	CLK_PCKENR1 = 0xff;                 //  Enable all peripheral clocks.
+	CLK_PCKENR2 = 0xff;                 //  Ditto.
+	CLK_CCOR = 0;                       //  Turn off CCO.
+	CLK_HSITRIMR = 0;                   //  Turn off any HSIU trimming.
+	CLK_SWIMCCR = 0;                    //  Set SWIM to run at clock / 2.
+	CLK_SWR = 0xe1;                     //  Use HSI as the clock source.
+	CLK_SWCR = 0;                       //  Reset the clock switch control register.
+	CLK_SWCR |= CLK_SWCR_SWEN;                  //  Enable switching.
+	while ((CLK_SWCR & CLK_SWCR_SWBSY) != 0);        //  Pause while the clock switch is busy.
 }
 
 
@@ -50,16 +50,16 @@ void init_uart()
 	//  Now setup the port to 115200,n,8,1.
 	//
 	/*
-	UART1_CR1_M = 0;        //  8 Data bits.
-	UART1_CR1_PCEN = 0;     //  Disable parity.
-	UART1_CR3_STOP = 0;     //  1 stop bit.
-	*/
+	   UART1_CR1_M = 0;        //  8 Data bits.
+	   UART1_CR1_PCEN = 0;     //  Disable parity.
+	   UART1_CR3_STOP = 0;     //  1 stop bit.
+	   */
 	UART1_BRR2 = 0x0a;      //  given in original exampl3
 	UART1_BRR2 = 0x0b;      //  Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 
 	// assuming that the default clock is 2MHz...
-	
+
 
 	//
 	//  Disable the transmitter and receiver.
@@ -81,6 +81,12 @@ void init_uart()
 }
 
 
+void uart_putc(char c)
+{
+	while ((UART1_SR & UART1_SR_TXE)==0); //  Wait for transmission complete
+	UART1_DR = c; //  Put next char data transmission reg
+}
+
 //
 //  Send a message to the debug port (UART1).
 //
@@ -88,11 +94,7 @@ void UARTPrintf(char *message)
 {
 	char *ch = message;
 	while (*ch)
-	{
-		while ((UART1_SR & UART1_SR_TXE)==0); //  Wait for transmission complete
-		UART1_DR = (unsigned char) *ch; //  Put next char data transmission reg
-		ch++;                               //  Grab the next character.
-	}
+		uart_putc(*ch++);
 }
 
 //
