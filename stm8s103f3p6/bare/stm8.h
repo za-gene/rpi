@@ -6,6 +6,9 @@ typedef uint16_t u16;
 typedef unsigned char uchar;
 typedef unsigned long  ulong;
 
+
+// MEMORY MAP
+
 // forward declarations
 struct PORT_t;
 
@@ -15,7 +18,18 @@ struct PORT_t;
 #define PORTD ((PORT_t*) 0x00500F)
 #define PORTE ((PORT_t*) 0x005014)
 #define PORTF ((PORT_t*) 0x005019)
-#define CLK_DIVR *(uchar*)0x0050C6
+
+#define CLK_ICKR *(uchar*)0x50c0
+#define CLK_ECKR *(uchar*)0x50c1
+// 0x50C2 reserved
+#define CLK_SWR *(uchar*)0x50c4
+#define CLK_SWCR *(uchar*)0x50c5
+#define CLK_CKDIVR *(uchar*)0x0050C6 // (changed from CLK_DIVR 2020-09-19(
+#define CLK_PCKENR1 *(uchar*)0x50c7
+#define CLK_CCOR *(uchar*)0x50c9
+#define CLK_PCKENR2 *(uchar*)0x50ca
+#define CLK_HSITRIMR *(uchar*)0x50cc
+#define CLK_SWIMCCR *(uchar*)0x50cd
 
 #define UART1_SR   *(uchar*)(0x5230)
 #define UART1_DR   *(uchar*)(0x5231)
@@ -55,6 +69,15 @@ typedef struct {
 } PORT_t;
 
 
+// END MEMORY MAP
+
+
+#define CLK_ICKR_HSIEN (1<<0)
+#define CLK_ICKR_HSIRDY (1<<1)
+
+#define CLK_SWCR_SWBSY (1<<0) 
+#define CLK_SWCR_SWEN (1<<1) 
+
 #define TIM2_CR1_CEN (1<<0) // counter enable
 #define TIM2_EGR_UG (1<<0) // update generation
 
@@ -82,7 +105,7 @@ typedef struct {
 
 
 
-// Interrupts
+// INTERRUPTS
 #define TLI_ISR                 0
 #define AWU_ISR                 1
 #define CLK_ISR                 2

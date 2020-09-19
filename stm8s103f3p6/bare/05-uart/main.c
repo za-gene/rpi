@@ -1,6 +1,27 @@
 #include "../stm8.h"
 
 
+//
+//  Setup the system clock to run at 16MHz using the internal oscillator.
+//
+void InitialiseSystemClock()
+{
+    CLK_ICKR = 0;                       //  Reset the Internal Clock Register.
+    CLK_ICKR |= CLK_ICKR_HSIEN ;                 //  Enable the HSI.
+    CLK_ECKR = 0;                       //  Disable the external clock.
+    while ((CLK_ICKR & CLK_ICKR_HSIRDY) == 0);       //  Wait for the HSI to be ready for use.
+    CLK_CKDIVR = 0;                     //  Ensure the clocks are running at full speed.
+    CLK_PCKENR1 = 0xff;                 //  Enable all peripheral clocks.
+    CLK_PCKENR2 = 0xff;                 //  Ditto.
+    CLK_CCOR = 0;                       //  Turn off CCO.
+    CLK_HSITRIMR = 0;                   //  Turn off any HSIU trimming.
+    CLK_SWIMCCR = 0;                    //  Set SWIM to run at clock / 2.
+    CLK_SWR = 0xe1;                     //  Use HSI as the clock source.
+    CLK_SWCR = 0;                       //  Reset the clock switch control register.
+    CLK_SWCR |= CLK_SWCR_SWEN;                  //  Enable switching.
+    while ((CLK_SWCR & CLK_SWCR_SWBSY) != 0);        //  Pause while the clock switch is busy.
+}
+
 
 //
 //  Setup the UART to run at 115200 baud, no parity, one stop bit, 8 data bits.
@@ -33,8 +54,13 @@ void init_uart()
 	UART1_CR1_PCEN = 0;     //  Disable parity.
 	UART1_CR3_STOP = 0;     //  1 stop bit.
 	*/
-	UART1_BRR2 = 0x0a;      //  Set the baud rate registers to 115200 baud
+	UART1_BRR2 = 0x0a;      //  given in original exampl3
+	UART1_BRR2 = 0x0b;      //  Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
+
+	// assuming that the default clock is 2MHz...
+	
+
 	//
 	//  Disable the transmitter and receiver.
 	//
@@ -63,8 +89,8 @@ void UARTPrintf(char *message)
 	char *ch = message;
 	while (*ch)
 	{
-		UART1_DR = (unsigned char) *ch;     //  Put the next character into the data transmission register.
-		while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
+		while ((UART1_SR & UART1_SR_TXE)==0); //  Wait for transmission complete
+		UART1_DR = (unsigned char) *ch; //  Put next char data transmission reg
 		ch++;                               //  Grab the next character.
 	}
 }
@@ -75,13 +101,14 @@ void UARTPrintf(char *message)
 void main()
 {
 	disable_interrupts();
-	//InitialiseSystemClock();
+	InitialiseSystemClock();
 	init_uart();
 	enable_interrupts();
+	UARTPrintf("Uart example\n\r");
 	while (1)
 	{
 		UARTPrintf("Hello from my microcontroller....\n\r");
-		for (long counter = 0; counter < 250000; counter++);
+		for (long counter = 0; counter < 2500000; counter++);
 	}
 }
 
