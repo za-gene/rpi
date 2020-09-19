@@ -27,6 +27,7 @@ struct USART_t;
 #define GPIOA ((GPIO_t*)   0x40010800)
 #define USART2 ((USART_t*) 0x40004400)
 #define TIM4	((TIMx_t*) 0x40000800)
+#define TIM2	((TIMx_t*) 0x40000000)
 
 // section 7.3.11 RCC register map page 121
 #define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00) 
@@ -49,6 +50,7 @@ struct USART_t;
 #define GPIO_CRL_CNF3 (0x3<<GPIO_CRL_CNF3_Pos)
 #define GPIO_CRL_MODE2 (0x3<<GPIO_CRL_MODE2_Pos)
 #define GPIO_CRL_MODE3 (0x3<<GPIO_CRL_MODE3_Pos)
+
 #define USART_BRR_DIV_Fraction_Pos 0 // page 820
 #define USART_BRR_DIV_Mantissa_Pos 4
 #define USART_CR1_RE (1<<2) // page 821

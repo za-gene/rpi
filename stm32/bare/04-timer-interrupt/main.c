@@ -18,11 +18,12 @@
 #define TIM_EGR_TG (1<<6)
 
 //void __attribute__ ((interrupt ("IRQ"))) myhandler()
-void TIM4_IRQHandler()
+//void TIM4_IRQHandler()
+void __attribute__ ((interrupt ("TIM4_IRQHandler"))) myhandler()
 {
 	puts("hi");
-	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
-	//TIM4->SR &= ~0x01; // clear UIF
+	TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
+	TIM4->SR &= ~0x01; // clear UIF
 	TIM4->DIER |= 0x01; // UIE
 }
 
@@ -38,7 +39,7 @@ void setup_timer()
 	puts("Timer setup");
 }
 
-void main() 
+void main_1() 
 {
 	init_serial();
 	puts("04-timer-interrupt started 4");
@@ -48,17 +49,17 @@ void main()
 
 	//NVIC_TIM4 = (uint32_t) myhandler; // seems to cause a problem
 	//TIM4->DIER |= (TIM_DIER_UIE | TIM_DIER_TIE);
+	TIM4->DIER |= 1;
 	puts("Interrupt set");
 
-
-	asm("CPSIE I"); // enable interrupts
+	enable_irq();
 
 	putchar('\a'); // beep
 
 	int secs = 0;
 	while(1) {
 		itoa(secs++, msg, 10);
-		puts(msg);
+		//puts(msg);
 		for(int i=0; i< 1000000; i++);
 		//delay(1000);
 	}
@@ -74,5 +75,36 @@ void SystemInit()
 void __libc_init_array()
 {
 	// TODO
-	
+
+}
+
+
+#define disable_irq() asm("CPSID I")
+#define enable_irq() asm("CPSIE I")
+
+int main(void) {
+	disable_irq();                        // global disable IRQs
+	RCC_AHB1ENR |= 1;            // enable GPIOA clock */
+
+	GPIOA->MODER &= ~0x00000C00;
+	GPIOA->MODER |= 0x00000400;
+
+	/* setup TIM2 */
+	RCC_APB1ENR |= 1;             //enable TIM2 clock
+	TIM2->PSC = 16000 - 1;       //divided by 16000
+	TIM2->ARR = 1000 - 1;        //divided by 1000
+	TIM2->CR1 = 1;                   //enable counter
+
+	TIM2->DIER |= 1;                                //enable UIE
+	NVIC_EnableIRQ(TIM2_IRQn);            //enable interrupt in NVIC
+
+	enable_irq();                                  //global enable IRQs
+
+	while(1);
+}
+
+void TIM2_IRQHandler(void)
+{
+	TIM2->SR = 0;                           //clear UIF
+	GPIOA->ODR ^= 0x20;             //toggle LED
 }
