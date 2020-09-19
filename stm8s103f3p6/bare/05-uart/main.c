@@ -34,8 +34,11 @@ void init_uart()
 	//  Clear the Idle Line Detected bit in the status register by a read
 	//  to the UART1_SR register followed by a Read to the UART1_DR register.
 	//
-	unsigned char tmp = UART1_SR;
-	tmp = UART1_DR;
+	//unsigned char tmp = UART1_SR;
+	//tmp = UART1_DR;
+
+	//UART1_SR = 0xC0; // mcarter set to default value
+
 	//
 	//  Reset the UART registers to the reset values.
 	//
@@ -49,17 +52,25 @@ void init_uart()
 	//
 	//  Now setup the port to 115200,n,8,1.
 	//
-	/*
-	   UART1_CR1_M = 0;        //  8 Data bits.
-	   UART1_CR1_PCEN = 0;     //  Disable parity.
-	   UART1_CR3_STOP = 0;     //  1 stop bit.
-	   */
-	UART1_BRR2 = 0x0a;      //  given in original exampl3
+
+	// clear certain bits
+	UART1_CR1 &= ~UART1_CR1_M ;        //  8 Data bits.
+	UART1_CR1 &= ~UART1_CR1_PCEN;     //  Disable parity
+
+	// stop bits
+	UART1_CR3 &= 0b11001111; // unmask the stop bit to default (1 stop bit)
+	//UART1_CR3 |= 0b00100000; // two stop bits
+	//UART1_CR3 |= 0b00110000; // 1.5 stop bits
+	//UART1_CR3 &= ~UART1_CR3_STOP;     //  1 stop bit.
+
+#if 1 //115200 baud
+	//UART1_BRR2 = 0x0a;      //  given in original example
 	UART1_BRR2 = 0x0b;      //  Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
-
-	// assuming that the default clock is 2MHz...
-
+#else // 9600 baud, but seems to be worse than 115200
+	UART1_BRR2 = 0x03;
+	UART1_BRR1 = 0x69;
+#endif
 
 	//
 	//  Disable the transmitter and receiver.
@@ -71,25 +82,28 @@ void init_uart()
 	//
 	UART1_CR3 |= UART1_CR3_CPOL;
 	UART1_CR3 |= UART1_CR3_CPHA;
-	UART1_CR3 |= UART1_CR3_LBCL;
-	//
-	//  Turn on the UART transmit, receive and the UART clock.
-	//
-	UART1_CR2 |= UART1_CR2_TEN;
-	UART1_CR2 |= UART1_CR2_REN;
-	UART1_CR3 |= UART1_CR3_CLKEN;
+	//UART1_CR3 |= UART1_CR3_LBCL; // this seems to cause problems
+
+	UART1_CR2 |= UART1_CR2_TEN; // enable transmit
+	UART1_CR2 |= UART1_CR2_REN; // enable receive
+	UART1_CR3 |= UART1_CR3_CLKEN; // unable uart clock
 }
 
+
+char uart_getc()
+{
+	while((UART1_SR & UART1_SR_RXNE)==0); //  Block until char rec'd
+	//char c =  UART1_DR;
+	//return c;
+	return UART1_DR;
+}
 
 void uart_putc(char c)
 {
-	while ((UART1_SR & UART1_SR_TXE)==0); //  Wait for transmission complete
-	UART1_DR = c; //  Put next char data transmission reg
+	while((UART1_SR & UART1_SR_TXE)==0); //  Wait for transmission complete
+	UART1_DR = c; //  transmit char
 }
 
-//
-//  Send a message to the debug port (UART1).
-//
 void UARTPrintf(char *message)
 {
 	char *ch = message;
@@ -97,20 +111,20 @@ void UARTPrintf(char *message)
 		uart_putc(*ch++);
 }
 
-//
-//	Main program loop.
-//
 void main()
 {
 	disable_interrupts();
 	InitialiseSystemClock();
 	init_uart();
 	enable_interrupts();
-	UARTPrintf("Uart example\n\r");
+	UARTPrintf("Uart example: you type, I echo\n\r");
 	while (1)
 	{
-		UARTPrintf("Hello from my microcontroller....\n\r");
-		for (long counter = 0; counter < 2500000; counter++);
+		//continue;
+		char c = uart_getc();
+		uart_putc(c);
+		//UARTPrintf("Hello from my microcontroller....\n\r");
+		//for (long counter = 0; counter < 2500000; counter++);
 	}
 }
 
