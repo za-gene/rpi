@@ -12,7 +12,7 @@ all : $(HEX)
 	$(CC) $(CFLAGS) -c $<
 
 $(HEX) : $(RELS)
-	$(CC) $(CFLAGS) $(RELS) --out-fmt-ihx -o$(HEX)
+	$(CC) $(CFLAGS) $(RELS) stm8.lib -L .. --out-fmt-ihx -o$(HEX)
 
 flash: $(HEX)
 	stm8flash -cstlinkv2 -pstm8s103f3 -w$(HEX)

@@ -30,14 +30,25 @@ void uart_print(char *msg)
 	while (*msg) uart_putc(*msg++);
 }
 
+#define LED (1<<5)
+
 void main()
 {
-	init_uart();
-	uart_print("Uart example: you type, I echo\n\r");
+	//init_uart();
+	//init_millis();
+	//uart_print("millis\n\r");
+
+	PORTB->DDR |= LED; // 0x00001000 PB5 is now output
+	PORTB->CR1 |= LED; // 0x00001000 PB5 is now pushpull
+
+	//u32 ms = millis();
 	while (1)
 	{
-		char c = uart_getc();
-		uart_putc(c);
+		//if(millis() - ms < 500) continue;
+		//char c = uart_getc();
+		//uart_putc('.');
+		//ms = millis();
+		PORTB->ODR &= ~LED; // Toggle PB5 output
 	}
 }
 
