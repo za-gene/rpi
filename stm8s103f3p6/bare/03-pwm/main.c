@@ -7,7 +7,8 @@
  */
 
 const uint16_t timer2_arr = 60; // frequency
-const uint16_t timer2_ccr1 = timer2_arr/2; // 50% duty cycle
+//const uint16_t timer2_ccr1 = timer2_arr/2; // 50% duty cycle
+const uint16_t timer2_ccr1 = 30; // 50% duty cycle
 
 
 int main()
@@ -31,7 +32,7 @@ int main()
 	TIM2_CCR1H = timer2_ccr1 >> 8;
 	TIM2_CCR1L = timer2_ccr1 & 0x00FF;
 
-	TIM2_CCER1 |= TIM2_CCER1_CC1P;a // channel 1 active low
+	TIM2_CCER1 |= TIM2_CCER1_CC1P; // channel 1 active low
 	TIM2_CCER1 |= TIM2_CCER1_CC1E; // enable channel 1 output
 
 	// PWM mode 1.
