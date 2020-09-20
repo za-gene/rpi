@@ -133,3 +133,5 @@ typedef struct {
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
 #define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
 
+void init_millis();
+uint32_t millis();
