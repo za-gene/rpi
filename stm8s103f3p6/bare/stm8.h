@@ -57,6 +57,11 @@ struct PORT_t;
 #define TIM2_CCR1L *(uint8_t*)0x5312  // Capture compare register 1 low
 #define TIM2_CCER1 *(uint8_t*)0x530A // apture compare enable register 1
 
+#define TIM4_CR1 *(uint8_t*)0x5340
+#define TIM4_IER *(uint8_t*)0x5343
+#define TIM4_SR *(uint8_t*)0x5344
+#define TIM4_PSCR *(uint8_t*)0x5347
+#define TIM4_ARR *(uint8_t*)0x5348
 
 
 
@@ -86,6 +91,10 @@ typedef struct {
 #define TIM2_SR1_UIF (1<<0) // Update Interrupt Flag
 #define TIM2_IER_UIE (1<<0) 
 
+// section 19.6.10 page 260 TIM4/TIM6 register map and reset values
+#define TIM4_IER_UIE (1<<0)
+#define TIM4_CR1_CEN (1<<0)
+#define TIM4_SR_UIF (1<<0)
 
 #define UART1_CR1_M (1<<4)
 #define UART1_CR1_PCEN (1<<2)
