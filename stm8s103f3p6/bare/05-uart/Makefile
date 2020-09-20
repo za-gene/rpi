@@ -7,13 +7,14 @@ RELS = main.rel
 
 all : $(HEX)
 
+
 %.rel : %.c
 	$(CC) $(CFLAGS) -c $<
 
 $(HEX) : $(RELS)
 	$(CC) $(CFLAGS) $(RELS) --out-fmt-ihx -o$(HEX)
 
-flash:
+flash: $(HEX)
 	stm8flash -cstlinkv2 -pstm8s103f3 -w$(HEX)
 
 clean:
