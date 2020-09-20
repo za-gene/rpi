@@ -25,7 +25,7 @@ struct PORT_t;
 // 0x50C2 reserved
 #define CLK_SWR *(uchar*)0x50c4
 #define CLK_SWCR *(uchar*)0x50c5
-#define CLK_CKDIVR *(uchar*)0x0050C6 // (changed from CLK_DIVR 2020-09-19(
+#define CLK_CKDIVR *(uchar*)0x0050C6 // (changed from CLK_DIVR 2020-09-19)
 #define CLK_PCKENR1 *(uchar*)0x50c7
 #define CLK_CCOR *(uchar*)0x50c9
 #define CLK_PCKENR2 *(uchar*)0x50ca
@@ -137,7 +137,8 @@ typedef struct {
 #define FLASH_ISR               24
 
 
-#define  enable_interrupts() __asm__("rim");
+#define nop() __asm__("nop")
+#define enable_interrupts() __asm__("rim");
 #define disable_interrupts() __asm__("sim");
 #define set_bit(register_8, bit) (register_8 |= (1 << bit))
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
@@ -145,3 +146,4 @@ typedef struct {
 
 void init_millis();
 uint32_t millis();
+void timer4_millis_isr() __interrupt(TIM4_ISR); // need to include this here, even though not called

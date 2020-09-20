@@ -4,7 +4,8 @@
 
 volatile uint32_t __global_millis = 0;
 
-void timer4_millis_isr() __interrupt(TIM4_ISR) {
+void timer4_millis_isr() __interrupt(TIM4_ISR) 
+{
 	__global_millis++;
 	//clear_bit(TIM4_SR, TIM4_SR_UIF);  // Clear interrupt flag
 	TIM4_SR &= ~TIM4_SR_UIF;
