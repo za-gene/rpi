@@ -1,4 +1,5 @@
-#include "../stm8.h"
+#include <stm8.h>
+#include <millis.h>
 
 
 #define LED (1<<5)
