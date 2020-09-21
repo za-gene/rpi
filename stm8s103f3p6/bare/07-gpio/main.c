@@ -1,4 +1,4 @@
-#include "../stm8.h"
+#include <stm8.h>
 
 #define PD4 1
 #define PD5 2
