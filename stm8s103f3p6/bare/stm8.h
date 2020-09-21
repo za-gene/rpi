@@ -145,6 +145,3 @@ typedef struct {
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
 #define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
 
-void init_millis();
-uint32_t millis();
-void timer4_millis_isr() __interrupt(TIM4_ISR); // need to include this here, even though not called

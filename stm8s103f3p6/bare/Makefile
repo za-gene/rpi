@@ -2,7 +2,8 @@ CC = sdcc
 CFLAGS = -lstm8 -mstm8
 
 stm8.lib : millis.rel
-	sdcclib  $@ millis.rel
+	#sdcclib  $@ millis.rel
+	sdar -rc stm8.lib millis.rel
 
 %.rel : %.c
 	$(CC) $(CFLAGS) -c $<
