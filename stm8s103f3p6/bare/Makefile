@@ -1,9 +1,11 @@
 CC = sdcc
-CFLAGS = -lstm8 -mstm8
+CFLAGS = -lstm8 -mstm8 -I .
+
+RELS = millis.rel gpio.rel
 
 stm8.lib : millis.rel
 	#sdcclib  $@ millis.rel
-	sdar -rc stm8.lib millis.rel
+	sdar -rc stm8.lib $^
 
 %.rel : %.c
 	$(CC) $(CFLAGS) -c $<
