@@ -43,4 +43,5 @@ Pin PD5 is UART1_TX, so it must be connected to the RX pin of your serial device
 
 ## See also
 
+* [alternative](http://www.colecovision.eu/stm8/STM8S003F3%20Dev%20Board%20Power%20Input%20Onboard%203V3%20Regulator.shtml) implementation
 * [source](https://blog.mark-stevens.co.uk/2012/08/using-the-uart-on-the-stm8s-2/)
