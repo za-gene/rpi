@@ -3,7 +3,7 @@ CFLAGS = -lstm8 -mstm8 -I .
 
 RELS = millis.rel gpio.rel
 
-stm8.lib : millis.rel
+stm8.lib : $(RELS)
 	#sdcclib  $@ millis.rel
 	sdar -rc stm8.lib $^
 
