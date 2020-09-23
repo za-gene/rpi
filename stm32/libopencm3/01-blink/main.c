@@ -2,7 +2,7 @@
 #include <libopencm3/stm32/gpio.h>
 
 #define PORT_LED1 GPIOC
-#define PIN_LED1 13
+#define PIN_LED1 GPIO13
 
 //#define LITTLE_BIT 50000UL
 int main(void) {

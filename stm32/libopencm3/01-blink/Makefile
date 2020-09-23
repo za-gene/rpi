@@ -13,7 +13,7 @@ all: app.bin
 #	$(AS) -o crt.o crt.s
 
 main.o: main.c
-	//echo $(OPENCM3_DIR)
+	#echo $(OPENCM3_DIR)
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 app.elf: linker.ld main.o
