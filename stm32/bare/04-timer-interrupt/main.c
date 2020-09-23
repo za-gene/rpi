@@ -6,9 +6,11 @@
 
 // section 10.1.2 Vector table
 
-#define NVIC_TIM4 *(volatile uint32_t *)(0x000000B8)
+//#define NVIC_TIM4 *(volatile uint32_t *)(0x000000B8)
 
 
+#define disable_irq() asm("CPSID I")
+#define enable_irq() asm("CPSIE I")
 
 // section 15.4.4 TIMx DMA/Interrupt enable register (TIMx_DIER)
 #define TIM_DIER_UIE (1<<0)
@@ -18,13 +20,13 @@
 #define TIM_EGR_TG (1<<6)
 
 //void __attribute__ ((interrupt ("IRQ"))) myhandler()
-//void TIM4_IRQHandler()
-void __attribute__ ((interrupt ("TIM4_IRQHandler"))) myhandler()
+void TIM4_IRQHandler()
+//void __attribute__ ((interrupt ("TIM4_IRQHandler"))) myhandler()
 {
 	puts("hi");
-	TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
+	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
 	TIM4->SR &= ~0x01; // clear UIF
-	TIM4->DIER |= 0x01; // UIE
+	//TIM4->DIER |= 0x01; // UIE
 }
 
 void setup_timer()
@@ -39,7 +41,9 @@ void setup_timer()
 	puts("Timer setup");
 }
 
-void main_1() 
+
+#define NVIC_ISER0 *(volatile uint32_t *)(0xE000E000+0x100)
+void main() 
 {
 	init_serial();
 	puts("04-timer-interrupt started 4");
@@ -49,6 +53,7 @@ void main_1()
 
 	//NVIC_TIM4 = (uint32_t) myhandler; // seems to cause a problem
 	//TIM4->DIER |= (TIM_DIER_UIE | TIM_DIER_TIE);
+	NVIC_ISER0 = (1<<30);
 	TIM4->DIER |= 1;
 	puts("Interrupt set");
 
@@ -79,8 +84,7 @@ void __libc_init_array()
 }
 
 
-#define disable_irq() asm("CPSID I")
-#define enable_irq() asm("CPSIE I")
+#if 0
 
 int main(void) {
 	disable_irq();                        // global disable IRQs
@@ -108,3 +112,4 @@ void TIM2_IRQHandler(void)
 	TIM2->SR = 0;                           //clear UIF
 	GPIOA->ODR ^= 0x20;             //toggle LED
 }
+#endif
