@@ -9,15 +9,15 @@ CFLAGS += -DSTM32F1
 
 all: app.bin
 
-crt.o: crt.s
-	$(AS) -o crt.o crt.s
+#crt.o: crt.s
+#	$(AS) -o crt.o crt.s
 
 main.o: main.c
 	//echo $(OPENCM3_DIR)
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-app.elf: linker.ld crt.o main.o
-	$(LD) -T linker.ld -o app.elf crt.o main.o
+app.elf: linker.ld main.o
+	$(LD) -T linker.ld -o app.elf main.o -L$(OPENCM3_DIR)/lib -lopencm3_stm32f1
 
 app.bin: app.elf
 	$(BIN) -O binary app.elf app.bin
@@ -77,10 +77,4 @@ libopencm3/lib/libopencm3_%.a: libopencm3/Makefile
 %.hex: %.elf
 	@#printf "  OBJCOPY $(*).hex\n"
 	$(OBJCOPY) -Oihex $(*).elf $(*).hex
-
-outdir:
-	mkdir -p $(OD)/efm32
-	mkdir -p $(OD)/sam
-	mkdir -p $(OD)/stm32
-	mkdir -p $(OD)/ti
 
