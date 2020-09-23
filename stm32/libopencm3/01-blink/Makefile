@@ -4,7 +4,8 @@ LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
 CFLAGS = -mthumb -mcpu=cortex-m3 -msoft-float -ggdb -O0
-CFLAGS += -I $(OPENCM3_DIR)/include
+CFLAGS += -I$(OPENCM3_DIR)/include
+CFLAGS += -DSTM32F1
 
 all: app.bin
 
@@ -12,7 +13,7 @@ crt.o: crt.s
 	$(AS) -o crt.o crt.s
 
 main.o: main.c
-	echo $(OPENCM3_DIR)
+	//echo $(OPENCM3_DIR)
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 app.elf: linker.ld crt.o main.o
@@ -83,8 +84,3 @@ outdir:
 	mkdir -p $(OD)/stm32
 	mkdir -p $(OD)/ti
 
-clean:
-	$(RM) $(BOARDS_ELF) $(BOARDS_BIN) $(BOARDS_HEX)
-
-.PHONY: realall.really outdir clean all
-$(V).SILENT:
