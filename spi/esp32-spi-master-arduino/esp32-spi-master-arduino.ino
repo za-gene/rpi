@@ -15,7 +15,7 @@
  */
 #include <SPI.h>
 
-static const int spiClk = 1000000; // 1 MHz
+static const int spiClk = 200000; // 200kHz
 
 //uninitalised pointers to SPI objects
 //SPIClass * vspi = NULL;
@@ -26,7 +26,8 @@ void setup() {
   //initialise two instances of the SPIClass attached to VSPI and HSPI respectively
   //vspi = new SPIClass(VSPI);
   //hspi = new SPIClass(HSPI);
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println("Hello from esp32 spi master");
   
   //clock miso mosi ss
 
@@ -34,19 +35,8 @@ void setup() {
   //SCLK = 18, MISO = 19, MOSI = 23, SS = 5
   //vspi->begin();
   vspi.begin();
-  //alternatively route through GPIO pins of your choice
-  //hspi->begin(0, 2, 4, 33); //SCLK, MISO, MOSI, SS
-  
-  //initialise hspi with default pins
-  //SCLK = 14, MISO = 12, MOSI = 13, SS = 15
-  //hspi->begin(); 
-  //alternatively route through GPIO pins
-  //hspi->begin(25, 26, 27, 32); //SCLK, MISO, MOSI, SS
 
-  //set up slave select pins as outputs as the Arduino API
-  //doesn't handle automatically pulling SS low
   pinMode(5, OUTPUT); //VSPI SS
-  //pinMode(15, OUTPUT); //HSPI SS
 
 }
 
@@ -55,7 +45,7 @@ void loop() {
   //use the SPI buses
   vspiCommand();
   //hspiCommand();
-  delay(500);
+  delay(1000);
 }
 
 void vspiCommand() {
@@ -67,17 +57,6 @@ void vspiCommand() {
   int res = vspi.transfer(data);  
   digitalWrite(5, HIGH); //pull ss high to signify end of data transfer
   vspi.endTransaction();
+  Serial.print("esp32 master: slave returned: ");
   Serial.println(res);
 }
-
-/*
-void hspiCommand() {
-  byte stuff = 0b11001100;
-  
-  hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-  digitalWrite(15, LOW);
-  hspi->transfer(stuff);
-  digitalWrite(15, HIGH);
-  hspi->endTransaction();
-}
-*/
