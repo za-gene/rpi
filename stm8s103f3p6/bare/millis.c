@@ -31,3 +31,10 @@ uint32_t millis()
 {
 	return __global_millis;
 }
+
+void delay_millis(u32 ms)
+{
+	u32 start = __global_millis;
+	while(__global_millis - start < ms);
+}
+
