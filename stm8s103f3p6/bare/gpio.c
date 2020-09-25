@@ -47,12 +47,22 @@ void gpio_mode_out(u8 pin)
 	port->CR1 |= (1<<pos); // "push-pull"
 }
 
+/* this is probably not strictly necessary, as it will be the default anyway
+ */
+void gpio_mode_in(u8 pin)
+{
+	PORT_t* port = pin_to_port(pin);
+	u8 pos = pin_to_pos(pin);
+	port->DDR &= ~(1<<pos); // input
+	port->CR1 &= ~(1<<pos); // floating
+}
+
 void gpio_mode_pullup(u8 pin)
 {
 	PORT_t* port = pin_to_port(pin);
 	u8 pos = pin_to_pos(pin);
-	port->DDR &= ~ (1<<pos);
-	port->CR1 |= (1<<pos);
+	port->DDR &= ~ (1<<pos); // input
+	port->CR1 |= (1<<pos); // pullup
 }
 
 void gpio_toggle(u8 pin)

@@ -22,6 +22,7 @@
 
 PORT_t* pin_to_port(u8 pin);
 u8 pin_to_pos(u8 pin);
+void gpio_mode_in(u8 pin);
 void gpio_mode_out(u8 pin);
 void gpio_mode_pullup(u8 pin);
 void gpio_toggle(u8 pin);
