@@ -15,7 +15,7 @@
  */
 #include <SPI.h>
 
-static const int spiClk = 200000; // 200kHz
+static const int spiClk = 250000; // 250kHz
 
 //uninitalised pointers to SPI objects
 //SPIClass * vspi = NULL;
