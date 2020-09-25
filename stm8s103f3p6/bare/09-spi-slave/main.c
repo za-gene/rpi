@@ -14,19 +14,19 @@ void main()
 	//init_millis();
 
 	// set speed to 2MHz/8 = 250,000
-	SPI_CR1 |= (0b010 << 3); // 0b010 is bause rate f_MASTER/8, 3 is baud rate bits
+	//SPI_CR1 |= (0b010 << 3); // 0b010 is bause rate f_MASTER/8, 3 is baud rate bits
 	//SPI_CR1 |= SPI_CR1_MSTR; // master configuration
 	SPI_CR1 |= SPI_CR1_SPE; // enable peripheral
 
 	u8 val = 0;
-	SPI_DR = val; // 
+	//SPI_DR = val; // 
 	while (1)
 	{
 		//gpio_write(CS, 0);
 		while(!(SPI_SR & SPI_SR_RXNE));
-		//while((SPI_SR & SPI_SR_TXE));
-		val = SPI_DR;
-		SPI_DR = 0; // seems necessary
+		//while(!(SPI_SR & SPI_SR_TXE));
+		u8 dummy = SPI_DR;
+		SPI_DR = ++val; // seems necessary
 		//gpio_write(CS, 1);
 
 		//gpio_write(PD6, val & 0b1);
