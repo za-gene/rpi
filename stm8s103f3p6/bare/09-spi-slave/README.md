@@ -1,4 +1,4 @@
 # stm8 spi master (blocking)
 
-Status: working
+Status: not working
 
