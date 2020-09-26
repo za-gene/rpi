@@ -1,12 +1,12 @@
-# stm8 spi master (blocking)
+# stm8 connect to max7219 (7-segment display)
 
 Status: working
 
-The corresponding master is [here](../08-spi-master)
+![](max7219.jpg)
 
-Hookup: CS=PA3 (apparently unneeded), SCK=PC5, MISO=PC7, MOSI=PC6. MOSI possibly not needed.
 
-## See also
+Hookup: CS=PA3, CLK=PC5, DIN (MISO)=PC7. MOSI not needed.
 
-* [STM8S SPI Slave Device](https://blog.mark-stevens.co.uk/2012/11/stm8s-spi-slave-device/)
+## Also on this site
 
+* [zeroseg](../../zeroseg)

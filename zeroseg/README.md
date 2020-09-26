@@ -14,6 +14,11 @@ to `sketch_feb04b`.
 * db5.105
 * db5.110 - switches (although they don't seem to work
 
+## Also on this site
+
+* [stm8 bare metal](../stm8s103f3p6/bare/10-max7219)
+
+
 ## Links to other sites
 
 * [datasheet](https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf) PDF
