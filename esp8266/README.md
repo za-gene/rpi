@@ -12,6 +12,10 @@ I reckon it's fast by about 20secs/hr, according to a timing experiment I did.
 
 * `mel.py` reusable library
 
+## Unclassified
+
+`digitalRead(2)` means `GPIO2`, not pin `D2`.
+
 ## See also
 
 * [basic](https://github.com/esp8266/Basic) language implementation
