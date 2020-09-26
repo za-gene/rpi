@@ -2,6 +2,9 @@
 
 SPI
 
+VCC should be connected to 5V, even for 3V3 MCUs
+
+
 **`basic.py`** is my water-down version of putting a random char (one of: 5, H, I) to the display. I use it as a migration mechanism for C and Arduino.
 
 **`espzero.ipynb`** - example written for **nodemcu esp8266**, similar 
