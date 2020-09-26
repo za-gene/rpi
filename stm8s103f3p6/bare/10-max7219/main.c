@@ -1,18 +1,18 @@
 #include <stm8.h>
 //#include <millis.h>
 
-
 #define CS PA3 // SPI chip select
 #define MISO PC7
 
+#if 1
 volatile u8 val =0;
 void my_spi_handler() __interrupt(SPI_ISR)
 {
-	//gpio_toggle(BUILTIN_LED);
+		//gpio_toggle(BUILTIN_LED);
 	if(SPI_SR & SPI_SR_RXNE) { // seems necessary
 		u8 byte = SPI_DR;
 		//SPI_DR = val++;
-		gpio_toggle(BUILTIN_LED);
+		//gpio_toggle(BUILTIN_LED);
 	}
 
 	if(SPI_SR & SPI_SR_TXE) { // master is ready for transmission
@@ -20,6 +20,7 @@ void my_spi_handler() __interrupt(SPI_ISR)
 		gpio_toggle(BUILTIN_LED);
 	}
 }
+#endif
 
 void main()
 {
@@ -45,26 +46,23 @@ void main()
 
 	u8 val = 0;
 	//SPI_DR = val;  
-	/*
-	   while (1)
-	   {
-	   continue;
-	//gpio_write(CS, 0);
-	//while(!(SPI_SR & SPI_SR_RXNE));
-	//while(!(SPI_SR & SPI_SR_TXE));
-	u8 dummy = SPI_DR;
-	SPI_DR = ++val; // seems necessary
-	//gpio_write(CS, 1);
+	while (1)
+	{
+		continue;
+		//gpio_write(CS, 0);
+		//while(!(SPI_SR & SPI_SR_RXNE));
+		//while(!(SPI_SR & SPI_SR_TXE));
+		u8 dummy = SPI_DR;
+		SPI_DR = ++val; // seems necessary
+		//gpio_write(CS, 1);
 
-	//gpio_write(PD6, val & 0b1);
-	//gpio_write(PD5, val & 0b10);
-	//gpio_write(PD4, val & 0b100);
-
-	gpio_toggle(BUILTIN_LED);
-	//++val;
-	//delay_millis(1000);
+		//gpio_write(PD6, val & 0b1);
+		//gpio_write(PD5, val & 0b10);
+		//gpio_write(PD4, val & 0b100);
+		
+		gpio_toggle(BUILTIN_LED);
+		//++val;
+		//delay_millis(1000);
 	}
-	*/
-	while(1);
 }
 

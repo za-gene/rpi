@@ -36,7 +36,7 @@ struct PORT_t;
 #define SPI_CR1 *(uchar*)0x005200
 #define SPI_CR2 *(uchar*)0x005201
 #define SPI_ICR *(uchar*)0x005202
-#define SPI_SR *(uchar*)0x005203
+#define SPI_SR *(volatile uchar*)0x005203
 #define SPI_DR *(uchar*)0x005204
 #define SPI_CRCPR *(uchar*)0x005205 // CRC polynomial register
 #define SPI_RXCRCR *(uchar*)0x005206 // Rx CRC register
@@ -126,6 +126,12 @@ typedef struct {
 
 #define SPI_CR1_MSTR (1<<2)
 #define SPI_CR1_SPE (1<<6)
+
+// SPI Interrupt Control Register section 20.4.3 page 284
+#define SPI_ICR_TXIE (1<<7)
+#define SPI_ICR_RXIE (1<<6)
+
+#define SPI_CR2_SSM (1<<1)
 
 // SPI status register section 20.4.4 page 285
 #define SPI_SR_RXNE (1<<0) 
