@@ -47,9 +47,10 @@ void write_row(uint8_t y, uint8_t xs) {
 
 #define REG(addr) *(volatile u8*)(addr)
 
-#define I2C_CR1   REG(0x5200)
-#define I2C_CR2   REG(0x5201)
+#define I2C_CR1   REG(0x5210)
+#define I2C_CR2   REG(0x5211)
 #define I2C_FREQR   REG(0x5212)
+#define I2C_OARL  REG(0x5213)
 #define I2C_OARH  REG(0x5214)
 #define I2C_DR    REG(0x5216)
 #define I2C_SR1   REG(0x5217)
@@ -87,30 +88,28 @@ void I2C_Init_copy() {
   I2C_AddMode_TypeDef AddMode = 0;
   uint8_t InputClockFrequencyMHz = 16;
 
-  uint16_t result = 0x0004;
-  uint16_t tmpval = 0;
-  uint8_t tmpccrh = 0;
+
 
 
 
   /*------------------------- I2C FREQ Configuration ------------------------*/
   /* Clear frequency bits */
-  I2C->FREQR &= (uint8_t)(~I2C_FREQR_FREQ);
+  I2C_FREQR &= (uint8_t)(~I2C_FREQR_FREQ);
   /* Write new value */
-  I2C->FREQR |= InputClockFrequencyMHz;
+  I2C_FREQR |= InputClockFrequencyMHz;
 
   /*--------------------------- I2C CCR Configuration ------------------------*/
   /* Disable I2C to configure TRISER */
-  I2C->CR1 &= (uint8_t)(~I2C_CR1_PE);
+  I2C_CR1 &= (uint8_t)(~I2C_CR1_PE);
 
   /* Clear CCRH & CCRL */
-  I2C->CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
-  I2C->CCRL &= (uint8_t)(~I2C_CCRL_CCR);
+  I2C_CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
+  I2C_CCRL &= (uint8_t)(~I2C_CCRL_CCR);
 
 
 
   /* Calculate standard mode speed */
-  result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
+  uint16_t result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
 
   /* Verify and correct CCR value if below minimum value */
   if (result < (uint16_t)0x0004)
@@ -122,23 +121,25 @@ void I2C_Init_copy() {
   /* Set Maximum Rise Time: 1000ns max in Standard Mode
     = [1000ns/(1/InputClockFrequencyMHz.10e6)]+1
     = InputClockFrequencyMHz+1 */
-  I2C->TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
+  I2C_TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
 
-
+  //uint16_t result = 0x0004;
+  uint16_t tmpval = 0;
+  uint8_t tmpccrh = 0;
 
   /* Write CCR with new calculated value */
-  I2C->CCRL = (uint8_t)result;
-  I2C->CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
+  I2C_CCRL = (uint8_t)result;
+  I2C_CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
 
   /* Enable I2C */
-  I2C->CR1 |= I2C_CR1_PE;
+  I2C_CR1 |= I2C_CR1_PE;
 
   /* Configure I2C acknowledgement */
   I2C_AcknowledgeConfig(Ack);
 
   /*--------------------------- I2C OAR Configuration ------------------------*/
-  I2C->OARL = (uint8_t)(OwnAddress);
-  I2C->OARH = (uint8_t)((uint8_t)(AddMode | I2C_OARH_ADDCONF) |
+  I2C_OARL = (uint8_t)(OwnAddress);
+  I2C_OARH = (uint8_t)((uint8_t)(AddMode | I2C_OARH_ADDCONF) |
                         (uint8_t)((OwnAddress & (uint16_t)0x0300) >> (uint8_t)7));
 }
 
