@@ -2,8 +2,8 @@
 
 #define REG(addr) *(volatile u8*)(addr)
 
-#define I2C_CR1 	REG(0x5200)
-#define I2C_CR2 	REG(0x5201)
+#define I2C_CR1 	REG(0x5210)
+#define I2C_CR2 	REG(0x5211)
 #define I2C_FREQR 	REG(0x5212)
 #define I2C_DR 		REG(0x5216)
 #define I2C_SR1 	REG(0x5217)
