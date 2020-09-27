@@ -1,12 +1,7 @@
-# stm8 connect to max7219 (7-segment display)
+# stm8 pin test
 
-Status: working
+This is a test on pins PB4 and PB5. You should probably just ignore this project.
 
-![](max7219.jpg)
+It turns out that PB4/5 are "true sinks", meaning that driving the pins high won't help. I think we need pull-up resistors to that end.
 
-
-Hookup: CS=PA3, CLK=PC5, DIN (MISO)=PC7. MOSI not needed. VCC=5V (even on this device).
-
-## Also on this site
-
-* [zeroseg](../../../zeroseg)
+Those pins are for I2C.
