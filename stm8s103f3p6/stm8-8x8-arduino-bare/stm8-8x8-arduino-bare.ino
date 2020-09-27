@@ -41,7 +41,7 @@ void write_row(uint8_t y, uint8_t xs) {
 
   // send x layout to device
   send2(2 * y, bits);
-  
+
 }
 
 
@@ -91,7 +91,7 @@ void I2C_Init_copy() {
   uint16_t tmpval = 0;
   uint8_t tmpccrh = 0;
 
- 
+
 
   /*------------------------- I2C FREQ Configuration ------------------------*/
   /* Clear frequency bits */
@@ -107,58 +107,24 @@ void I2C_Init_copy() {
   I2C->CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
   I2C->CCRL &= (uint8_t)(~I2C_CCRL_CCR);
 
-  /* Detect Fast or Standard mode depending on the Output clock frequency selected */
-  if (OutputClockFrequencyHz > I2C_MAX_STANDARD_FREQ) /* FAST MODE */
+
+
+  /* Calculate standard mode speed */
+  result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
+
+  /* Verify and correct CCR value if below minimum value */
+  if (result < (uint16_t)0x0004)
   {
-    /* Set F/S bit for fast mode */
-    tmpccrh = I2C_CCRH_FS;
-
-    if (I2C_DutyCycle == I2C_DUTYCYCLE_2)
-    {
-      /* Fast mode speed calculate: Tlow/Thigh = 2 */
-      result = (uint16_t) ((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz * 3));
-    }
-    else /* I2C_DUTYCYCLE_16_9 */
-    {
-      /* Fast mode speed calculate: Tlow/Thigh = 16/9 */
-      result = (uint16_t) ((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz * 25));
-      /* Set DUTY bit */
-      tmpccrh |= I2C_CCRH_DUTY;
-    }
-
-    /* Verify and correct CCR value if below minimum value */
-    if (result < (uint16_t)0x01)
-    {
-      /* Set the minimum allowed value */
-      result = (uint16_t)0x0001;
-    }
-
-    /* Set Maximum Rise Time: 300ns max in Fast Mode
-      = [300ns/(1/InputClockFrequencyMHz.10e6)]+1
-      = [(InputClockFrequencyMHz * 3)/10]+1 */
-    tmpval = ((InputClockFrequencyMHz * 3) / 10) + 1;
-    I2C->TRISER = (uint8_t)tmpval;
-
+    /* Set the minimum allowed value */
+    result = (uint16_t)0x0004;
   }
-  else /* STANDARD MODE */
-  {
 
-    /* Calculate standard mode speed */
-    result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
+  /* Set Maximum Rise Time: 1000ns max in Standard Mode
+    = [1000ns/(1/InputClockFrequencyMHz.10e6)]+1
+    = InputClockFrequencyMHz+1 */
+  I2C->TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
 
-    /* Verify and correct CCR value if below minimum value */
-    if (result < (uint16_t)0x0004)
-    {
-      /* Set the minimum allowed value */
-      result = (uint16_t)0x0004;
-    }
 
-    /* Set Maximum Rise Time: 1000ns max in Standard Mode
-      = [1000ns/(1/InputClockFrequencyMHz.10e6)]+1
-      = InputClockFrequencyMHz+1 */
-    I2C->TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
-
-  }
 
   /* Write CCR with new calculated value */
   I2C->CCRL = (uint8_t)result;
