@@ -1,7 +1,4 @@
-# stm8 pin test
+# stm8 I2C 8x8 (HTK16K33) test
 
-This is a test on pins PB4 and PB5. You should probably just ignore this project.
+Status: not working. However, there is a working version for the Arduino, so it should be possible to get this to work.
 
-It turns out that PB4/5 are "true sinks", meaning that driving the pins high won't help. I think we need pull-up resistors to that end.
-
-Those pins are for I2C.
