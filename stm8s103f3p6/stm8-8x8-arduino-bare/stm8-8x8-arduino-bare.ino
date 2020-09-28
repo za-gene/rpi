@@ -41,88 +41,39 @@
 //#define I2C_CR2_START = 1;
 
 
-#define SLA_W(address)  (address << 1)
-
-
-static void stop(void)
+static void end_i2c_write(void)
 {
-  while(!((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+  while (!((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
 
   I2C->CR2 |= I2C_CR2_STOP;
-  while(I2C->CR2 & I2C_CR2_STOP);
+  while (I2C->CR2 & I2C_CR2_STOP);
 }
 
-void sendByte(uint8_t i2cData)
+void write_i2c_byte(uint8_t dat)
 {
-  while(!(I2C->SR1 & I2C_SR1_TXE));
-  I2C->DR = i2cData;
+  while (!(I2C->SR1 & I2C_SR1_TXE));
+  I2C->DR = dat;
 }
 
-static void sendAddress(uint8_t i2cAddress, uint8_t mode)
+static void begin_i2c_write(uint8_t slave_id)
 {
   I2C->CR2 |= I2C_CR2_ACK;  // set ACK
   I2C->CR2 |= I2C_CR2_START;  // send start sequence
-  while(!(I2C->SR1 & I2C_SR1_SB));
+  while (!(I2C->SR1 & I2C_SR1_SB));
 
-  /* Send the Address + Direction */
-  I2C->DR = i2cAddress; // I2C_Send7bitAddress()
-
-  /* Test on EV6, but don't clear it yet (ADDR flag) */
-  // error code 2: no ACK received on address transmission
-  while(!(I2C->SR1 & I2C_SR1_ADDR));
-
-  if (mode == 1) {
-    I2C->CR2 &= ~I2C_CR2_ACK; // clear ACK
-    BEGIN_CRITICAL      // disable interrupts
-    (void) I2C->SR3;    // read SR3 to clear ADDR event bit
-    I2C->CR2 |= I2C_CR2_STOP; // send STOP soon
-    END_CRITICAL      // enable interrupts
-  } else if (mode == 2) {
-    I2C->CR2 |= I2C_CR2_POS;  // set POS
-    BEGIN_CRITICAL      // disable interrupts
-    (void) I2C->SR3;    // read SR3 to clear ADDR event bit
-    I2C->CR2 &= ~I2C_CR2_ACK; // clear ACK
-    END_CRITICAL      // enable interrupts
-  } else {
-    (void)I2C->SR3;   // read SR3 to clear ADDR event bit
-  }
+  I2C->DR = slave_id << 1; // send the address and direction
+  while (!(I2C->SR1 & I2C_SR1_ADDR));
+  (void)I2C->SR3;   // read SR3 to clear ADDR event bit
 }
 
-#define MODE_WRITE 4
-
-
-
-
-  
-void my_I2C_write_sn(uint8_t address, uint8_t registerAddress, uint8_t * data,
-         uint8_t numberBytes)
-{
-  sendAddress(SLA_W(address),MODE_WRITE);
-  sendByte(registerAddress);
-// only this part differs for the variants of I2C_write()
-  while (numberBytes--) {
-    sendByte(*data++);
-  }
-//
-  stop();
- }
-
-void my_I2C_write(uint8_t address, uint8_t registerAddress)
-{
-  my_I2C_write_sn(address, registerAddress, NULL, 0);
-}
 
 
 void send_cmd(u8 cmd) {
-  my_I2C_write(SID, cmd);
+  begin_i2c_write(SID);
+  write_i2c_byte(cmd);
+  end_i2c_write();
 }
 
-void send2(u8 cmd, u8 val) {
-  char s[2];
-  s[0] = val;
-  s[1] = 0;
-  my_I2C_write_sn(SID, cmd, s, 1);
-}
 
 void write_row(uint8_t y, uint8_t xs) {
   // the row of xs needs to be quirkily transformed
@@ -135,7 +86,10 @@ void write_row(uint8_t y, uint8_t xs) {
   bits |= (xs << 7);
 
   // send x layout to device
-  send2(2 * y, bits);
+  begin_i2c_write(SID);
+  write_i2c_byte(2*y);
+  write_i2c_byte(bits);
+  end_i2c_write();
 
 }
 
@@ -148,12 +102,12 @@ void init_i2c() {
   I2C_TRISER = InputClockFrequencyMHz + 1; // max rise time
 
   // set clock control frequency registers
-  uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz/2));
+  uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz / 2));
   if (speed < (uint16_t)0x0004) speed = (uint16_t)0x0004; // must be at least 4
   I2C_CCRL = (uint8_t)speed;
   I2C_CCRH = (uint8_t)(speed >> 8);
 
-  I2C_CR1 |= I2C_CR1_PE; // enable I2C 
+  I2C_CR1 |= I2C_CR1_PE; // enable I2C
 }
 
 
@@ -174,7 +128,7 @@ void setup() {
   send_cmd(0x81); // display on
   send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
-  pattern[0] = 0b11111111;
+  //pattern[0] = 0b11111111;
 
 }
 
