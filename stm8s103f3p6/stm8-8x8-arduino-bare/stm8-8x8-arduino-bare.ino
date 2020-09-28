@@ -16,6 +16,8 @@
 #define I2C_OARH  REG(0x5214)
 #define I2C_DR    REG(0x5216)
 #define I2C_SR1   REG(0x5217)
+#define I2C_SR2   REG(0x5218)
+#define I2C_SR3   REG(0x5219)
 
 //#define     I2C_OARH_ADDMODE (1<<7)               //  7 bit address mode.
 //#define    I2C_OARH_ADDCONF (1<<6)               //  Docs say this must always be 1.
@@ -43,27 +45,27 @@
 
 static void end_i2c_write(void)
 {
-  while (!((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+  while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
 
-  I2C->CR2 |= I2C_CR2_STOP;
-  while (I2C->CR2 & I2C_CR2_STOP);
+  I2C_CR2 |= I2C_CR2_STOP;
+  while (I2C_CR2 & I2C_CR2_STOP);
 }
 
 void write_i2c_byte(uint8_t dat)
 {
-  while (!(I2C->SR1 & I2C_SR1_TXE));
-  I2C->DR = dat;
+  while (!(I2C_SR1 & I2C_SR1_TXE));
+  I2C_DR = dat;
 }
 
 static void begin_i2c_write(uint8_t slave_id)
 {
-  I2C->CR2 |= I2C_CR2_ACK;  // set ACK
-  I2C->CR2 |= I2C_CR2_START;  // send start sequence
-  while (!(I2C->SR1 & I2C_SR1_SB));
+  I2C_CR2 |= I2C_CR2_ACK;  // set ACK
+  I2C_CR2 |= I2C_CR2_START;  // send start sequence
+  while (!(I2C_SR1 & I2C_SR1_SB));
 
-  I2C->DR = slave_id << 1; // send the address and direction
-  while (!(I2C->SR1 & I2C_SR1_ADDR));
-  (void)I2C->SR3;   // read SR3 to clear ADDR event bit
+  I2C_DR = slave_id << 1; // send the address and direction
+  while (!(I2C_SR1 & I2C_SR1_ADDR));
+  (void)I2C_SR3;   // read SR3 to clear ADDR event bit
 }
 
 
