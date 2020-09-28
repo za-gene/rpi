@@ -83,28 +83,24 @@ void I2C_Init_copy() {
 
   uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
   uint16_t OwnAddress = 0xA0;
-  I2C_DutyCycle_TypeDef I2C_DutyCycle = 0;
-  I2C_Ack_TypeDef Ack = 0;
-  I2C_AddMode_TypeDef AddMode = 0;
-  uint8_t InputClockFrequencyMHz = 16;
-
-
-
+  //I2C_DutyCycle_TypeDef I2C_DutyCycle = 0;
 
 
   /*------------------------- I2C FREQ Configuration ------------------------*/
+   uint8_t InputClockFrequencyMHz = 16;
   /* Clear frequency bits */
-  I2C_FREQR &= (uint8_t)(~I2C_FREQR_FREQ);
+  //I2C_FREQR &= (uint8_t)(~I2C_FREQR_FREQ);
   /* Write new value */
-  I2C_FREQR |= InputClockFrequencyMHz;
+  //I2C_FREQR |= InputClockFrequencyMHz;
+  I2C_FREQR = InputClockFrequencyMHz;
 
   /*--------------------------- I2C CCR Configuration ------------------------*/
   /* Disable I2C to configure TRISER */
-  I2C_CR1 &= (uint8_t)(~I2C_CR1_PE);
+  //I2C_CR1 &= (uint8_t)(~I2C_CR1_PE);
 
   /* Clear CCRH & CCRL */
-  I2C_CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
-  I2C_CCRL &= (uint8_t)(~I2C_CCRL_CCR);
+  //I2C_CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
+  //I2C_CCRL &= (uint8_t)(~I2C_CCRL_CCR);
 
 
 
@@ -131,16 +127,16 @@ void I2C_Init_copy() {
   I2C_CCRL = (uint8_t)result;
   I2C_CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
 
-  /* Enable I2C */
-  I2C_CR1 |= I2C_CR1_PE;
+  I2C_CR1 |= I2C_CR1_PE; // enable I2C
 
   /* Configure I2C acknowledgement */
+  I2C_Ack_TypeDef Ack = 0;
   I2C_AcknowledgeConfig(Ack);
 
   /*--------------------------- I2C OAR Configuration ------------------------*/
   I2C_OARL = (uint8_t)(OwnAddress);
-  I2C_OARH = (uint8_t)((uint8_t)(AddMode | I2C_OARH_ADDCONF) |
-                        (uint8_t)((OwnAddress & (uint16_t)0x0300) >> (uint8_t)7));
+  I2C_AddMode_TypeDef AddMode = 0;
+  I2C_OARH = (uint8_t)((uint8_t)(AddMode | I2C_OARH_ADDCONF) | (uint8_t)((OwnAddress & (uint16_t)0x0300) >> (uint8_t)7));
 }
 
 
