@@ -82,29 +82,19 @@ void write_row(uint8_t y, uint8_t xs) {
 void I2C_Init_copy() {
 
   uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
-  uint16_t OwnAddress = 0xA0;
+
 
 
   /*------------------------- I2C FREQ Configuration ------------------------*/
-   uint8_t InputClockFrequencyMHz = 16;
+  uint8_t InputClockFrequencyMHz = 16;
   I2C_FREQR = InputClockFrequencyMHz;
+  I2C_TRISER = InputClockFrequencyMHz + 1; // max rise time
 
-  /* Calculate standard mode speed */
-  uint16_t result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
-
-  /* Verify and correct CCR value if below minimum value */
-  if (result < (uint16_t)0x0004) result = (uint16_t)0x0004;
-
-  /* Set Maximum Rise Time: 1000ns max in Standard Mode
-    = [1000ns/(1/InputClockFrequencyMHz.10e6)]+1
-    = InputClockFrequencyMHz+1 */
-  I2C_TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
-
-
-  /* Write CCR with new calculated value */
-  I2C_CCRL = (uint8_t)result;
-  //I2C_CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
-  I2C_CCRH = (uint8_t)(result>>8);
+  // set clock control frequency registers
+  uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz/2));
+  if (speed < (uint16_t)0x0004) speed = (uint16_t)0x0004; // must be at least 4
+  I2C_CCRL = (uint8_t)speed;
+  I2C_CCRH = (uint8_t)(speed >> 8);
 
   I2C_CR1 |= I2C_CR1_PE; // enable I2C
 
@@ -112,10 +102,6 @@ void I2C_Init_copy() {
   I2C_Ack_TypeDef Ack = 0;
   I2C_AcknowledgeConfig(Ack);
 
-  /*--------------------------- I2C OAR Configuration ------------------------*/
-  I2C_OARL = (uint8_t)(OwnAddress);
-  I2C_AddMode_TypeDef AddMode = 0;
-  I2C_OARH = (uint8_t)((uint8_t)(AddMode | I2C_OARH_ADDCONF) | (uint8_t)((OwnAddress & (uint16_t)0x0300) >> (uint8_t)7));
 }
 
 
@@ -129,7 +115,7 @@ void setup() {
   send_cmd(0x81); // display on
   send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
-  //pattern[0] = 0b11111111;
+  pattern[0] = 0b11111111;
 
 }
 
