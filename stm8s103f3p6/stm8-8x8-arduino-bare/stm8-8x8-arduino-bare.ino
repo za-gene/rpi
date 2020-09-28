@@ -83,49 +83,28 @@ void I2C_Init_copy() {
 
   uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
   uint16_t OwnAddress = 0xA0;
-  //I2C_DutyCycle_TypeDef I2C_DutyCycle = 0;
 
 
   /*------------------------- I2C FREQ Configuration ------------------------*/
    uint8_t InputClockFrequencyMHz = 16;
-  /* Clear frequency bits */
-  //I2C_FREQR &= (uint8_t)(~I2C_FREQR_FREQ);
-  /* Write new value */
-  //I2C_FREQR |= InputClockFrequencyMHz;
   I2C_FREQR = InputClockFrequencyMHz;
-
-  /*--------------------------- I2C CCR Configuration ------------------------*/
-  /* Disable I2C to configure TRISER */
-  //I2C_CR1 &= (uint8_t)(~I2C_CR1_PE);
-
-  /* Clear CCRH & CCRL */
-  //I2C_CCRH &= (uint8_t)(~(I2C_CCRH_FS | I2C_CCRH_DUTY | I2C_CCRH_CCR));
-  //I2C_CCRL &= (uint8_t)(~I2C_CCRL_CCR);
-
-
 
   /* Calculate standard mode speed */
   uint16_t result = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz << (uint8_t)1));
 
   /* Verify and correct CCR value if below minimum value */
-  if (result < (uint16_t)0x0004)
-  {
-    /* Set the minimum allowed value */
-    result = (uint16_t)0x0004;
-  }
+  if (result < (uint16_t)0x0004) result = (uint16_t)0x0004;
 
   /* Set Maximum Rise Time: 1000ns max in Standard Mode
     = [1000ns/(1/InputClockFrequencyMHz.10e6)]+1
     = InputClockFrequencyMHz+1 */
   I2C_TRISER = (uint8_t)(InputClockFrequencyMHz + (uint8_t)1);
 
-  //uint16_t result = 0x0004;
-  uint16_t tmpval = 0;
-  uint8_t tmpccrh = 0;
 
   /* Write CCR with new calculated value */
   I2C_CCRL = (uint8_t)result;
-  I2C_CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
+  //I2C_CCRH = (uint8_t)((uint8_t)((uint8_t)(result >> 8) & I2C_CCRH_CCR) | tmpccrh);
+  I2C_CCRH = (uint8_t)(result>>8);
 
   I2C_CR1 |= I2C_CR1_PE; // enable I2C
 
