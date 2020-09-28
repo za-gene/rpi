@@ -7,6 +7,9 @@
 #define I2C_FREQR 	REG(0x5212)
 #define I2C_DR 		REG(0x5216)
 #define I2C_SR1 	REG(0x5217)
+#define I2C_CCRL 	REG(0x521B)
+#define I2C_CCRH 	REG(0x521C)
+#define I2C_TRISER 	REG(0x521D)
 
 
 
@@ -49,10 +52,12 @@ void send_cmd(u8 cmd)
 void main()
 {
 	// init I2C
-	I2C_CR1 |= I2C_CR1_PE; // enable peripheral
-	I2C_CR2 |= I2C_CR2_ACK; 
+	//I2C_CR2 |= I2C_CR2_ACK; 
 	I2C_FREQR = 0x02; // 2MHz
-	I2C_CR2 |= I2C_CR2_START; // generate a start condition
+	I2C_TRISER = I2C_FREQR +1;
+	I2C_CCRL = (I2C_FREQR * 1000000)/(250000/2);
+	//I2C_CR2 |= I2C_CR2_START; // generate a start condition
+	I2C_CR1 |= I2C_CR1_PE; // enable peripheral
 
 	// init 8x8
 	send_cmd(0x20|1); // turn on oscillator
