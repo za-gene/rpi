@@ -71,41 +71,18 @@ static void lockUp(void)
 
 #define TIMEOUT_WAIT_FOR_ONE(CONDITION,ERROR) TIMEOUT_WAIT_FOR_ZERO(!(CONDITION), ERROR)
 
-static uint8_t stop(void)
+static void stop(void)
 {
-  uint16_t startingTime = millis();
+  while(!((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
 
-  /* Test on EV8_2: TXE and BTF flags */
-  TIMEOUT_WAIT_FOR_ONE((I2C->SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) ==
-           (I2C_SR1_TXE | I2C_SR1_BTF), 3);
-
-  /* Generate a STOP condition */
   I2C->CR2 |= I2C_CR2_STOP;
-
-  // wait for the end of the STOP condition
-  //
-  // The reference manual rm0016 is not clear on how to check for this
-  // condition. Maybe BUSY, BTF, TRA or even MSL.
-  // Waiting for BTF works.
-  // AN3281, Fig. 4 specifies to wait for STOPF, but that does not work.
-  // The source code attached to AN3281 waits for the STOP bit in CR2
-  // to flip back to zero. This works, so this method is used.
-//  TIMEOUT_WAIT_FOR_ONE((I2C->SR1 & I2C_SR1_BTF), 7);  // works
-//  TIMEOUT_WAIT_FOR_ONE((I2C->SR1 & I2C_SR1_STOPF), 7);  // doesn't work
-  TIMEOUT_WAIT_FOR_ZERO(I2C->CR2 & I2C_CR2_STOP, 7);  // works
-  return (0);
+  while(I2C->CR2 & I2C_CR2_STOP);
 }
 
-uint8_t sendByte(uint8_t i2cData)
+void sendByte(uint8_t i2cData)
 {
-  uint16_t startingTime = millis();
-
-  /* Test on EV8 (wait for TXE flag) */
-  /* On fail: 3: no ACK received on data transmission */
-  TIMEOUT_WAIT_FOR_ONE((I2C->SR1 & I2C_SR1_TXE), 3);
-
+  while(!(I2C->SR1 & I2C_SR1_TXE));
   I2C->DR = i2cData;
-  return 0;
 }
 
 static uint8_t sendAddress(uint8_t i2cAddress, uint8_t mode)
@@ -152,18 +129,16 @@ static uint8_t sendAddress(uint8_t i2cAddress, uint8_t mode)
 
 
 
-#define SEND_ADDRESS_W(ADDR) sendAddress(SLA_W(ADDR),MODE_WRITE); 
 
-#define SEND_BYTE(VAL) sendByte(VAL); 
   
 void my_I2C_write_sn(uint8_t address, uint8_t registerAddress, uint8_t * data,
          uint8_t numberBytes)
 {
-  SEND_ADDRESS_W(address);
-  SEND_BYTE(registerAddress);
+  sendAddress(SLA_W(address),MODE_WRITE);
+  sendByte(registerAddress);
 // only this part differs for the variants of I2C_write()
   while (numberBytes--) {
-    SEND_BYTE(*data++);
+    sendByte(*data++);
   }
 //
   stop();
@@ -239,7 +214,7 @@ void setup() {
   send_cmd(0x81); // display on
   send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
-  //pattern[0] = 0b11111111;
+  pattern[0] = 0b11111111;
 
 }
 
