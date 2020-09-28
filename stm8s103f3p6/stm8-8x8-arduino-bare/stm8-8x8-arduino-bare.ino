@@ -40,36 +40,9 @@
 //#define I2C_CR2_ACK = (1<<2)
 //#define I2C_CR2_START = 1;
 
-static uint16_t timeOutDelay;
-//uint8_t returnStatus;
 
 #define SLA_W(address)  (address << 1)
 
-static void lockUp(void)
-{
-#if 0
-  TWCR = 0;   //releases SDA and SCL lines to high impedance
-  TWCR = _BV(TWEN) | _BV(TWEA); //reinitialize TWI 
-#endif
-  //FIXME: this needs to be checked in detail. CR1 might be involved
-  // don't do a full software reset here. That would require a full
-  // re-initialization before the next transfer could happen.
-  I2C->CR2 = 0;
-}
-
-
-#define TIMEOUT_WAIT_FOR_ZERO(CONDITION,ERROR) \
-  while (CONDITION)   /* wait while the condition is still true */ \
-  { \
-          if(!timeOutDelay){continue;} \
-          if((((uint16_t)millis()) - startingTime) >= timeOutDelay) \
-          { \
-            lockUp(); \
-            return(ERROR);    /* return the appropriate error code */ \
-          } \
-        }
-
-#define TIMEOUT_WAIT_FOR_ONE(CONDITION,ERROR) TIMEOUT_WAIT_FOR_ZERO(!(CONDITION), ERROR)
 
 static void stop(void)
 {
@@ -85,26 +58,18 @@ void sendByte(uint8_t i2cData)
   I2C->DR = i2cData;
 }
 
-static uint8_t sendAddress(uint8_t i2cAddress, uint8_t mode)
+static void sendAddress(uint8_t i2cAddress, uint8_t mode)
 {
-  uint16_t startingTime = millis();
-
-  /* do not wait for BUSY==0 as this would block for repeated start */
-//  TIMEOUT_WAIT_FOR_ZERO((I2C->SR3 & I2C_SR3_BUSY), 1);
-
   I2C->CR2 |= I2C_CR2_ACK;  // set ACK
-  /* send start sequence */
   I2C->CR2 |= I2C_CR2_START;  // send start sequence
-
-  /* Test on EV5 and clear it (SB flag) */
-  TIMEOUT_WAIT_FOR_ONE(I2C->SR1 & I2C_SR1_SB, 1);
+  while(!(I2C->SR1 & I2C_SR1_SB));
 
   /* Send the Address + Direction */
   I2C->DR = i2cAddress; // I2C_Send7bitAddress()
 
   /* Test on EV6, but don't clear it yet (ADDR flag) */
   // error code 2: no ACK received on address transmission
-  TIMEOUT_WAIT_FOR_ONE(I2C->SR1 & I2C_SR1_ADDR, 2);
+  while(!(I2C->SR1 & I2C_SR1_ADDR));
 
   if (mode == 1) {
     I2C->CR2 &= ~I2C_CR2_ACK; // clear ACK
@@ -121,8 +86,6 @@ static uint8_t sendAddress(uint8_t i2cAddress, uint8_t mode)
   } else {
     (void)I2C->SR3;   // read SR3 to clear ADDR event bit
   }
-
-  return 0;
 }
 
 #define MODE_WRITE 4
@@ -162,7 +125,7 @@ void send2(u8 cmd, u8 val) {
 }
 
 void write_row(uint8_t y, uint8_t xs) {
-  // the row of xs beed to be quirkily transformed
+  // the row of xs needs to be quirkily transformed
   uint8_t bits = 0;
   for (int x = 0; x < 7; ++x) {
     bits <<= 1;
@@ -178,7 +141,7 @@ void write_row(uint8_t y, uint8_t xs) {
 
 
 
-void I2C_Init_copy() {
+void init_i2c() {
   uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
   uint8_t InputClockFrequencyMHz = 16;
   I2C_FREQR = InputClockFrequencyMHz;
@@ -206,10 +169,7 @@ static uint8_t  pattern[] =
 };
 
 void setup() {
-
-  //I2C_begin();
-  //InitialiseI2C();
-  I2C_Init_copy();
+  init_i2c();
   send_cmd(0x20 | 1); // turn on oscillator
   send_cmd(0x81); // display on
   send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
