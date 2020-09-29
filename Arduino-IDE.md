@@ -14,6 +14,7 @@ The upshot is:
 ```
 BOARD  DEFINE
 -----  ------------------
+STM32  MCU_STM32F103C8
 WROOM  ARDUINO_ARCH_ESP32 
 ...
 ```
