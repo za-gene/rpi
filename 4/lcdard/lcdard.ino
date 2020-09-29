@@ -4,7 +4,14 @@
 // Connect as per parent directory
 constexpr int rs_pin = 4;
 constexpr int cs_pin = 5;
-#else // Assume Nano
+#endif
+
+#ifdef MCU_STM32F103C8 // blue pill
+constexpr int rs_pin = PB0;
+constexpr int cs_pin = PA4;
+#endif
+
+#if 0 // Assume Nano
 constexpr int rs_pin = 12;
 constexpr int cs_pin = 10;
 #endif
@@ -26,7 +33,7 @@ void setup() {
   pinMode(rs_pin, OUTPUT);
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   constexpr auto contrast = 0x70  | 0b1000; // from 0x7C
   constexpr auto display = 0b1111; // ori 0x0F
@@ -44,7 +51,6 @@ void setup() {
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
   delay(10);
 
 }

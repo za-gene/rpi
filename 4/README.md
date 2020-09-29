@@ -7,7 +7,7 @@ git clone git@github.com:blippy/lcddogmspi.git
 ```
 
 Low-level controllers:
-* `lcdard` - Nano/Uno/WROOM. Connect as per Layout section
+* `lcdard` - Nano/Uno/WROOM/STM32. Connect as per Layout section
 * `lcdesp.py` - ESP8266
 * `lcdpi.py` - RPi3. Use this is as a baseline
 
@@ -24,13 +24,13 @@ git clone git@github.com:blippy/DogLcd.git
 Pins are labelled C1, C2, ... C6 left to right in the diagram above.
 
 ```
-DEV  DESC   WROOM
-C1   5V     VIN
-C2   RS[1]  D4  
-C3   CS     D5
-C4   CLK    D18
-C5   MOSI   D23
-C6   GND    GND
+DEV  DESC   WROOM STM32
+C1   5V     VIN   5V
+C2   RS[1]  D4    PB0
+C3   CS     D5    PA4
+C4   CLK    D18   PA5
+C5   MOSI   D23   PA7
+C6   GND    GND   GND
 ```
 
 [1] **MISO** is not used. **RS** is set low to issue a command, high to issue an ASCII. DO NOT use a regular MISO on ESP8266, use an alternative pin like D4 (GPIO2).

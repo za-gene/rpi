@@ -65,10 +65,10 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [ZeroSeg](zeroseg) SPI
 
 ---
-![](1306/1306.jpg) [1306](1306) I2C, WROOM 
+![](1306/1306.jpg) [1306](1306) I2C. WROOM 
 ___
 
-![](4/4.jpg) [4](4) SPI
+![](4/4.jpg) [4](4) quasi-SPI. NANO/STM32/WROOM
 
 ___
 
