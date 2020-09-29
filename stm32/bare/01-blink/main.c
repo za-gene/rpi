@@ -21,11 +21,41 @@
 
 //static int j = 666; // this seems to cause problems
 
+// pins are defined as hex 0xPQ where P is port, and Q is pin number
+
+
+#define PA13 0x0D
+#define PB1  0x11
+#define PB13 0x1D
+#define PC13 0x2D
+
+void gpio_mode_out(u32 pin)
+{
+	u32 port = pin >>4; // gives 0 for Port A, 1 for port B, 2 for port C
+	RCC_APB2ENR |= (1 << (port+2)); // enable port
+	//GPIO_t* port_x = ((GPIO_t*) (GPIO_BASE + port*0x400));
+	u32 GPIOx_CRx = GPIO_BASE+port*0x400; // assume GPIOx_CRL
+	u32 pin_num = pin & 0x0F;
+	if(pin_num > 7) {
+		GPIOx_CRx += 0x04; // bump to GPIOx_CRH;
+		pin_num -= 8;
+	}
+	//GPIOx_CRx =  GPIO_BASE + 0x800 + 0x04;
+	u32 mask = 0b1111 << (pin_num*4);
+	*(volatile u32*) GPIOx_CRx &= ~mask; // mask out the mode and CNF
+	*(volatile u32*) GPIOx_CRx |= (0b0010<< (pin_num*4)) ; //  CNF output push-pull, max speed 2MHz
+	//GPIOC->CRH   |= 0x00200000;
+
+}
+
+
 void main(void)
 {
-	RCC_APB2ENR |= RCC_IOPCEN; // enable port C
-	GPIOC->CRH   &= 0xFF0FFFFF;
-	GPIOC->CRH   |= 0x00200000;
+	gpio_mode_out(PC13);
+
+	//RCC_APB2ENR |= RCC_IOPCEN; // enable port C
+	//GPIOC->CRH   &= 0xFF0FFFFF;
+	//GPIOC->CRH   |= 0x00200000;
 
 	// Set PB13 into a high output state
 	RCC_APB2ENR |= RCC_IOPBEN; // enable port B
@@ -41,7 +71,7 @@ void main(void)
 	GPIOB->ODR  |= GPIO1;
 
 
-	int i = 666;
+	int i;
 	while(1)
 	{
 		//GPIOC_ODR |=  GPIO13;

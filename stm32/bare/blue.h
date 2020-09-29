@@ -3,8 +3,12 @@
 #include <stdint.h>
 
 
+typedef uint8_t u8;
+typedef uint32_t u32;
+
 #define __IO volatile
 
+#define REG(x) *(volatile uint32_t *)(x)
 
 #define RCC_BASE      	0x40021000
 
@@ -22,9 +26,11 @@ struct GPIO_t;
 struct TIMx_t;
 struct USART_t;
 
-#define GPIOC ((GPIO_t*)   0x40011000)
-#define GPIOB ((GPIO_t*)   0x40010C00)
-#define GPIOA ((GPIO_t*)   0x40010800)
+#define GPIO_BASE 0x40010800
+
+#define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
+#define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
+#define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
 #define USART2 ((USART_t*) 0x40004400)
 #define TIM4	((TIMx_t*) 0x40000800)
 #define TIM2	((TIMx_t*) 0x40000000)
