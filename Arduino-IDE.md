@@ -32,7 +32,15 @@ cd ~/.arduino15/packages/esp32/hardware/esp32/1.0.4
 grep board= boards.txt | cut -f2 -d= | sort -u
 ```
 
+## Boards
 
+```
+http://arduino.esp8266.com/stable/package_esp8266com_index.json
+https://dl.espressif.com/dl/package_esp32_index.json
+https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json
+https://github.com/tenbaht/sduino/raw/master/package_sduino_stm8_index.json
+https://dan.drown.org/stm32duino/package_STM32duino_index.json
+```
 
 
 

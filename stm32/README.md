@@ -17,6 +17,11 @@ Upload stlink
 
 confirmed working 2020-07-04.
 
+Alternative which does not seem as good:
+```
+https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json
+```
+
 ## Unclassified
 
 **2020-07-15** I think I **fried** some of the circuits on the board. Both 3.3V out pins near the STLink connectors seems broken. use the one near the USB port instead. I also suspect some of the SPI pins don't work properly.
