@@ -30,8 +30,11 @@ If flashing not working:
 ## Also in this directory
 
 * [blink](blink) - blinky sketch
-* [de;ay](delay) - uses TIM4
+* [delay](delay) - uses TIM4
 * [usart](usart)
+
+* [gpio](gpio.md) - some notes on GPIO
+
 
 ## Links to other sites
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)

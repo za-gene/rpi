@@ -89,6 +89,7 @@ void *memset(void *b, int c, int len)
 	return(b);
 }
 
+#if 0
 void init_mem()
 {
 	// not called explicitly, but done in crt.s prior to calling main()
@@ -98,6 +99,7 @@ void init_mem()
 	// Clear the .bss section in RAM.
 	memset( &_sbss, 0x00, ( ( void* )&_ebss - ( void* )&_sbss ) );
 }
+#endif
 
 /* reverse() and itoa() from https://www.geeksforgeeks.org/implement-itoa/
 */

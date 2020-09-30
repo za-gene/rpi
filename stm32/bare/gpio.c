@@ -1,5 +1,6 @@
 #include "gpio.h"
 
+#if 0
 void put32(u32 addr, u32 val)
 {
 	*(volatile u32*) addr = val;
@@ -9,6 +10,8 @@ u32 get32(u32 addr)
 {
 	return *(volatile u32*) addr;
 }
+#endif
+
 
 u32 pin_to_gpio(u32 pin)
 {
