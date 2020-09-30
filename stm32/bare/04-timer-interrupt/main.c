@@ -70,6 +70,7 @@ void main()
 	//while(1);
 }
 
+#if 1
 void SystemInit()
 {
 	// TODO
@@ -80,4 +81,4 @@ void __libc_init_array()
 	// TODO
 
 }
-
+#endif

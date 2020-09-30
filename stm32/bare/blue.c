@@ -89,7 +89,7 @@ void *memset(void *b, int c, int len)
 	return(b);
 }
 
-#if 0
+#if 1
 void init_mem()
 {
 	// not called explicitly, but done in crt.s prior to calling main()
