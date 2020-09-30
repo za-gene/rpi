@@ -1,5 +1,6 @@
-#include "../blue.h"
+#include <gpio.h>
 
+#if 0
 // http://embedded-lab.com/blog/stm32-gpio-ports-insights/
 
 /* A more refactored style for the registers can be found at
@@ -93,6 +94,8 @@ void gpio_toggle(u32 pin)
 	else
 		gpio_write(pin, 1);
 }
+
+#endif
 
 void main(void)
 {

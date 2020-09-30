@@ -4,6 +4,7 @@ LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
 CFLAGS = -mthumb -mcpu=cortex-m3
+CFLAGS += -I..
 #CFLAGS += -ggdb -O0
 
 all: app.bin
@@ -14,8 +15,8 @@ crt.o: crt.s
 main.o: main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-app.elf: linker.ld crt.o main.o
-	$(LD) -T linker.ld -o app.elf crt.o main.o
+app.elf: linker.ld crt.o main.o ../libblue.a
+	$(LD) -T linker.ld -o app.elf crt.o main.o -L .. -lblue
 
 app.bin: app.elf
 	$(BIN) -O binary app.elf app.bin

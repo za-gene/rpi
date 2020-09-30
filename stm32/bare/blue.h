@@ -108,3 +108,5 @@ typedef struct {
 
 void init_serial();
 char* itoa(int num, char* str, int base);
+void put32(u32 addr, u32 val);
+u32 get32(u32 addr);

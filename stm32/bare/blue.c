@@ -162,3 +162,12 @@ char* itoa(int num, char* str, int base)
 	return str; 
 } 
 
+void put32(u32 addr, u32 val)
+{
+	*(volatile u32*) addr = val;
+}
+
+u32 get32(u32 addr)
+{
+	return *(volatile u32*) addr;
+}
