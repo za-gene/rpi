@@ -33,6 +33,7 @@ void setup_timer()
 	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
 	TIM4->PSC=7999;
 	TIM4->ARR=1000;
+	//TIM4->ARR=100; // fiddle around for testing purposes
 	TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
 	TIM4->EGR |= (TIM_EGR_TG | TIM_EGR_UG);
 	TIM4->DIER |= 0x01; // UIE enable interrupt
