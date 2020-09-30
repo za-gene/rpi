@@ -10,17 +10,14 @@ CFLAGS += -I..
 
 all: app.bin 
 
-crt1.o: crt1.s
-	$(AS) -o crt1.o crt1.s
+#crt1.o: crt1.s
+#	$(AS) -o crt1.o crt1.s
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
-app.elf: linker.ld crt1.o main.o ../libblue.a
-	#$(LD) -T linker.ld  -o app.elf main.o -L/usr/lib/arm-none-eabi/newlib/thumb  -lc_nano
-	#$(LD) -T linker.ld -o app.elf crt1.o main.o -L .. -lblue
-	$(LD) -T linker.ld -o app.elf main.o crt1.o -L .. -lblue
-	#$(LD) -T linker.ld -o app.elf crt.o main.o -lc
+app.elf: linker.ld main.o ../libblue.a
+	$(LD) -T linker.ld -o app.elf main.o -L .. -lblue
 
 app.bin: app.elf
 	$(BIN) -O binary app.elf app.bin
