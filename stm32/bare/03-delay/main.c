@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include <blue.h>
+#include <gpio.h>
 
 
 void delay(uint16_t ms)
@@ -31,6 +31,7 @@ void delay(uint16_t ms)
 
 void main() 
 {
+	gpio_mode_out(BUILTIN_LED);
 	init_serial();
 	puts("03-delay started");
 	char msg[40];
@@ -38,6 +39,7 @@ void main()
 	putchar('\a'); // beep
 	int secs = 0;
 	while(1) {
+		gpio_toggle(BUILTIN_LED);
 		itoa(secs++, msg, 10);
 		puts(msg);
 		delay(1000);
