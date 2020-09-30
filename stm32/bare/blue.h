@@ -110,3 +110,5 @@ void init_serial();
 char* itoa(int num, char* str, int base);
 void put32(u32 addr, u32 val);
 u32 get32(u32 addr);
+#define disable_irq() asm("CPSID I")
+#define enable_irq() asm("CPSIE I")
