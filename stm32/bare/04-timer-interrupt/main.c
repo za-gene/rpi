@@ -70,7 +70,7 @@ void main()
 	//while(1);
 }
 
-#if 1
+#if 0
 void SystemInit()
 {
 	// TODO

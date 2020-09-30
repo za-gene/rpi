@@ -78,8 +78,9 @@ defined in linker script */
   .type Reset_Handler, %function
 Reset_Handler:
 
-/* Copy the data segment initializers from flash to SRAM */
-  movs r1, #0
+/*
+// Copy the data segment initializers from flash to SRAM 
+  movs r1, #0 
   b LoopCopyDataInit
 
 CopyDataInit:
@@ -96,8 +97,7 @@ LoopCopyDataInit:
   bcc CopyDataInit
   ldr r2, =_sbss
   b LoopFillZerobss
-/* Zero fill the bss segment. */
-FillZerobss:
+FillZerobss: // zero fill the bss segment
   movs r3, #0
   str r3, [r2], #4
 
@@ -108,11 +108,12 @@ LoopFillZerobss:
 
     bl  SystemInit // clock system init
     bl __libc_init_array // call static constructors
-/* Call the application's entry point.*/
-  bl main
+*/
+	bl init_mem // defined in blue.c. Handles data and bss segment
+	bl main // call the app's main entry point
 //hang:
 //	b hang
-  bx lr
+	bx lr
 .size Reset_Handler, .-Reset_Handler
 
 /**
