@@ -23,10 +23,16 @@ typedef uint32_t u32;
 
 // forward declarations
 struct GPIO_t;
+struct SPI_t;
 struct TIMx_t;
 struct USART_t;
 
 #define GPIO_BASE 0x40010800
+
+#define SPI1 ((SPI_t*) 0x40013000)
+#define SPI3 ((SPI_t*) 0x40003C00)
+#define SPI2 ((SPI_t*) 0x40003800)
+
 
 #define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
 #define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
@@ -75,6 +81,20 @@ typedef struct
 	__IO uint32_t BRR; // 0x14
 	__IO uint32_t LCKR; //0x18
 } GPIO_t;
+
+// section 25.5 page 742
+typedef struct {
+	__IO u32 CR1;     // 0x00
+	__IO u32 CR2;     // 0x04
+	__IO u32 SR;      // 0x08
+	__IO u32 DR;      // 0x0C
+	__IO u32 CRCPR;   // 0x10
+	__IO u32 RXCRCR;  // 0x14
+	__IO u32 TXCRCR;  // 0x18
+	__IO u32 I2SCFGR; // 0x1C
+	__IO u32 I2SPR;   // 0x20
+} SPI_t;
+
 
 // section 15.4.18 TIMx register map page 423
 typedef struct {
