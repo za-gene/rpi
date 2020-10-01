@@ -33,6 +33,7 @@ void delay(uint16_t ms)
 	}
 }
 
+#define SPI_SR_RXNE (1<<0)
 #define SPI_SR_TXE (1<<1)
 #define SPI_SR_BSY (1<<7)
 
@@ -46,8 +47,9 @@ void sendByte(int rs_val, u8 val) {
 	// transmit sequence on page 712, section 25.3.5
 	SPI1->DR = (u32)val;
 	while((SPI1->SR & SPI_SR_TXE) != 1); //wait until TXE=1
+	while(!(SPI1->SR & SPI_SR_RXNE)); //wait until TXE=1
 	while(SPI1->SR & SPI_SR_BSY); //wait until BSY=0
-	//(void)SPI1->DR;
+	(void)SPI1->DR;
 
 	//delay(60);
 	gpio_write(cs_pin, HIGH);  
@@ -93,8 +95,8 @@ void gpio_mode_alt_out(u32 pin)
 }
 
 void main() {
-	gpio_mode_out(cs_pin);
-	gpio_write(cs_pin, 1);
+	gpio_mode_alt_out(cs_pin);
+	//gpio_write(cs_pin, 1);
 	gpio_mode_out(rs_pin);
 	gpio_mode_alt_out(PA5);
 	gpio_mode_alt_out(PA7);
@@ -106,7 +108,7 @@ void main() {
 		| SPI_CR1_BIDIOE // transmit only
 		| SPI_CR1_SSM // we'll manage CS pin ourselves
 		| SPI_CR1_MSTR // master mode
-		| (0b010 <<3) // Baud rate. Just a guess for now
+		| (0b111 <<3) // Baud rate. Just a guess for now
 		;
 	SPI1->CR2 |= SPI_CR2_SSOE; // some bizarre output enabling
 	SPI1->CR1 |= SPI_CR1_SPE; // enable SPI
