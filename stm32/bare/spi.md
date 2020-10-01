@@ -32,6 +32,7 @@ See also: [video](https://www.youtube.com/watch?v=HjMF4w8QTn8)
 DFF = 0 means an 8-bit data frame, Set to 1 for 16-bit data frame. This bit should be written only when SPI is disabled (SPE=0).
 
 PA4 SPI1\_NSS, PA5 SPI1\_SCK, PA6 SPI1\_MISO, PA7 SPI\_MOSI
+```
 void setupSPI()
 {
 // turn on the clocks
@@ -57,13 +58,14 @@ SPI1->CR2 |= spi_cr2_ssoe;
 
 SPI_CR1_SPE; // enable SPI
 }
+```
 
-
-
+```
 void spi_send(u8 data)
 {
 spi1->dr = data;
 while(!(spi1->sr & spi_sr_txe)); // wait until the data is transmitted
 }
+```
 
 See also: [video](https://www.youtube.com/watch?v=0kFb6_f9u8w)

@@ -63,11 +63,41 @@ void sendByte(int rs_val, u8 val) {
 #define SPI_CR1_BIDIOE (1<<14)
 
 #define SPI_CR2_SSOE (1<<2)
+u32 pin_to_gpio_1(u32 pin)
+{
+	u32 port = pin>>4;
+	return GPIO_BASE + port*0x400;
+}
+
+void gpio_mode_alt_out(u32 pin)
+{
+	u32 port = pin >>4; // gives 0 for Port A, 1 for port B, 2 for port C
+
+	// enable the port only if it not enabled
+	//u32 port_enabled = RCC_APB2ENR & (1 << (port+2));
+	//if(port_enabled == 0) 
+	RCC_APB2ENR |= (1 << (port+2)); // enable port
+
+	u32 GPIOx_CRx = pin_to_gpio_1(pin) + 0x00; // assume GPIOx_CRL
+	u32 pin_num = pin & 0x0F;
+	if(pin_num > 7) {
+		GPIOx_CRx += 0x04; // bump to GPIOx_CRH;
+		pin_num -= 8;
+	}
+	u32 mask = 0b1111 << (pin_num*4);
+	*(volatile u32*) GPIOx_CRx &= ~mask; // mask out the mode and CNF
+	*(volatile u32*) GPIOx_CRx |= (0b1010<< (pin_num*4)) ; //  CNF output push-pull, max speed 2MHz
+	//GPIOC->CRH   |= 0x00200000;
+	//gpio_write(pin, 0);
+
+}
 
 void main() {
 	gpio_mode_out(cs_pin);
 	gpio_write(cs_pin, 1);
 	gpio_mode_out(rs_pin);
+	gpio_mode_alt_out(PA5);
+	gpio_mode_alt_out(PA7);
 
 	// setup SPI as master, transmit only
 	RCC_APB2ENR |= (1<<2); // enable port A, where our SPI is
