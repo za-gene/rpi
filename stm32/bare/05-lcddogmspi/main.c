@@ -55,9 +55,13 @@ void sendByte(int rs_val, u8 val) {
 }
 
 #define RCC_APB2ENR_SPI1EN (1<<12)
+
 #define SPI_CR1_SPE (1<<6)
 #define SPI_CR1_SSM (1<<9)
 #define SPI_CR1_MSTR (1<<2)
+#define SPI_CR1_BIDIMODE (1<<15)
+#define SPI_CR1_BIDIOE (1<<14)
+
 #define SPI_CR2_SSOE (1<<2)
 
 void main() {
@@ -68,9 +72,11 @@ void main() {
 	// setup SPI as master, transmit only
 	RCC_APB2ENR |= (1<<2); // enable port A, where our SPI is
 	RCC_APB2ENR |= RCC_APB2ENR_SPI1EN; // enable SPI1
-	SPI1->CR1 |= SPI_CR1_SSM // we'll manage CS pin ourselves
+	SPI1->CR1 |= SPI_CR1_BIDIMODE // 1-line bi-directional
+		| SPI_CR1_BIDIOE // transmit only
+		| SPI_CR1_SSM // we'll manage CS pin ourselves
 		| SPI_CR1_MSTR // master mode
-		| (0b111 <<3) // Baud rate. Just a guess for now
+		| (0b010 <<3) // Baud rate. Just a guess for now
 		;
 	SPI1->CR2 |= SPI_CR2_SSOE; // some bizarre output enabling
 	SPI1->CR1 |= SPI_CR1_SPE; // enable SPI
