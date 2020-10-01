@@ -39,16 +39,17 @@ void delay(uint16_t ms)
 
 /* rs_val = LOW to send command, HIGH to send ASCII char 
 */
-void sendByte(int rs_val, int val) {
+void sendByte(int rs_val, u8 val) {
 	gpio_write(rs_pin, rs_val);
 	gpio_write(cs_pin, LOW);
 	
 	// transmit sequence on page 712, section 25.3.5
-	SPI1->DR = val;
+	SPI1->DR = (u32)val;
 	while((SPI1->SR & SPI_SR_TXE) != 1); //wait until TXE=1
-	//while(SPI1->SR & SPI_SR_BSY); //wait until BSY=0
+	while(SPI1->SR & SPI_SR_BSY); //wait until BSY=0
 	//(void)SPI1->DR;
 
+	//delay(60);
 	gpio_write(cs_pin, HIGH);  
 	delay(60);
 }
@@ -69,7 +70,7 @@ void main() {
 	RCC_APB2ENR |= RCC_APB2ENR_SPI1EN; // enable SPI1
 	SPI1->CR1 |= SPI_CR1_SSM // we'll manage CS pin ourselves
 		| SPI_CR1_MSTR // master mode
-		| (0b100 <<3) // Baud rate. Just a guess for now
+		| (0b111 <<3) // Baud rate. Just a guess for now
 		;
 	SPI1->CR2 |= SPI_CR2_SSOE; // some bizarre output enabling
 	SPI1->CR1 |= SPI_CR1_SPE; // enable SPI
@@ -81,7 +82,7 @@ void main() {
 	//Serial.println(sizeof(cmds));
 
 	// now send some intersting output
-	uint8_t msg[] = {'S', 'T', 'M', '3', '2'};
+	u8 msg[] = {'S', 'T', 'M', '3', '2'};
 	for(int i=0; i<sizeof(msg); ++i) sendByte(HIGH, msg[i]);
 	//Serial.println(sizeof(msg));
 
