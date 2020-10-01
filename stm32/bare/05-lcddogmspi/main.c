@@ -47,7 +47,7 @@ void sendByte(int rs_val, int val) {
 	SPI1->DR = val;
 	while((SPI1->SR & SPI_SR_TXE) != 1); //wait until TXE=1
 	//while(SPI1->SR & SPI_SR_BSY); //wait until BSY=0
-	(void)SPI1->DR;
+	//(void)SPI1->DR;
 
 	gpio_write(cs_pin, HIGH);  
 	delay(60);
@@ -69,7 +69,7 @@ void main() {
 	RCC_APB2ENR |= RCC_APB2ENR_SPI1EN; // enable SPI1
 	SPI1->CR1 |= SPI_CR1_SSM // we'll manage CS pin ourselves
 		| SPI_CR1_MSTR // master mode
-		| 0b100 <<3 // Baud rate. Just a guess for now
+		| (0b100 <<3) // Baud rate. Just a guess for now
 		;
 	SPI1->CR2 |= SPI_CR2_SSOE; // some bizarre output enabling
 	SPI1->CR1 |= SPI_CR1_SPE; // enable SPI
