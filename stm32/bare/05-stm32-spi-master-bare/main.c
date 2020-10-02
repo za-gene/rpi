@@ -58,9 +58,10 @@ void sendByte(int rs_val, u8 val) {
 
 #define RCC_APB2ENR_SPI1EN (1<<12)
 
-#define SPI_CR1_SPE (1<<6)
-#define SPI_CR1_SSM (1<<9)
 #define SPI_CR1_MSTR (1<<2)
+#define SPI_CR1_SPE (1<<6)
+#define SPI_CR1_SSI (1<<8)
+#define SPI_CR1_SSM (1<<9)
 #define SPI_CR1_BIDIMODE (1<<15)
 #define SPI_CR1_BIDIOE (1<<14)
 
