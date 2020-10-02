@@ -1,7 +1,7 @@
-#include <string.h>
-#include <stddef.h> // for size_t
-#include <stdio.h>
-#include "../blue.h"
+//#include <string.h>
+//#include <stddef.h> // for size_t
+//#include <stdio.h>
+#include <blue.h>
 
 
 char greeting[] = "Hello from bare metal usart 8";

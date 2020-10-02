@@ -30,6 +30,8 @@ struct USART_t;
 
 #define GPIO_BASE 0x40010800
 
+#define USART1 ((USART_t*) 0x40013400)
+
 #define SPI1 ((SPI_t*) 0x40013000)
 #define SPI3 ((SPI_t*) 0x40003C00)
 #define SPI2 ((SPI_t*) 0x40003800)
@@ -38,6 +40,9 @@ struct USART_t;
 #define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
 #define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
 #define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
+#define USART5 ((USART_t*) 0x40005000)
+#define USART4 ((USART_t*) 0x40004C00)
+#define USART3 ((USART_t*) 0x40004800)
 #define USART2 ((USART_t*) 0x40004400)
 #define TIM4	((TIMx_t*) 0x40000800)
 #define TIM2	((TIMx_t*) 0x40000000)
