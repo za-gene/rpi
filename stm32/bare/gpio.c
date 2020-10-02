@@ -15,21 +15,29 @@ void gpio_write(u32 pin, u32 val)
 
 }
 
+// return either GPIO_CRL, GPIO_CRH, and a pin offset into it
+static void gpio_crx_offset(u32 pin, u32 *crx, u32 *offset)
+{
+	*crx = pin_to_gpio(pin) + 0x00; // assume GPIOx_CRL
+	u32 pin_num = pin & 0x0F;
+	if(pin_num > 7) {
+		*crx += 0x04; // bump to GPIOx_CRH;
+		pin_num -= 8;
+	}
+	*offset = pin_num*4;
+}
+
 void gpio_mode(u32 pin, u8 mode)
 {
 	u32 port = pin >>4; // gives 0 for Port A, 1 for port B, 2 for port C
 
 	RCC_APB2ENR |= (1 << (port+2)); // enable port
 
-	u32 GPIOx_CRx = pin_to_gpio(pin) + 0x00; // assume GPIOx_CRL
-	u32 pin_num = pin & 0x0F;
-	if(pin_num > 7) {
-		GPIOx_CRx += 0x04; // bump to GPIOx_CRH;
-		pin_num -= 8;
-	}
-	u32 mask = 0b1111 << (pin_num*4);
-	*(volatile u32*) GPIOx_CRx &= ~mask; // mask out the mode and CNF
-	*(volatile u32*) GPIOx_CRx |= (((u32)mode)<< (pin_num*4)); 
+	u32 crx, offset;
+	gpio_crx_offset(pin, &crx, &offset);
+	u32 mask = 0b1111 << offset;
+	*(volatile u32*) crx &= ~mask; // mask out the mode and CNF
+	*(volatile u32*) crx |= (((u32)mode)<< offset); 
 }
 
 void gpio_mode_out(u32 pin)
@@ -53,9 +61,30 @@ void gpio_toggle(u32 pin)
 
 u8 gpio_read(u32 pin)
 {
-	u32 GPIO_IDR = pin_to_gpio(pin) + 0x08;
-	u32 on = get32(GPIO_IDR) & (1<<(pin & 0xF));
+	u32 crx, offset;
+	gpio_crx_offset(pin, &crx, &offset);
+	u32 config = get32(crx); // the CNF and MODE settings for the whole port
+	u32 mode = config & ( 0b11 << offset); // mask out non-MODE bits
+
+	// determine whether to read IDR or ODR
+	u32 addr = pin_to_gpio(pin); // GPIO A/B/C
+	if(mode) { 
+		// it's an output
+		addr += 0x0C; // we're now pointing to GPIOx_ODR
+	} else {
+		addr += 0x08; // we're now pointint to GPIOx_IDR
+	}
+
+	u32 port_data = get32(addr);
+	if(port_data & (1<< (pin & 0xF)))
+		return 1;
+	else
+		return 0;
+#if 0
+	u32 GPIO_ODR = pin_to_gpio(pin) + 0x0C;
+	u32 on = get32(GPIO_ODR) & (1<<(pin & 0xF));
 	if(on) return 1;
 	return 0;
+#endif
 }
 
