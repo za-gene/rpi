@@ -68,13 +68,16 @@ u8 gpio_read(u32 pin)
 
 	// determine whether to read IDR or ODR
 	u32 addr = pin_to_gpio(pin); // GPIO A/B/C
+#if 1
 	if(mode) { 
 		// it's an output
 		addr += 0x0C; // we're now pointing to GPIOx_ODR
 	} else {
 		addr += 0x08; // we're now pointint to GPIOx_IDR
 	}
-
+#else
+	addr += 0x0C;
+#endif
 	u32 port_data = get32(addr);
 	if(port_data & (1<< (pin & 0xF)))
 		return 1;

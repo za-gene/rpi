@@ -15,7 +15,8 @@ void main(void)
 	gpio_mode(PC15, OUTPUT);
 
 	gpio_mode(BTN_LED, OUTPUT);
-	gpio_mode(BTN, INPUT_PULLUP);
+	gpio_mode(BTN, INPUT_PULLUP); // doesn't seem to work properly
+	gpio_mode(BTN, INPUT); // HIGHLY SUSPICIOUS
 
 	gpio_write(PA7, 1); // set it high permanently
 
