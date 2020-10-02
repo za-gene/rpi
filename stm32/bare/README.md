@@ -35,6 +35,8 @@ If flashing not working:
 
 * [gpio](gpio.md) - some notes on GPIO
 
+* [reng-spi-master](reng-spi-master) - reverse engineering a SPI master
+
 
 ## Links to other sites
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
