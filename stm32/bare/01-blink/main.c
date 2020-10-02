@@ -10,7 +10,7 @@ void main(void)
 	gpio_mode_out(PA7);
 	gpio_mode_out(PB1);
 	gpio_mode_out(PB13);
-	gpio_mode_out(PC15);
+	gpio_mode(PC15, INPUT_PULLUP);
 
 	gpio_write(PA7, 1); // set it high permanently
 
@@ -20,7 +20,6 @@ void main(void)
 	while(1)
 	{
 		gpio_toggle(PA4);
-		gpio_toggle(PB1);
 		gpio_toggle(PC15);
 		gpio_write(BUILTIN_LED, 1);
 
@@ -28,8 +27,9 @@ void main(void)
 		for (i = 0; i < 500000; i++); // arbitrary delay
 		gpio_write(BUILTIN_LED, 0);
 		gpio_write(PB13, 0);
-		gpio_toggle(PB1);
 		for (i = 0; i < 500000; i++); // arbitrary delay
+
+		gpio_write(PC15, ~gpio_read(PA5)); 
 	}
 }
 

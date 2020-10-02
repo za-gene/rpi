@@ -40,12 +40,22 @@ void gpio_mode_out(u32 pin)
 
 void gpio_toggle(u32 pin)
 {
+	gpio_write(pin, 1-gpio_read(pin));
+#if 0
 	u32 GPIO_ODR = pin_to_gpio(pin) + 0x0C;
 	u32 on = get32(GPIO_ODR) &  (1<<(pin & 0xF));
 	if(on)
 		gpio_write(pin, 0);
 	else
 		gpio_write(pin, 1);
+#endif
 }
 
+u8 gpio_read(u32 pin)
+{
+	u32 GPIO_IDR = pin_to_gpio(pin) + 0x08;
+	u32 on = get32(GPIO_IDR) & (1<<(pin & 0xF));
+	if(on) return 1;
+	return 0;
+}
 

@@ -40,3 +40,4 @@ void gpio_write(u32 pin, u32 val);
 void gpio_mode(u32 pin, u8 mode);
 void gpio_mode_out(u32 pin);
 void gpio_toggle(u32 pin);
+u8 gpio_read(u32 pin);
