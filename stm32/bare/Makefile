@@ -8,8 +8,6 @@ OBJS = blue.o gpio.o crt.o usart.o
 libblue.a : $(OBJS)
 	ar rcs $@ $^
 
-#blue.o : blue.c blue.h
-
 %.o : %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
