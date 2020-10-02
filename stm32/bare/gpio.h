@@ -29,10 +29,11 @@
 
 #define BUILTIN_LED PC13
 
-// section 9.2.1 and 9.2.2 
+// section 9.2.1 and 9.2.2 CNF/MODE combos
 #define INPUT  		0b0100 // CNF=1, MODE=0, floating input
 #define INPUT_PULLUP 	0b1000 // CNF=2, MODE =0. input with pull-up/down
-#define OUTPUT 		0b0010 // CNF=0, MODE=1, output 2MHz push-pull ("regular" out)
+#define OUTPUT 		0b0011 // CNF=0, MODE=1, output 50MHz push-pull ("regular" out)
+#define OUTPUT_ALT	0b1011 // alt out push-pull, 50MHz
 
 u32 pin_to_gpio(u32 pin);
 void gpio_write(u32 pin, u32 val);

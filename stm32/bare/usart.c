@@ -24,8 +24,8 @@ void usart_2()
 void usart_1()
 {
 	RCC_APB2ENR  |=  RCC_APB2ENR_USART1EN;
-	RCC_APB2ENR  |=  RCC_APB2ENR_IOPAEN;
-	gpio_mode(PA9, OUTPUT);
+	//RCC_APB2ENR  |=  RCC_APB2ENR_IOPAEN;
+	gpio_mode(PA9, OUTPUT_ALT);
 	gpio_mode(PA10, INPUT);
 
 }

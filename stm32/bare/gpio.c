@@ -31,7 +31,9 @@ void gpio_mode(u32 pin, u8 mode)
 {
 	u32 port = pin >>4; // gives 0 for Port A, 1 for port B, 2 for port C
 
-	RCC_APB2ENR |= (1 << (port+2)); // enable port
+	// only enable port if currently unenabled
+	if((RCC_APB2ENR & (1<<(port+2))) == 0)
+		RCC_APB2ENR |= (1 << (port+2)); // enable port
 
 	u32 crx, offset;
 	gpio_crx_offset(pin, &crx, &offset);
