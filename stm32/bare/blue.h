@@ -30,7 +30,7 @@ struct USART_t;
 
 #define GPIO_BASE 0x40010800
 
-#define USART1 ((USART_t*) 0x40013400)
+#define USART1 ((USART_t*) 0x40013800)
 
 #define SPI1 ((SPI_t*) 0x40013000)
 #define SPI3 ((SPI_t*) 0x40003C00)
@@ -56,8 +56,12 @@ struct USART_t;
 #define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
 #define RCC_APB1ENR_TIM4EN (1<<2)
 #define RCC_APB1ENR_USART2EN	(1<<17)
+
 #define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
+#define RCC_APB2ENR_USART1EN (1<<14)
 #define RCC_APB2ENR_IOPAEN	(1<<2)
+
+
 #define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
 
 #define GPIO_CRL_CNF2_Pos 10 // page 171
@@ -132,8 +136,6 @@ typedef struct {
 	__IO uint32_t GTPT; // 0x18
 } USART_t;
 
-void init_serial();
-char* itoa(int num, char* str, int base);
 void put32(u32 addr, u32 val);
 u32 get32(u32 addr);
 #define disable_irq() asm("CPSID I")

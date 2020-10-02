@@ -4,13 +4,8 @@
 
 #define _USART USART1 // the default USART we're going to use
 
-void init_serial()
+void usart_2()
 {
-
-	// Set the core system clock speed.
-	// Default clock source is the 8MHz internal oscillator.
-	uint32_t SystemCoreClock = 8000000;
-
 	// Enable peripheral clocks and set up GPIO pins.
 	// Enable peripheral clocks: GPIOA, USART2.
 	RCC_APB1ENR  |=  ( RCC_APB1ENR_USART2EN );
@@ -24,6 +19,25 @@ void init_serial()
 			( 0x2 << GPIO_CRL_CNF2_Pos ) |
 			( 0x0 << GPIO_CRL_MODE3_Pos ) |
 			( 0x1 << GPIO_CRL_CNF3_Pos ) );
+}
+
+void usart_1()
+{
+	RCC_APB2ENR  |=  RCC_APB2ENR_USART1EN;
+	RCC_APB2ENR  |=  RCC_APB2ENR_IOPAEN;
+	gpio_mode(PA9, OUTPUT);
+	gpio_mode(PA10, INPUT);
+
+}
+
+void init_serial()
+{
+
+	// Set the core system clock speed.
+	// Default clock source is the 8MHz internal oscillator.
+	uint32_t SystemCoreClock = 8000000;
+
+	usart_1();
 
 	// Set the baud rate
 	uint32_t baud_rate = 115200;

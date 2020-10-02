@@ -16,6 +16,8 @@
 #define PA4  0x04
 #define PA5  0x05
 #define PA7  0x07
+#define PA9  0x09
+#define PA10 0x0A
 #define PA13 0x0D
 #define PB0  0x10
 #define PB1  0x11

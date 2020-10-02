@@ -1,14 +1,14 @@
 //#include <string.h>
 //#include <stddef.h> // for size_t
 //#include <stdio.h>
-#include <blue.h>
+//#include <blue.h>
+#include <usart.h>
 
-
-char greeting[] = "Hello from bare metal usart 8";
 
 
 void main() 
 {
+char greeting[] = "Hello from bare metal usart 8";
 	init_serial();
 	putchar('\a'); // beep
 	puts(greeting);
