@@ -12,7 +12,6 @@ LDFLAGS = -L${STM32} -T linker.ld
 all: app.bin 
 
 main.o: main.c
-	echo $(LDFLAGS)
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 app.elf: main.o 

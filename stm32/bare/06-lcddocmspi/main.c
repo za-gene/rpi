@@ -1,9 +1,5 @@
 #include <gpio.h>
 #include <spi.h>
-#include <usart.h>
-
-// just a template at this stage
-
 
 u8 spi_transfer(u8 data)
 {
@@ -34,36 +30,41 @@ void init_spi()
 	SPI1->CR1 |= baud;
 
 	SPI1->CR1 |= SPI_CR1_SPE; // enable
-	//SPI1->CR1 = 852;
-	//SPI1->CR1 = 0b001101010100;
-	//GPIOA->CRL = 0b10110100101100110100010001000100;
 }
 
 
-#define SS PA4
+#define rs_pin PB0
+#define cs_pin PA4
+
+#define digitalWrite gpio_write
+
+void sendByte(int rs_val, int val) {
+	digitalWrite(rs_pin, rs_val);
+	digitalWrite(cs_pin, LOW);
+	spi_transfer(val);
+	digitalWrite(cs_pin, HIGH);  
+	for(int i=0; i< 500; i++) nop(); // simple delay to allow for catchup
+}
+
 
 void main()
 {
-	gpio_mode(SS, OUTPUT);
-	gpio_write(SS, HIGH);
-	init_serial();
+	gpio_mode(cs_pin, OUTPUT);
+	gpio_write(cs_pin, HIGH);
+	gpio_mode(rs_pin, OUTPUT);
+
 	init_spi();
-	puts("simple spi example");
-	beep();
 
-	while(1) {
-		u8 data = 0b01010101; // junk data to illustrate usage
+	u8 contrast = 0x70  | 0b1000; // from 0x7C
+	u8 display = 0b1111; // ori 0x0F
+	uint8_t cmds[] = {0x39, 0x1D, 0x50, 0x6C, contrast , 0x38, display, 0x01, 0x06};
+	for(int i=0; i<sizeof(cmds); ++i) sendByte(LOW, cmds[i]);
 
-		gpio_write(SS, LOW); //pull SS slow to prep other end for transfer
-		data = spi_transfer(data);
-		gpio_write(SS, HIGH); //pull ss high to signify end of data transfer
+	// now send some interesting output
+	uint8_t msg[] = {'S', 'T', 'M', '3', '2'};
+	for(int i=0; i<sizeof(msg); ++i) sendByte(HIGH, msg[i]);
 
-		print("stm32 master: slave returned: ");
-		char buff[4];
-		puts(itoa(data, buff, 10));
-
-		for(int i=0; i< 600000; i++) nop(); // simple delay
-	}
+	while(1);
 }
 
 
