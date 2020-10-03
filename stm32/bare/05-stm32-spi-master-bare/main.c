@@ -57,6 +57,7 @@ void sendByte(int rs_val, u8 val) {
 	delay(60);
 }
 
+#define RCC_APB2ENR_AFIOEN (1<<0)
 #define RCC_APB2ENR_SPI1EN (1<<12)
 
 #define SPI_CR1_MSTR (1<<2)
@@ -67,71 +68,32 @@ void sendByte(int rs_val, u8 val) {
 #define SPI_CR1_BIDIOE (1<<14)
 
 #define SPI_CR2_SSOE (1<<2)
-u32 pin_to_gpio_1(u32 pin)
-{
-	u32 port = pin>>4;
-	return GPIO_BASE + port*0x400;
-}
 
-void gpio_mode_alt_out(u32 pin)
-{
-	u32 port = pin >>4; // gives 0 for Port A, 1 for port B, 2 for port C
-
-	// enable the port only if it not enabled
-	//u32 port_enabled = RCC_APB2ENR & (1 << (port+2));
-	//if(port_enabled == 0) 
-	RCC_APB2ENR |= (1 << (port+2)); // enable port
-
-	u32 GPIOx_CRx = pin_to_gpio_1(pin) + 0x00; // assume GPIOx_CRL
-	u32 pin_num = pin & 0x0F;
-	if(pin_num > 7) {
-		GPIOx_CRx += 0x04; // bump to GPIOx_CRH;
-		pin_num -= 8;
-	}
-	u32 mask = 0b1111 << (pin_num*4);
-	*(volatile u32*) GPIOx_CRx &= ~mask; // mask out the mode and CNF
-	*(volatile u32*) GPIOx_CRx |= (0b1010<< (pin_num*4)) ; //  CNF output push-pull, max speed 2MHz
-	//GPIOC->CRH   |= 0x00200000;
-	//gpio_write(pin, 0);
-
-}
-
-u8 spi_transfer_1(u8 data)
-{
-	//data =SPI1->DR; // read any previous data
-
-	// wait until transmission complete
-	puts("-");
-	while(!(SPI1->SR & SPI_SR_TXE));
-	SPI1->DR = data; // write the data
-	puts(".");
-	//while(!(SPI1->SR & SPI_SR_RXNE));
-	data = SPI1->DR;
-	puts("%");
-	//while(SPI1->SR & SPI_SR_BSY);
-
-	return data;
-	//return (u8)SPI1->DR; // return the result
-}
 
 u8 spi_transfer(u8 data)
 {
-	while(!(SPI1->SR & SPI_SR_RXNE));
-	data = SPI1->DR;
-	SPI1->DR = 0;
-	return data;
+	SPI1->DR; // read any previous data
+	SPI1->DR = data; // write the data
+
+	// wait until transmission complete
+	while (!(SPI1->SR & SPI_SR_TXE));
+	while (SPI1->SR & SPI_SR_BSY);
+
+	return (u8)SPI1->DR; // return the result
 }
+
 
 void init_spi()
 {
+	RCC_APB2ENR |= RCC_APB2ENR_SPI1EN | RCC_APB2ENR_AFIOEN; 
+
 	gpio_mode(PA5, OUTPUT_ALT);
 	gpio_mode(PA6, INPUT);
 	gpio_mode(PA7, OUTPUT_ALT);
 
 	SPI1->CR1 = 852;
 	//SPI1->CR1 = 0b001101010100;
-	RCC_APB2ENR |= 1<<12; // SPI1EN
-	//GPIOA->CRL = 0b10110100101100110100010001000100;
+	GPIOA->CRL = 0b10110100101100110100010001000100;
 }
 
 #define nop() asm volatile ("nop")
@@ -152,52 +114,20 @@ void main()
 		u8 data = 0b01010101; // junk data to illustrate usage
 
 		gpio_write(SS, LOW); //pull SS slow to prep other end for transfer
-		data = spi_transfer_1(data);
+		data = spi_transfer(data);
 		gpio_write(SS, HIGH); //pull ss high to signify end of data transfer
-		
+
 		//ser.print("stm32 master: slave returned: ");  ser.println(res);
 		char buff[4];
 		puts("stm32 master: slave returned: ");
 		puts(itoa(data, buff, 10));
 
 		// simple delay
-		for(int i=0; i< 500000; i++) nop();
+		for(int i=0; i< 600000; i++) nop();
 		//delay(1000);
 	}
 }
 
-void main_x() {
-	gpio_mode_alt_out(cs_pin);
-	//gpio_write(cs_pin, 1);
-	gpio_mode_out(rs_pin);
-	gpio_mode_alt_out(PA5);
-	gpio_mode_alt_out(PA7);
-
-	// setup SPI as master, transmit only
-	RCC_APB2ENR |= (1<<2); // enable port A, where our SPI is
-	RCC_APB2ENR |= RCC_APB2ENR_SPI1EN; // enable SPI1
-	SPI1->CR1 |= SPI_CR1_BIDIMODE // 1-line bi-directional
-		| SPI_CR1_BIDIOE // transmit only
-		| SPI_CR1_SSM // we'll manage CS pin ourselves
-		| SPI_CR1_MSTR // master mode
-		| (0b111 <<3) // Baud rate. Just a guess for now
-		;
-	SPI1->CR2 |= SPI_CR2_SSOE; // some bizarre output enabling
-	SPI1->CR1 |= SPI_CR1_SPE; // enable SPI
-
-	u8 contrast = 0x70  | 0b1000; // from 0x7C
-	u8 display = 0b1111; // ori 0x0F
-	u8 cmds[] = {0x39, 0x1D, 0x50, 0x6C, contrast , 0x38, display, 0x01, 0x06};
-	for(int i=0; i<sizeof(cmds); ++i) sendByte(LOW, cmds[i]);
-	//Serial.println(sizeof(cmds));
-
-	// now send some intersting output
-	u8 msg[] = {'S', 'T', 'M', '3', '2'};
-	for(int i=0; i<sizeof(msg); ++i) sendByte(HIGH, msg[i]);
-	//Serial.println(sizeof(msg));
-
-	while(1);
-}
 
 
 

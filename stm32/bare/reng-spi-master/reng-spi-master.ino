@@ -96,7 +96,7 @@ static const int spiClk = 250000; // 250kHz
 
 void  init_spi() {
 
-  //SPI1x->CR1 = 852;
+  //NB RCC_APB2ENR_AFIOEN is already enabled
   RCC_APB2ENR |= RCC_APB2ENR_SPI1EN;
   SPI1->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_MSTR ;
 
