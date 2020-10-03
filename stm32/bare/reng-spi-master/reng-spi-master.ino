@@ -4,6 +4,8 @@
 /*
    a minimal example that works
 
+   some reverse engineering notes at db5.194
+
 */
 
 typedef uint8_t u8;

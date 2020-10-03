@@ -1,4 +1,6 @@
 # spi master
 
-DOESN'T WORK
+## See also
+
+* db5.194
 
