@@ -2,8 +2,8 @@
 // /home/pi/.arduino15/packages/stm32duino/hardware/STM32F1/2020.6.20/libraries/SPI/src/SPI.cpp
 
 /*
- * a minimal example that works
- */
+   a minimal example that works
+*/
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -26,6 +26,7 @@ typedef struct {
 } SPI_t;
 
 #define SPI1x ((SPI_t*) 0x40013000)
+#define SPI1 SPI1x
 //#define SPI3 ((SPI_t*) 0x40003C00)
 //#define SPI2 ((SPI_t*) 0x40003800)
 
@@ -51,13 +52,13 @@ typedef struct {
 
 typedef struct
 {
-        __IO uint32_t CRL; // 0x00
-        __IO uint32_t CRH; // 0x04
-        __IO uint32_t IDR; // 0x08
-        __IO uint32_t ODR; // 0x0C
-        __IO uint32_t BSRR; // 0x10
-        __IO uint32_t BRR; // 0x14
-        __IO uint32_t LCKR; //0x18
+  __IO uint32_t CRL; // 0x00
+  __IO uint32_t CRH; // 0x04
+  __IO uint32_t IDR; // 0x08
+  __IO uint32_t ODR; // 0x0C
+  __IO uint32_t BSRR; // 0x10
+  __IO uint32_t BRR; // 0x14
+  __IO uint32_t LCKR; //0x18
 } GPIO_t;
 
 #define GPIO_BASE 0x40010800
@@ -86,31 +87,35 @@ void pu32(char* str, u32 v) {
   ser.println("");
 
 }
-#include <SPI.h>
+//#include <SPI.h>
 
 #define SS PA4
 static const int spiClk = 250000; // 250kHz
+
+void  init_spi() {
+#if 0
+  SPI.begin();
+  SPI.setClockDivider(SPI_CLOCK_DIV8);//divide the clock by 8
+  //SPI.setClockDivider(SPI_CLOCK_DIV16);//divide the clock by 8
+#else
+  //pinMode(PA5, OUTPUT);
+  //pinMode(PA6,INPUT);
+  //pinMode(PA7, OUTPUT);
+  SPI1x->CR1 = 852;
+  RCC_APB2ENR |= 1 << 12; // SPI1EN
+  GPIOA->CRL = 0b10110100101100110100010001000100;
+#endif
+}
 
 void setup() {
   pinMode(SS, OUTPUT);
   digitalWrite(SS, HIGH);
 
   ser.begin(115200);
-  ser.println("Hello from stm32 spi master 2");
+  ser.println("Hello from stm32 spi master 3");
 
   pu32("CRL", GPIOA->CRL);
-#if 0
-  SPI.begin();
-  SPI.setClockDivider(SPI_CLOCK_DIV8);//divide the clock by 8
-  //SPI.setClockDivider(SPI_CLOCK_DIV16);//divide the clock by 8
-#else
-//pinMode(PA5, OUTPUT);
-//pinMode(PA6,INPUT);
-//pinMode(PA7, OUTPUT);
-  SPI1x->CR1 = 852;
-  RCC_APB2ENR |= 1<<12; // SPI1EN
-  GPIOA->CRL = 0b10110100101100110100010001000100;
-#endif
+  init_spi();
   pu32("CRL", GPIOA->CRL);
 }
 
@@ -123,20 +128,20 @@ void spi_tx_reg(u8 data) { // guess - seems OK
 }
 
 void waitSpiTxEnd() { // seems to corespond with official
-  while(!(SPI1x->SR & SPI_SR_TXE));
-  while(SPI1x->SR & SPI_SR_BSY);
+  while (!(SPI1x->SR & SPI_SR_TXE));
+  while (SPI1x->SR & SPI_SR_BSY);
 }
 
 /*
-static inline void waitSpiTxEnd(spi_dev *spi_d)
-{
+  static inline void waitSpiTxEnd(spi_dev *spi_d)
+  {
     while (spi_is_tx_empty(spi_d) == 0); // wait until TXE=1
     while (spi_is_busy(spi_d) != 0); // wait until BSY=0
-}
+  }
 */
 
 //This actually works!!!
-int spi_transfer(u8 data) {
+int spi_transfer_1(u8 data) {
 #if 0
   return SPI.transfer(data);
 #else
@@ -146,6 +151,22 @@ int spi_transfer(u8 data) {
   return (u8)spi_rx_reg();
 #endif
 }
+
+u8 spi_transfer(u8 data)
+{
+  SPI1->DR; // read any previous data
+  SPI1->DR = data; // write the data
+
+  // wait until transmission complete
+  while (!(SPI1->SR & SPI_SR_TXE));
+  while (SPI1->SR & SPI_SR_BSY);
+
+  return (u8)SPI1->DR; // return the result
+}
+
+
+
+
 void loop() {
   byte data = 0b01010101; // junk data to illustrate usage
 

@@ -96,23 +96,42 @@ void gpio_mode_alt_out(u32 pin)
 
 }
 
-u8 spi_transfer(u8 data)
+u8 spi_transfer_1(u8 data)
 {
-	SPI1->DR; // read any previous data
-	SPI1->DR = data; // write the data
+	//data =SPI1->DR; // read any previous data
 
 	// wait until transmission complete
+	puts("-");
 	while(!(SPI1->SR & SPI_SR_TXE));
-	while(SPI1->SR & SPI_SR_BSY);
+	SPI1->DR = data; // write the data
+	puts(".");
+	//while(!(SPI1->SR & SPI_SR_RXNE));
+	data = SPI1->DR;
+	puts("%");
+	//while(SPI1->SR & SPI_SR_BSY);
 
-	return (u8)SPI1->DR; // return the result
+	return data;
+	//return (u8)SPI1->DR; // return the result
+}
+
+u8 spi_transfer(u8 data)
+{
+	while(!(SPI1->SR & SPI_SR_RXNE));
+	data = SPI1->DR;
+	SPI1->DR = 0;
+	return data;
 }
 
 void init_spi()
 {
+	gpio_mode(PA5, OUTPUT_ALT);
+	gpio_mode(PA6, INPUT);
+	gpio_mode(PA7, OUTPUT_ALT);
+
 	SPI1->CR1 = 852;
+	//SPI1->CR1 = 0b001101010100;
 	RCC_APB2ENR |= 1<<12; // SPI1EN
-	GPIOA->CRL = 0b10110100101100110100010001000100;
+	//GPIOA->CRL = 0b10110100101100110100010001000100;
 }
 
 #define nop() asm volatile ("nop")
@@ -123,16 +142,17 @@ void main()
 {
 	gpio_mode(SS, OUTPUT);
 	gpio_write(SS, HIGH);
-	init_spi();
 	init_serial();
+	init_spi();
 	puts("simple spi example 1");
 	putchar('\a');
 
+	//SPI1->DR = 0;
 	while(1) {
 		u8 data = 0b01010101; // junk data to illustrate usage
 
 		gpio_write(SS, LOW); //pull SS slow to prep other end for transfer
-		data = spi_transfer(data);
+		data = spi_transfer_1(data);
 		gpio_write(SS, HIGH); //pull ss high to signify end of data transfer
 		
 		//ser.print("stm32 master: slave returned: ");  ser.println(res);
