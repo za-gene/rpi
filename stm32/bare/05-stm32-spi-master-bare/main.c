@@ -3,9 +3,10 @@
 #include <stdbool.h>
 
 #include <gpio.h>
+#include <usart.h>
 
-#define HIGH 1
-#define LOW 0
+//#define HIGH 1
+//#define LOW 0
 
 u32 rs_pin = PB0;
 u32 cs_pin = PA4;
@@ -43,7 +44,7 @@ void delay(uint16_t ms)
 void sendByte(int rs_val, u8 val) {
 	gpio_write(rs_pin, rs_val);
 	gpio_write(cs_pin, LOW);
-	
+
 	// transmit sequence on page 712, section 25.3.5
 	SPI1->DR = (u32)val;
 	while((SPI1->SR & SPI_SR_TXE) != 1); //wait until TXE=1
@@ -95,7 +96,57 @@ void gpio_mode_alt_out(u32 pin)
 
 }
 
-void main() {
+u8 spi_transfer(u8 data)
+{
+	SPI1->DR; // read any previous data
+	SPI1->DR = data; // write the data
+
+	// wait until transmission complete
+	while(!(SPI1->SR & SPI_SR_TXE));
+	while(SPI1->SR & SPI_SR_BSY);
+
+	return (u8)SPI1->DR; // return the result
+}
+
+void init_spi()
+{
+	SPI1->CR1 = 852;
+	RCC_APB2ENR |= 1<<12; // SPI1EN
+	GPIOA->CRL = 0b10110100101100110100010001000100;
+}
+
+#define nop() asm volatile ("nop")
+
+#define SS PA4
+
+void main()
+{
+	gpio_mode(SS, OUTPUT);
+	gpio_write(SS, HIGH);
+	init_spi();
+	init_serial();
+	puts("simple spi example 1");
+	putchar('\a');
+
+	while(1) {
+		u8 data = 0b01010101; // junk data to illustrate usage
+
+		gpio_write(SS, LOW); //pull SS slow to prep other end for transfer
+		data = spi_transfer(data);
+		gpio_write(SS, HIGH); //pull ss high to signify end of data transfer
+		
+		//ser.print("stm32 master: slave returned: ");  ser.println(res);
+		char buff[4];
+		puts("stm32 master: slave returned: ");
+		puts(itoa(data, buff, 10));
+
+		// simple delay
+		for(int i=0; i< 500000; i++) nop();
+		//delay(1000);
+	}
+}
+
+void main_x() {
 	gpio_mode_alt_out(cs_pin);
 	//gpio_write(cs_pin, 1);
 	gpio_mode_out(rs_pin);
