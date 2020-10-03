@@ -5,13 +5,14 @@ STL = st-flash
 CFLAGS = -mthumb -mcpu=cortex-m3 
 #CFLAGS += -ggdb -O0 
 CFLAGS += -nostdlib
-CFLAGS += -I..
+CFLAGS += -I${STM32}
 #CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 -nostdlib --specs=nano.specs
-LDFLAGS = -L.. -T linker.ld
+LDFLAGS = -L${STM32} -T linker.ld
 
 all: app.bin 
 
 main.o: main.c
+	echo $(LDFLAGS)
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 app.elf: main.o 
