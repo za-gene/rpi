@@ -64,11 +64,16 @@ int putchar(int c)
 }
 
 
-int puts(const char* s)
+int print(const char* s)
 {
 	while(s && *s) putchar(*s++);
-	putchar('\r');
-	putchar('\n');
+	return 0;
+}
+
+int puts(const char* s)
+{
+	print(s);
+	print("\r\n");
 	return 0;
 }
 
@@ -133,4 +138,7 @@ char* itoa(int num, char* str, int base)
 	reverse(str, i); 
 
 	return str; 
-} 
+}
+
+void beep() { putchar('\a'); }
+

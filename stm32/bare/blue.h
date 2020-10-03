@@ -24,7 +24,6 @@ typedef uint32_t u32;
 
 // forward declarations
 struct GPIO_t;
-struct SPI_t;
 struct TIMx_t;
 struct USART_t;
 
@@ -32,9 +31,6 @@ struct USART_t;
 
 #define USART1 ((USART_t*) 0x40013800)
 
-#define SPI1 ((SPI_t*) 0x40013000)
-#define SPI3 ((SPI_t*) 0x40003C00)
-#define SPI2 ((SPI_t*) 0x40003800)
 
 
 #define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
@@ -60,6 +56,8 @@ struct USART_t;
 #define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
 #define RCC_APB2ENR_USART1EN (1<<14)
 #define RCC_APB2ENR_IOPAEN	(1<<2)
+#define RCC_APB2ENR_AFIOEN (1<<0)
+#define RCC_APB2ENR_SPI1EN (1<<12)
 
 
 #define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
@@ -92,18 +90,6 @@ typedef struct
 	__IO uint32_t LCKR; //0x18
 } GPIO_t;
 
-// section 25.5 page 742
-typedef struct {
-	__IO u32 CR1;     // 0x00
-	__IO u32 CR2;     // 0x04
-	__IO u32 SR;      // 0x08
-	__IO u32 DR;      // 0x0C
-	__IO u32 CRCPR;   // 0x10
-	__IO u32 RXCRCR;  // 0x14
-	__IO u32 TXCRCR;  // 0x18
-	__IO u32 I2SCFGR; // 0x1C
-	__IO u32 I2SPR;   // 0x20
-} SPI_t;
 
 
 // section 15.4.18 TIMx register map page 423
@@ -140,3 +126,4 @@ void put32(u32 addr, u32 val);
 u32 get32(u32 addr);
 #define disable_irq() asm("CPSID I")
 #define enable_irq() asm("CPSIE I")
+#define nop() asm volatile ("nop")

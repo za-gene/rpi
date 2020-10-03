@@ -22,6 +22,7 @@ DUP	- SUGGESTED DUPONT COLOURS
 
 * [rpi-master-spi.py](rpi-master-spi.py) - example which has been proven to work
 * [stm32-spi-master-arduino](stm32-spi-master-arduino)
+* [stm32-spi-master-bare](../stm32/bare/stm32-spi-master-bare)
 * [stm32-spi-slave-arduino](stm32-sp-slave)
 * [stm32-spi-slave-mbed](https://os.mbed.com/users/blippy/code/spi-slave/)
 * [stm8-spi-master-bare](../stm8s103f3p6/bare/08-spi-master)
