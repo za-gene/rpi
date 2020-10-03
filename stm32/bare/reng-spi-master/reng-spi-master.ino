@@ -3,7 +3,9 @@
 
 /*
    a minimal example that works
+
 */
+
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -25,8 +27,8 @@ typedef struct {
   __IO u32 I2SPR;   // 0x20
 } SPI_t;
 
-#define SPI1x ((SPI_t*) 0x40013000)
-#define SPI1 SPI1x
+//#define SPI1x ((SPI_t*) 0x40013000)
+#define SPI1 ((SPI_t*) 0x40013000)
 //#define SPI3 ((SPI_t*) 0x40003C00)
 //#define SPI2 ((SPI_t*) 0x40003800)
 
@@ -93,18 +95,26 @@ void pu32(char* str, u32 v) {
 static const int spiClk = 250000; // 250kHz
 
 void  init_spi() {
-#if 0
-  SPI.begin();
-  SPI.setClockDivider(SPI_CLOCK_DIV8);//divide the clock by 8
-  //SPI.setClockDivider(SPI_CLOCK_DIV16);//divide the clock by 8
-#else
+
+  //SPI1x->CR1 = 852;
+  RCC_APB2ENR |= RCC_APB2ENR_SPI1EN;
+  SPI1->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_MSTR ;
+
+  // set the baud. If you don't get it right, you'll get rubbish results
+  SPI1->CR1 &= ~(0b111<<3); // clear the baud rate
+  u32 baud = 0b010 << 3;
+  SPI1->CR1 |= baud;
+
+  SPI1->CR1 |= SPI_CR1_SPE; // enable
+  //SPI1->CR1 = 852;
+    
+  //RCC_APB2ENR |= 1 << 12; // SPI1EN
+
+  // tricky to accomplish in Arduino IDE: this sets PA7 and PA5 is alternate output (pattern 0b1011)
+  GPIOA->CRL = 0b10110100101100110100010001000100;
   //pinMode(PA5, OUTPUT);
   //pinMode(PA6,INPUT);
   //pinMode(PA7, OUTPUT);
-  SPI1x->CR1 = 852;
-  RCC_APB2ENR |= 1 << 12; // SPI1EN
-  GPIOA->CRL = 0b10110100101100110100010001000100;
-#endif
 }
 
 void setup() {
@@ -114,42 +124,10 @@ void setup() {
   ser.begin(115200);
   ser.println("Hello from stm32 spi master 3");
 
-  pu32("CRL", GPIOA->CRL);
+  //pu32("CRL", GPIOA->CRL);
   init_spi();
   pu32("CRL", GPIOA->CRL);
-}
-
-u8 spi_rx_reg() { // guess - seems OK
-  return SPI1x->DR;
-}
-
-void spi_tx_reg(u8 data) { // guess - seems OK
-  SPI1x->DR = data;
-}
-
-void waitSpiTxEnd() { // seems to corespond with official
-  while (!(SPI1x->SR & SPI_SR_TXE));
-  while (SPI1x->SR & SPI_SR_BSY);
-}
-
-/*
-  static inline void waitSpiTxEnd(spi_dev *spi_d)
-  {
-    while (spi_is_tx_empty(spi_d) == 0); // wait until TXE=1
-    while (spi_is_busy(spi_d) != 0); // wait until BSY=0
-  }
-*/
-
-//This actually works!!!
-int spi_transfer_1(u8 data) {
-#if 0
-  return SPI.transfer(data);
-#else
-  spi_rx_reg(); // read any previous data
-  spi_tx_reg(data); // write the data item in SP_DR
-  waitSpiTxEnd();
-  return (u8)spi_rx_reg();
-#endif
+  //pu32("CR1", SPI1->CR1);
 }
 
 u8 spi_transfer(u8 data)
