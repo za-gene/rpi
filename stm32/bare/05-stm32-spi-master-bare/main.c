@@ -3,6 +3,7 @@
 #include <usart.h>
 
 
+#if 0
 u8 spi_transfer(u8 data)
 {
 	SPI1->DR; // read any previous data
@@ -36,7 +37,7 @@ void init_spi()
 	//SPI1->CR1 = 0b001101010100;
 	//GPIOA->CRL = 0b10110100101100110100010001000100;
 }
-
+#endif
 
 #define SS PA4
 
