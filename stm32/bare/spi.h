@@ -33,3 +33,6 @@ typedef struct {
 #define SPI_SR_RXNE (1<<0)
 #define SPI_SR_TXE (1<<1)
 #define SPI_SR_BSY (1<<7)
+
+void init_spi();
+u8 spi_transfer(u8 data);
