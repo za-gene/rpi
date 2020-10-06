@@ -2,11 +2,11 @@
 
 ## Connection guide
 ```
-I2C | NANO | RPI      | TINY85 | ESP32
-+   |  3V3 | 1 3V3    | 8 VCC  | 
-SDA |   A4 | 3 SDA.1  | 5 PB0  |   D21
-SCL |   A5 | 5 SCL.1  | 7 PB2  |   D22
--   |      |          |        |
+I2C | NANO | RPI      | TINY85 | ESP32 | STM32
++   |  3V3 | 1 3V3    | 8 VCC  |       |
+SDA |   A4 | 3 SDA.1  | 5 PB0  |   D21 | PB7
+SCL |   A5 | 5 SCL.1  | 7 PB2  |   D22 | PB6
+-   |      |          |        |       |
 ```
 
 ## ATTiny85 slave
@@ -57,6 +57,12 @@ i2cdetect -y 1
 ```
 
 Likewise for SDA.0/SCL.0.
+
+
+## STM32
+
+PB7 and PB6 are 5V tolerant.
+
 
 ## Reference
 
