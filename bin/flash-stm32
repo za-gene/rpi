@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
-BIN=`ls -t *bin | head -n 1`
-echo "Flashing $BIN"
-st-flash write $BIN 0x8000000
+function do_help {
+cat <<EOF
+-h this help
+-x erase flash
+EOF
+}
+
+function do_flash {
+	BIN=`ls -t *bin | head -n 1`
+	echo "Flashing $BIN"
+	st-flash write $BIN 0x8000000
+}
+
+while getopts "hx" arg; do
+	case $arg in
+		h) do_help; exit;;
+		x) st-flash erase; exit;;
+	esac
+done
+
+do_flash
