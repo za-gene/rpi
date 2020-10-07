@@ -10,6 +10,8 @@ auto &ser = Serial1;
 auto &ser = Serial;
 #endif
 
+#define SID 4
+
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -34,7 +36,7 @@ typedef struct {
 #define I2C1_ ((I2C_t*) (0x40005400))
 #define I2C2_ ((I2C_t*) (0x40005800))
 
-#define I2C_ I2C1_
+//#define I2C_ I2C1_
 
 #define I2C_CR1_PE (1<<0)
 
@@ -89,52 +91,142 @@ void pu32(char* str, u32 v) {
 // https://www.youtube.com/watch?v=ZVeG25cMe58
 
 /* send addr 1 means read, 0 meand write in LSB, but maybe only for AT32C02
- *  
- */
+
+*/
 
 
-void init_i2c()
+
+
+
+#define I2C_CR1_PE (1<<0)
+#define RCC_APB1ENR_I2C1EN (1<<21)
+
+void my_init_i2c() // this seems to be correct
 {
   //RCC->AB1ENR &= ~(RCC_APB1ENR_I2CEN);
   //I2C2->CR1 = 0X00;
   //I2C2->CR2 = 0X00;
   RCC_APB2ENR |= RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
-  RCC_APB1ENR |= RCC_APB1ENR_I2C2EN;
+  RCC_APB1ENR |= RCC_APB1ENR_I2C1EN;
+
+
 
   I2C1_->CR2 |= 36; // FREQ OF APB1 BUS = 72MHZ/2 = 36MHZ
 
   /* TAKE THE PERIOS OF THE FREQ SET INTO CR2 EX: 1/10MHZ = 100NS
-   *  NOW PICK A FREQ YOU WANT THE I2C TO RUN AT (MAX 100KHZ IN STD
-   *  MODE) (400KHZ MAX IN FAST MODE)
-   *  THEN IF IN STD MODE GET THE PERIOD OF THAT FREQ
-   *  EX:1/100KHZ = 10US THEN DIVIDE BY 2 TO GET THE
-   *  HTIME BECAUSE THE DUTY CYCLE IS 50% SO HIGH TIME AND LOW TIME
-   *  IS THE SAME SO WE JUST DIVIDE PERIOD BY 2 TO GET
-   *  5US
-   *  THEN CCR REGISTER = 5US/100NS = 50
-   *  SOO CCR IS 50, THIS IS THE MAX TIME THE I2C WILL WAIT FOR A 
-   *  RISE TIME AND NOT NECESSARILY THE RISE TIME THAT IT WILL
-   *  ACTUALLY
-   */
-   I2C1_->CCR |= 180; // SPEED TO 100KHZ STD MODE MAX: I2C_PERIOD /2 * ABI = (1/100K/2)*36MHZ
-   I2C1_->TRISE |= 37; // 1000NS/(CR2 PERIOD=1/36MHZ) = TRISE +1
-   I2C1_->CR1 |= I2C_CR1_ACK ; // ENABLE ACKS
+      NOW PICK A FREQ YOU WANT THE I2C TO RUN AT (MAX 100KHZ IN STD
+      MODE) (400KHZ MAX IN FAST MODE)
+      THEN IF IN STD MODE GET THE PERIOD OF THAT FREQ
+      EX:1/100KHZ = 10US THEN DIVIDE BY 2 TO GET THE
+      HTIME BECAUSE THE DUTY CYCLE IS 50% SO HIGH TIME AND LOW TIME
+      IS THE SAME SO WE JUST DIVIDE PERIOD BY 2 TO GET
+      5US
+      THEN CCR REGISTER = 5US/100NS = 50
+      SOO CCR IS 50, THIS IS THE MAX TIME THE I2C WILL WAIT FOR A
+      RISE TIME AND NOT NECESSARILY THE RISE TIME THAT IT WILL
+      ACTUALLY
+  */
+  I2C1_->CCR |= 180; // SPEED TO 100KHZ STD MODE MAX: I2C_PERIOD /2 * ABI = (1/100K/2)*36MHZ
+  I2C1_->TRISE |= 37; // 1000NS/(CR2 PERIOD=1/36MHZ) = TRISE +1
+  I2C1_->CR1 |= I2C_CR1_ACK ; // ENABLE ACKS
 
-   // stretch mode enabled by default
+  // stretch mode enabled by default
 
-   // 7 bit addressing mode enabled by default
-
-// PAGE 168
-   // configu gpio for internal pullup alt function open drain OUTPUT
-   //GPIOB->CRH |= GPIO_CRH_CNF10 | GPIO_CRH_MODE_0
-   //| BPIO_CRH_CNF11 | BPIO_CRH_MODE11;
-   //#define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
-   GPIOB->CRL = 0b11111111010010000100010001000100;
+  // 7 bit addressing mode enabled by default
 
 
-   I2C1_->CR1 |= I2C_CR1_PE; // ENABLE PERIPHERAL
+
+  GPIOB->CRL = 0b11111111010010000100010001000100;
+
+
+  I2C1_->CR1 |= I2C_CR1_PE; // ENABLE PERIPHERAL
 }
 
+
+
+#define RCC_AHBENR   REG(RCC_BASE   + 0x14)
+#define RCC_AHBENR_DMA1EN (1<<0)
+
+#define I2C_CR2_DMAEN (1<<11)
+
+typedef struct {
+  __IO u32 CCR;
+  __IO u32 CNDTR;
+  __IO u32 CPAR;
+  __IO u32 CMAR;
+  __IO u32 RESERVED;
+} DMA_CHAN_t;
+
+
+typedef struct
+{
+  __IO u32 ISR;
+  __IO u32 IFCR;
+  DMA_CHAN_t CHAN1;
+  DMA_CHAN_t CHAN2;
+  DMA_CHAN_t CHAN3;
+  DMA_CHAN_t CHAN4;
+  DMA_CHAN_t CHAN5;
+  DMA_CHAN_t CHAN6;
+  DMA_CHAN_t CHAN7;
+} DMA_t;
+
+//#define GPIO_BASE 0x40010800
+#define DMA1 ((DMA_t*) (0x40020000))
+#define DMA2 ((DMA_t*) (0x40020400))
+
+#define DMA_CCR_TCIE  (1<<1)
+#define DMA_CCR_MINC (1<<7)
+#define DMA_CCR_EN (1<<0)
+
+#define DMA_ISR_TCIF5 (1<<17)
+#define DMA_ISR_TCIF7 (1<<25)
+
+#define I2C_SR1_SB (1<<0)
+
+u8 i2c_buff[2];
+
+void i2c_read(u8 sid, u8* buffer, u32 len)
+{
+  //u32 temp =0;
+  //i2c_buff[0] = 0x00;
+  //rcc->ahbenr |= RCC_AHBENR_DMA1EN;
+  RCC_AHBENR |= RCC_AHBENR_DMA1EN;
+  I2C1_->CR2 |= I2C_CR2_DMAEN;
+  I2C1_->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
+  #define  CHAN DMA1->CHAN7
+  //DMA1_CHANNEL5->CMAR = (U32)I2C_BUFF;
+  CHAN.CMAR = (u32)i2c_buff;
+  //DMA1_CHANNEL5->CPAR = (U32)&I2C2->DR;
+  CHAN.CPAR = (u32)&I2C1_->DR;
+  //DMA1_CHANNEL5->CNDTR = len;
+  CHAN.CNDTR = len;
+  //DMA1_CHANNEL5->CCR |= DMA_CCR4_TCIE | DMA_CCR5_MINC | DMA_CCR5_EN;
+  CHAN.CCR = DMA_CCR_TCIE | DMA_CCR_MINC | DMA_CCR_EN;
+
+  I2C1_->CR1 |= I2C_CR1_START;
+
+  ser.print(".");
+
+  while (!(I2C1_->SR1 & I2C_SR1_SB));
+  I2C1_->DR = (sid<<1); // WRITE 0XA0; // SEND ADDR
+
+  ser.print("-"); 
+  while (!(I2C1_->SR1 & I2C_SR1_ADDR));
+  u32 temp = I2C1_->SR2;
+  ser.print("<"); //seems to reach here
+
+  while(!(DMA1->ISR & DMA_ISR_TCIF7));
+  ser.print(">"); // no seems to reach here
+
+  I2C1_->CR1 |= I2C_CR1_STOP;
+}
+
+
+
+
+// using dma is easier, and seems to be recommended
+// I2C is on APB1. runs at half the clock speed. So, if 72MHz, it will run at 36MHz
 
 
 #ifdef TUTORIAL
@@ -158,37 +250,6 @@ VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
 
   I2C2->CR1 |= I2C_CR1_STOP;
 }
-
-void i2c_read(u8 sid, u8 len)
-{
-  u32 temp =0;
-  i2c_buff[0] = 0x00;
-  rcc->ahbenr |= RCC_AHBENR_DMA1EN;
-  I2C2->CR2 |= I2C2_CR2_DMAEN;
-  I2C2->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
-  DMA1_CHANNEL5->CMAR = (U32)I2C_BUFF;
-  DMA1_CHANNEL5->CPAR =(U32)&I2C2->DR;
-  DMA1_CHANNEL5->CNDTR = len;
-  DMA1_CHANNEL5->CCR |= DMA_CCR4_TCIE | DMA_CCR5_MINC | DMA_CCR5_EN;
-
-  I2C2->CR1 |= I2C_CR1_START;
-
-  WHILE(!(I2C2->SR1 & I2C_SR1_SB));
-  I2C2->DR = SID+1; // WRITE 0XA0; // SEND ADDR
-
-  WHILE(!(I2C2->SR1 & I2C_SR1_ADDR));
-  TEMP = I2C2->SR2;
-
-  WHILE((DMA1->ISR & DMA_ISR_TCIF5)==0);
-
-  I2C2->CR1 |= I2C_CR1_STOP;
-}
-
-
-
-
-// using dma is easier, and seems to be recommended
-// I2C is on APB1. runs at half the clock speed. So, if 72MHz, it will run at 36MHz
 
 // taken from stm8
 static void begin_i2c_write(uint8_t slave_id)
@@ -218,18 +279,27 @@ static void begin_i2c_write(uint8_t slave_id)
 void setup()
 {
   ser.begin(115200); // start serial for output
-  ser.println("i2c master here");
-    
-  pu32("CR", GPIOB->CRL); // FREQ OF APB1 BUS = 72MHZ/2 = 36MHZ
-  //Wire.begin(); // join i2c bus (address optional for master)
-  init_i2c();
-  pu32("CR", GPIOB->CRL); // FREQ OF APB1 BUS = 72MHZ/2 = 36MHZ
+  ser.println("i2c master here 4");
+
+  pu32("I2C1_->CR1", I2C1_->CR2);
+#if 0
+  Wire.begin(); // join i2c bus (address optional for master)
+#else
+  my_init_i2c();
+#endif
+  pu32("I2C1_->CR1", I2C1_->CR2);
 
 }
 
 void loop()
 {
-  //return;
+  //goto foo;
+  ser.println("Begin reading");
+  i2c_read(SID, 0, 1);
+  ser.println(i2c_buff[0]); // print the character
+
+  return;
+foo:
   Wire.requestFrom(4, 1); // request 1 byte from slave device address 4
 
   while (Wire.available()) // slave may send less than requested
