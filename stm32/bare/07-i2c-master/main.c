@@ -5,6 +5,13 @@
 
 #define SID 4
 
+void printi(u32 x)
+{
+	char buf[10];
+	itoa(x, buf, 10);
+	print(buf);
+}
+
 
 /*
 #define RCC_BASE        0x40021000
@@ -107,35 +114,39 @@ void i2c_read_dma(u8 sid, u8* buffer, u32 len)
 	//ser.print(">"); // no seems to reach here
 
 	I2C1->CR1 |= I2C_CR1_STOP;
-	DMA1->IFCR |= DMA_ISR_TCIF7; // added by mcarter. hinders-?
 	CHAN.CCR &= ~DMA_CCR_EN; // added mcarter. Seems to help clear DMA_ISR_TCIF7
+	DMA1->IFCR |= DMA_ISR_TCIF7; // added by mcarter. hinders-?
 }
 
 void i2c_read(u8 sid, u8* buffer, u32 len)
 {
-	I2C1->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
+	//I2C1->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
 	I2C1->CR1 |= I2C_CR1_START;
 
 	//ser.print(".");
 
 	while (!(I2C1->SR1 & I2C_SR1_SB));
-	I2C1->DR = (sid << 1); // WRITE 0XA0; // SEND ADDR
+	I2C1->DR = (sid << 1) +1;
 	while (!(I2C1->SR1 & I2C_SR1_ADDR));
 	(void)I2C1->SR2;
 
-	//ser.print("1");
+	//print("1");
 	//I2C1_->DR = (u32)i2c_buff; //ADDRESS TO RWITE TO
-	I2C1->DR = (u32)buffer; //ADDRESS TO RWITE TO
-	while (!(I2C1->SR1 & I2C_SR1_TXE));
-	(void)I2C1->SR2;
+	//I2C1->DR = (u32)buffer; //ADDRESS TO RWITE TO
+	for(int i = 0; i < len; i++) {
+		while (!(I2C1->SR1 & I2C_SR1_RXNE));
+		(void)I2C1->SR2;
+		buffer[i] = I2C1->DR;
+	}
 
-	//ser.print("2");
+
+	//print("2");
 	// COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
 	//I2C2->DR = DATA;
-	while (!(I2C1->SR1 & I2C_SR1_RXNE));
-	(void)I2C1->SR2;
+	//while (!(I2C1->SR1 & I2C_SR1_RXNE));
+	//(void)I2C1->SR2;
 
-	//ser.print("3");
+	//print("3-");
 	I2C1->CR1 |= I2C_CR1_STOP;
 
 }
@@ -207,11 +218,11 @@ int main()
 
 	while(1) {
 		static int i = 0;		
-		print("Begin reading attempt ");
+		print("Begin reading attempt 1");
 		char str[10];
 		itoa(i++, str, 10);
 		puts(str);
-		i2c_read_dma(SID, i2c_buff, 1);
+		i2c_read(SID, i2c_buff, 1);
 		itoa(i2c_buff[0], str, 10);
 		puts(str);
 		for(int i=0; i< 600000; i++) nop(); // simple delay
