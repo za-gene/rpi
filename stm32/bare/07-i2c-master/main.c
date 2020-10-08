@@ -1,44 +1,9 @@
+#include <dma.h>
 #include <gpio.h>
+#include <i2c.h>
 #include <usart.h>
 
 #define SID 4
-
-
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-
-#define __IO volatile
-
-#define REG(x) *(volatile uint32_t *)(x)
-
-typedef struct {
-	__IO u32 CR1; //0x00
-	__IO u32 CR2; // 0x04
-	__IO u32 OAR1; //0x08
-	__IO u32 OAR2; //0x0C
-	__IO u32 DR; //0x10
-	__IO u32 SR1; //0x14
-	__IO u32 SR2; //0x18
-	__IO u32 CCR; // 0x1C
-	__IO u32 TRISE; // 0x20
-} I2C_t;
-
-#define I2C1_ ((I2C_t*) (0x40005400))
-#define I2C2_ ((I2C_t*) (0x40005800))
-
-//#define I2C_ I2C1_
-
-#define I2C_CR1_PE (1<<0)
-
-#define I2C_SR1_SB (1<<0)
-#define I2C_SR1_RXNE (1<<6)
-#define I2C_SR1_TXE  (1<<7)
-#define I2C_SR1_ADDR (1<<1)
-
-#define I2C_CR1_STOP (1<<9)
-#define I2C_CR1_ACK (1<<10)
-#define I2C_CR1_START (1<<8)
 
 
 #define RCC_BASE        0x40021000
@@ -49,43 +14,10 @@ typedef struct {
 
 
 
-#if 0
-void pu32(char* str, u32 v) {
-	ser.print(str);
-	ser.print(v);
-	ser.print(" 0b");
-	for (int i = 0; i < 8; i++) {
-		if (i) ser.print("'");
-		for (int j = 0; j < 4; j++) {
-			//u32 x = v & (0b10000000000000000000000000000000);
-			u32 x = v & (1 << 31);
-			if (x > 0) {
-				ser.print(1);
-			} else {
-				ser.print(0);
-			}
-
-			v = (v << 1);
-		}
-	}
-	ser.println("");
-}
-#endif
-
-// stm32 i2c pt 1
-// https://www.youtube.com/watch?v=TqUzQfMGlfI
-// part 2
-// https://www.youtube.com/watch?v=ZVeG25cMe58
-
-/* send addr 1 means read, 0 meand write in LSB, but maybe only for AT32C02
-
-*/
 
 
 
 
-
-#define I2C_CR1_PE (1<<0)
 #define RCC_APB1ENR_I2C1EN (1<<21)
 
 void init_i2c() // this seems to be correct
@@ -137,41 +69,6 @@ ACTUALLY
 #define RCC_AHBENR   REG(RCC_BASE   + 0x14)
 #define RCC_AHBENR_DMA1EN (1<<0)
 
-#define I2C_CR2_DMAEN (1<<11)
-
-typedef struct {
-	__IO u32 CCR;
-	__IO u32 CNDTR;
-	__IO u32 CPAR;
-	__IO u32 CMAR;
-	__IO u32 RESERVED;
-} DMA_CHAN_t;
-
-
-typedef struct
-{
-	__IO u32 ISR;
-	__IO u32 IFCR;
-	DMA_CHAN_t CHAN1;
-	DMA_CHAN_t CHAN2;
-	DMA_CHAN_t CHAN3;
-	DMA_CHAN_t CHAN4;
-	DMA_CHAN_t CHAN5;
-	DMA_CHAN_t CHAN6;
-	DMA_CHAN_t CHAN7;
-} DMA_t;
-
-//#define GPIO_BASE 0x40010800
-#define DMA1 ((DMA_t*) (0x40020000))
-#define DMA2 ((DMA_t*) (0x40020400))
-
-#define DMA_CCR_TCIE  (1<<1)
-#define DMA_CCR_MINC (1<<7)
-#define DMA_CCR_EN (1<<0)
-#define DMA_CCR_DIR (1<<4)
-
-#define DMA_ISR_TCIF5 (1<<17)
-#define DMA_ISR_TCIF7 (1<<25)
 
 u8 i2c_buff[10];
 
