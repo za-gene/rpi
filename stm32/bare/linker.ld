@@ -29,10 +29,10 @@ SECTIONS
 {
   /* The vector table goes to the start of flash. */
 	/*
-  .isr_vector :
+  .vectors :
   {
     . = ALIGN(4);
-    KEEP (*(.isr_vector))
+    KEEP (*(.vectors))
     . = ALIGN(4);
   } >FLASH
   */
@@ -41,7 +41,7 @@ SECTIONS
   .text :
   {
     . = ALIGN(4);
-    *(.vectors)
+    KEEP(*(.vectors))
     //*(.text)
     *(.text*)
     . = ALIGN(4);

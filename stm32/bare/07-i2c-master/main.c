@@ -204,7 +204,7 @@ static void begin_i2c_write(uint8_t slave_id)
 int main()
 {
 	init_serial();
-	puts("i2c bare master here");
+	puts("i2c bare master here 1");
 
 	//pu32("I2C1_->CR1", I2C1_->CR2);
 	init_i2c();
