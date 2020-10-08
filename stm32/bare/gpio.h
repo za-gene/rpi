@@ -22,6 +22,8 @@
 #define PA13 0x0D
 #define PB0  0x10
 #define PB1  0x11
+#define PB6  0x16
+#define PB7  0x17
 #define PB10 0x1A
 #define PB11 0x1B
 #define PB13 0x1D

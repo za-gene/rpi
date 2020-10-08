@@ -1,5 +1,11 @@
 # bar metal programming on stm32f1038t6
 
+## delay
+
+This one is pretty good:
+```
+		for(int i=0; i< 600000; i++) nop(); // simple delay
+```
 
 ## setup
 
