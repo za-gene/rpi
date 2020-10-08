@@ -62,6 +62,10 @@ There is a `String` class, which behaves a little like `std::string`. See
 ~/tools/arduino-1.8.10/hardware/arduino/avr/cores/arduino/WString.cpp
 ```
 
+## Also in this directory
+
+* [arduino-cli](arduino-cli.md)
+
 
 ## Also on this site
 

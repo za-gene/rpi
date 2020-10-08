@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+Description here
+etc
+EOF
+}
+ 
+
+case $1 in
+    h) print_help ; exit ;;
+esac
+
+#arduino-cli upload --port /dev/ttyACM0 --fqbn stm32duino:STM32F1:genericSTM32F103C
+
+BIN=`ls build/stm*/*bin`
+echo "BIN=$BIN"
+st-flash write $BIN 0x8000000

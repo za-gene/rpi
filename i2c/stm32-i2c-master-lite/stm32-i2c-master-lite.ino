@@ -325,7 +325,7 @@ static void begin_i2c_write(uint8_t slave_id)
 void setup()
 {
   ser.begin(115200); // start serial for output
-  ser.println("i2c master here 4");
+  ser.println("i2c master here 5");
 
   pu32("I2C1_->CR1", I2C1_->CR2);
 #if 0

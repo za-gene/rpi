@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+Description here
+etc
+EOF
+}
+ 
+
+case $1 in
+    h) print_help ; exit ;;
+esac
+
+arduino-cli compile --fqbn stm32duino:STM32F1:genericSTM32F103C
+
