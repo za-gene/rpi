@@ -59,6 +59,12 @@ struct USART_t;
 #define RCC_APB2ENR_AFIOEN (1<<0)
 #define RCC_APB2ENR_SPI1EN (1<<12)
 
+#define RCC_APB2ENR_AFIOEN (1<<0)
+
+#define RCC_APB1ENR_I2C1EN (1<<21)
+#define RCC_AHBENR   REG(RCC_BASE   + 0x14)
+#define RCC_AHBENR_DMA1EN (1<<0)
+
 
 #define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
 
