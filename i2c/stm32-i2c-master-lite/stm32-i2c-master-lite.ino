@@ -1,3 +1,8 @@
+/*
+   /home/pi/.arduino15/packages/stm32duino/hardware/STM32F1/2020.6.20/cores/maple/libmaple
+
+*/
+
 #include <Wire.h>
 
 
@@ -178,50 +183,90 @@ typedef struct
 #define DMA_CCR_TCIE  (1<<1)
 #define DMA_CCR_MINC (1<<7)
 #define DMA_CCR_EN (1<<0)
+#define DMA_CCR_DIR (1<<4)
 
 #define DMA_ISR_TCIF5 (1<<17)
 #define DMA_ISR_TCIF7 (1<<25)
 
 #define I2C_SR1_SB (1<<0)
 
-u8 i2c_buff[2];
+u8 i2c_buff[10];
 
-void i2c_read(u8 sid, u8* buffer, u32 len)
+void i2c_read_dma(u8 sid, u8* buffer, u32 len)
 {
   //u32 temp =0;
   //i2c_buff[0] = 0x00;
   //rcc->ahbenr |= RCC_AHBENR_DMA1EN;
   RCC_AHBENR |= RCC_AHBENR_DMA1EN;
   I2C1_->CR2 |= I2C_CR2_DMAEN;
+
   I2C1_->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
-  #define  CHAN DMA1->CHAN7
+#define  CHAN DMA1->CHAN7
   //DMA1_CHANNEL5->CMAR = (U32)I2C_BUFF;
   CHAN.CMAR = (u32)i2c_buff;
   //DMA1_CHANNEL5->CPAR = (U32)&I2C2->DR;
-  CHAN.CPAR = (u32)&I2C1_->DR;
+  CHAN.CPAR = (u32)(&(I2C1_->DR));
   //DMA1_CHANNEL5->CNDTR = len;
   CHAN.CNDTR = len;
   //DMA1_CHANNEL5->CCR |= DMA_CCR4_TCIE | DMA_CCR5_MINC | DMA_CCR5_EN;
-  CHAN.CCR = DMA_CCR_TCIE | DMA_CCR_MINC | DMA_CCR_EN;
+  //CHAN.CCR = DMA_CCR_TCIE | DMA_CCR_MINC | DMA_CCR_EN;
+  //CHAN.CCR |= DMA_CCR_DIR; // added by mcarter . not helps
+  //DMA1->IFCR |= DMA_ISR_TCIF7; // added by mcarter. hinders-t
+  CHAN.CCR = DMA_CCR_MINC | DMA_CCR_EN;
+
+  I2C1_->CR1 |= I2C_CR1_START;
+  #define I2C_CR2_LAST (1<<12)
+  I2C1_->CR2 |= I2C_CR2_LAST; // added mcarter help-f
+
+  ser.print(".");
+  //ser.println(DMA1->ISR & DMA_ISR_TCIF7);
+
+  while (!(I2C1_->SR1 & I2C_SR1_SB));
+  I2C1_->DR = (sid << 1) + 1; // WRITE 0XA0; // SEND ADDR
+
+  ser.print("-");
+  while (!(I2C1_->SR1 & I2C_SR1_ADDR));
+  u32 temp = I2C1_->SR2;
+  ser.print("<"); //seems to reach here
+
+  while (!(DMA1->ISR & DMA_ISR_TCIF7));
+  //I2C1_->SR2; // added by mcarter. help-f
+
+  ser.print(">"); // no seems to reach here
+
+  I2C1_->CR1 |= I2C_CR1_STOP;
+  DMA1->IFCR |= DMA_ISR_TCIF7; // added by mcarter. hinders-?
+  CHAN.CCR &= ~DMA_CCR_EN; // added mcarter. Seems to help clear DMA_ISR_TCIF7
+}
+
+void i2c_read(u8 sid, u8* buffer, u32 len)
+{
+  I2C1_->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
 
   I2C1_->CR1 |= I2C_CR1_START;
 
   ser.print(".");
 
   while (!(I2C1_->SR1 & I2C_SR1_SB));
-  I2C1_->DR = (sid<<1); // WRITE 0XA0; // SEND ADDR
-
-  ser.print("-"); 
+  I2C1_->DR = (sid << 1); // WRITE 0XA0; // SEND ADDR
   while (!(I2C1_->SR1 & I2C_SR1_ADDR));
-  u32 temp = I2C1_->SR2;
-  ser.print("<"); //seems to reach here
+  (void)I2C1_->SR2;
 
-  while(!(DMA1->ISR & DMA_ISR_TCIF7));
-  ser.print(">"); // no seems to reach here
+  ser.print("1");
+  I2C1_->DR = (u32)i2c_buff; //ADDRESS TO RWITE TO
+  while (!(I2C1_->SR1 & I2C_SR1_TXE));
+  (void)I2C1_->SR2;
 
+  ser.print("2");
+  // COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
+  //I2C2->DR = DATA;
+  while (!(I2C1_->SR1 & I2C_SR1_RXNE));
+  (void)I2C1_->SR2;
+
+  ser.print("3");
   I2C1_->CR1 |= I2C_CR1_STOP;
-}
 
+}
 
 
 
@@ -247,6 +292,7 @@ VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
   // COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
   I2C2->DR = DATA;
   WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
+
 
   I2C2->CR1 |= I2C_CR1_STOP;
 }
@@ -293,10 +339,13 @@ void setup()
 
 void loop()
 {
+  static int i = 0;
   //goto foo;
-  ser.println("Begin reading");
-  i2c_read(SID, 0, 1);
+  ser.println("Begin reading attempt " + String(i++));
+  i2c_read_dma(SID, 0, 1);
   ser.println(i2c_buff[0]); // print the character
+  //ser.println(i2c_buff[1]); // print the character
+  delay(1000);
 
   return;
 foo:
