@@ -7,6 +7,15 @@ This one is pretty good:
 		for(int i=0; i< 600000; i++) nop(); // simple delay
 ```
 
+## linking
+
+Linking t reduce size can cause complications
+
+```
+-Os -Wl,--gc-sections,-u,main
+```
+
+
 ## setup
 
 ```
