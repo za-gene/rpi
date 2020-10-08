@@ -3,7 +3,7 @@
 
 */
 
-#include <Wire.h>
+//#include <Wire.h>
 
 
 
@@ -105,6 +105,14 @@ void pu32(char* str, u32 v) {
 
 #define I2C_CR1_PE (1<<0)
 #define RCC_APB1ENR_I2C1EN (1<<21)
+#define I2C_CR1_ACK (1<<10)
+#define I2C_CR1_START (1<<8)
+#define I2C_CR1_STOP (1<<9)
+
+#define I2C_SR1_TXE (1<<7)
+#define I2C_SR1_RXNE (1<<6)
+#define I2C_SR1_ADDR (1<<1)
+
 
 void my_init_i2c() // this seems to be correct
 {
@@ -327,13 +335,13 @@ void setup()
   ser.begin(115200); // start serial for output
   ser.println("i2c master here 5");
 
-  pu32("I2C1_->CR1", I2C1_->CR2);
+  //pu32("I2C1_->CR1", I2C1_->CR2);
 #if 0
   Wire.begin(); // join i2c bus (address optional for master)
 #else
   my_init_i2c();
 #endif
-  pu32("I2C1_->CR1", I2C1_->CR2);
+  //pu32("I2C1_->CR1", I2C1_->CR2);
 
 }
 
@@ -348,6 +356,7 @@ void loop()
   delay(1000);
 
   return;
+  #if 0
 foo:
   Wire.requestFrom(4, 1); // request 1 byte from slave device address 4
 
@@ -358,4 +367,5 @@ foo:
   }
 
   delay(1000);
+  #endif
 }
