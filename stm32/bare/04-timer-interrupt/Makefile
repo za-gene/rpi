@@ -8,6 +8,7 @@ CFLAGS += -nostdlib
 CFLAGS += -I..
 #CFLAGS = -mthumb -mcpu=cortex-m3 -ggdb -O0 -nostdlib --specs=nano.specs
 LDFLAGS = -L.. -T linker.ld
+LDFLAGS += -Os --gc-sections # remove unneeded code. Might cause problems
 
 all: app.bin 
 
