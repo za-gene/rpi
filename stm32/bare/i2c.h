@@ -32,3 +32,7 @@ typedef struct {
 #define I2C_SR1_TXE  (1<<7)
 #define I2C_SR1_ADDR (1<<1)
 
+void init_i2c();
+void i2c_read_dma(u8 sid, u8* buffer, u32 len);
+void i2c_read(u8 sid, u8* buffer, u32 len);
+void write_i2c(u8 sid, u8* buffer, u32 len);
