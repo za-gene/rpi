@@ -2,6 +2,6 @@
 
 i2c master transmit only
 
-Under construction 2020-10-09
+Works 2020-10-09
 
 

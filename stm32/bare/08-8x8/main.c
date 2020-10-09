@@ -67,7 +67,7 @@ void i2c_read_dma(u8 sid, u8* buffer, u32 len)
 {
 #define  CHAN DMA1->CHAN7
 	//CHAN.CCR &= ~DMA_CCR_EN; // added mcarter. Seems to help clear DMA_ISR_TCIF7
-	
+
 	//u32 temp =0;
 	//i2c_buff[0] = 0x00;
 	//rcc->ahbenr |= RCC_AHBENR_DMA1EN;
@@ -153,25 +153,27 @@ void i2c_read(u8 sid, u8* buffer, u32 len)
 
 
 
-VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
+void write_i2c(u8 sid, u8* buffer, u32 len)
 {
-	U32 TEMP;
-	I2C2->CR1 |= I2C2_CR1_START; // GENERATE A START CONDITION
+	//U32 TEMP;
+	I2C1->CR1 |= I2C_CR1_START; // GENERATE A START CONDITION
 
-	WHILE(!(I2C2->SR1 & I2C_SR1_SB));
-	I2C2->DR = SID;
-	WHILE(!(I2C2->SR1 & I2C2_SR1_ADDR));
-	TEMP = I2C2->SR2;
+	while(!(I2C1->SR1 & I2C_SR1_SB));
+	I2C1->DR = sid<<1;
+	while(!(I2C1->SR1 & I2C_SR1_ADDR));
+	I2C1->SR2;
 
-	I2C2->DR = MEM_ADDR; //ADDRESS TO RWITE TO
-	WHILE(!(I2C2->SR1 & I2C2_SR1_TXE));
+	for(u32 i=0; i<len; i++) {
+		I2C1->DR = buffer[i]; 
+		while(!(I2C1->SR1 & I2C_SR1_TXE));
+	}
 
 	// COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
-	I2C2->DR = DATA;
-	WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
+	//I2C2->DR = DATA;
+	//WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
 
 
-	I2C2->CR1 |= I2C_CR1_STOP;
+	I2C1->CR1 |= I2C_CR1_STOP;
 }
 
 #ifdef TUTORIAL
@@ -189,89 +191,87 @@ static void begin_i2c_write(uint8_t slave_id)
 }
 #endif //TUTORIAL
 
-
-static uint8_t  pattern[] =
-{ B10000001,
-  B01000010,
-  B00100100,
-  B00010000,
-  B00001000,
-  B00100100,
-  B01000010,
-  B10000001
+static uint8_t  pattern[] = { 
+	//0b11111111, // for testing purposes
+	0b10000001,
+	0b01000010,
+	0b00100100,
+	0b00010000,
+	0b00001000,
+	0b00100100,
+	0b01000010,
+	0b10000001
 };
 
+u8 i2c_buff[2];
+
 void send_cmd(u8 cmd) {
-  //I2C_write(SID, cmd);
-  Wire.beginTransmission(SID);
-  Wire.write(cmd);
-  //Wire.write(2 * y);
-  //Wire.write(bits);
-  Wire.endTransmission();
+	i2c_buff[0] = cmd;
+	write_i2c(SID, i2c_buff, 1);
 }
 
 void write_row(uint8_t y, uint8_t xs) {
-  // the row of xs beed to be quirkily transformed
-  uint8_t bits = 0;
-  for (int x = 0; x < 7; ++x) {
-    bits <<= 1;
-    bits |= (xs & 1);
-    xs  >>= 1;
-  }
-  bits |= (xs << 7);
+	// the row of xs beed to be quirkily transformed
+	uint8_t bits = 0;
+	for (int x = 0; x < 7; ++x) {
+		bits <<= 1;
+		bits |= (xs & 1);
+		xs  >>= 1;
+	}
+	bits |= (xs << 7);
 
-  // send x layout to device
-  //send2(2 * y, bits);
+	// send x layout to device
+	//send2(2 * y, bits);
 
-  Wire.beginTransmission(SID); // address of LED matrix
-  Wire.write(2 * y);
-  Wire.write(bits);
-  Wire.endTransmission();
+	i2c_buff[0] = 2*y;
+	i2c_buff[1] = bits;
+	write_i2c(SID, i2c_buff, 2);
 
 }
 
 void setup() {
 
-  Wire.begin();
-  send_cmd(0x20 | 1); // turn on oscillator
-  send_cmd(0x81); // display on
-  send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
-
-}
-
-void loop() {
-  for (int i = 0; i < 8; ++i) {
-    u8 row = pattern[i];
-    write_row(i, row);
-    row = ((row & 0x01) ? 0x80 : 0x00) | (row >> 1); // rotate the row for fun
-    pattern[i] = row;
-  }
-  delay(100);
-}
-
-int main()
-{
-	setup();
-	while(1) loop();
-    
+	//Wire.begin();
 	init_serial();
 	puts("stm32 i2c bare 8x8 here 3");
 
 	//pu32("I2C1_->CR1", I2C1_->CR2);
 	init_i2c();
 	//pu32("I2C1_->CR1", I2C1_->CR2);
+	send_cmd(0x20 | 1); // turn on oscillator
+	send_cmd(0x81); // display on
+	send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
-	u8 i2c_buff[1];
+}
 
-	while(1) {
-		static int i = 0;		
-		print("Begin reading attempt 1");
-		char str[10];
-		itoa(i++, str, 10);
-		puts(str);
-		i2c_read(SID, i2c_buff, 1);
-		itoa(i2c_buff[0], str, 10);
-		puts(str);
-		for(int i=0; i< 600000; i++) nop(); // simple delay
+void loop() {
+	for (int i = 0; i < 8; ++i) {
+		u8 row = pattern[i];
+		write_row(i, row);
+		row = ((row & 0x01) ? 0x80 : 0x00) | (row >> 1); // rotate the row for fun
+		pattern[i] = row;
 	}
+	for(int i=0; i< 60000; i++) nop(); // simple delay
+	//delay(100);
+}
+
+int main()
+{
+	setup();
+	while(1) loop();
+
+
+
+	/*
+	   while(1) {
+	   static int i = 0;		
+	   print("Begin reading attempt 1");
+	   char str[10];
+	   itoa(i++, str, 10);
+	   puts(str);
+	   i2c_read(SID, i2c_buff, 1);
+	   itoa(i2c_buff[0], str, 10);
+	   puts(str);
+	   }
+	   */
 }
