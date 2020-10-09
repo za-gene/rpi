@@ -94,7 +94,7 @@ class Adafruit_SSD1306  {
   public:
     // NEW CONSTRUCTORS -- recommended for new projects
     Adafruit_SSD1306(uint8_t w, uint8_t h, TwoWire *twi = &Wire,
-                     int8_t rst_pin = -1, uint32_t clkDuring = 400000UL,
+                     uint32_t clkDuring = 400000UL,
                      uint32_t clkAfter = 100000UL);
 
     ~Adafruit_SSD1306(void);
@@ -106,8 +106,6 @@ class Adafruit_SSD1306  {
     void invertDisplay(bool i);
     void dim(bool dim);
     void drawPixel(int16_t x, int16_t y, uint16_t color);
-    void startscrollright(uint8_t start, uint8_t stop);
-    void startscrollleft(uint8_t start, uint8_t stop);
     void stopscroll(void);
     void ssd1306_command(uint8_t c);
     int HEIGHT = 64;
@@ -139,9 +137,6 @@ class Adafruit_SSD1306  {
 #define WIRE_MAX 32 ///< Use common Arduino core default
 #endif
 
-#define ssd1306_swap(a, b)                                                     \
-  (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b))) ///< No-temp-var swap operation
-
 #define WIRE_WRITE wire->write ///< Wire write function in recent Arduino lib
 
 #define TRANSACTION_START  wire->setClock(wireClk);
@@ -149,10 +144,10 @@ class Adafruit_SSD1306  {
 
 
 Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h, TwoWire *twi,
-                                   int8_t rst_pin, uint32_t clkDuring,
+                                   uint32_t clkDuring,
                                    uint32_t clkAfter)
   :  wire(twi ? twi : & Wire), buffer(NULL),
-     mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1), rstPin(rst_pin)
+     mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1)
 #if ARDUINO >= 157
   ,
      wireClk(clkDuring), restoreClk(clkAfter)
@@ -233,15 +228,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
   } else {
   }
 
-  // Reset SSD1306 if requested and reset pin specified in constructor
-  if (reset && (rstPin >= 0)) {
-    pinMode(rstPin, OUTPUT);
-    digitalWrite(rstPin, HIGH);
-    delay(1);                   // VDD goes high at start, pause for 1 ms
-    digitalWrite(rstPin, LOW);  // Bring reset low
-    delay(10);                  // Wait 10 ms
-    digitalWrite(rstPin, HIGH); // Bring out of reset
-  }
+
 
 
   uint8_t comPins = 0x02;
@@ -311,22 +298,6 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
 
 void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
   if ((x >= 0) && (x < WIDTH) && (y >= 0) && (y < HEIGHT)) {
-    // Pixel is in-bounds. Rotate coordinates if needed.
-    int rotation = 0; // guessing
-    switch (rotation) {
-      case 1:
-        ssd1306_swap(x, y);
-        x = WIDTH - x - 1;
-        break;
-      case 2:
-        x = WIDTH - x - 1;
-        y = HEIGHT - y - 1;
-        break;
-      case 3:
-        ssd1306_swap(x, y);
-        y = HEIGHT - y - 1;
-        break;
-    }
     switch (color) {
       case SSD1306_WHITE:
         buffer[x + (y / 8) * WIDTH] |= (1 << (y & 7));
@@ -393,47 +364,6 @@ void Adafruit_SSD1306::display(void) {
 }
 
 
-// To scroll the whole display, run: display.startscrollright(0x00, 0x0F)
-void Adafruit_SSD1306::startscrollright(uint8_t start, uint8_t stop) {
-  TRANSACTION_START
-  static const uint8_t PROGMEM scrollList1a[] = {
-    SSD1306_RIGHT_HORIZONTAL_SCROLL, 0X00
-  };
-  ssd1306_commandList(scrollList1a, sizeof(scrollList1a));
-  ssd1306_command1(start);
-  ssd1306_command1(0X00);
-  ssd1306_command1(stop);
-  static const uint8_t PROGMEM scrollList1b[] = {0X00, 0XFF,
-                                                 SSD1306_ACTIVATE_SCROLL
-                                                };
-  ssd1306_commandList(scrollList1b, sizeof(scrollList1b));
-  TRANSACTION_END
-}
-
-/*!
-    @brief  Activate a left-handed scroll for all or part of the display.
-    @param  start
-            First row.
-    @param  stop
-            Last row.
-    @return None (void).
-*/
-// To scroll the whole display, run: display.startscrollleft(0x00, 0x0F)
-void Adafruit_SSD1306::startscrollleft(uint8_t start, uint8_t stop) {
-  TRANSACTION_START
-  static const uint8_t PROGMEM scrollList2a[] = {SSD1306_LEFT_HORIZONTAL_SCROLL,
-                                                 0X00
-                                                };
-  ssd1306_commandList(scrollList2a, sizeof(scrollList2a));
-  ssd1306_command1(start);
-  ssd1306_command1(0X00);
-  ssd1306_command1(stop);
-  static const uint8_t PROGMEM scrollList2b[] = {0X00, 0XFF,
-                                                 SSD1306_ACTIVATE_SCROLL
-                                                };
-  ssd1306_commandList(scrollList2b, sizeof(scrollList2b));
-  TRANSACTION_END
-}
 
 
 /*!
@@ -475,8 +405,7 @@ auto& ser = Serial1;
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
 
 
@@ -525,7 +454,7 @@ void setup() {
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
 
-  draw_letter(letterH);
+  draw_letter(letterP);
 
 }
 void loop() {
