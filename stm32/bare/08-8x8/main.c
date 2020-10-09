@@ -3,7 +3,7 @@
 #include <i2c.h>
 #include <usart.h>
 
-#define SID 4
+#define SID 0x70 // SID
 
 void printi(u32 x)
 {
@@ -12,12 +12,6 @@ void printi(u32 x)
 	print(buf);
 }
 
-
-/*
-#define RCC_BASE        0x40021000
-#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
-#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
-*/
 
 
 void init_i2c() // this seems to be correct
@@ -157,7 +151,7 @@ void i2c_read(u8 sid, u8* buffer, u32 len)
 // I2C is on APB1. runs at half the clock speed. So, if 72MHz, it will run at 36MHz
 
 
-#ifdef TUTORIAL
+
 
 VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
 {
@@ -180,6 +174,8 @@ VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
 	I2C2->CR1 |= I2C_CR1_STOP;
 }
 
+#ifdef TUTORIAL
+
 // taken from stm8
 static void begin_i2c_write(uint8_t slave_id)
 {
@@ -194,21 +190,72 @@ static void begin_i2c_write(uint8_t slave_id)
 #endif //TUTORIAL
 
 
+static uint8_t  pattern[] =
+{ B10000001,
+  B01000010,
+  B00100100,
+  B00010000,
+  B00001000,
+  B00100100,
+  B01000010,
+  B10000001
+};
 
+void send_cmd(u8 cmd) {
+  //I2C_write(SID, cmd);
+  Wire.beginTransmission(SID);
+  Wire.write(cmd);
+  //Wire.write(2 * y);
+  //Wire.write(bits);
+  Wire.endTransmission();
+}
 
+void write_row(uint8_t y, uint8_t xs) {
+  // the row of xs beed to be quirkily transformed
+  uint8_t bits = 0;
+  for (int x = 0; x < 7; ++x) {
+    bits <<= 1;
+    bits |= (xs & 1);
+    xs  >>= 1;
+  }
+  bits |= (xs << 7);
 
+  // send x layout to device
+  //send2(2 * y, bits);
 
+  Wire.beginTransmission(SID); // address of LED matrix
+  Wire.write(2 * y);
+  Wire.write(bits);
+  Wire.endTransmission();
 
+}
 
+void setup() {
 
+  Wire.begin();
+  send_cmd(0x20 | 1); // turn on oscillator
+  send_cmd(0x81); // display on
+  send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
+}
 
-
+void loop() {
+  for (int i = 0; i < 8; ++i) {
+    u8 row = pattern[i];
+    write_row(i, row);
+    row = ((row & 0x01) ? 0x80 : 0x00) | (row >> 1); // rotate the row for fun
+    pattern[i] = row;
+  }
+  delay(100);
+}
 
 int main()
 {
+	setup();
+	while(1) loop();
+    
 	init_serial();
-	puts("i2c bare master here 3");
+	puts("stm32 i2c bare 8x8 here 3");
 
 	//pu32("I2C1_->CR1", I2C1_->CR2);
 	init_i2c();
