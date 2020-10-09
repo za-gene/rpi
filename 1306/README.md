@@ -5,11 +5,9 @@ OLED SSD1306, I2C, 128x64, 12864 LCD screen
 Connection:
 
 ```
-      WROOM
-+         +
--         -
-SDA     D21
-SCL     D22
+      GND VDD SCK SDA
+STM32 GND 3V  PB6 PB7
+WROOM GND 3V  D22 D21
 ```
 
 ## WROOM
