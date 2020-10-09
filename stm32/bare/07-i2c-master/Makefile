@@ -24,7 +24,7 @@ app.bin: app.elf
 	arm-none-eabi-objdump -d app.elf >app.txt
 
 clean:
-	rm -f *.o *.elf *.bin app.txt
+	rm -f *.o *.elf *.bin app.txt .flash
 
 .flash: app.bin
 	touch .flash
