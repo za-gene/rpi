@@ -12,13 +12,7 @@ void printi(u32 x)
 	print(buf);
 }
 
-
-/*
-#define RCC_BASE        0x40021000
-#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
-#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
-*/
-
+#if 0
 
 void init_i2c() // this seems to be correct
 {
@@ -67,7 +61,6 @@ ACTUALLY
 
 
 
-//u8 i2c_buff[10];
 
 void i2c_read_dma(u8 sid, u8* buffer, u32 len)
 {
@@ -157,51 +150,7 @@ void i2c_read(u8 sid, u8* buffer, u32 len)
 // I2C is on APB1. runs at half the clock speed. So, if 72MHz, it will run at 36MHz
 
 
-#ifdef TUTORIAL
-
-VOID I2C_WRITE_SINGLE(U8 SID, I8 MEM_ADDR, U8 DATA)
-{
-	U32 TEMP;
-	I2C2->CR1 |= I2C2_CR1_START; // GENERATE A START CONDITION
-
-	WHILE(!(I2C2->SR1 & I2C_SR1_SB));
-	I2C2->DR = SID;
-	WHILE(!(I2C2->SR1 & I2C2_SR1_ADDR));
-	TEMP = I2C2->SR2;
-
-	I2C2->DR = MEM_ADDR; //ADDRESS TO RWITE TO
-	WHILE(!(I2C2->SR1 & I2C2_SR1_TXE));
-
-	// COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
-	I2C2->DR = DATA;
-	WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
-
-
-	I2C2->CR1 |= I2C_CR1_STOP;
-}
-
-// taken from stm8
-static void begin_i2c_write(uint8_t slave_id)
-{
-	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
-	I2C_CR2 |= I2C_CR2_START;  // send start sequence
-	while (!(I2C_SR1 & I2C_SR1_SB));
-
-	I2C_DR = slave_id << 1; // send the address and direction
-	while (!(I2C_SR1 & I2C_SR1_ADDR));
-	(void)I2C_SR3;   // read SR3 to clear ADDR event bit
-}
 #endif //TUTORIAL
-
-
-
-
-
-
-
-
-
-
 
 
 
