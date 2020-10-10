@@ -130,7 +130,7 @@ void pu32(char* str, u32 v) {
 class Adafruit_SSD1306  {
   public:
     // NEW CONSTRUCTORS -- recommended for new projects
-    Adafruit_SSD1306(uint8_t w, uint8_t h, 
+    Adafruit_SSD1306(uint8_t w, uint8_t h,
                      uint32_t clkDuring = 400000UL,
                      uint32_t clkAfter = 100000UL);
 
@@ -176,18 +176,22 @@ class Adafruit_SSD1306  {
 
 #define WIRE_WRITE wire->write ///< Wire write function in recent Arduino lib
 
+#if 1
+#define TRANSACTION_START
+#define TRANSACTION_END
+#else
 #define TRANSACTION_START  wire->setClock(wireClk);
 #define TRANSACTION_END wire->setClock(restoreClk);
+#endif
 
-
-Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h, 
+Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
                                    uint32_t clkDuring,
                                    uint32_t clkAfter)
   :   buffer(NULL),
-     mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1)
+      mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1)
 #if ARDUINO >= 157
   ,
-     wireClk(clkDuring), restoreClk(clkAfter)
+      wireClk(clkDuring), restoreClk(clkAfter)
 #endif
 {
   wire = &Wire;
@@ -231,7 +235,13 @@ void send_u8_i2c(u8 c) {
 // Issue list of commands to SSD1306, same rules as above re: transactions.
 // This is a private function, not exposed.
 void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
-  ser.println("WIRE_MAX=" + String(WIRE_MAX));
+  begin_i2c(i2caddr);
+  send_u8_i2c(0x00); // Co = 0, D/C = 0
+  while (n--) send_u8_i2c(*c++);
+  end_i2c();
+  return;
+
+  //ser.println("WIRE_MAX=" + String(WIRE_MAX));
 #if 1 // work-t (needed to add check for BTF)
   //u8 cmd = 0x00;
   begin_i2c(i2caddr);
