@@ -12,5 +12,10 @@ case $1 in
     h) print_help ; exit ;;
 esac
 
+DEV=/dev/ttyACM0
+if [ ! -e $DEV ]; then
+	DEV=/dev/ttyUSB0
+fi
+
 # --omap arg below converts \r to \r\n for better outputting on console
-picocom -b 115200 /dev/ttyUSB0 --omap crcrlf
+picocom -b 115200 $DEV --omap crcrlf
