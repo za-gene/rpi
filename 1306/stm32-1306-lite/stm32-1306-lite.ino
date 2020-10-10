@@ -176,13 +176,6 @@ class Adafruit_SSD1306  {
 
 #define WIRE_WRITE wire->write ///< Wire write function in recent Arduino lib
 
-#if 1
-#define TRANSACTION_START
-#define TRANSACTION_END
-#else
-#define TRANSACTION_START  wire->setClock(wireClk);
-#define TRANSACTION_END wire->setClock(restoreClk);
-#endif
 
 Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
                                    uint32_t clkDuring,
@@ -409,8 +402,7 @@ void Adafruit_SSD1306::clearDisplay(void) {
             of graphics commands, as best needed by one's own application.
 */
 void Adafruit_SSD1306::display(void) {
-  TRANSACTION_START
-  static const uint8_t PROGMEM dlist1[] = {
+  static const uint8_t  dlist1[] = {
     SSD1306_PAGEADDR,
     0,                      // Page start address
     0xFF,                   // Page end (not really, but works here)
@@ -437,8 +429,6 @@ void Adafruit_SSD1306::display(void) {
   }
   wire->endTransmission();
 
-  TRANSACTION_END
-
 }
 
 
@@ -449,15 +439,11 @@ void Adafruit_SSD1306::display(void) {
     @return None (void).
 */
 void Adafruit_SSD1306::stopscroll(void) {
-  TRANSACTION_START
   ssd1306_command1(SSD1306_DEACTIVATE_SCROLL);
-  TRANSACTION_END
 }
 
 void Adafruit_SSD1306::invertDisplay(bool i) {
-  TRANSACTION_START
   ssd1306_command1(i ? SSD1306_INVERTDISPLAY : SSD1306_NORMALDISPLAY);
-  TRANSACTION_END
 }
 
 /*!
@@ -471,10 +457,8 @@ void Adafruit_SSD1306::invertDisplay(bool i) {
 void Adafruit_SSD1306::dim(bool dim) {
   // the range of contrast to too small to be really useful
   // it is useful to dim the display
-  TRANSACTION_START
   ssd1306_command1(SSD1306_SETCONTRAST);
   ssd1306_command1(dim ? 0 : contrast);
-  TRANSACTION_END
 }
 
 
@@ -510,7 +494,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterP;
+u8* the_letter = letterH;
 
 void setup() {
   ser.begin(115200);
