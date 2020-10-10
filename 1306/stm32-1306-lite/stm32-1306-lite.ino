@@ -96,6 +96,7 @@ void write_i2c(u8 sid, const u8* buffer, u32 len);
 void begin_i2c(u8 sid);
 void end_i2c();
 void  send_i2c(const u8* buffer, u32 len);
+void init_i2c();
 
 /*!
     @brief  Class that stores state and functions for interacting with
@@ -196,19 +197,37 @@ void Adafruit_SSD1306::ssd1306_command1(uint8_t c) {
 #endif
 }
 
+void send_u8_i2c(u8 c) {
+  u8 buff = c;
+  send_i2c(&buff, 1);
+}
+
 // Issue list of commands to SSD1306, same rules as above re: transactions.
 // This is a private function, not exposed.
 void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
   ser.println("WIRE_MAX=" + String(WIRE_MAX));
 #if 0 // doesn't seem to work
-  u8 buf[n + 1];
-  for (int i = 0; i < n; i++) buf[i + 1] = *c++;
-  buf[0] = 0;
-  //buf[1] = c;
-  //write_i2c(SID, buf, 1);
-  write_i2c(i2caddr, buf, n + 1);
-  //while (n--) {
-  //  ssd1306_command1(*c++);
+  //u8 cmd = 0x00;
+  begin_i2c(i2caddr);
+  send_u8_i2c(0x00); // Co = 0, D/C = 0
+  uint8_t bytesOut = 1;
+  while (n--) {
+    if (bytesOut >= WIRE_MAX) {
+      //wire->endTransmission();
+      end_i2c();
+      //wire->beginTransmission(i2caddr);
+      begin_i2c(i2caddr);
+      //WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
+      send_u8_i2c(0x00);
+      bytesOut = 1;
+    }
+    //WIRE_WRITE(*c++);
+    //send_i2c(*c++, 1);
+    send_u8_i2c(*c++);
+    bytesOut++;
+  }
+  //wire->endTransmission();
+  end_i2c();
   // }
 #else
   wire->beginTransmission(i2caddr);
@@ -245,20 +264,12 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
 
   vccstate = vcs;
 
-  // Setup pin directions
-  if (wire) { // Using I2C
-    // If I2C address is unspecified, use default
-    // (0x3C for 32-pixel-tall displays, 0x3D for all others).
-    i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
-    // TwoWire begin() function might be already performed by the calling
-    // function if it has unusual circumstances (e.g. TWI variants that
-    // can accept different SDA/SCL pins, or if two SSD1306 instances
-    // with different addresses -- only a single begin() is needed).
-    if (periphBegin)
-      wire->begin();
-  } else {
-  }
-
+  i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
+#if 1
+  init_i2c();
+#else
+  wire->begin();
+#endif
 
 
 
@@ -463,6 +474,8 @@ u8 letterP[] = {
 };
 
 
+u8* the_letter = letterP;
+
 void setup() {
   ser.begin(115200);
   ser.println("testing oled");
@@ -485,7 +498,7 @@ void setup() {
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
 
-  draw_letter(letterH);
+  draw_letter(the_letter);
 
 }
 void loop() {
@@ -572,4 +585,217 @@ void write_i2c(u8 sid, const u8* buffer, u32 len)
   //WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
 
   end_i2c();
+}
+
+
+
+#define GPIO_BASE 0x40010800
+#define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
+#define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
+#define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
+
+
+#define PA4  0x04
+#define PA5  0x05
+#define PA6  0x06
+#define PA7  0x07
+#define PA9  0x09
+#define PA10 0x0A
+#define PA13 0x0D
+#define PB0  0x10
+#define PB1  0x11
+#define PB6  0x16
+#define PB7  0x17
+#define PB10 0x1A
+#define PB11 0x1B
+#define PB13 0x1D
+#define PC13 0x2D
+#define PC15 0x2F
+
+#define BUILTIN_LED PC13
+
+// section 9.2.1 and 9.2.2 CNF/MODE combos
+#define OSPEED 0b10 // 2MHz
+#define INPUT      0b0100 // CNF=1, MODE=0, floating input
+#define INPUT_PULLUP  0b1000 // CNF=2, MODE =0. input with pull-up/down
+#define OUTPUT    (0b0000 | OSPEED) // CNF=0, MODE=1, output push-pull ("regular" out)
+#define OUTPUT_ALT  (0b1000 | OSPEED) // alt out push-pull
+
+
+u32 pin_to_gpio(u32 pin)
+{
+  u32 port = pin >> 4;
+  return GPIO_BASE + port * 0x400;
+}
+
+
+void put32(u32 addr, u32 val)
+{
+  *(volatile u32*) addr = val;
+}
+
+u32 get32(u32 addr)
+{
+  return *(volatile u32*) addr;
+}
+
+
+
+#define RCC_BASE        0x40021000
+
+// section 7.3.11 RCC register map page 121
+#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00)
+#define RCC_CR_HSION (1<<0)
+#define RCC_CR_HSIRDY (1<<1)
+#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04)
+#define RCC_CFGR_SW (1<<0)
+#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
+#define RCC_APB1ENR_TIM4EN (1<<2)
+#define RCC_APB1ENR_USART2EN  (1<<17)
+
+#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
+#define RCC_APB2ENR_USART1EN (1<<14)
+#define RCC_APB2ENR_IOPAEN  (1<<2)
+#define RCC_APB2ENR_AFIOEN (1<<0)
+#define RCC_APB2ENR_SPI1EN (1<<12)
+
+#define RCC_APB2ENR_AFIOEN (1<<0)
+
+#define RCC_APB1ENR_I2C1EN (1<<21)
+#define RCC_AHBENR   REG(RCC_BASE   + 0x14)
+#define RCC_AHBENR_DMA1EN (1<<0)
+
+void gpio_write(u32 pin, u32 val)
+{
+  u32 pos = pin & 0xF;
+  u32 GPIO_BSRR = pin_to_gpio(pin) +  0x10;
+  if (val == 0 ) pos += 16; // Reset rather than Set
+  put32(GPIO_BSRR, 1 << pos);
+
+}
+
+// return either GPIO_CRL, GPIO_CRH, and a pin offset into it
+static void gpio_crx_offset(u32 pin, u32 *crx, u32 *offset)
+{
+  *crx = pin_to_gpio(pin) + 0x00; // assume GPIOx_CRL
+  u32 pin_num = pin & 0x0F;
+  if (pin_num > 7) {
+    *crx += 0x04; // bump to GPIOx_CRH;
+    pin_num -= 8;
+  }
+  *offset = pin_num * 4;
+}
+
+void gpio_mode(u32 pin, u8 mode)
+{
+  u32 port = pin >> 4; // gives 0 for Port A, 1 for port B, 2 for port C
+
+  // only enable port if currently unenabled
+  if ((RCC_APB2ENR & (1 << (port + 2))) == 0)
+    RCC_APB2ENR |= (1 << (port + 2)); // enable port
+
+  u32 crx, offset;
+  gpio_crx_offset(pin, &crx, &offset);
+  u32 mask = 0b1111 << offset;
+  *(volatile u32*) crx &= ~mask; // mask out the mode and CNF
+  *(volatile u32*) crx |= (((u32)mode) << offset);
+}
+
+void gpio_mode_out(u32 pin)
+{
+  gpio_mode(pin, OUTPUT);
+}
+
+
+void gpio_toggle(u32 pin)
+{
+  gpio_write(pin, 1 - gpio_read(pin));
+#if 0
+  u32 GPIO_ODR = pin_to_gpio(pin) + 0x0C;
+  u32 on = get32(GPIO_ODR) &  (1 << (pin & 0xF));
+  if (on)
+    gpio_write(pin, 0);
+  else
+    gpio_write(pin, 1);
+#endif
+}
+
+u8 gpio_read(u32 pin)
+{
+  u32 crx, offset;
+  gpio_crx_offset(pin, &crx, &offset);
+  u32 config = get32(crx); // the CNF and MODE settings for the whole port
+  u32 mode = config & ( 0b11 << offset); // mask out non-MODE bits
+
+  // determine whether to read IDR or ODR
+  u32 addr = pin_to_gpio(pin); // GPIO A/B/C
+#if 1
+  if (mode) {
+    // it's an output
+    addr += 0x0C; // we're now pointing to GPIOx_ODR
+  } else {
+    addr += 0x08; // we're now pointint to GPIOx_IDR
+  }
+#else
+  addr += 0x0C;
+#endif
+  u32 port_data = get32(addr);
+  if (port_data & (1 << (pin & 0xF)))
+    return 1;
+  else
+    return 0;
+#if 0
+  u32 GPIO_ODR = pin_to_gpio(pin) + 0x0C;
+  u32 on = get32(GPIO_ODR) & (1 << (pin & 0xF));
+  if (on) return 1;
+  return 0;
+#endif
+}
+
+
+
+
+void init_i2c() // this seems to be correct
+{
+  //RCC->AB1ENR &= ~(RCC_APB1ENR_I2CEN);
+  I2C1->CR1 = 0X00;
+  I2C1->CR2 = 0X00;
+  //RCC_APB2ENR |= RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
+  RCC_APB2ENR |= RCC_APB2ENR_AFIOEN;
+  RCC_APB1ENR |= RCC_APB1ENR_I2C1EN;
+
+  //I2C1_->CR1 |= I2C_CR1_SWRST; // reset I2C for good measure. bad-t
+
+
+  I2C1->CR2 |= 36; // FREQ OF APB1 BUS = 72MHZ/2 = 36MHZ
+
+  /* TAKE THE PERIOS OF THE FREQ SET INTO CR2 EX: 1/10MHZ = 100NS
+     NOW PICK A FREQ YOU WANT THE I2C TO RUN AT (MAX 100KHZ IN STD
+     MODE) (400KHZ MAX IN FAST MODE)
+     THEN IF IN STD MODE GET THE PERIOD OF THAT FREQ
+    EX:1/100KHZ = 10US THEN DIVIDE BY 2 TO GET THE
+    HTIME BECAUSE THE DUTY CYCLE IS 50% SO HIGH TIME AND LOW TIME
+    IS THE SAME SO WE JUST DIVIDE PERIOD BY 2 TO GET
+    5US
+    THEN CCR REGISTER = 5US/100NS = 50
+    SOO CCR IS 50, THIS IS THE MAX TIME THE I2C WILL WAIT FOR A
+    RISE TIME AND NOT NECESSARILY THE RISE TIME THAT IT WILL
+    ACTUALLY
+  */
+  I2C1->CCR |= 180; // SPEED TO 100KHZ STD MODE MAX: I2C_PERIOD /2 * ABI = (1/100K/2)*36MHZ
+  I2C1->TRISE |= 37; // 1000NS/(CR2 PERIOD=1/36MHZ) = TRISE +1
+  I2C1->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
+
+  // stretch mode enabled by default
+
+  // 7 bit addressing mode enabled by default
+
+
+
+  //GPIOB->CRL = 0b11111111010010000100010001000100;
+  gpio_mode(PB6, 0b1111);
+  gpio_mode(PB7, 0b1111);
+
+
+  I2C1->CR1 |= I2C_CR1_PE; // ENABLE PERIPHERAL
 }
