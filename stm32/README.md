@@ -36,6 +36,7 @@ https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/pack
 * [debugging](debugging.txt)
 * song-player - 3V3 SD card, MCP4921 and LED confirmation. Plays raw song.
 * stm32-timer-led - using a timer to blink an LED once per second using a timer set a frequency of 8kHz
+* [usb-bootloader](usb-bootloader.md) - a bit flakey mind
 
 ## Elsewhere in this site
 
