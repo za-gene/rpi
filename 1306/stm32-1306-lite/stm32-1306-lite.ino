@@ -164,17 +164,6 @@ class Adafruit_SSD1306  {
 };
 
 
-// SOME DEFINES AND STATIC VARIABLES USED INTERNALLY -----------------------
-
-#if defined(BUFFER_LENGTH)
-#define WIRE_MAX BUFFER_LENGTH ///< AVR or similar Wire lib
-#elif defined(SERIAL_BUFFER_SIZE)
-#define WIRE_MAX (SERIAL_BUFFER_SIZE - 1) ///< Newer Wire uses RingBuffer
-#else
-#define WIRE_MAX 32 ///< Use common Arduino core default
-#endif
-
-#define WIRE_WRITE wire->write ///< Wire write function in recent Arduino lib
 
 
 Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
@@ -206,17 +195,10 @@ Adafruit_SSD1306::~Adafruit_SSD1306(void) {
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void Adafruit_SSD1306::ssd1306_command1(uint8_t c) {
-#if 1
   u8 buf[2];
   buf[0] = 0;
   buf[1] = c;
   write_i2c(i2caddr, buf, 2);
-#else
-  wire->beginTransmission(i2caddr);
-  WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
-  WIRE_WRITE(c);
-  wire->endTransmission();
-#endif
 }
 
 void send_u8_i2c(u8 c) {
@@ -231,54 +213,10 @@ void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
   send_u8_i2c(0x00); // Co = 0, D/C = 0
   while (n--) send_u8_i2c(*c++);
   end_i2c();
-  return;
-
-  //ser.println("WIRE_MAX=" + String(WIRE_MAX));
-#if 1 // work-t (needed to add check for BTF)
-  //u8 cmd = 0x00;
-  begin_i2c(i2caddr);
-  send_u8_i2c(0x00); // Co = 0, D/C = 0
-  uint8_t bytesOut = 1;
-  while (n--) {
-    if (bytesOut >= WIRE_MAX) {
-      //wire->endTransmission();
-      end_i2c();
-      //wire->beginTransmission(i2caddr);
-      begin_i2c(i2caddr);
-      //WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
-      send_u8_i2c(0x00);
-      bytesOut = 1;
-    }
-    //WIRE_WRITE(*c++);
-    //send_i2c(*c++, 1);
-    send_u8_i2c(*c++);
-    bytesOut++;
-  }
-  //wire->endTransmission();
-  end_i2c();
-  // }
-#else
-  wire->beginTransmission(i2caddr);
-  WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
-  uint8_t bytesOut = 1;
-  while (n--) {
-    if (bytesOut >= WIRE_MAX) {
-      wire->endTransmission();
-      wire->beginTransmission(i2caddr);
-      WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
-      bytesOut = 1;
-    }
-    WIRE_WRITE(*c++);
-    bytesOut++;
-  }
-  wire->endTransmission();
-#endif
 }
 
 void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
-  //TRANSACTION_START
   ssd1306_command1(c);
-  //TRANSACTION_END
 }
 
 bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
@@ -293,13 +231,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
   vccstate = vcs;
 
   i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
-#if 1 // work-t
   init_i2c();
-#else
-  wire->begin();
-#endif
-
-
 
   uint8_t comPins = 0x02;
   contrast = 0x8F;
@@ -359,11 +291,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
   };
   ssd1306_commandList(init1, sizeof(init1));
 
-
-
-  //TRANSACTION_END
-
-  return true; // Success
+  return true; 
 }
 
 void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
@@ -413,27 +341,10 @@ void Adafruit_SSD1306::display(void) {
 
   uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
   uint8_t *ptr = buffer;
-#if 1
   begin_i2c(i2caddr);
   send_u8_i2c(0x40);
   while (count--) send_u8_i2c(*ptr++);
   end_i2c();
-#else
-  wire->beginTransmission(i2caddr);
-  WIRE_WRITE((uint8_t)0x40);
-  uint8_t bytesOut = 1;
-  while (count--) {
-    if (bytesOut >= WIRE_MAX) {
-      wire->endTransmission();
-      wire->beginTransmission(i2caddr);
-      WIRE_WRITE((uint8_t)0x40);
-      bytesOut = 1;
-    }
-    WIRE_WRITE(*ptr++);
-    bytesOut++;
-  }
-  wire->endTransmission();
-#endif
 }
 
 
@@ -499,7 +410,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterP;
+u8* the_letter = letterH;
 
 void setup() {
   ser.begin(115200);
