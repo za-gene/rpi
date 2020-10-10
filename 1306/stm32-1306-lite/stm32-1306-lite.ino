@@ -1,39 +1,42 @@
 /*
-This is the core graphics library for all our displays, providing a common
-set of graphics primitives (points, lines, circles, etc.).  It needs to be
-paired with a hardware-specific library for each display device we carry
-(to handle the lower-level functions).
+  This is the core graphics library for all our displays, providing a common
+  set of graphics primitives (points, lines, circles, etc.).  It needs to be
+  paired with a hardware-specific library for each display device we carry
+  (to handle the lower-level functions).
 
-Adafruit invests time and resources providing this open source code, please
-support Adafruit & open-source hardware by purchasing products from Adafruit!
+  Adafruit invests time and resources providing this open source code, please
+  support Adafruit & open-source hardware by purchasing products from Adafruit!
 
-Copyright (c) 2013 Adafruit Industries.  All rights reserved.
+  Copyright (c) 2013 Adafruit Industries.  All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-- Redistributions of source code must retain the above copyright notice,
+  - Redistributions of source code must retain the above copyright notice,
   this list of conditions and the following disclaimer.
-- Redistributions in binary form must reproduce the above copyright notice,
+  - Redistributions in binary form must reproduce the above copyright notice,
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
- */
- 
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <Wire.h>
 
+auto& ser = Serial;
+
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 /// The following "raw" color names are kept for backwards client compatability
 /// They can be disabled by predefining this macro before including the Adafruit
@@ -85,6 +88,14 @@ typedef uint8_t u8;
 #define SSD1306_ACTIVATE_SCROLL 0x2F                      ///< Start scroll
 #define SSD1306_SET_VERTICAL_SCROLL_AREA 0xA3             ///< Set scroll range
 
+
+#define SID 0x3C
+
+
+void write_i2c(u8 sid, const u8* buffer, u32 len);
+void begin_i2c(u8 sid);
+void end_i2c();
+void  send_i2c(const u8* buffer, u32 len);
 
 /*!
     @brief  Class that stores state and functions for interacting with
@@ -172,15 +183,34 @@ Adafruit_SSD1306::~Adafruit_SSD1306(void) {
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void Adafruit_SSD1306::ssd1306_command1(uint8_t c) {
+#if 1
+  u8 buf[2];
+  buf[0] = 0;
+  buf[1] = c;
+  write_i2c(i2caddr, buf, 2);
+#else
   wire->beginTransmission(i2caddr);
   WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
   WIRE_WRITE(c);
   wire->endTransmission();
+#endif
 }
 
 // Issue list of commands to SSD1306, same rules as above re: transactions.
 // This is a private function, not exposed.
 void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
+  ser.println("WIRE_MAX=" + String(WIRE_MAX));
+#if 0 // doesn't seem to work
+  u8 buf[n + 1];
+  for (int i = 0; i < n; i++) buf[i + 1] = *c++;
+  buf[0] = 0;
+  //buf[1] = c;
+  //write_i2c(SID, buf, 1);
+  write_i2c(i2caddr, buf, n + 1);
+  //while (n--) {
+  //  ssd1306_command1(*c++);
+  // }
+#else
   wire->beginTransmission(i2caddr);
   WIRE_WRITE((uint8_t)0x00); // Co = 0, D/C = 0
   uint8_t bytesOut = 1;
@@ -195,12 +225,13 @@ void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
     bytesOut++;
   }
   wire->endTransmission();
+#endif
 }
 
 void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
-  TRANSACTION_START
+  //TRANSACTION_START
   ssd1306_command1(c);
-  TRANSACTION_END
+  //TRANSACTION_END
 }
 
 bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
@@ -399,7 +430,7 @@ void Adafruit_SSD1306::dim(bool dim) {
   TRANSACTION_END
 }
 
-auto& ser = Serial1;
+
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -420,7 +451,7 @@ u8 letterH[] = {
   0b00000000
 };
 
-u8 letterP[] = { 
+u8 letterP[] = {
   0b11111100,
   0b10000010,
   0b10000010,
@@ -454,7 +485,7 @@ void setup() {
   // drawing operations and then update the screen all at once by calling
   // display.display(). These examples demonstrate both approaches...
 
-  draw_letter(letterP);
+  draw_letter(letterH);
 
 }
 void loop() {
@@ -465,16 +496,80 @@ void loop() {
 
 void draw_letter(u8 letter[]) {
   display.clearDisplay();
-  for(int i=0; i<8; i++) {
+  for (int i = 0; i < 8; i++) {
     u8 row = letter[i];
-    for(int j=0; j<8; j++) {
-      u8 on = (row & 1<<7) ? 1 : 0;
+    for (int j = 0; j < 8; j++) {
+      u8 on = (row & 1 << 7) ? 1 : 0;
       display.drawPixel(j, i, on);
       row <<= 1;
     }
-    
+
     //display.drawPixel(i, 0, row);
   }
   display.display();
   delay(2000);
+}
+
+typedef struct {
+  __IO u32 CR1; //0x00
+  __IO u32 CR2; // 0x04
+  __IO u32 OAR1; //0x08
+  __IO u32 OAR2; //0x0C
+  __IO u32 DR; //0x10
+  __IO u32 SR1; //0x14
+  __IO u32 SR2; //0x18
+  __IO u32 CCR; // 0x1C
+  __IO u32 TRISE; // 0x20
+} I2C_t;
+
+#define I2C1 ((I2C_t*) (0x40005400))
+#define I2C2 ((I2C_t*) (0x40005800))
+
+
+#define I2C_CR1_PE (1<<0)
+
+#define I2C_CR1_STOP (1<<9)
+#define I2C_CR1_ACK (1<<10)
+#define I2C_CR1_START (1<<8)
+#define I2C_CR1_SWRST (1<<15)
+
+#define I2C_CR2_LAST (1<<12)
+#define I2C_CR2_DMAEN (1<<11)
+
+#define I2C_SR1_SB (1<<0)
+#define I2C_SR1_RXNE (1<<6)
+#define I2C_SR1_TXE  (1<<7)
+#define I2C_SR1_ADDR (1<<1)
+
+void begin_i2c(u8 sid) {
+  //U32 TEMP;
+  I2C1->CR1 |= I2C_CR1_START; // GENERATE A START CONDITION
+
+  while (!(I2C1->SR1 & I2C_SR1_SB));
+  I2C1->DR = sid << 1;
+  while (!(I2C1->SR1 & I2C_SR1_ADDR));
+  I2C1->SR2;
+}
+
+void end_i2c() {
+  I2C1->CR1 |= I2C_CR1_STOP;
+}
+
+void  send_i2c(const u8* buffer, u32 len) {
+  for (u32 i = 0; i < len; i++) {
+    I2C1->DR = buffer[i];
+    while (!(I2C1->SR1 & I2C_SR1_TXE));
+  }
+}
+
+void write_i2c(u8 sid, const u8* buffer, u32 len)
+{
+  begin_i2c(sid);
+  send_i2c(buffer, len);
+
+  // COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
+  //I2C2->DR = DATA;
+  //WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
+
+  end_i2c();
 }
