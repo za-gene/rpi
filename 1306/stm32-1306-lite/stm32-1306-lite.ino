@@ -82,7 +82,7 @@ const int HEIGHT = 64;
 const int WIDTH = 128;
 u8 buffer1306[WIDTH * ((HEIGHT + 7) / 8)];
 
-#define SID 0x3C
+#define SID 0x3C // I2C 1306 slave ID ... for 64 height display. 32 hieight is 0x3D
 
 
 void write_i2c(u8 sid, const u8* buffer, u32 len);
@@ -114,63 +114,17 @@ void pu32(char* str, u32 v) {
 
 }
 
-/*!
-    @brief  Class that stores state and functions for interacting with
-            SSD1306 OLED displays.
-*/
-class Adafruit_SSD1306  {
-  public:
-    // NEW CONSTRUCTORS -- recommended for new projects
-    Adafruit_SSD1306(uint8_t w, uint8_t h);
-
-    ~Adafruit_SSD1306(void);
-
-    bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, uint8_t i2caddr = 0);
-    void display(void);
-    void clearDisplay(void);
-    void invertDisplay(bool i);
-    void dim(bool dim);
-    void drawPixel(int16_t x, int16_t y, uint16_t color);
-    void stopscroll(void);
-    void ssd1306_command(uint8_t c);
-
-
-  private:
-    void ssd1306_command1(uint8_t c);
-    void ssd1306_commandList(const uint8_t *c, uint8_t n);
-
-    //uint8_t *buffer;
-    int8_t i2caddr, vccstate, page_end;
-
-    uint8_t contrast; // normal contrast setting for this device
-};
-
-
-
-
-Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h)
-{
-
-}
-
-
-/*!
-    @brief  Destructor for Adafruit_SSD1306 object.
-*/
-Adafruit_SSD1306::~Adafruit_SSD1306(void) {
-
-}
 
 
 // Issue single command to SSD1306, using I2C or hard/soft SPI as needed.
 // Because command calls are often grouped, SPI transaction and selection
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
-void Adafruit_SSD1306::ssd1306_command1(uint8_t c) {
+void ssd1306_command1(uint8_t c) {
   u8 buf[2];
   buf[0] = 0;
   buf[1] = c;
-  write_i2c(i2caddr, buf, 2);
+  write_i2c(SID, buf, 2);
 }
 
 void send_u8_i2c(u8 c) {
@@ -178,28 +132,23 @@ void send_u8_i2c(u8 c) {
   send_i2c(&buff, 1);
 }
 
-// Issue list of commands to SSD1306, same rules as above re: transactions.
-// This is a private function, not exposed.
-void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
-  begin_i2c(i2caddr);
+void ssd1306_commandList(const uint8_t *c, uint8_t n) {
+  begin_i2c(SID);
   send_u8_i2c(0x00); // Co = 0, D/C = 0
   while (n--) send_u8_i2c(*c++);
   end_i2c();
 }
 
-void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
-  ssd1306_command1(c);
-}
 
-bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr) {
-  clearDisplay();
-  vccstate = vcs;
+bool init1306(uint8_t vcs) {
+  clear1306();
+  u8 vccstate = vcs;
 
-  i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
+  //i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
   init_i2c();
 
   uint8_t comPins = 0x02;
-  contrast = 0x8F;
+  u8 contrast = 0x8F;
 
   if ((WIDTH == 128) && (HEIGHT == 32)) {
     comPins = 0x02;
@@ -247,7 +196,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr) {
   return true;
 }
 
-void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
+void draw_pixel1306(int16_t x, int16_t y, uint16_t color) {
   if ((x >= 0) && (x < WIDTH) && (y >= 0) && (y < HEIGHT)) {
     switch (color) {
       case SSD1306_WHITE:
@@ -264,7 +213,7 @@ void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
 }
 
 
-void Adafruit_SSD1306::clearDisplay(void) {
+void clear1306() {
   memset(buffer1306, 0, WIDTH * ((HEIGHT + 7) / 8));
 }
 
@@ -281,7 +230,7 @@ void Adafruit_SSD1306::clearDisplay(void) {
             called. Call after each graphics command, or after a whole set
             of graphics commands, as best needed by one's own application.
 */
-void Adafruit_SSD1306::display(void) {
+void display1306(void) {
   static const uint8_t  dlist1[] = {
     SSD1306_PAGEADDR,
     0,                      // Page start address
@@ -294,7 +243,7 @@ void Adafruit_SSD1306::display(void) {
 
   uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
   uint8_t *ptr = buffer1306;
-  begin_i2c(i2caddr);
+  begin_i2c(SID);
   send_u8_i2c(0x40);
   while (count--) send_u8_i2c(*ptr++);
   end_i2c();
@@ -307,11 +256,11 @@ void Adafruit_SSD1306::display(void) {
     @brief  Cease a previously-begun scrolling action.
     @return None (void).
 */
-void Adafruit_SSD1306::stopscroll(void) {
+void stopscroll1306(void) {
   ssd1306_command1(SSD1306_DEACTIVATE_SCROLL);
 }
 
-void Adafruit_SSD1306::invertDisplay(bool i) {
+void invert1306(bool i) {
   ssd1306_command1(i ? SSD1306_INVERTDISPLAY : SSD1306_NORMALDISPLAY);
 }
 
@@ -323,21 +272,17 @@ void Adafruit_SSD1306::invertDisplay(bool i) {
     @note   This has an immediate effect on the display, no need to call the
             display() function -- buffer contents are not changed.
 */
-void Adafruit_SSD1306::dim(bool dim) {
+void dim1306(bool dim) {
   // the range of contrast to too small to be really useful
   // it is useful to dim the display
   ssd1306_command1(SSD1306_SETCONTRAST);
-  ssd1306_command1(dim ? 0 : contrast);
+  ssd1306_command1(dim);
 }
 
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
-
 
 
 u8 letterH[] = {
@@ -370,17 +315,17 @@ void setup() {
   ser.println("testing oled");
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+  if (!init1306(SSD1306_SWITCHCAPVCC)) {
     ser.println(F("SSD1306 allocation failed"));
     for (;;); // Don't proceed, loop forever
   }
   ser.println("display begun");
 
-  display.drawPixel(10, 10, SSD1306_WHITE);
+  draw_pixel1306(10, 10, SSD1306_WHITE);
 
   // Show the display buffer on the screen. You MUST call display() after
   // drawing commands to make them visible on screen!
-  display.display();
+  display1306();
   delay(2000);
   // display.display() is NOT necessary after every single drawing command,
   // unless that's what you want...rather, you can batch up a bunch of
@@ -397,16 +342,16 @@ void loop() {
 
 
 void draw_letter(u8 letter[]) {
-  display.clearDisplay();
+  clear1306();
   for (int i = 0; i < 8; i++) {
     u8 row = letter[i];
     for (int j = 0; j < 8; j++) {
       u8 on = (row & 1 << 7) ? 1 : 0;
-      display.drawPixel(j, i, on);
+      draw_pixel1306(j, i, on);
       row <<= 1;
     }
   }
-  display.display();
+  display1306();
   delay(2000);
 }
 
