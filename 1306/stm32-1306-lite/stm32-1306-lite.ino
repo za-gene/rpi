@@ -265,7 +265,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
   vccstate = vcs;
 
   i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
-#if 1
+#if 1 // work-t
   init_i2c();
 #else
   wire->begin();
