@@ -130,7 +130,7 @@ void pu32(char* str, u32 v) {
 class Adafruit_SSD1306  {
   public:
     // NEW CONSTRUCTORS -- recommended for new projects
-    Adafruit_SSD1306(uint8_t w, uint8_t h, TwoWire *twi = &Wire,
+    Adafruit_SSD1306(uint8_t w, uint8_t h, 
                      uint32_t clkDuring = 400000UL,
                      uint32_t clkAfter = 100000UL);
 
@@ -180,16 +180,17 @@ class Adafruit_SSD1306  {
 #define TRANSACTION_END wire->setClock(restoreClk);
 
 
-Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h, TwoWire *twi,
+Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h, 
                                    uint32_t clkDuring,
                                    uint32_t clkAfter)
-  :  wire(twi ? twi : & Wire), buffer(NULL),
+  :   buffer(NULL),
      mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1)
 #if ARDUINO >= 157
   ,
      wireClk(clkDuring), restoreClk(clkAfter)
 #endif
 {
+  wire = &Wire;
 }
 
 
@@ -472,7 +473,7 @@ void Adafruit_SSD1306::dim(bool dim) {
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 
@@ -595,16 +596,11 @@ void end_i2c() {
 
 void  send_i2c(const u8* buffer, u32 len) {
   for (u32 i = 0; i < len; i++) {
-
-
     I2C1->DR = buffer[i];
     while (!(I2C1->SR1 & I2C_SR1_TXE));
     //I2C1->SR2;
     while (!(I2C1->SR1 & I2C_SR1_BTF)); // added mcarter 2020-10-10. Seems necessary
-    //I2C1->DR; // mcarter added
-    //pu32("send_i2c I2C1->SR1 ", I2C1->SR1);
-    //ser.println(".");
-    //delay(1); // TODO seems to be necessary. Implying that I need to do something
+
   }
 }
 
