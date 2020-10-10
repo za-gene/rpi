@@ -33,7 +33,9 @@
 
 #include <Wire.h>
 
-auto& ser = Serial;
+//#include <gpio.h>
+
+auto& ser = Serial1;
 
 typedef uint8_t u8;
 typedef uint32_t u32;
@@ -97,6 +99,29 @@ void begin_i2c(u8 sid);
 void end_i2c();
 void  send_i2c(const u8* buffer, u32 len);
 void init_i2c();
+
+
+void pu32(char* str, u32 v) {
+  ser.print(str);
+  ser.print(v);
+  ser.print(" 0b");
+  for (int i = 0; i < 8; i++) {
+    if (i) ser.print("'");
+    for (int j = 0; j < 4; j++) {
+      //u32 x = v & (0b10000000000000000000000000000000);
+      u32 x = v & (1 << 31);
+      if (x > 0) {
+        ser.print(1);
+      } else {
+        ser.print(0);
+      }
+
+      v = (v << 1);
+    }
+  }
+  ser.println("");
+
+}
 
 /*!
     @brief  Class that stores state and functions for interacting with
@@ -206,7 +231,7 @@ void send_u8_i2c(u8 c) {
 // This is a private function, not exposed.
 void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
   ser.println("WIRE_MAX=" + String(WIRE_MAX));
-#if 0 // work-f
+#if 1 // work-t (needed to add check for BTF)
   //u8 cmd = 0x00;
   begin_i2c(i2caddr);
   send_u8_i2c(0x00); // Co = 0, D/C = 0
@@ -474,7 +499,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterH;
+u8* the_letter = letterP;
 
 void setup() {
   ser.begin(115200);
@@ -570,9 +595,16 @@ void end_i2c() {
 
 void  send_i2c(const u8* buffer, u32 len) {
   for (u32 i = 0; i < len; i++) {
+
+
     I2C1->DR = buffer[i];
     while (!(I2C1->SR1 & I2C_SR1_TXE));
-    I2C1->SR2;
+    //I2C1->SR2;
+    while (!(I2C1->SR1 & I2C_SR1_BTF)); // added mcarter 2020-10-10. Seems necessary
+    //I2C1->DR; // mcarter added
+    //pu32("send_i2c I2C1->SR1 ", I2C1->SR1);
+    //ser.println(".");
+    //delay(1); // TODO seems to be necessary. Implying that I need to do something
   }
 }
 
