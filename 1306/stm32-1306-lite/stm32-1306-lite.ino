@@ -31,7 +31,7 @@
   POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <Wire.h>
+//#include <Wire.h>
 
 //#include <gpio.h>
 
@@ -153,7 +153,7 @@ class Adafruit_SSD1306  {
     void ssd1306_commandList(const uint8_t *c, uint8_t n);
 
 
-    TwoWire *wire;
+    //TwoWire *wire;
     uint8_t *buffer;
     int8_t i2caddr, vccstate, page_end;
     int8_t mosiPin, clkPin, dcPin, csPin, rstPin;
@@ -187,7 +187,9 @@ Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
       wireClk(clkDuring), restoreClk(clkAfter)
 #endif
 {
+#if 0
   wire = &Wire;
+#endif
 }
 
 
@@ -414,6 +416,12 @@ void Adafruit_SSD1306::display(void) {
 
   uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
   uint8_t *ptr = buffer;
+#if 1
+  begin_i2c(i2caddr);
+  send_u8_i2c(0x40);
+  while (count--) send_u8_i2c(*ptr++);
+  end_i2c();
+#else
   wire->beginTransmission(i2caddr);
   WIRE_WRITE((uint8_t)0x40);
   uint8_t bytesOut = 1;
@@ -428,7 +436,7 @@ void Adafruit_SSD1306::display(void) {
     bytesOut++;
   }
   wire->endTransmission();
-
+#endif
 }
 
 
@@ -587,6 +595,8 @@ void begin_i2c(u8 sid) {
 void end_i2c() {
   I2C1->CR1 |= I2C_CR1_STOP;
 }
+
+#define I2C_SR1_BTF (1<<2)
 
 void  send_i2c(const u8* buffer, u32 len) {
   for (u32 i = 0; i < len; i++) {
