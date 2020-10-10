@@ -31,25 +31,12 @@
   POSSIBILITY OF SUCH DAMAGE.
 */
 
-//#include <Wire.h>
-
-//#include <gpio.h>
 
 auto& ser = Serial1;
 
 typedef uint8_t u8;
 typedef uint32_t u32;
 
-/// The following "raw" color names are kept for backwards client compatability
-/// They can be disabled by predefining this macro before including the Adafruit
-/// header client code will then need to be modified to use the scoped enum
-/// values directly
-#ifndef NO_ADAFRUIT_SSD1306_COLOR_COMPATIBILITY
-#define BLACK SSD1306_BLACK     ///< Draw 'off' pixels
-#define WHITE SSD1306_WHITE     ///< Draw 'on' pixels
-#define INVERSE SSD1306_INVERSE ///< Invert pixels
-#endif
-/// fit into the SSD1306_ naming scheme
 #define SSD1306_BLACK 0   ///< Draw 'off' pixels
 #define SSD1306_WHITE 1   ///< Draw 'on' pixels
 #define SSD1306_INVERSE 2 ///< Invert pixels
@@ -90,6 +77,10 @@ typedef uint32_t u32;
 #define SSD1306_ACTIVATE_SCROLL 0x2F                      ///< Start scroll
 #define SSD1306_SET_VERTICAL_SCROLL_AREA 0xA3             ///< Set scroll range
 
+
+const int HEIGHT = 64;
+const int WIDTH = 128;
+u8 buffer1306[WIDTH * ((HEIGHT + 7) / 8)];
 
 #define SID 0x3C
 
@@ -142,18 +133,15 @@ class Adafruit_SSD1306  {
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void stopscroll(void);
     void ssd1306_command(uint8_t c);
-    int HEIGHT = 64;
-    int WIDTH = 128;
+
 
   private:
     void ssd1306_command1(uint8_t c);
     void ssd1306_commandList(const uint8_t *c, uint8_t n);
 
-    uint8_t *buffer;
+    //uint8_t *buffer;
     int8_t i2caddr, vccstate, page_end;
 
-    //uint32_t wireClk;    // Wire speed for SSD1306 transfers
-    //uint32_t restoreClk; // Wire speed following SSD1306 transfers
     uint8_t contrast; // normal contrast setting for this device
 };
 
@@ -162,7 +150,7 @@ class Adafruit_SSD1306  {
 
 Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h)
 {
-  buffer = NULL;
+
 }
 
 
@@ -170,10 +158,7 @@ Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h)
     @brief  Destructor for Adafruit_SSD1306 object.
 */
 Adafruit_SSD1306::~Adafruit_SSD1306(void) {
-  if (buffer) {
-    free(buffer);
-    buffer = NULL;
-  }
+
 }
 
 
@@ -207,13 +192,7 @@ void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
 }
 
 bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr) {
-
-  if ((!buffer) && !(buffer = (uint8_t *)malloc(WIDTH * ((HEIGHT + 7) / 8))))
-    return false;
-
   clearDisplay();
-
-
   vccstate = vcs;
 
   i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
@@ -272,13 +251,13 @@ void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
   if ((x >= 0) && (x < WIDTH) && (y >= 0) && (y < HEIGHT)) {
     switch (color) {
       case SSD1306_WHITE:
-        buffer[x + (y / 8) * WIDTH] |= (1 << (y & 7));
+        buffer1306[x + (y / 8) * WIDTH] |= (1 << (y & 7));
         break;
       case SSD1306_BLACK:
-        buffer[x + (y / 8) * WIDTH] &= ~(1 << (y & 7));
+        buffer1306[x + (y / 8) * WIDTH] &= ~(1 << (y & 7));
         break;
       case SSD1306_INVERSE:
-        buffer[x + (y / 8) * WIDTH] ^= (1 << (y & 7));
+        buffer1306[x + (y / 8) * WIDTH] ^= (1 << (y & 7));
         break;
     }
   }
@@ -286,7 +265,7 @@ void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
 
 void Adafruit_SSD1306::clearDisplay(void) {
-  memset(buffer, 0, WIDTH * ((HEIGHT + 7) / 8));
+  memset(buffer1306, 0, WIDTH * ((HEIGHT + 7) / 8));
 }
 
 
@@ -314,7 +293,7 @@ void Adafruit_SSD1306::display(void) {
 
 
   uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
-  uint8_t *ptr = buffer;
+  uint8_t *ptr = buffer1306;
   begin_i2c(i2caddr);
   send_u8_i2c(0x40);
   while (count--) send_u8_i2c(*ptr++);
