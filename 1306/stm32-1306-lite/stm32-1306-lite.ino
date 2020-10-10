@@ -130,14 +130,11 @@ void pu32(char* str, u32 v) {
 class Adafruit_SSD1306  {
   public:
     // NEW CONSTRUCTORS -- recommended for new projects
-    Adafruit_SSD1306(uint8_t w, uint8_t h,
-                     uint32_t clkDuring = 400000UL,
-                     uint32_t clkAfter = 100000UL);
+    Adafruit_SSD1306(uint8_t w, uint8_t h);
 
     ~Adafruit_SSD1306(void);
 
-    bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, uint8_t i2caddr = 0,
-               bool reset = true, bool periphBegin = true);
+    bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, uint8_t i2caddr = 0);
     void display(void);
     void clearDisplay(void);
     void invertDisplay(bool i);
@@ -152,30 +149,20 @@ class Adafruit_SSD1306  {
     void ssd1306_command1(uint8_t c);
     void ssd1306_commandList(const uint8_t *c, uint8_t n);
 
-
-    //TwoWire *wire;
     uint8_t *buffer;
     int8_t i2caddr, vccstate, page_end;
-    //int8_t mosiPin, clkPin, dcPin, csPin, rstPin;
 
-    uint32_t wireClk;    // Wire speed for SSD1306 transfers
-    uint32_t restoreClk; // Wire speed following SSD1306 transfers
+    //uint32_t wireClk;    // Wire speed for SSD1306 transfers
+    //uint32_t restoreClk; // Wire speed following SSD1306 transfers
     uint8_t contrast; // normal contrast setting for this device
 };
 
 
 
 
-Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
-                                   uint32_t clkDuring,
-                                   uint32_t clkAfter)
-  :   buffer(NULL)
-#if ARDUINO >= 157
-  ,
-      wireClk(clkDuring), restoreClk(clkAfter)
-#endif
+Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h)
 {
-
+  buffer = NULL;
 }
 
 
@@ -219,8 +206,7 @@ void Adafruit_SSD1306::ssd1306_command(uint8_t c) {
   ssd1306_command1(c);
 }
 
-bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
-                             bool periphBegin) {
+bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr) {
 
   if ((!buffer) && !(buffer = (uint8_t *)malloc(WIDTH * ((HEIGHT + 7) / 8))))
     return false;
@@ -249,49 +235,37 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
     // Other screen varieties -- TBD
   }
 
-  //TRANSACTION_START
 
 
   u8 init1[] = {
-    // init1
     SSD1306_DISPLAYOFF,         // 0xAE
     SSD1306_SETDISPLAYCLOCKDIV, // 0xD5
     0x80, // the suggested ratio 0x80
     SSD1306_SETMULTIPLEX, // 0xA8
-
     HEIGHT - 1,
-    // init2
-
     SSD1306_SETDISPLAYOFFSET, // 0xD3
     0x0,                      // no offset
     SSD1306_SETSTARTLINE | 0x0, // line #0
     SSD1306_CHARGEPUMP,        // 0x8D
-
     (vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0x14,
-
-    // init3
     SSD1306_MEMORYMODE, // 0x20
     0x00, // 0x0 act like ks0108
     SSD1306_SEGREMAP | 0x1,
     SSD1306_COMSCANDEC,
-
-
     SSD1306_SETCOMPINS, comPins,
     SSD1306_SETCONTRAST, contrast,
     SSD1306_SETPRECHARGE, // 0xd9
     (vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
-
     SSD1306_SETVCOMDETECT, // 0xDB
     0x40,
     SSD1306_DISPLAYALLON_RESUME, // 0xA4
     SSD1306_NORMALDISPLAY,       // 0xA6
     SSD1306_DEACTIVATE_SCROLL,
     SSD1306_DISPLAYON
-
   };
   ssd1306_commandList(init1, sizeof(init1));
 
-  return true; 
+  return true;
 }
 
 void Adafruit_SSD1306::drawPixel(int16_t x, int16_t y, uint16_t color) {
@@ -410,7 +384,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterH;
+u8* the_letter = letterP;
 
 void setup() {
   ser.begin(115200);
@@ -452,8 +426,6 @@ void draw_letter(u8 letter[]) {
       display.drawPixel(j, i, on);
       row <<= 1;
     }
-
-    //display.drawPixel(i, 0, row);
   }
   display.display();
   delay(2000);
@@ -491,7 +463,6 @@ typedef struct {
 #define I2C_SR1_ADDR (1<<1)
 
 void begin_i2c(u8 sid) {
-  //U32 TEMP;
   I2C1->CR1 |= I2C_CR1_START; // GENERATE A START CONDITION
 
   while (!(I2C1->SR1 & I2C_SR1_SB));
@@ -510,7 +481,6 @@ void  send_i2c(const u8* buffer, u32 len) {
   for (u32 i = 0; i < len; i++) {
     I2C1->DR = buffer[i];
     while (!(I2C1->SR1 & I2C_SR1_TXE));
-    //I2C1->SR2;
     while (!(I2C1->SR1 & I2C_SR1_BTF)); // added mcarter 2020-10-10. Seems necessary
 
   }
@@ -520,14 +490,11 @@ void write_i2c(u8 sid, const u8* buffer, u32 len)
 {
   begin_i2c(sid);
   send_i2c(buffer, len);
-
-  // COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
-  //I2C2->DR = DATA;
-  //WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
-
   end_i2c();
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
 
 
 #define GPIO_BASE 0x40010800
