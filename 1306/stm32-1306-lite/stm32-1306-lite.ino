@@ -206,7 +206,7 @@ void send_u8_i2c(u8 c) {
 // This is a private function, not exposed.
 void Adafruit_SSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
   ser.println("WIRE_MAX=" + String(WIRE_MAX));
-#if 0 // doesn't seem to work
+#if 0 // work-f
   //u8 cmd = 0x00;
   begin_i2c(i2caddr);
   send_u8_i2c(0x00); // Co = 0, D/C = 0
@@ -289,7 +289,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
     // Other screen varieties -- TBD
   }
 
-  TRANSACTION_START
+  //TRANSACTION_START
 
 
   u8 init1[] = {
@@ -333,7 +333,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
 
 
 
-  TRANSACTION_END
+  //TRANSACTION_END
 
   return true; // Success
 }
@@ -474,7 +474,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterP;
+u8* the_letter = letterH;
 
 void setup() {
   ser.begin(115200);
@@ -572,6 +572,7 @@ void  send_i2c(const u8* buffer, u32 len) {
   for (u32 i = 0; i < len; i++) {
     I2C1->DR = buffer[i];
     while (!(I2C1->SR1 & I2C_SR1_TXE));
+    I2C1->SR2;
   }
 }
 
