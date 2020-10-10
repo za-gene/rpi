@@ -156,7 +156,7 @@ class Adafruit_SSD1306  {
     //TwoWire *wire;
     uint8_t *buffer;
     int8_t i2caddr, vccstate, page_end;
-    int8_t mosiPin, clkPin, dcPin, csPin, rstPin;
+    //int8_t mosiPin, clkPin, dcPin, csPin, rstPin;
 
     uint32_t wireClk;    // Wire speed for SSD1306 transfers
     uint32_t restoreClk; // Wire speed following SSD1306 transfers
@@ -180,16 +180,13 @@ class Adafruit_SSD1306  {
 Adafruit_SSD1306::Adafruit_SSD1306(uint8_t w, uint8_t h,
                                    uint32_t clkDuring,
                                    uint32_t clkAfter)
-  :   buffer(NULL),
-      mosiPin(-1), clkPin(-1), dcPin(-1), csPin(-1)
+  :   buffer(NULL)
 #if ARDUINO >= 157
   ,
       wireClk(clkDuring), restoreClk(clkAfter)
 #endif
 {
-#if 0
-  wire = &Wire;
-#endif
+
 }
 
 
@@ -502,7 +499,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterH;
+u8* the_letter = letterP;
 
 void setup() {
   ser.begin(115200);
