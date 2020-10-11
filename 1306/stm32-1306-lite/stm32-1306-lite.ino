@@ -310,6 +310,22 @@ u8 letterP[] = {
 
 u8* the_letter = letterP;
 
+void  low_level_test() {
+  static const uint8_t  dlist1[] = {
+    SSD1306_PAGEADDR,
+    1,                      // Page start address
+    1,                   // Page end (not really, but works here)
+    SSD1306_COLUMNADDR, 0, 7
+  };
+  ssd1306_commandList(dlist1, sizeof(dlist1));
+  begin_i2c(SID);
+  send_u8_i2c(0x40);
+  send_u8_i2c(0b10101010);
+  end_i2c();
+  //ssd1306_command1(WIDTH - 1); // Column end address
+}
+
+
 void setup() {
   ser.begin(115200);
   ser.println("testing oled");
@@ -333,6 +349,8 @@ void setup() {
   // display.display(). These examples demonstrate both approaches...
 
   draw_letter(the_letter);
+
+  low_level_test();
 
 }
 void loop() {
