@@ -22,7 +22,7 @@ u8 i2c_buff[2];
 
 void send_cmd(u8 cmd) {
 	i2c_buff[0] = cmd;
-	write_i2c(SID, i2c_buff, 1);
+	write_i2c(SID, i2c_buff, 1, false);
 }
 
 void write_row(uint8_t y, uint8_t xs) {
@@ -40,7 +40,7 @@ void write_row(uint8_t y, uint8_t xs) {
 
 	i2c_buff[0] = 2*y;
 	i2c_buff[1] = bits;
-	write_i2c(SID, i2c_buff, 2);
+	write_i2c(SID, i2c_buff, 2, false);
 
 }
 

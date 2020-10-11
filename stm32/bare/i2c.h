@@ -1,5 +1,7 @@
 #pragma once
-#include "blue.h"
+#include <stdbool.h>
+
+#include <blue.h>
 
 typedef struct {
 	__IO u32 CR1; //0x00
@@ -28,11 +30,16 @@ typedef struct {
 #define I2C_CR2_DMAEN (1<<11)
 
 #define I2C_SR1_SB (1<<0)
+#define I2C_SR1_ADDR (1<<1)
+#define I2C_SR1_BTF (1<<2)
 #define I2C_SR1_RXNE (1<<6)
 #define I2C_SR1_TXE  (1<<7)
-#define I2C_SR1_ADDR (1<<1)
 
 void init_i2c();
 void i2c_read_dma(u8 sid, u8* buffer, u32 len);
 void i2c_read(u8 sid, u8* buffer, u32 len);
-void write_i2c(u8 sid, u8* buffer, u32 len);
+
+void begin_i2c(u8 sid, bool read);
+void end_i2c();
+void send_i2c(u8* buffer, u32 len, bool with_btf);
+void write_i2c(u8 sid, u8* buffer, u32 len, bool with_btf);

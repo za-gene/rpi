@@ -132,34 +132,49 @@ void i2c_read(u8 sid, u8* buffer, u32 len)
 
 }
 
+/**
+ * 
+ * @param read Set to true if you want to begin a read transaction, false to write
+ */
 
-
-// using dma is easier, and seems to be recommended
-// I2C is on APB1. runs at half the clock speed. So, if 72MHz, it will run at 36MHz
-
-
-
-
-void write_i2c(u8 sid, u8* buffer, u32 len)
+void begin_i2c(u8 sid, bool read)
 {
-	//U32 TEMP;
 	I2C1->CR1 |= I2C_CR1_START; // GENERATE A START CONDITION
 
-	while(!(I2C1->SR1 & I2C_SR1_SB));
-	I2C1->DR = sid<<1;
-	while(!(I2C1->SR1 & I2C_SR1_ADDR));
+	while (!(I2C1->SR1 & I2C_SR1_SB));
+	I2C1->DR = (sid << 1) + (read ? 1 : 0);
+	while (!(I2C1->SR1 & I2C_SR1_ADDR));
 	I2C1->SR2;
+}
 
+void end_i2c()
+{
+	I2C1->CR1 |= I2C_CR1_STOP;
+}
+
+/**
+ * @param with_btf set to true to check for I2C_SR1_BTF. False otherwise.
+ * Sometimes it seems to work with it, sometimes without it. It probably
+ * indicates a bug in this module.
+ * 
+ * The 8x8 module seems to require it to be set to false, whilst the 
+ * ssd1306 seems to require it to be true.
+ */
+ 
+void send_i2c(u8* buffer, u32 len, bool with_btf)
+{
 	for(u32 i=0; i<len; i++) {
 		I2C1->DR = buffer[i]; 
 		while(!(I2C1->SR1 & I2C_SR1_TXE));
+		if(with_btf)
+				while(!(I2C1->SR1 & I2C_SR1_BTF)); // added mcarter 2020-10-10
 	}
+}
 
-	// COULR DO THIS MULTIPLE TIMES TO SEND LOTS OF DATA
-	//I2C2->DR = DATA;
-	//WHILE(!(I2C2->SR1 & I2C_SR1_TXE));
-
-
-	I2C1->CR1 |= I2C_CR1_STOP;
+void write_i2c(u8 sid, u8* buffer, u32 len, bool with_btf)
+{
+	begin_i2c(sid, false);
+	send_i2c(buffer, len, with_btf);	
+	end_i2c();
 }
 
