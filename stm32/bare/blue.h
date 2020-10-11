@@ -136,4 +136,5 @@ u32 get32(u32 addr);
 #define nop() asm volatile ("nop")
 void* memcpy(void* dst, const void* src, size_t n);
 void *memset(void *b, int c, int len);
-
+void delayish(u32 ms);
+void delaysecsish(u32 secs);

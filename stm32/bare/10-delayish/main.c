@@ -1,13 +1,13 @@
-//#include <stdio.h>
-//#include <stdbool.h>
+/*
+ * Calibrating the delayish() function. The aim here is
+ * to use nop() to create a delay of approx 1ms without
+ * using timers.
+ *
+ * A lot of this was cobbled from project 04
+ */
 
-#include <gpio.h>
 #include <usart.h>
-
-
-// section 10.1.2 Vector table
-
-//#define NVIC_TIM4 *(volatile uint32_t *)(0x000000B8)
+#include <blue.h>
 
 
 
@@ -18,12 +18,13 @@
 #define TIM_EGR_UG (1<<0)
 #define TIM_EGR_TG (1<<6)
 
-//void __attribute__ ((interrupt ("IRQ"))) myhandler()
+u32 ticks = 0;
+
 void TIM4_IRQHandler()
-//void __attribute__ ((interrupt ("TIM4_IRQHandler"))) myhandler()
 {
-	gpio_toggle(BUILTIN_LED);
-	puts("hi");
+	ticks++;
+	//gpio_toggle(BUILTIN_LED);
+	//puts("hi");
 	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
 	TIM4->SR &= ~0x01; // clear UIF
 	//TIM4->DIER |= 0x01; // UIE
@@ -32,7 +33,8 @@ void TIM4_IRQHandler()
 void setup_timer()
 {
 	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
-	TIM4->PSC=7999; // scalar looks iffy:clock is 72MHz, not 80MHz
+	//TIM4->PSC=7199;
+	TIM4->PSC=7999;
 	TIM4->ARR=1000;
 	//TIM4->ARR=100; // fiddle around for testing purposes
 	TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
@@ -42,45 +44,35 @@ void setup_timer()
 	puts("Timer setup");
 }
 
-
 #define NVIC_ISER0 *(volatile uint32_t *)(0xE000E000+0x100)
-void main() 
-{
+
+int main() {
 	init_serial();
-	puts("04-timer-interrupt started 4");
-	char msg[40];
-
+	puts("10-delayish 1");
 	setup_timer();
-	gpio_mode_out(BUILTIN_LED);
-
 	NVIC_ISER0 = (1<<30);
 	TIM4->DIER |= 1;
-	puts("Interrupt set");
 
 	enable_irq();
+	puts("Interrupt set");
 
-	putchar('\a'); // beep
 
-	int secs = 0;
+	char str[20];
+	puts("Start");
+	u32 start = ticks, elapsed;
+	delaysecsish(60);
+	elapsed = ticks -start;
+	/*
 	while(1) {
-		itoa(secs++, msg, 10);
-		//puts(msg);
-		for(int i=0; i< 1000000; i++);
-		//delay(1000);
+		elapsed = ticks -start;
+		if(elapsed>=100UL) break;
 	}
+	*/
+	puts("Stop");
+	itoa(elapsed, str, 10);
+	puts(str);
 
-	//while(1);
+
+	while(1);
 }
 
-#if 0
-void SystemInit()
-{
-	// TODO
-}
-
-void __libc_init_array()
-{
-	// TODO
-
-}
-#endif

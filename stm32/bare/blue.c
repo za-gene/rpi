@@ -2,7 +2,7 @@
  * @file
  * @brief yakkity yak todo
  */
- 
+
 #include <stdbool.h>
 #include "blue.h"
 
@@ -60,3 +60,33 @@ u32 get32(u32 addr)
 {
 	return *(volatile u32*) addr;
 }
+
+/**
+ * @brief Delay ms
+ * @param ms number of milliseconds to delay.
+ *
+ * This function uses a nop() loop. It can therefore be
+ * considered only approximate. Its advantage is that it
+ * doesn't use timers.
+ *
+ * The timing was calibrated using project 10-delayish .
+ */
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+void delayish(u32 ms)
+{
+	while(ms--) {
+		for(volatile int i = 0; i <732; i++) nop();
+	}
+}
+
+/**
+ * Delays for approx number of secs. Uses delayish()
+ */
+void delaysecsish(u32 secs)
+{
+	while(secs--) delayish(1000);
+}
+#pragma GCC pop_options
+
+

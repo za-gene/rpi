@@ -2,10 +2,10 @@
 
 ## delay
 
-This one is pretty good:
-```
-		for(int i=0; i< 600000; i++) nop(); // simple delay
-```
+For quick-and-dirty timing use `delayish()` for milliseconds,
+and `delaysecsish()` for seconds. It uses `nop()` under the
+hood, but has the advantage that it doesn't use timers.
+
 
 ## linking
 
