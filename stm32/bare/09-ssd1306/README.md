@@ -1,4 +1,4 @@
-# i2c 8x8 matrix
+# SSD1306 128x64 I2C OLED
 
 i2c master transmit only
 
