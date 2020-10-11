@@ -9,6 +9,8 @@
 //#include "I2C.h"
 
 #define SID 0x3C // I2C 1306 slave ID ... for 64 height display.
+#define HEIGHT 64
+#define WIDTH 128
 
 #define REG(addr) *(volatile u8*)(addr)
 
@@ -155,26 +157,25 @@ void init_i2c() {
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-	u8 buf[2];
-	buf[0] = 0;
-	buf[1] = c;
-	write_i2c(SID, buf, 2);
+	begin_i2c_write(SID);
+	write_i2c_byte(0);
+	write_i2c_byte(c);
+	end_i2c_write();
 }
 
 void send_u8_i2c(u8 c) {
-	u8 buff = c;
-	send_i2c(&buff, 1);
+	write_i2c_byte(c);
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-	begin_i2c(SID);
+	begin_i2c_write(SID);
 	send_u8_i2c(0x00); // Co = 0, D/C = 0
 	while (n--) send_u8_i2c(*c++);
-	end_i2c();
+	end_i2c_write();
 }
 
-bool init1306(uint8_t vcs) {
-	clear1306();
+void init1306(u8 vcs) {
+	//clear1306();
 	u8 vccstate = vcs;
 
 	//i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
@@ -225,8 +226,6 @@ bool init1306(uint8_t vcs) {
 		SSD1306_DISPLAYON
 	};
 	ssd1306_commandList(init1, sizeof(init1));
-
-	return true;
 }
 
 
@@ -238,11 +237,10 @@ void  low_level_test() {
 		SSD1306_COLUMNADDR, 0, 7
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	begin_i2c(SID);
+	begin_i2c_write(SID);
 	send_u8_i2c(0x40);
 	send_u8_i2c(0b10101010);
-	end_i2c();
-	//ssd1306_command1(WIDTH - 1); // Column end address
+	end_i2c_write();
 }
 
 
@@ -251,5 +249,5 @@ void main() {
 	init_i2c();
 	init1306(SSD1306_SWITCHCAPVCC);
 	low_level_test();
-	wile(1);
+	while(1);
 }
