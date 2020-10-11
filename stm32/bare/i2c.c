@@ -50,6 +50,11 @@ ACTUALLY
 
 
 
+/**
+ * Someone recommended using DMA rather than the alternative method.
+ * There might be a suspicious bug in theis function, though.
+ */
+  
 void i2c_read_dma(u8 sid, u8* buffer, u32 len)
 {
 #define  CHAN DMA1->CHAN7

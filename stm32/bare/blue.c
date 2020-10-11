@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stddef.h> // for size_t
 #include "blue.h"
 
 extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;

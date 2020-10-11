@@ -1,48 +1,10 @@
+//#include <blue.h>
 #include <dma.h>
 #include <gpio.h>
 #include <i2c.h>
-#include <usart.h>
 
-#define SID 0x70 // SID
+//auto& ser = Serial1;
 
-/*
-  This is the core graphics library for all our displays, providing a common
-  set of graphics primitives (points, lines, circles, etc.).  It needs to be
-  paired with a hardware-specific library for each display device we carry
-  (to handle the lower-level functions).
-
-  Adafruit invests time and resources providing this open source code, please
-  support Adafruit & open-source hardware by purchasing products from Adafruit!
-
-  Copyright (c) 2013 Adafruit Industries.  All rights reserved.
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-
-  - Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-  - Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  POSSIBILITY OF SUCH DAMAGE.
-*/
-
-
-auto& ser = Serial1;
-
-typedef uint8_t u8;
-typedef uint32_t u32;
 
 #define SSD1306_BLACK 0   ///< Draw 'off' pixels
 #define SSD1306_WHITE 1   ///< Draw 'on' pixels
@@ -85,41 +47,14 @@ typedef uint32_t u32;
 #define SSD1306_SET_VERTICAL_SCROLL_AREA 0xA3             ///< Set scroll range
 
 
-const int HEIGHT = 64;
-const int WIDTH = 128;
+//const int HEIGHT = 64;
+//const int WIDTH = 128;
+#define HEIGHT 64
+#define WIDTH 128
+
 u8 buffer1306[WIDTH * ((HEIGHT + 7) / 8)];
 
 #define SID 0x3C // I2C 1306 slave ID ... for 64 height display. 32 hieight is 0x3D
-
-
-void write_i2c(u8 sid, const u8* buffer, u32 len);
-void begin_i2c(u8 sid);
-void end_i2c();
-void  send_i2c(const u8* buffer, u32 len);
-void init_i2c();
-
-
-void pu32(char* str, u32 v) {
-  ser.print(str);
-  ser.print(v);
-  ser.print(" 0b");
-  for (int i = 0; i < 8; i++) {
-    if (i) ser.print("'");
-    for (int j = 0; j < 4; j++) {
-      //u32 x = v & (0b10000000000000000000000000000000);
-      u32 x = v & (1 << 31);
-      if (x > 0) {
-        ser.print(1);
-      } else {
-        ser.print(0);
-      }
-
-      v = (v << 1);
-    }
-  }
-  ser.println("");
-
-}
 
 
 
@@ -131,21 +66,33 @@ void ssd1306_command1(uint8_t c) {
   u8 buf[2];
   buf[0] = 0;
   buf[1] = c;
-  write_i2c(SID, buf, 2);
+  write_i2c(SID, buf, 2, true);
 }
 
 void send_u8_i2c(u8 c) {
   u8 buff = c;
-  send_i2c(&buff, 1);
+  send_i2c(&buff, 1, true);
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-  begin_i2c(SID);
+  begin_i2c(SID, false);
   send_u8_i2c(0x00); // Co = 0, D/C = 0
   while (n--) send_u8_i2c(*c++);
   end_i2c();
 }
 
+// silly delay function
+void delayish(u32 n)
+{
+	while(n--) {
+		for(int i = 0; i <200; i++) nop();
+	}
+}
+
+
+void clear1306() {
+  memset(buffer1306, 0, WIDTH * ((HEIGHT + 7) / 8));
+}	
 
 bool init1306(uint8_t vcs) {
   clear1306();
@@ -220,9 +167,6 @@ void draw_pixel1306(int16_t x, int16_t y, uint16_t color) {
 }
 
 
-void clear1306() {
-  memset(buffer1306, 0, WIDTH * ((HEIGHT + 7) / 8));
-}
 
 
 
@@ -250,7 +194,7 @@ void display1306(void) {
 
   uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
   uint8_t *ptr = buffer1306;
-  begin_i2c(SID);
+  begin_i2c(SID, false);
   send_u8_i2c(0x40);
   while (count--) send_u8_i2c(*ptr++);
   end_i2c();
@@ -317,37 +261,6 @@ u8 letterP[] = {
 
 u8* the_letter = letterP;
 
-void setup() {
-  ser.begin(115200);
-  ser.println("testing oled");
-
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if (!init1306(SSD1306_SWITCHCAPVCC)) {
-    ser.println(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
-  }
-  ser.println("display begun");
-
-  draw_pixel1306(10, 10, SSD1306_WHITE);
-
-  // Show the display buffer on the screen. You MUST call display() after
-  // drawing commands to make them visible on screen!
-  display1306();
-  delay(2000);
-  // display.display() is NOT necessary after every single drawing command,
-  // unless that's what you want...rather, you can batch up a bunch of
-  // drawing operations and then update the screen all at once by calling
-  // display.display(). These examples demonstrate both approaches...
-
-  draw_letter(the_letter);
-
-}
-void loop() {
-}
-
-
-
-
 void draw_letter(u8 letter[]) {
   clear1306();
   for (int i = 0; i < 8; i++) {
@@ -359,156 +272,33 @@ void draw_letter(u8 letter[]) {
     }
   }
   display1306();
-  delay(2000);
+  delayish(2000);
 }
 
-typedef struct {
-  __IO u32 CR1; //0x00
-  __IO u32 CR2; // 0x04
-  __IO u32 OAR1; //0x08
-  __IO u32 OAR2; //0x0C
-  __IO u32 DR; //0x10
-  __IO u32 SR1; //0x14
-  __IO u32 SR2; //0x18
-  __IO u32 CCR; // 0x1C
-  __IO u32 TRISE; // 0x20
-} I2C_t;
-
-#define I2C1 ((I2C_t*) (0x40005400))
-#define I2C2 ((I2C_t*) (0x40005800))
-
-
-#define I2C_CR1_PE (1<<0)
-
-#define I2C_CR1_STOP (1<<9)
-#define I2C_CR1_ACK (1<<10)
-#define I2C_CR1_START (1<<8)
-#define I2C_CR1_SWRST (1<<15)
-
-#define I2C_CR2_LAST (1<<12)
-#define I2C_CR2_DMAEN (1<<11)
-
-#define I2C_SR1_SB (1<<0)
-#define I2C_SR1_RXNE (1<<6)
-#define I2C_SR1_TXE  (1<<7)
-#define I2C_SR1_ADDR (1<<1)
-
-void begin_i2c(u8 sid) {
-  I2C1->CR1 |= I2C_CR1_START; // GENERATE A START CONDITION
-
-  while (!(I2C1->SR1 & I2C_SR1_SB));
-  I2C1->DR = sid << 1;
-  while (!(I2C1->SR1 & I2C_SR1_ADDR));
-  I2C1->SR2;
+int main() {
+	//ser.begin(115200);
+	//ser.println("testing oled");
+	
+	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+	if (!init1306(SSD1306_SWITCHCAPVCC)) {
+		//ser.println(F("SSD1306 allocation failed"));
+		for (;;);
+	}
+	  //ser.println("display begun");
+	
+	 draw_pixel1306(10, 10, SSD1306_WHITE);
+	
+	  // Show the display buffer on the screen. You MUST call display() after
+	  // drawing commands to make them visible on screen!
+	  display1306();
+	  delayish(2000);
+	  // display.display() is NOT necessary after every single drawing command,
+	  // unless that's what you want...rather, you can batch up a bunch of
+	  // drawing operations and then update the screen all at once by calling
+	  // display.display(). These examples demonstrate both approaches...
+	
+	  draw_letter(the_letter);
+	
+	while(1);
 }
 
-void end_i2c() {
-  I2C1->CR1 |= I2C_CR1_STOP;
-}
-
-#define I2C_SR1_BTF (1<<2)
-
-void  send_i2c(const u8* buffer, u32 len) {
-  for (u32 i = 0; i < len; i++) {
-    I2C1->DR = buffer[i];
-    while (!(I2C1->SR1 & I2C_SR1_TXE));
-    while (!(I2C1->SR1 & I2C_SR1_BTF)); // added mcarter 2020-10-10. Seems necessary
-
-  }
-}
-
-void write_i2c(u8 sid, const u8* buffer, u32 len)
-{
-  begin_i2c(sid);
-  send_i2c(buffer, len);
-  end_i2c();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-
-
-#define RCC_BASE        0x40021000
-
-// section 7.3.11 RCC register map page 121
-#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00)
-#define RCC_CR_HSION (1<<0)
-#define RCC_CR_HSIRDY (1<<1)
-#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04)
-#define RCC_CFGR_SW (1<<0)
-#define RCC_APB1ENR   *(volatile uint32_t *)(RCC_BASE   + 0x1C) // page 148
-#define RCC_APB1ENR_TIM4EN (1<<2)
-#define RCC_APB1ENR_USART2EN  (1<<17)
-
-#define RCC_APB2ENR   *(volatile uint32_t *)(RCC_BASE   + 0x18)
-#define RCC_APB2ENR_USART1EN (1<<14)
-#define RCC_APB2ENR_IOPAEN  (1<<2)
-#define RCC_APB2ENR_AFIOEN (1<<0)
-#define RCC_APB2ENR_SPI1EN (1<<12)
-
-#define RCC_APB2ENR_AFIOEN (1<<0)
-
-#define RCC_APB1ENR_I2C1EN (1<<21)
-#define RCC_AHBENR   REG(RCC_BASE   + 0x14)
-#define RCC_AHBENR_DMA1EN (1<<0)
-
-void gpio_write(u32 pin, u32 val)
-{
-  u32 pos = pin & 0xF;
-  u32 GPIO_BSRR = pin_to_gpio(pin) +  0x10;
-  if (val == 0 ) pos += 16; // Reset rather than Set
-  put32(GPIO_BSRR, 1 << pos);
-
-}
-
-
-void init_i2c() // this seems to be correct
-{
-  //RCC->AB1ENR &= ~(RCC_APB1ENR_I2CEN);
-  I2C1->CR1 = 0X00;
-  I2C1->CR2 = 0X00;
-  //RCC_APB2ENR |= RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
-  RCC_APB2ENR |= RCC_APB2ENR_AFIOEN;
-  RCC_APB1ENR |= RCC_APB1ENR_I2C1EN;
-
-  //I2C1_->CR1 |= I2C_CR1_SWRST; // reset I2C for good measure. bad-t
-
-
-  I2C1->CR2 |= 36; // FREQ OF APB1 BUS = 72MHZ/2 = 36MHZ
-
-  /* TAKE THE PERIOS OF THE FREQ SET INTO CR2 EX: 1/10MHZ = 100NS
-     NOW PICK A FREQ YOU WANT THE I2C TO RUN AT (MAX 100KHZ IN STD
-     MODE) (400KHZ MAX IN FAST MODE)
-     THEN IF IN STD MODE GET THE PERIOD OF THAT FREQ
-    EX:1/100KHZ = 10US THEN DIVIDE BY 2 TO GET THE
-    HTIME BECAUSE THE DUTY CYCLE IS 50% SO HIGH TIME AND LOW TIME
-    IS THE SAME SO WE JUST DIVIDE PERIOD BY 2 TO GET
-    5US
-    THEN CCR REGISTER = 5US/100NS = 50
-    SOO CCR IS 50, THIS IS THE MAX TIME THE I2C WILL WAIT FOR A
-    RISE TIME AND NOT NECESSARILY THE RISE TIME THAT IT WILL
-    ACTUALLY
-  */
-  I2C1->CCR |= 180; // SPEED TO 100KHZ STD MODE MAX: I2C_PERIOD /2 * ABI = (1/100K/2)*36MHZ
-  I2C1->TRISE |= 37; // 1000NS/(CR2 PERIOD=1/36MHZ) = TRISE +1
-  I2C1->CR1 |= I2C_CR1_ACK; // ENABLE ACKS
-
-  // stretch mode enabled by default
-
-  // 7 bit addressing mode enabled by default
-
-
-
-  //GPIOB->CRL = 0b11111111010010000100010001000100;
-  gpio_mode(PB6, 0b1111);
-  gpio_mode(PB7, 0b1111);
-
-
-  I2C1->CR1 |= I2C_CR1_PE; // ENABLE PERIPHERAL
-}
-
-int main()
-{
-	setup();
-	while(1) loop();
-}

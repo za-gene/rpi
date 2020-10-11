@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h> // for size_t
 
 
 typedef uint8_t u8;
@@ -133,3 +134,6 @@ u32 get32(u32 addr);
 #define disable_irq() asm("CPSID I")
 #define enable_irq() asm("CPSIE I")
 #define nop() asm volatile ("nop")
+void* memcpy(void* dst, const void* src, size_t n);
+void *memset(void *b, int c, int len);
+
