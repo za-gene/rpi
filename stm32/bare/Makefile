@@ -16,4 +16,12 @@ libblue.a : $(OBJS)
 %.o : %.s
 	$(AS) -o $@ $<
 clean :
-	rm -f *.o *.a
+	rm -f *.o *.a .doc 
+	rm -rf doc
+
+.doc :
+	touch .doc
+
+doc : .doc
+	doxygen
+	touch .doc

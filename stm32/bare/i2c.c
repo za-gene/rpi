@@ -1,7 +1,11 @@
+/**
+ * @file
+ * @brief I2C communication
+ */
 #include <dma.h>
 #include <gpio.h>
 #include <i2c.h>
-#include <usart.h>
+//#include <usart.h>
 
 void init_i2c() // this seems to be correct
 {
