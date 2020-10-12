@@ -1,5 +1,7 @@
 // attempt to convert arduino library to bare metal
 
+// 2020-10-12 confirmed working
+
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
@@ -123,8 +125,9 @@ void init_i2c() {
 }
 
 
-static uint8_t  pattern[] =
-{ B10000001,
+static uint8_t  pattern[] = { 
+  //B11111111,
+  B10000001,
   B01000010,
   B00100100,
   B00010000,

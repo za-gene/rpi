@@ -1,22 +1,15 @@
+/*
+ * 2020-10-12 Confirmed working (make sure you use the right pins!)
+ */
+ 
 #include "I2C.h"
 
 #define SID 0x70 // Slave ID
 
-/*
-static uint8_t  smile[] =
-{ B00111100,
-  B01000010,
-  B10100101,
-  B10000001,
-  B10100101,
-  B10011001,
-  B01000010,
-  B00111100
-};
-*/
 
-static uint8_t  pattern[] =
-{ B10000001,
+static uint8_t  pattern[] = { 
+  //B11111111,
+  B10000001,
   B01000010,
   B00100100,
   B00010000,

@@ -129,6 +129,7 @@ void init_i2c() {
 
 
 static uint8_t  pattern[] = { 
+	//0b11111111,
 	0b10000001,
 	0b01000010,
 	0b00100100,
