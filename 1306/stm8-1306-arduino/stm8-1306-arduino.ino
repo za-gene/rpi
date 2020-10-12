@@ -61,7 +61,7 @@ void send2(u8 b1, u8 b2) {
   u8 buf = b2;
   //buf[0] = b1;
   //buf[1] = b2;
-  //I2C_write_sn(SID, b1, &buf, 1);
+  I2C_write_sn(SID, b1, &buf, 1);
 }
 void ssd1306_command1(uint8_t c) {
   /*
@@ -76,7 +76,7 @@ void ssd1306_command1(uint8_t c) {
 void send_u8_i2c(u8 c) {
   u8 buff = c;
   //send_i2c(&buff, 1);
-  //I2C_write(SID, c);
+  I2C_write(SID, c);
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
@@ -86,7 +86,7 @@ void ssd1306_commandList(const uint8_t *c, uint8_t n) {
   while (n--) send_u8_i2c(*c++);
   end_i2c();
   */
-  //I2C_write_sn(SID, 0x00, c, n);
+  I2C_write_sn(SID, 0x00, c, n);
 }
 
 
@@ -169,7 +169,7 @@ void  low_level_test() {
 
 void setup() {
   //Wire.begin();
-  //I2C_begin();
+  I2C_begin();
   init1306(SSD1306_SWITCHCAPVCC);
   //I2C_end(); // dunno if needed
   low_level_test();

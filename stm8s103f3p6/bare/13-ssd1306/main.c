@@ -1,7 +1,11 @@
 // attempt to convert arduino library to bare metal
 
+// I've made a right mess of this code
+
+
 #include <stdbool.h>
 
+#include <gpio.h>
 #include <stm8.h>
 #include <millis.h>
 
@@ -58,42 +62,70 @@
 #define I2C_SR1_RXNE (1<<6)
 #define I2C_SR1_TXE (1<<7)
 
+#define IC2_SR2_AF (1<<2)
+#define IC2_SR2_BERR (1<<0)
+
 #define I2C_SR3_MSL (1<<0)
 
 
-static void end_i2c_1(void)
-{
-	//while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
 
-	I2C_CR2 |= I2C_CR2_STOP;
-	while(I2C_SR3 & I2C_SR3_MSL);
+void check()
+{
+	if(I2C_SR2 & IC2_SR2_AF) gpio_write(PA2, 1);
+	if(I2C_SR2 & IC2_SR2_BERR) gpio_write(PA1, 1);
+}
+
+void here()
+{
+	gpio_write(PD6, 1); // check that we make it here
 }
 
 void write_i2c_byte_1(uint8_t dat)
 {
-	I2C_DR = dat;
 	while (!(I2C_SR1 & I2C_SR1_TXE));
+	I2C_DR = dat;
+	check();
 }
 
-static void begin_i2c_1(uint8_t slave_id, bool read)
+static void end_i2c_1(bool with_btf)
 {
+	while(!(I2C_SR1 & I2C_SR1_TXE));
+	if(with_btf) while(!(I2C_SR1 & I2C_SR1_BTF));
+	//while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+	
+	check();
+	I2C_CR2 |= I2C_CR2_STOP;
+	//while(I2C_SR3 & I2C_SR3_MSL);
+}
+
+
+
+
+static void begin_i2c_write(uint8_t slave_id, u8 b)
+{
+	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
+
 	I2C_CR2 |= I2C_CR2_START;  // send start sequence
-	while (!(I2C_SR1 & I2C_SR1_SB)); // EV5
-	I2C_DR = (slave_id << 1) + (read ? 1 : 0); // send the address and direction
+	while (!(I2C_SR1 & I2C_SR1_SB)) check(); // EV5
+	I2C_DR = (slave_id << 1); // doesn't make it here
+	//here();
 
 	// EV6 ADDR=1, cleared by reading SR1 register, then SR3
 	while (!(I2C_SR1 & I2C_SR1_ADDR));
 	I2C_SR3;   // read SR3 to clear ADDR event bit
 
-	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
+	// EV8_1
+	while (!(I2C_SR1 & I2C_SR1_TXE));
+	I2C_DR = b;
+
 }
 
 
 
 void send_cmd(u8 cmd) {
-	begin_i2c_1(SID, false);
-	write_i2c_byte_1(cmd);
-	end_i2c_1();
+	begin_i2c_write(SID, cmd);
+	//write_i2c_byte_1(cmd);
+	end_i2c_1(true);
 }
 
 
@@ -120,7 +152,7 @@ void init_i2c_1()
 {
 	I2C_FREQR = 0x2; // mc
 	I2C_CCRL = 0x0A; // 100kHz
-	I2C_OARH = I2C_OARH_ADDMODE; // 7-bit addressing
+	//I2C_OARH = I2C_OARH_ADDMODE; // 7-bit addressing
 	I2C_CR1 |= I2C_CR1_PE;
 }
 
@@ -171,10 +203,10 @@ void init_i2c_1()
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-	begin_i2c_1(SID, false);
-	write_i2c_byte_1(0);
+	begin_i2c_write(SID, 0);
+	//write_i2c_byte_1(0);
 	write_i2c_byte_1(c);
-	end_i2c_1();
+	end_i2c_1(true);
 }
 
 void send_u8_i2c(u8 c) {
@@ -182,10 +214,10 @@ void send_u8_i2c(u8 c) {
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-	begin_i2c_1(SID, false);
-	send_u8_i2c(0x00); // Co = 0, D/C = 0
+	begin_i2c_write(SID, 0x00);
+	//send_u8_i2c(0x00); // Co = 0, D/C = 0
 	while (n--) send_u8_i2c(*c++);
-	end_i2c_1();
+	end_i2c_1(true);
 }
 
 void init1306(u8 vcs) {
@@ -251,17 +283,28 @@ void  low_level_test() {
 		SSD1306_COLUMNADDR, 0, 7
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	begin_i2c_1(SID, false);
-	send_u8_i2c(0x40);
+	begin_i2c_write(SID, 0x40);
+	//send_u8_i2c(0x40);
 	send_u8_i2c(0b10101010);
-	end_i2c_1();
+	end_i2c_1(true);
 }
 
 
 void main() {
+	gpio_mode_out(PA1);
+	gpio_mode_out(PA2);
+	gpio_mode_out(PD6);
+
 	//init_millis();
-	init_i2c_ori();
-	init1306(SSD1306_SWITCHCAPVCC);
+	init_i2c_1(); // this completes
+	init1306(SSD1306_SWITCHCAPVCC); // this completes
 	low_level_test();
+
+	//for(u32 i = 0; i < 5000; i++) nop();
+	//send_cmd(0xAE); // turn display off - which doesn't seem to work
+
+	//gpio_write(PD6, 1); // check that we make it to end
+	here();
+
 	while(1);
 }
