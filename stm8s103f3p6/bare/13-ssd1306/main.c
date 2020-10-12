@@ -1,5 +1,7 @@
 // attempt to convert arduino library to bare metal
 
+#include <stdbool.h>
+
 #include <stm8.h>
 #include <millis.h>
 
@@ -56,45 +58,47 @@
 #define I2C_SR1_RXNE (1<<6)
 #define I2C_SR1_TXE (1<<7)
 
+#define I2C_SR3_MSL (1<<0)
 
 
-
-static void end_i2c_write(void)
+static void end_i2c_1(void)
 {
-	while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+	//while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
 
 	I2C_CR2 |= I2C_CR2_STOP;
-	while (I2C_CR2 & I2C_CR2_STOP);
+	while(I2C_SR3 & I2C_SR3_MSL);
 }
 
-void write_i2c_byte(uint8_t dat)
+void write_i2c_byte_1(uint8_t dat)
 {
-	while (!(I2C_SR1 & I2C_SR1_TXE));
 	I2C_DR = dat;
+	while (!(I2C_SR1 & I2C_SR1_TXE));
 }
 
-static void begin_i2c_write(uint8_t slave_id)
+static void begin_i2c_1(uint8_t slave_id, bool read)
 {
-	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 	I2C_CR2 |= I2C_CR2_START;  // send start sequence
-	while (!(I2C_SR1 & I2C_SR1_SB));
+	while (!(I2C_SR1 & I2C_SR1_SB)); // EV5
+	I2C_DR = (slave_id << 1) + (read ? 1 : 0); // send the address and direction
 
-	I2C_DR = slave_id << 1; // send the address and direction
+	// EV6 ADDR=1, cleared by reading SR1 register, then SR3
 	while (!(I2C_SR1 & I2C_SR1_ADDR));
-	(void)I2C_SR3;   // read SR3 to clear ADDR event bit
+	I2C_SR3;   // read SR3 to clear ADDR event bit
+
+	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 }
 
 
 
 void send_cmd(u8 cmd) {
-	begin_i2c_write(SID);
-	write_i2c_byte(cmd);
-	end_i2c_write();
+	begin_i2c_1(SID, false);
+	write_i2c_byte_1(cmd);
+	end_i2c_1();
 }
 
 
 
-void init_i2c() {
+void init_i2c_ori() {
 	uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
 	//Serial_println_u(I2C_MAX_STANDARD_FREQ);
 	uint8_t InputClockFrequencyMHz = 2; // 16;
@@ -108,6 +112,16 @@ void init_i2c() {
 	I2C_CCRH = (uint8_t)(speed >> 8);
 
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
+}
+
+//I2C_FREQR_FREQ1 
+#define I2C_OARH_ADDMODE (1<<7) // hmmm, goes to 10-bit addr
+void init_i2c_1()
+{
+	I2C_FREQR = 0x2; // mc
+	I2C_CCRL = 0x0A; // 100kHz
+	I2C_OARH = I2C_OARH_ADDMODE; // 7-bit addressing
+	I2C_CR1 |= I2C_CR1_PE;
 }
 
 #define SSD1306_BLACK 0   ///< Draw 'off' pixels
@@ -157,21 +171,21 @@ void init_i2c() {
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-	begin_i2c_write(SID);
-	write_i2c_byte(0);
-	write_i2c_byte(c);
-	end_i2c_write();
+	begin_i2c_1(SID, false);
+	write_i2c_byte_1(0);
+	write_i2c_byte_1(c);
+	end_i2c_1();
 }
 
 void send_u8_i2c(u8 c) {
-	write_i2c_byte(c);
+	write_i2c_byte_1(c);
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-	begin_i2c_write(SID);
+	begin_i2c_1(SID, false);
 	send_u8_i2c(0x00); // Co = 0, D/C = 0
 	while (n--) send_u8_i2c(*c++);
-	end_i2c_write();
+	end_i2c_1();
 }
 
 void init1306(u8 vcs) {
@@ -179,7 +193,7 @@ void init1306(u8 vcs) {
 	u8 vccstate = vcs;
 
 	//i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
-	init_i2c();
+	//init_i2c_1();
 
 	uint8_t comPins = 0x02;
 	u8 contrast = 0x8F;
@@ -237,16 +251,16 @@ void  low_level_test() {
 		SSD1306_COLUMNADDR, 0, 7
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	begin_i2c_write(SID);
+	begin_i2c_1(SID, false);
 	send_u8_i2c(0x40);
 	send_u8_i2c(0b10101010);
-	end_i2c_write();
+	end_i2c_1();
 }
 
 
 void main() {
-	init_millis();
-	init_i2c();
+	//init_millis();
+	init_i2c_ori();
 	init1306(SSD1306_SWITCHCAPVCC);
 	low_level_test();
 	while(1);
