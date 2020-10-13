@@ -103,12 +103,11 @@ static void end_i2c_1(bool with_btf)
 
 static void begin_i2c_write(uint8_t slave_id, u8 b)
 {
-	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 
 	I2C_CR2 |= I2C_CR2_START;  // send start sequence
 	while (!(I2C_SR1 & I2C_SR1_SB)) check(); // EV5
 	I2C_DR = (slave_id << 1); // doesn't make it here
-	//here();
+	here();
 
 	// EV6 ADDR=1, cleared by reading SR1 register, then SR3
 	while (!(I2C_SR1 & I2C_SR1_ADDR));
@@ -130,7 +129,7 @@ void send_cmd(u8 cmd) {
 
 
 
-void init_i2c_ori() {
+void init_i2c_1() {
 	uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
 	//Serial_println_u(I2C_MAX_STANDARD_FREQ);
 	uint8_t InputClockFrequencyMHz = 2; // 16;
@@ -143,12 +142,14 @@ void init_i2c_ori() {
 	I2C_CCRL = (uint8_t)speed;
 	I2C_CCRH = (uint8_t)(speed >> 8);
 
+	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
+
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
 }
 
 //I2C_FREQR_FREQ1 
 #define I2C_OARH_ADDMODE (1<<7) // hmmm, goes to 10-bit addr
-void init_i2c_1()
+void init_i2c_1X()
 {
 	I2C_FREQR = 0x2; // mc
 	I2C_CCRL = 0x0A; // 100kHz
@@ -298,7 +299,8 @@ void main() {
 	//init_millis();
 	init_i2c_1(); // this completes
 	init1306(SSD1306_SWITCHCAPVCC); // this completes
-	low_level_test();
+	//while(1)
+	       	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
 	//send_cmd(0xAE); // turn display off - which doesn't seem to work
