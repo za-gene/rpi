@@ -92,7 +92,7 @@ static void end_i2c_1(bool with_btf)
 	while(!(I2C_SR1 & I2C_SR1_TXE));
 	if(with_btf) while(!(I2C_SR1 & I2C_SR1_BTF));
 	//while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
-	
+
 	check();
 	I2C_CR2 |= I2C_CR2_STOP;
 	//while(I2C_SR3 & I2C_SR3_MSL);
@@ -300,7 +300,7 @@ void main() {
 	init_i2c_1(); // this completes
 	init1306(SSD1306_SWITCHCAPVCC); // this completes
 	//while(1)
-	       	low_level_test();
+	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
 	//send_cmd(0xAE); // turn display off - which doesn't seem to work

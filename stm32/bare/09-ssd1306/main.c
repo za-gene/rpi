@@ -81,15 +81,6 @@ void ssd1306_commandList(const uint8_t *c, uint8_t n) {
   end_i2c();
 }
 
-// silly delay function
-void delayish(u32 n)
-{
-	while(n--) {
-		for(int i = 0; i <200; i++) nop();
-	}
-}
-
-
 void clear1306() {
   memset(buffer1306, 0, WIDTH * ((HEIGHT + 7) / 8));
 }	
@@ -259,7 +250,7 @@ u8 letterP[] = {
 };
 
 
-u8* the_letter = letterP;
+u8* the_letter = letterH;
 
 void draw_letter(u8 letter[]) {
   clear1306();
