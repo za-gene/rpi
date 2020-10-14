@@ -83,17 +83,24 @@ void here()
 void write_i2c_byte_1(uint8_t dat)
 {
 	while (!(I2C_SR1 & I2C_SR1_TXE));
+	//while (!(I2C_SR1 & I2C_SR1_BTF));
 	I2C_DR = dat;
-	check();
+	//check();
 }
 
-static void end_i2c_1(bool with_btf)
+void pause()
 {
-	while(!(I2C_SR1 & I2C_SR1_TXE));
-	if(with_btf) while(!(I2C_SR1 & I2C_SR1_BTF));
-	//while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+	for(u32 i = 0; i< 1000UL; i++) nop();
+}
 
-	check();
+static void end_i2c_1()
+{
+	// seems to have problems
+	//while(!(I2C_SR1 & I2C_SR1_BTF));
+	//while(!(I2C_SR1 & I2C_SR1_TXE));
+
+	pause();
+	//check();
 	I2C_CR2 |= I2C_CR2_STOP;
 	//while(I2C_SR3 & I2C_SR3_MSL);
 }
@@ -101,30 +108,27 @@ static void end_i2c_1(bool with_btf)
 
 
 
-static void begin_i2c_write(uint8_t slave_id, u8 b)
+static void begin_i2c_write(uint8_t slave_id)
 {
 
+	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 	I2C_CR2 |= I2C_CR2_START;  // send start sequence
-	while (!(I2C_SR1 & I2C_SR1_SB)) check(); // EV5
-	I2C_DR = (slave_id << 1); // doesn't make it here
+	while (!(I2C_SR1 & I2C_SR1_SB)); // EV5
 	here();
+	I2C_DR = (slave_id << 1); 
 
 	// EV6 ADDR=1, cleared by reading SR1 register, then SR3
 	while (!(I2C_SR1 & I2C_SR1_ADDR));
 	I2C_SR3;   // read SR3 to clear ADDR event bit
-
-	// EV8_1
-	while (!(I2C_SR1 & I2C_SR1_TXE));
-	I2C_DR = b;
 
 }
 
 
 
 void send_cmd(u8 cmd) {
-	begin_i2c_write(SID, cmd);
-	//write_i2c_byte_1(cmd);
-	end_i2c_1(true);
+	begin_i2c_write(SID);
+	write_i2c_byte_1(cmd);
+	end_i2c_1();
 }
 
 
@@ -142,7 +146,6 @@ void init_i2c_1() {
 	I2C_CCRL = (uint8_t)speed;
 	I2C_CCRH = (uint8_t)(speed >> 8);
 
-	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
 }
@@ -204,10 +207,10 @@ void init_i2c_1X()
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-	begin_i2c_write(SID, 0);
-	//write_i2c_byte_1(0);
+	begin_i2c_write(SID);
+	write_i2c_byte_1(0);
 	write_i2c_byte_1(c);
-	end_i2c_1(true);
+	end_i2c_1();
 }
 
 void send_u8_i2c(u8 c) {
@@ -215,10 +218,10 @@ void send_u8_i2c(u8 c) {
 }
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-	begin_i2c_write(SID, 0x00);
-	//send_u8_i2c(0x00); // Co = 0, D/C = 0
+	begin_i2c_write(SID);
+	send_u8_i2c(0x00); // Co = 0, D/C = 0
 	while (n--) send_u8_i2c(*c++);
-	end_i2c_1(true);
+	end_i2c_1();
 }
 
 void init1306(u8 vcs) {
@@ -284,29 +287,42 @@ void  low_level_test() {
 		SSD1306_COLUMNADDR, 0, 7
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	begin_i2c_write(SID, 0x40);
-	//send_u8_i2c(0x40);
+	begin_i2c_write(SID);
+	send_u8_i2c(0x40);
 	send_u8_i2c(0b10101010);
-	end_i2c_1(true);
+	end_i2c_1();
 }
 
 
+void gpio_mode_out_drain(u8 pin)
+{
+	PORT_t* port = pin_to_port(pin);
+	u8 pos = pin_to_pos(pin);
+	port->DDR |= (1<< pos); // direction is output
+}
+
 void main() {
+#if 0
+	gpio_mode_out_drain(PB4);
+	gpio_mode_out_drain(PB5);
+#endif
 	gpio_mode_out(PA1);
 	gpio_mode_out(PA2);
 	gpio_mode_out(PD6);
 
 	//init_millis();
 	init_i2c_1(); // this completes
+	//here();
+	//while(1);
 	init1306(SSD1306_SWITCHCAPVCC); // this completes
-	//while(1)
+	while(1)
 	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
 	//send_cmd(0xAE); // turn display off - which doesn't seem to work
 
 	//gpio_write(PD6, 1); // check that we make it to end
-	here();
+	//here();
 
 	while(1);
 }
