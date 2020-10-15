@@ -113,7 +113,14 @@ typedef struct {
 	__IO uint32_t CNT; // 0x24
 	__IO uint32_t PSC; // 0x28
 	__IO uint32_t ARR; // 0x2C
-	// ... more ... incomplete
+	__IO u32 reserved1; // 0x30
+	__IO u32 CCR1; // 0x34
+	__IO u32 CCR2; // 0x38
+	__IO u32 CCR3; // 0x3C
+	__IO u32 CCR4; // 0x40
+	__IO u32 reserved2; // 0x44
+	__IO u32 DCR; // 0x49
+	__IO u32 DMAR; // 0x4C
 } TIMx_t;
 
 #define TIM_CR1_CEN (1<<0)

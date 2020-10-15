@@ -5,11 +5,7 @@
 #include <usart.h>
 
 
-// section 10.1.2 Vector table
-
-//#define NVIC_TIM4 *(volatile uint32_t *)(0x000000B8)
-
-
+#define TIM3	((TIMx_t*) 0x40000400)
 
 // section 15.4.4 TIMx DMA/Interrupt enable register (TIMx_DIER)
 #define TIM_DIER_UIE (1<<0)
@@ -18,46 +14,48 @@
 #define TIM_EGR_UG (1<<0)
 #define TIM_EGR_TG (1<<6)
 
-//void __attribute__ ((interrupt ("IRQ"))) myhandler()
-void TIM4_IRQHandler()
-//void __attribute__ ((interrupt ("TIM4_IRQHandler"))) myhandler()
-{
-	gpio_toggle(BUILTIN_LED);
-	puts("hi");
-	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
-	TIM4->SR &= ~0x01; // clear UIF
-	//TIM4->DIER |= 0x01; // UIE
-}
+#define RCC_APB1ENR_TIM3EN (1<<1)
+#define TIM_CCER_CC1E (1<<0)
+
+
 
 void setup_timer()
 {
-	RCC_APB1ENR |= RCC_APB1ENR_TIM4EN;
-	TIM4->PSC=7999; // scalar looks iffy:clock is 72MHz, not 80MHz
-	TIM4->ARR=1000;
+	RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
+	gpio_mode(PA6, 0b1110); // output, push-pull, alt function
+	u32 freq = 440;
+	u32 rescale = 10; // we need this so both psc and arr are 16-bits
+	TIM3->PSC=72000000UL/freq/rescale -1; 
+	TIM3->ARR=freq*rescale-1;
+	TIM3->CCR1 = (TIM3->ARR +1)/4 -1; // duty cycle 25% (1/4)
+	TIM3->CCER |= TIM_CCER_CC1E; // enable capture/comapre 
+	TIM3->CCMR1 |= 0b110<<4; // output pwm compare mode 1 
+	//TIM3->EGR |= TIM_EGR_UG;;
+	TIM3->CR1 |= TIM_CR1_CEN; // enable counter
+
 	//TIM4->ARR=100; // fiddle around for testing purposes
-	TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
-	TIM4->EGR |= (TIM_EGR_TG | TIM_EGR_UG);
-	TIM4->DIER |= 0x01; // UIE enable interrupt
-	TIM4->CR1 |= TIM_CR1_CEN;
+	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
+	//TIM4->EGR |= (TIM_EGR_TG | TIM_EGR_UG);
+	//TIM4->DIER |= 0x01; // UIE enable interrupt
+	TIM3->CR1 |= TIM_CR1_CEN;
 	puts("Timer setup");
 }
 
 
-#define NVIC_ISER0 *(volatile uint32_t *)(0xE000E000+0x100)
 void main() 
 {
 	init_serial();
-	puts("04-timer-interrupt started 4");
+	puts("11 pwm");
 	char msg[40];
 
 	setup_timer();
-	gpio_mode_out(BUILTIN_LED);
+	//gpio_mode_out(BUILTIN_LED);
 
-	NVIC_ISER0 = (1<<30);
-	TIM4->DIER |= 1;
+	//NVIC_ISER0 = (1<<30);
+	//TIM4->DIER |= 1;
 	puts("Interrupt set");
 
-	enable_irq();
+	//enable_irq();
 
 	putchar('\a'); // beep
 
