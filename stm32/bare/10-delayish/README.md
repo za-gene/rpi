@@ -1,7 +1,7 @@
-# SSD1306 128x64 I2C OLED
+# DELAYISH
 
-i2c master transmit only
+Calibration for an appoximate delay without using timers.
 
-Works 2020-10-09
+Works 2020-10-15
 
 
