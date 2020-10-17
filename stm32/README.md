@@ -22,6 +22,18 @@ Alternative which does not seem as good:
 https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/master/STM32/package_stm_index.json
 ```
 
+## Unbricking
+
+If all else fails:
+
+1. Unplug the ST-Link
+2. Plug it back in again
+3. Hold down the reset button
+4. In a CLI, issue the command `st-info --probe`
+5. Wait until the command completes
+6. Release the reset button
+
+
 ## Unclassified
 
 **2020-07-15** I think I **fried** some of the circuits on the board. Both 3.3V out pins near the STLink connectors seems broken. use the one near the USB port instead. I also suspect some of the SPI pins don't work properly.

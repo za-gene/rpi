@@ -19,6 +19,7 @@
 void setup_timer()
 {
 	RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
+	RCC_APB2ENR |= RCC_APB2ENR_AFIOEN; // dunno if needed
 	gpio_mode(PA6, 0b1110); // output, push-pull, alt function
 	u32 freq = 440;
 	u32 rescale = 10; // we need this so both psc and arr are 16-bits
