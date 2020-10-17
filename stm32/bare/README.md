@@ -47,10 +47,11 @@ If flashing not working:
 * [blink](blink) - blinky sketch
 * [delay](delay) - uses TIM4
 * [usart](usart)
-
-* [gpio](gpio.md) - some notes on GPIO
-
 * [reng-spi-master](reng-spi-master) - reverse engineering a SPI master
+
+Notes
+* [gpio](gpio.md) - some notes on GPIO
+* [pwm](pwm.md)
 
 
 ## Links to other sites
