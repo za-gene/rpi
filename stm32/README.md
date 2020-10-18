@@ -1,6 +1,7 @@
 # STM32F103C8T6
 
-Arm Cortex M3, max clock 72MHz, 64KiB flash, 20KiB SRAM
+Arm Cortex M3, max clock 72MHz, 64KiB flash, 20KiB SRAM. 
+*NB* system core clock is *8MHz* by default.
 
 ## Arduino IDE
 
