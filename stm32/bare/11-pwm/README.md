@@ -1,4 +1,4 @@
-# PWm output pin PA5, 440Hz, 25% duty cycle
+# PWM output pin PA6, 440Hz, 25% duty cycle
 
-Under contrusction.
+Working 2020-10-18
 
