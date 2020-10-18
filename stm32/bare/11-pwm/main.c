@@ -1,18 +1,8 @@
 #include <gpio.h>
+#include <timers.h>
 #include <usart.h>
 
 
-#define TIM3	((TIMx_t*) 0x40000400)
-
-// section 15.4.4 TIMx DMA/Interrupt enable register (TIMx_DIER)
-#define TIM_DIER_UIE (1<<0)
-#define TIM_DIER_TIE (1<<6)
-
-#define TIM_EGR_UG (1<<0)
-#define TIM_EGR_TG (1<<6)
-
-#define RCC_APB1ENR_TIM3EN (1<<1)
-#define TIM_CCER_CC1E (1<<0)
 
 
 
