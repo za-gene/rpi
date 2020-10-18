@@ -9,9 +9,6 @@ void printi(u32 v)
 {
 	itoa(v, msg, 10);
 	print(msg);
-	//puts(msg);
-	//for(int i=0; i< 1000000; i++);
-	//delay(1000);
 }
 void print_bin(u32 v)
 {
@@ -41,25 +38,22 @@ void setup_timer()
 	}
 	TIM3->PSC = psc -1;
 	TIM3->ARR = arr -1;
-	//u32 rescale = 10; // we need this so both psc and arr are 16-bits
-	//TIM3->PSC=72000000UL/freq/rescale -1; 
-	//TIM3->ARR=freq*rescale-1;
-	//TIM3->PSC = 7199;
-	//TIM3->ARR = 999;
 	TIM3->CCR1 = arr/4 -1; // duty cycle 25% (1/4)
 	TIM3->CCER |= TIM_CCER_CC1E; // enable capture/comapre 
 	TIM3->CCMR1 |= 0b110<<4; // output pwm compare mode 1 
-	//TIM3->EGR |= TIM_EGR_UG;;
 	TIM3->CR1 |= TIM_CR1_CEN; // enable counter
 
-	//TIM4->ARR=100; // fiddle around for testing purposes
-	//TIM4->EGR |= TIM_EGR_UG; // send an update even to reset timer and apply settings
 	TIM3->EGR |= (TIM_EGR_TG | TIM_EGR_UG);
-	//TIM4->DIER |= 0x01; // UIE enable interrupt
 	TIM3->CR1 |= TIM_CR1_CEN;
-	puts("Timer setup");
 }
 
+
+void printn(u32 v)
+{
+	printi(v);
+	print_bin(v);
+	puts("");
+}
 
 void main() 
 {
@@ -67,24 +61,11 @@ void main()
 	puts("11 pwm");
 
 	setup_timer();
-	//gpio_mode_out(BUILTIN_LED);
 
-	//NVIC_ISER0 = (1<<30);
-	//TIM4->DIER |= 1;
-	printi(TIM3->PSC);
-	print_bin(TIM3->PSC);
-	puts("");
-	printi(TIM3->ARR);
-	print_bin(TIM3->ARR);
+	printn(TIM3->PSC);
+	printn(TIM3->ARR);
+	beep();
 
-	//enable_irq();
-
-	putchar('\a'); // beep
-
-	int secs = 0;
-	while(1) {
-	}
-
-	//while(1);
+	while(1);
 }
 
