@@ -25,6 +25,10 @@ void print_bin(u32 v)
 
 /* freq in Hz
  * duty_pc as a percentage
+ *
+ * It works specifically on PA6, which is timer 3, channel 1.
+ *
+ * RCC_APB2ENR_AFIOEN apparently not required.
  */
 
 void setup_timer(u32 freq, u32 duty_pc)
