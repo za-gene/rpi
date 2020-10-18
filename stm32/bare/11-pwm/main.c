@@ -23,13 +23,18 @@ void print_bin(u32 v)
 
 
 
+/* freq in Hz
+ * duty_pc as a percentage
+ */
 
-void setup_timer()
+void setup_timer(u32 freq, u32 duty_pc)
 {
 	RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
 	RCC_APB2ENR |= RCC_APB2ENR_AFIOEN; // dunno if needed
-	gpio_mode(PA6, 0b1011); // output, push-pull, alt function
-	u32 freq = 440;
+	gpio_mode(PA6, 0b1011); // output 50MHz, push-pull, alt function
+
+	// figure out prescaler and array
+	// Must fit in a u16, even though 32-bit wide
 	u32 arr = freq;
        	u32 psc = 8000000/freq/arr; // based on system core clock of 8MHz
 	while(psc >= (1<<16)) {
@@ -38,8 +43,8 @@ void setup_timer()
 	}
 	TIM3->PSC = psc -1;
 	TIM3->ARR = arr -1;
-	TIM3->CCR1 = arr/4 -1; // duty cycle 25% (1/4)
-	TIM3->CCER |= TIM_CCER_CC1E; // enable capture/comapre 
+	TIM3->CCR1 = arr * duty_pc / 100 -1;
+	TIM3->CCER |= TIM_CCER_CC1E; // enable capture/compare 
 	TIM3->CCMR1 |= 0b110<<4; // output pwm compare mode 1 
 	TIM3->CR1 |= TIM_CR1_CEN; // enable counter
 
@@ -60,7 +65,7 @@ void main()
 	init_serial();
 	puts("11 pwm");
 
-	setup_timer();
+	setup_timer(440, 35);
 
 	printn(TIM3->PSC);
 	printn(TIM3->ARR);
