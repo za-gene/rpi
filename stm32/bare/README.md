@@ -7,14 +7,6 @@ and `delaysecsish()` for seconds. It uses `nop()` under the
 hood, but has the advantage that it doesn't use timers.
 
 
-## linking
-
-Linking t reduce size can cause complications
-
-```
--Os -Wl,--gc-sections,-u,main
-```
-
 
 ## setup
 
@@ -44,12 +36,14 @@ If flashing not working:
 
 ## Also in this directory
 
+Projects
 * [blink](blink) - blinky sketch
 * [delay](delay) - uses TIM4
 * [usart](usart)
 * [reng-spi-master](reng-spi-master) - reverse engineering a SPI master
 
 Notes
+* [compiling](compiling.md) and linking
 * [gpio](gpio.md) - some notes on GPIO
 * [pwm](pwm.md)
 

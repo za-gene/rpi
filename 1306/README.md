@@ -47,3 +47,5 @@ oled.show()
 ## Links to other sites
 
 * [oscilloscope.py](https://gist.github.com/blippy/dd93dc64640f31dd9616af8e35cc602a) - seems a slow old thing
+* [STM8_I2C_OLED](https://github.com/tugaozi/STM8_I2C_OLED) seems "bare metal"
+
