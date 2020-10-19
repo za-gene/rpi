@@ -52,5 +52,6 @@ Notes
 * [Bare Metal STM32 programming - LED blink](https://freeelectron.ro/bare-metal-stm32-led-blink/)
 * [datasheet](https://github.com/freeelectron-ro/stm32_playground/tree/master/doc) and ref manual in PDF. Pretty important if you want to do low-level stm32 programming
 * [printf](https://github.com/embeddedartistry/printf/blob/89c4cfe96f0340065ad6eb17eeaa508f3eea5f25/printf.c) implementation
+* [STM32 ARM-Based MCUs Programming Tutorials](https://deepbluembedded.com/stm32-arm-programming-tutorials/)
 * [STM32F10x standard peripheral library](https://www.st.com/content/st_com/en/products/embedded-software/mcu-mpu-embedded-software/stm32-embedded-software/stm32-standard-peripheral-libraries/stsw-stm32054.html)
 * [Vivonomicon blog](https://vivonomicon.com/) - contains many STM32 bare metal posts, including the one for UART.
