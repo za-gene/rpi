@@ -61,3 +61,4 @@ If all else fails:
 * [GPIO as output](https://www.gadgetronicx.com/stm32-microcontroller-gpio-output/)
 * [GPIO insights](http://embedded-lab.com/blog/stm32-gpio-ports-insights/)
 * [interrupts](https://www.electronicshub.org/working-with-interrupts-in-stm32f103c8t6/)
+* [vivomicon](https://vivonomicon.com/) blog
