@@ -1,5 +1,11 @@
 #include <debounce.h> // a project here that does falling buttons
 
+//#include <ezButton.h>
+
+typedef unsigned long ulong;
+//typedef unsigned long micros_t;
+typedef ulong ms_t;
+
 
 ///////////////////////////////////////////////////////////
 // DS3231
@@ -17,14 +23,14 @@ DateTime get_time() {
   // only call the RTC occasionally to prevent peculiar noise coming from module
   static DateTime dt = rtc.now();
   static auto snap = millis();
-  if(millis() - snap > (unsigned long)1000*60) {
+  if (millis() - snap > 1000UL * 60UL) {
     Serial.println("Refreshing RTC");
     dt = rtc.now();
     snap = millis();
   }
-  
-  
-  auto tim = dt.unixtime() + (millis()-snap)/1000;
+
+
+  auto tim = dt.unixtime() + (millis() - snap) / 1000;
   tim = myTZ.toLocal(tim, &tcr);
   DateTime dt_local{tim};
   return dt_local;
@@ -72,9 +78,7 @@ void init_7219() {
 ///////////////////////////////////////////////////////////
 // COMMON COMPONENTS
 
-typedef unsigned long ulong;
-//typedef unsigned long micros_t;
-typedef ulong ms_t;
+
 
 template<int N, typename T>
 struct Buffer {
@@ -116,6 +120,7 @@ void serialise() {
 
 
 FallingButton sw0(3); // 0seg left button is A2, right button is A4
+//ezButton sw0(3);
 
 #define BZR 8
 void setup() {
@@ -142,9 +147,9 @@ void update_regular_display() {
   show_dec(7, dt.day());
 }
 
-void update_counter_display(int remaining_secs) {
-  show_dec(1, remaining_secs % 60);
-  show_dec(3, remaining_secs / 60, true);
+void update_counter_display(ulong elapsed) {
+  show_dec(1, elapsed % 60);
+  show_dec(3, elapsed / 60, true);
   for (int i = 5; i < 9; i++) {
     transfer_7219(i, 0b1111); // blank
   }
@@ -153,14 +158,30 @@ void update_counter_display(int remaining_secs) {
 void loop() {
   serialise();
 
-  if (sw0.falling())
-    mins30(true);
+  //sw0.loop();
 
-  int timer = mins30(false);
-  if (timer == 0) {
-    update_regular_display();
+  static bool timing = false;
+  static ulong start_time;
+  if (sw0.falling()) {
+    if (timing) {
+      timing = false;
+    } else {
+      timing = true;
+      start_time = millis();
+    }
+  }
+
+  if (timing) {
+    ulong elapsed = millis()-start_time;
+    update_counter_display(elapsed/1000);
+    long over_time = elapsed - 30UL * 1000UL * 60UL;
+    if(over_time>0) {
+      ulong segment = over_time % 5000;
+      sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
+    }
+    
   } else {
-    update_counter_display(timer);
+    update_regular_display();
   }
 }
 
@@ -173,34 +194,5 @@ void sound(bool on) {
     noTone(BZR);
     digitalWrite(BZR, LOW);
     Serial.println("off");
-  }
-}
-
-int mins30(bool toggle) {
-  enum states {idle, start, timing, expired};
-  static int state = idle;
-  static ms_t start_time;
-
-  if (state == idle) {
-    //sound(LOW);
-    if (toggle) state = start;
-    return 0;
-  }
-  if (toggle) {
-    state = idle;
-    sound(false);
-  }
-
-  ms_t segment = (millis() - start_time) % 5000; // break up the timing into 5 second chunks
-  switch (state) {
-    case start:
-      start_time = millis();
-      state = timing; //fallthrough
-    case timing:
-      if (millis() - start_time > 1800000) state = expired; // i.e. 30 mins
-      return 1800 - (millis() - start_time) / 1000; // i.e. seconds
-    case expired:
-      sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
-      return 0;
   }
 }
