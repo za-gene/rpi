@@ -45,7 +45,7 @@ Projects
 Notes
 * [compiling](compiling.md) and linking
 * [gpio](gpio.md) - some notes on GPIO
-* [pwm](pwm.md)
+* [pwm](pwm.md) and frequency
 
 
 ## Links to other sites
