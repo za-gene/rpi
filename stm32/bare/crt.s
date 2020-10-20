@@ -189,8 +189,8 @@ g_pfnVectors:
   .word TIM1_TRG_COM_IRQHandler
   .word TIM1_CC_IRQHandler
   .word TIM2_IRQHandler
-  .word TIM3_IRQHandler
-  .word TIM4_IRQHandler
+  .word TIM3_IRQHandler // bit 29
+  .word TIM4_IRQHandler // bit 30 in NVIC_ISER0
   .word I2C1_EV_IRQHandler
   .word I2C1_ER_IRQHandler
   .word I2C2_EV_IRQHandler
