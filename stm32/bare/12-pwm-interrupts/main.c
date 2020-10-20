@@ -57,8 +57,6 @@ void setup_timer()
 	printi(TIM3->PSC);
 
 
-	//TIM3->CCR1 = arr * duty_pc / 100 -1; // this was in project 11, but not needed anymore
-	TIM3->CCR1 = 8; // this was in project 11, but not needed anymore
 	TIM3->CCER |= TIM_CCER_CC1E; // enable capture/compare 
 	TIM3->CCMR1 |= TIM_CCMR1_OC1PE; // enable preload
 	TIM3->CCMR1 |= 0b110<<4; // output pwm compare mode 1 
