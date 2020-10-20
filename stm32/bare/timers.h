@@ -40,3 +40,7 @@ typedef struct {
 #define TIM_EGR_TG (1<<6)
 
 #define TIM_CCER_CC1E (1<<0)
+
+#define TIM_SR1_UIF (1<<0)
+//#define TIM_DIER_UIE (1<<0)
+#define TIM_CCMR1_OC1PE (1<<3)

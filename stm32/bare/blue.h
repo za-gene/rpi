@@ -31,6 +31,7 @@ struct USART_t;
 
 #define USART1 ((USART_t*) 0x40013800)
 
+#define NVIC_ISER0 *(volatile uint32_t *)(0xE000E000+0x100)
 
 
 #define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
