@@ -42,6 +42,10 @@ Projects
 * [usart](usart)
 * [reng-spi-master](reng-spi-master) - reverse engineering a SPI master
 
+* [12-pwm-interrupts](12-pwm-interrupts) - Approx. 440Hz triangular wave using PWM
+
+
+
 Notes
 * [compiling](compiling.md) and linking
 * [gpio](gpio.md) - some notes on GPIO
