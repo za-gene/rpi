@@ -2,6 +2,8 @@
 #include <timers.h>
 #include <usart.h>
 
+#include "track.h"
+
 
 #define FREQ 440
 #define NSAMPLES 16
@@ -30,9 +32,9 @@ void print_bin(u32 v)
 void TIM3_IRQHandler()
 {
 	// increment the PWM counter for when to set low
-	static u32 count=0;
-	if(count >= NSAMPLES) count = 0;
-	TIM3->CCR1 = count++;
+	static u32 idx=0;
+	if(idx >= track_raw_len) idx = 0;
+	TIM3->CCR1 = (u32) track_raw[idx++]/2;
 
 	TIM3->SR &= ~TIM_SR1_UIF; // reset interrupt flag
 }
@@ -51,9 +53,9 @@ void setup_timer()
 	RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
 	gpio_mode(PA6, 0b1011); // output 50MHz, push-pull, alt function
 
-	TIM3->ARR = NSAMPLES -1;
-	TIM3->PSC = 8000000UL/FREQ/NSAMPLES/NSAMPLES ;
-	//TIM3->PSC = 69;
+	TIM3->ARR = 255;
+	//TIM3->PSC = 8000000UL/FREQ/NSAMPLES/NSAMPLES ;
+	TIM3->PSC = 3;
 	printi(TIM3->PSC);
 
 
