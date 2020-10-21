@@ -5,10 +5,6 @@
 #include "track.h"
 
 
-#define FREQ 440
-#define NSAMPLES 16
-
-
 char msg[40];
 void printi(u32 v) 
 {
@@ -55,7 +51,6 @@ void setup_timer()
 	gpio_mode(PA6, 0b1011); // output 50MHz, push-pull, alt function
 
 	TIM3->ARR = 255;
-	//TIM3->PSC = 8000000UL/FREQ/NSAMPLES/NSAMPLES ;
 	TIM3->PSC = 7;
 	printi(TIM3->PSC);
 
@@ -75,16 +70,15 @@ void printn(u32 v)
 }
 
 
-#define RCC_CR_PLLON (1<<24)
-#define RCC_CR_PLLRDY (1<<25)
 
 void main() 
 {
-	//RCC_CFGR |= 0b0101 << 24; // MCO to PLL
-	RCC_CFGR |= 0b0110 << 18; // PLLMUL 8X
+	// change the system core clock from 8MHz to 32MHz
+	RCC_CFGR |= 0b0110 << RCC_CFGR_PLLMUL; // PLLMUL 8X
 	RCC_CFGR |= 0b10;  //PLL selected as system clock
 	while(RCC_CR & RCC_CR_PLLRDY);
 	RCC_CR |= RCC_CR_PLLON;
+	SystemCoreClock = 32000000UL; // tell everyone about new speed
 
 	gpio_mode_out(BUILTIN_LED);
 	init_serial();
@@ -97,8 +91,6 @@ void main()
 	TIM3->DIER |= TIM_DIER_UIE; // enable interrupt (this wasn't in project 11)
 	enable_irq();
 
-	//printn(TIM3->PSC);
-	//printn(TIM3->ARR);
 	beep();
 
 	while(1);

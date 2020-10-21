@@ -44,16 +44,19 @@ struct USART_t;
 #define USART3 ((USART_t*) 0x40004800)
 #define USART2 ((USART_t*) 0x40004400)
 
-#define RCC_APB2ENR   REG(RCC_BASE   + 0x18)
-#define RCC_APB1ENR   REG(RCC_BASE   + 0x1C) // page 148
-
+#define RCC_APB2ENR   	REG(RCC_BASE + 0x18)
+#define RCC_APB1ENR   	REG(RCC_BASE + 0x1C) // page 148
+#define RCC_CR   	REG(RCC_BASE + 0x00) 
+#define RCC_CFGR   	REG(RCC_BASE + 0x04) 
 
 // section 7.3.11 RCC register map page 121
-#define RCC_CR   *(volatile uint32_t *)(RCC_BASE + 0x00) 
 #define RCC_CR_HSION (1<<0)
 #define RCC_CR_HSIRDY (1<<1)
-#define RCC_CFGR   *(volatile uint32_t *)(RCC_BASE + 0x04) 
+#define RCC_CR_PLLON (1<<24)
+#define RCC_CR_PLLRDY (1<<25)
+
 #define RCC_CFGR_SW (1<<0)
+#define RCC_CFGR_PLLMUL 18
 
 #define RCC_APB1ENR_TIM3EN (1<<1)
 #define RCC_APB1ENR_TIM4EN (1<<2)
