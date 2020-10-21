@@ -12,6 +12,8 @@ typedef uint32_t u32;
 
 #define REG(x) *(volatile uint32_t *)(x)
 
+extern u32  SystemCoreClock;
+
 #define RCC_BASE      	0x40021000
 
 

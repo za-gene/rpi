@@ -8,6 +8,10 @@
 
 extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss;
 
+// Set the core system clock speed.
+// Default clock source is the 8MHz internal oscillator.
+u32 SystemCoreClock = 8000000UL;
+
 
 void* memcpy(void* dst, const void* src, size_t n) {
 	// Copies n bytes from src to dst

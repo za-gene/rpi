@@ -33,10 +33,6 @@ void usart_1()
 void init_serial()
 {
 
-	// Set the core system clock speed.
-	// Default clock source is the 8MHz internal oscillator.
-	uint32_t SystemCoreClock = 8000000;
-
 	usart_1();
 
 	// Set the baud rate
