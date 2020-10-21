@@ -43,7 +43,7 @@ Projects
 * [reng-spi-master](reng-spi-master) - reverse engineering a SPI master
 
 * [12-pwm-interrupts](12-pwm-interrupts) - Approx. 440Hz triangular wave using PWM
-
+* [13-track](13-track) - play hard-coded audio using PWM. (Keys: IRQ, PWM, audio, clock, timers)
 
 
 Notes
