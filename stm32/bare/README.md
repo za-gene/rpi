@@ -45,7 +45,7 @@ Projects
 
 * [12-pwm-interrupts](12-pwm-interrupts) - Approx. 440Hz triangular wave using PWM
 * [13-track](13-track) - play hard-coded audio using PWM. (Keys: IRQ, PWM, audio, clock, timers)
-
+* [14-max7219](14-max7219) - zero-swgment display (Keys: SPI)
 
 Notes
 * [compiling](compiling.md) and linking
