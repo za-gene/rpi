@@ -13,6 +13,7 @@ hood, but has the advantage that it doesn't use timers.
 ```
 sudo apt install stlink-tools stlink-gui
 sudo apt install gcc-arm-none-eabi
+sudo apt install doxygen graphviz # to build docs
 ```
 ARM provide a [toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) that includes a debugger. However, it might be possible to use `gdb-multiarch` instead. It is possible that debugger compatability is tied to the compiler version
 
@@ -44,7 +45,7 @@ Projects
 
 * [12-pwm-interrupts](12-pwm-interrupts) - Approx. 440Hz triangular wave using PWM
 * [13-track](13-track) - play hard-coded audio using PWM. (Keys: IRQ, PWM, audio, clock, timers)
-
+* [14-max7219](14-max7219) - zero-swgment display (Keys: SPI)
 
 Notes
 * [compiling](compiling.md) and linking

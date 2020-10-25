@@ -20,6 +20,7 @@ to `sketch_feb04b`.
 ## Also on this site
 
 * [stm8 bare metal](../stm8s103f3p6/bare/10-max7219)
+* [stm32 bare metal](../stm32/bare/14-max7219)
 
 
 ## Links to other sites

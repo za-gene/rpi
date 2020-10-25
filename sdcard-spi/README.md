@@ -16,7 +16,8 @@ MOSI=D11, MISO=D12, CLK=D13, SS=D4
 
 ## STM32 + IDE
 
-Confirmed working. See [st32-arduino-dumpfile](st32-arduino-dumpfile) for test and hookup
+Confirmed working. See [stm32-arduino-dumpfile](stm32-arduino-dumpfile) 
+for test and hookup
 
 See also: [stm32f103-sdcard](https://github.com/NimaMX/STM32F103-SDCARD) for an interesting possibility.
 
