@@ -14,7 +14,7 @@ typedef ulong ms_t;
 #include <Timezone.h> // https://github.com/JChristensen/Timezone
 
 TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
-TimeChangeRule mySTD = {"GMT", Last, Sun, Nov, 2, 0};
+TimeChangeRule mySTD = {"GMT", Last, Sun, Oct, 2, 0};
 Timezone myTZ(myBST, mySTD);
 TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abbrev
 
