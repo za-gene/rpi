@@ -1,7 +1,8 @@
 # audio
 
-## in this directory
+## In this directory
 
+* [pwm-audio-sdcard-nano](pwm-audio-sdcard-nano) - Nano RAW player using PWM and sound card
 * [sketch_jun09a](sketch_jun09a) - Arduino emulating DAC using PWM - poor output quality
 * [sketch_jun18](sketch_jun18) - Arduino slave with 5v SD card communicating via I2C with ESP32 master using built-in DAC. Uses a level shifter. 
 
@@ -17,5 +18,6 @@ A good song that I used for `sketch_jun9a` is available for download [here](http
 
 ## Also on this site
 
+* [dev09](../dev09) - sine wave and consant voltage generator
 * [tone440](../attiny85/tone440) - squarewave on attiny85
 
