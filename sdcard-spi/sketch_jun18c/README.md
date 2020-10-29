@@ -5,19 +5,20 @@ This experiment was to see how long it took to read 8K bytes from an SD Card. I 
 Summary Results 
 
 ```
-BLK    TIME    X
----  ------ ----
-1    307296 1.00
-8     75288 4.08
-16    59956 5.12
-256   45688 6.72
-512   37848 8.12
+BLK    TIME    X    UPB
+---  ------ ----  -----
+1    307296 1.00  37.49
+8     75288 4.08   9.19
+16    59956 5.12   7.50
+256   45688 6.72   5.57
+512   37848 8.12   4.62
 ```
 Legend:
 
 * `BLK` is the size of each block read. 
 * `TIME` is the time taken to transfer 8196 bytes (8Kby) in us (microseconds). 
 * `X` is the speed-up time as the result of block transfers relative to transferring 1 byte at a time (the first row is the base value of 1.00)
+* 'UPB' is microseconds per byte transfer time
 
 As can be seen, transferring 1 byte at a time from the SD card took 307296us, i.e. 0.31s for 8K. 8K represents approx 8kHz, but more accurately, the transfer time for 8kHz was 0.30s (=307296*8000/8196 us).
 
