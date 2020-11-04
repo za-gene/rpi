@@ -129,6 +129,13 @@ void setup() {
   Serial.begin(115200);
   update_regular_display();
   pinMode(BZR, OUTPUT);
+
+  // see if I can get rid of the buzzing sound
+  // doesn't seem to help though
+  rtc.disable32K();
+  rtc.disableAlarm(0);
+  rtc.disableAlarm(1);
+  rtc.disableAlarm(2);
 }
 
 void show_dec(int pos, int val, bool dp = false) {
@@ -158,7 +165,6 @@ void update_counter_display(ulong elapsed) {
 void loop() {
   serialise();
 
-  //sw0.loop();
 
   static bool timing = false;
   static ulong start_time;
@@ -172,14 +178,14 @@ void loop() {
   }
 
   if (timing) {
-    ulong elapsed = millis()-start_time;
-    update_counter_display(elapsed/1000);
+    ulong elapsed = millis() - start_time;
+    update_counter_display(elapsed / 1000);
     long over_time = elapsed - 30UL * 1000UL * 60UL;
-    if(over_time>0) {
+    if (over_time > 0) {
       ulong segment = over_time % 5000;
       sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
     }
-    
+
   } else {
     update_regular_display();
   }
