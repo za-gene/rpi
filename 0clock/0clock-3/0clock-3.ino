@@ -1,5 +1,9 @@
 #include <debounce.h> // a project here that does falling buttons
 
+/*  blue button sw0 turns timer on or off
+ *  left button on zeroseg toggles between timer and clock display
+ */
+
 //#include <ezButton.h>
 
 typedef unsigned long ulong;
@@ -119,7 +123,9 @@ void serialise() {
 }
 
 
-FallingButton sw0(3); // 0seg left button is A2, right button is A4
+FallingButton sw0(3); // 0seg left button is A0, right button is A2
+FallingButton sw_left(A0);
+
 //ezButton sw0(3);
 
 #define BZR 8
@@ -145,6 +151,8 @@ void show_dec(int pos, int val, bool dp = false) {
   transfer_7219(pos + 1, val / 10);
 }
 
+bool show_clock = true;
+
 void update_regular_display() {
   DateTime dt = get_time();
   show_dec(1, dt.minute());
@@ -162,6 +170,14 @@ void update_counter_display(ulong elapsed) {
   }
 }
 
+void update_display(ulong elapsed_secs) {
+  if (show_clock) {
+    update_regular_display();
+  } else {
+    update_counter_display(elapsed_secs);
+  }
+}
+
 void loop() {
   serialise();
 
@@ -171,24 +187,29 @@ void loop() {
   if (sw0.falling()) {
     if (timing) {
       timing = false;
+      show_clock = true;
     } else {
       timing = true;
       start_time = millis();
+      show_clock = false;
     }
   }
 
+  if (sw_left.falling()) {
+    show_clock = !show_clock;
+  }
+
+  ulong elapsed = 0;
   if (timing) {
-    ulong elapsed = millis() - start_time;
-    update_counter_display(elapsed / 1000);
+    elapsed = millis() - start_time;
     long over_time = elapsed - 30UL * 1000UL * 60UL;
     if (over_time > 0) {
       ulong segment = over_time % 5000;
       sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
     }
-
-  } else {
-    update_regular_display();
   }
+
+  update_display(elapsed / 1000);
 }
 
 void sound(bool on) {
