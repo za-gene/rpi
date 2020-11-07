@@ -51,4 +51,11 @@ rshell --buffer-size=30 -p /dev/ttyU* cp sdcard.py /pyboard
 
 Run `wroom-micropython-example.ipynb` . 
 
+## Links to other sites
 
+
+* [Accessing the SD Card](https://luckyresistor.me/cat-protector/software/sdcard-2/)
+* [FatFs](http://elm-chan.org/fsw/ff/00index_e.html) - separated from the 
+disk I/O layer
+* [Lecture 12: SPI and SD cards](http://www.dejazzer.com/ee379/lecture_notes/lec12_sd_card.pdf)
+* [SDHC microSD card and SPI initialization - Stack Overflow](https://stackoverflow.com/questions/8080718/sdhc-microsd-card-and-spi-initialization)
