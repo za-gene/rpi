@@ -25,13 +25,15 @@
 #include <uspi/util.h>
 #include <uspi/assert.h>
 
-static const char FromUSPi[] = "uspi";
+// mcarter 2020-11-08 commenting out LogWrite() because I think it causes crashing
+
+//static const char FromUSPi[] = "uspi";
 
 static TUSPiLibrary *s_pLibrary = 0;
 
 int USPiInitialize (void)
 {
-	LogWrite (FromUSPi, LOG_DEBUG, "Initializing " USPI_NAME " " USPI_VERSION_STRING);
+	//LogWrite (FromUSPi, LOG_DEBUG, "Initializing " USPI_NAME " " USPI_VERSION_STRING);
 
 	assert (s_pLibrary == 0);
 	s_pLibrary = (TUSPiLibrary *) malloc (sizeof (TUSPiLibrary));
@@ -44,7 +46,7 @@ int USPiInitialize (void)
 
 	if (!DWHCIDeviceInitialize (&s_pLibrary->DWHCI))
 	{
-		LogWrite (FromUSPi, LOG_ERROR, "Cannot initialize USB host controller interface");
+		//LogWrite (FromUSPi, LOG_ERROR, "Cannot initialize USB host controller interface");
 
 		_DWHCIDevice (&s_pLibrary->DWHCI);
 		_DeviceNameService (&s_pLibrary->NameService);
@@ -88,7 +90,7 @@ int USPiInitialize (void)
 		_String  (&DeviceName);
 	}
 
-	LogWrite (FromUSPi, LOG_DEBUG, USPI_NAME " successfully initialized");
+	//LogWrite (FromUSPi, LOG_DEBUG, USPI_NAME " successfully initialized");
 
 	return 1;
 }

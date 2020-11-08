@@ -6,6 +6,9 @@
 #include <uspios.h>
 #include <uspienv/util.h>
 
+#include <lfb.h>
+
+
 static const char FromSample[] = "sample";
 
 static void KeyPressedHandler (const char *pString)
@@ -13,31 +16,46 @@ static void KeyPressedHandler (const char *pString)
 	ScreenDeviceWrite (USPiEnvGetScreen (), pString, strlen (pString));
 }
 
-int main (void)
+void say(char* str)
 {
-	if (!USPiEnvInitialize ())
-	{
-		return EXIT_HALT;
+	lfb_print(90, 90, str);
+}
+
+void kernel_main()
+{
+	lfb_init();
+	lfb_print(80, 80, "Hello World!");
+	//LogWrite("main", LOG_DEBUG, "Testing to see if LogWrite actually works"); // I think this causes a crash
+	say("Let's try");
+	//goto finis;
+
+	goto skip1;
+	if (!USPiEnvInitialize()) { // seems to cause crash
+		say("USPiEnvInitialize:failed");
+		goto finis;
 	}
+	say("USPiEnvInitialize:OK");
 	
-	if (!USPiInitialize ())
+skip1:
+	say("USPiInitialize:try");
+	if (!USPiInitialize ()) // seems to cause crash
 	{
-		LogWrite (FromSample, LOG_ERROR, "Cannot initialize USPi");
-
+		//LogWrite (FromSample, LOG_ERROR, "Cannot initialize USPi");
+		say("Can't initialise USPi");
 		USPiEnvClose ();
-
-		return EXIT_HALT;
+		goto finis;
 	}
+	say("USPiInitialize:OK ");
 	
 	if (!USPiKeyboardAvailable ())
 	{
-		LogWrite (FromSample, LOG_ERROR, "Keyboard not found");
-
+		say("Keyboard not found");
+		//LogWrite (FromSample, LOG_ERROR, "Keyboard not found");
 		USPiEnvClose ();
-
-		return EXIT_HALT;
+		goto finis;
 	}
 
+	say("Keyboard setup");
 	USPiKeyboardRegisterKeyPressedHandler (KeyPressedHandler);
 
 	LogWrite (FromSample, LOG_NOTICE, "Just type something!");
@@ -46,9 +64,9 @@ int main (void)
 	for (unsigned nCount = 0; 1; nCount++)
 	{
 		USPiKeyboardUpdateLEDs ();
-
 		ScreenDeviceRotor (USPiEnvGetScreen (), 0, nCount);
 	}
 
-	return EXIT_HALT;
+finis:
+	while(1);
 }

@@ -9,7 +9,9 @@ LIBS	= $(USPIHOME)/lib/libuspi.a \
 AOPS = --warn --fatal-warnings 
 COPS = -Wall -Werror  -O3 -nostdlib -nostartfiles -ffreestanding \
        -I../../uspi/env/include \
-       -I../../uspi/include
+       -I../../uspi/include \
+       -I../..
+    
 
 IMG = kernel7.img
 ELF = kernel7.elf
@@ -18,7 +20,7 @@ HEX = kernel.hex
 #BUILT = font.psf.h font.sfn.h
 $(IMG) : $(HEX)
 
-OBJS = kernel.o # vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
+OBJS = kernel.o ../../vectors.o ../../interrupts.o ../../lfb.o  ../../font.psf.o ../../font.sfn.o ../../mbox.o # gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
 
 #FONTSO = font.psf.o font.sfn.o
 
