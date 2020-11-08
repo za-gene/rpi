@@ -16,6 +16,10 @@
 
 #include <lfb.h>
 
+#define DEVICE_ID_USB_HCD	3		// for SetPowerStateOn()
+#define ARM_IRQ_USB		9		// for ConnectInterrupt()
+
+
 
 static const char FromSample[] = "sample";
 
@@ -40,6 +44,95 @@ void myDeviceNameService (TDeviceNameService *pThis)
 	s_pThis = pThis;
 }
 
+extern void DWHCIDeviceInterruptHandler (void *pParam);
+
+boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
+{
+	assert (pThis != 0);
+
+	//DataMemBarrier ();
+
+	TDWHCIRegister VendorId;
+	DWHCIRegister (&VendorId, DWHCI_CORE_VENDOR_ID);
+	if (DWHCIRegisterRead (&VendorId) != 0x4F54280A)
+	{
+		say("DWHCIRegisterRead failed");
+		//LogWrite (FromDWHCI, LOG_ERROR, "Unknown vendor 0x%0X", DWHCIRegisterGet (&VendorId));
+		_DWHCIRegister (&VendorId);
+		return FALSE;
+	}
+	say("DWHCIRegisterRead:OK");
+
+	if (!SetPowerStateOn (DEVICE_ID_USB_HCD))
+	{
+		//LogWrite (FromDWHCI, LOG_ERROR, "Cannot power on");
+		_DWHCIRegister (&VendorId);
+		return FALSE;
+	}
+	say("SetPowerStateOn:OK");
+	
+	// Disable all interrupts
+	TDWHCIRegister AHBConfig;
+	DWHCIRegister (&AHBConfig, DWHCI_CORE_AHB_CFG);
+	DWHCIRegisterRead (&AHBConfig);
+	DWHCIRegisterAnd (&AHBConfig, ~DWHCI_CORE_AHB_CFG_GLOBALINT_MASK);
+	DWHCIRegisterWrite (&AHBConfig);
+	// we seem to make it to here
+	
+	say("attempt interupt connect");
+	ConnectInterrupt (ARM_IRQ_USB, DWHCIDeviceInterruptHandler, pThis);
+	say("connected interrupt");
+
+#if 0
+	if (!DWHCIDeviceInitCore (pThis))
+	{
+		//LogWrite (FromDWHCI, LOG_ERROR, "Cannot initialize core");
+		_DWHCIRegister (&AHBConfig);
+		_DWHCIRegister (&VendorId);
+		return FALSE;
+	}
+	
+	DWHCIDeviceEnableGlobalInterrupts (pThis);
+	
+	if (!DWHCIDeviceInitHost (pThis))
+	{
+		//LogWrite (FromDWHCI, LOG_ERROR, "Cannot initialize host");
+		_DWHCIRegister (&AHBConfig);
+		_DWHCIRegister (&VendorId);
+		return FALSE;
+	}
+
+	// The following calls will fail if there is no device or no supported device connected
+	// to root port. This is not an error because the system may run without an USB device.
+
+	if (!DWHCIDeviceEnableRootPort (pThis))
+	{
+		//LogWrite (FromDWHCI, LOG_WARNING, "No device connected to root port");
+		_DWHCIRegister (&AHBConfig);
+		_DWHCIRegister (&VendorId);
+		return TRUE;
+	}
+
+	if (!DWHCIRootPortInitialize (&pThis->m_RootPort))
+	{
+		//LogWrite (FromDWHCI, LOG_WARNING, "Cannot initialize root port");
+		_DWHCIRegister (&AHBConfig);
+		_DWHCIRegister (&VendorId);
+		return TRUE;
+	}
+	
+	DataMemBarrier ();
+
+	_DWHCIRegister (&AHBConfig);
+	_DWHCIRegister (&VendorId);
+
+#endif
+	say("TODO myDWHCIDeviceInitialize");
+	return TRUE;
+}
+
+
+
 int myUSPiInitialize (void)
 {
 	//LogWrite (FromUSPi, LOG_DEBUG, "Initializing " USPI_NAME " " USPI_VERSION_STRING);
@@ -56,8 +149,13 @@ int myUSPiInitialize (void)
 	s_pLibrary->pEth10 = 0;
 
 	say("2");
-	if (!DWHCIDeviceInitialize (&s_pLibrary->DWHCI)) // problems
+	if(&s_pLibrary->DWHCI)
+		say("reasonable");
+	else
+		say("nullptr");
+	if (!myDWHCIDeviceInitialize (&s_pLibrary->DWHCI)) // problems
 	{
+		say("Cannot initialize USB host controller interface");
 		//LogWrite (FromUSPi, LOG_ERROR, "Cannot initialize USB host controller interface");
 
 		_DWHCIDevice (&s_pLibrary->DWHCI);
@@ -67,6 +165,7 @@ int myUSPiInitialize (void)
 
 		return 0;
 	}
+	say("DWHCIDeviceInitialize:OK");
 
 	say("3");
 
