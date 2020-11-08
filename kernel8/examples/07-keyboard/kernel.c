@@ -21,7 +21,7 @@ static const char FromSample[] = "sample";
 
 void say(char* str)
 {
-	lfb_print(90, 90, str);
+	fbputs(str);
 }
 static void KeyPressedHandler (const char *pString)
 {
@@ -115,7 +115,7 @@ int USPiEnvInitialize() { return 1; }
 void kernel_main()
 {
 	lfb_init();
-	lfb_print(80, 80, "Hello World!");
+	say("keyobard test started");
 	//LogWrite("main", LOG_DEBUG, "Testing to see if LogWrite actually works"); // I think this causes a crash
 	say("Let's try");
 	//goto finis;
