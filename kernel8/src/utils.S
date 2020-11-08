@@ -1,3 +1,4 @@
+/*
 .globl put32
 put32:
 	str w1,[x0]
@@ -13,3 +14,4 @@ delay:
 	subs x0, x0, #1
 	bne delay
 	ret
+*/

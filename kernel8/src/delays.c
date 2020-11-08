@@ -39,6 +39,7 @@ void wait_cycles(unsigned int n)
 /**
  * Wait N microsec (ARM CPU only)
  */
+#if 0
 void wait_msec(unsigned int n)
 {
     register unsigned long f, t, r;
@@ -50,6 +51,7 @@ void wait_msec(unsigned int n)
     t+=((f/1000)*n)/1000;
     do{asm volatile ("mrs %0, cntpct_el0" : "=r"(r));}while(r<t);
 }
+#endif
 
 /**
  * Get System Timer's counter
