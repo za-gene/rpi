@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Copyright (C) 2018 bzt (bztsrc@github)
  *
@@ -27,3 +28,7 @@ void lfb_init();
 void lfb_showpicture();
 void lfb_print(int x, int y, char *s);
 void lfb_proprint(int x, int y, char *s);
+void fbputchar(char c);
+void fbprint(char* str);
+void fbputs(char* str);
+void fbnewline();

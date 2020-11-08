@@ -252,3 +252,64 @@ void lfb_proprint(int x, int y, char *s)
     }
 }
 
+
+int g_x =10, g_y = 10;
+void fbputchar(char c)
+{
+    char s[1];
+s[0] = c;
+        psf_t *font = (psf_t*)&_binary_font_psf_start; 
+        // get the offset of the glyph. Need to adjust this to support unicode table
+        unsigned char *glyph = (unsigned char*)&_binary_font_psf_start +
+                font->headersize + (*((unsigned char*)s)<font->numglyph?*s:0)*font->bytesperglyph;
+        // calculate the offset on screen 
+        int offs = (g_y * pitch) + (g_x * 4);
+        // variables
+        int i,j, line,mask, bytesperline=(font->width+7)/8;
+        // handle carriage return
+        if(*s == '\r') {
+                g_x = 0;
+        } else
+                // new line
+                if(*s == '\n') { 
+                        g_x = 0; g_y += font->height;
+                } else {
+                        // display a character
+                        for(j=0;j<font->height;j++){
+                                // display one row
+                                line=offs;
+                                mask=1<<(font->width-1);
+                                for(i=0;i<font->width;i++){
+                                        // if bit set, we use white color, otherwise black
+                                        *((unsigned int*)(lfb + line))=((int)*glyph) & mask?0xFFFFFF:0;
+                                        mask>>=1;
+                                        line+=4;
+                                }
+                                // adjust to next line
+                                glyph+=bytesperline;
+                                offs+=pitch;
+                        }
+                        g_x += (font->width+1);
+                }
+}
+
+
+void fbprint(char* str)
+{
+        while(*str)
+                fbputchar(*str++);
+}
+
+void fbnewline()
+{
+    fbprint("\r\n");
+}
+
+void fbputs(char* str)
+{
+        fbprint(str);
+        fbnewline();
+}
+
+
+
