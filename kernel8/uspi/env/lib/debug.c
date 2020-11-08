@@ -62,6 +62,7 @@ void debug_hexdump (const void *pStart, unsigned nBytes, const char *pSource)
 
 void debug_stacktrace (const u32 *pStackPtr, const char *pSource)
 {
+#if 0 // mcarter 2020-11-08 compilation hack
 	if (pSource == 0)
 	{
 		pSource = FromDebug;
@@ -77,6 +78,7 @@ void debug_stacktrace (const u32 *pStackPtr, const char *pSource)
 			LoggerWrite (LoggerGet (), pSource, LogDebug, "stack[%u] is 0x%X", i, (unsigned) *pStackPtr);
 		}
 	}
+#endif
 }
 
 #endif

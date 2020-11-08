@@ -33,6 +33,7 @@
 
 void PageTable (TPageTable *pThis, u32 nMemSize)
 {
+#if 0 // mcarter 2020-11-08 hack this away
 	assert (pThis != 0);
 
 	pThis->m_pTable = (u32 *) MEM_PAGE_TABLE1;
@@ -70,6 +71,7 @@ void PageTable (TPageTable *pThis, u32 nMemSize)
 
 	CleanDataCache ();
 	DataSyncBarrier ();
+#endif
 }
 
 void _PageTable (TPageTable *pThis)

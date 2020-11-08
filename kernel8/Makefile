@@ -1,12 +1,15 @@
-ARMGNU ?= aarch64-linux-gnu
+ARMGNU ?= arm-none-eabi
 
-COPS = -Wall -nostdlib -nostartfiles -ffreestanding -Iinclude -mgeneral-regs-only
-ASMOPS = -Iinclude 
+COPS = -Wall -nostdlib -nostartfiles -ffreestanding 
+#ASMOPS = -Iinclude 
 
-BUILD_DIR = build
-SRC_DIR = src
+#BUILD_DIR = build
+#SRC_DIR = src
 
-all : kernel8.img
+vectors.o : vectors.s
+	$(ARMGNU)-as vectors.s -o vectors.o
+
+#all : kernel8.img
 
 clean :
 	rm -rf $(BUILD_DIR) *.img 
