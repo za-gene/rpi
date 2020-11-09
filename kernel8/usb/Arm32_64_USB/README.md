@@ -20,3 +20,5 @@ For Pi3 in 64 Bit:
 To clean for full compile:     
 >     Make Clean
 ![](https://github.com/LdB-ECM/Docs_and_Images/blob/master/Images/USB64_alpha.jpg?raw=true)
+
+**NB added by mcarter 2020-11-09** - DiskImg/kernel8.img seems to work properly
