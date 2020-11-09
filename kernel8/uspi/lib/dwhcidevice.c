@@ -133,7 +133,8 @@ boolean DWHCIDeviceInitialize (TDWHCIDevice *pThis)
 	DWHCIRegisterRead (&AHBConfig);
 	DWHCIRegisterAnd (&AHBConfig, ~DWHCI_CORE_AHB_CFG_GLOBALINT_MASK);
 	DWHCIRegisterWrite (&AHBConfig);
-	
+
+	//LogWrite (FromDWHCI, LOG_WARNING, "mc: about to connect interrupts");
 	ConnectInterrupt (ARM_IRQ_USB, DWHCIDeviceInterruptHandler, pThis);
 
 	if (!DWHCIDeviceInitCore (pThis))
@@ -144,6 +145,7 @@ boolean DWHCIDeviceInitialize (TDWHCIDevice *pThis)
 		return FALSE;
 	}
 	
+    
 	DWHCIDeviceEnableGlobalInterrupts (pThis);
 	
 	if (!DWHCIDeviceInitHost (pThis))
@@ -1148,6 +1150,7 @@ void DWHCIDeviceChannelInterruptHandler (TDWHCIDevice *pThis, unsigned nChannel)
 
 void DWHCIDeviceInterruptHandler (void *pParam)
 {
+//LogWrite (FromDWHCI, LOG_WARNING, "mc: DWHCIDeviceInterruptHandler triggered");
 	TDWHCIDevice *pThis = (TDWHCIDevice *) pParam;
 	assert (pThis != 0);
 

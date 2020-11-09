@@ -80,10 +80,10 @@ boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
 	// we seem to make it to here
 	
 	say("attempt interupt connect");
-	ConnectInterrupt (ARM_IRQ_USB, DWHCIDeviceInterruptHandler, pThis);
-	say("connected interrupt");
+	//ConnectInterrupt (ARM_IRQ_USB, DWHCIDeviceInterruptHandler, pThis);
+	say("connected interrupt skipped");
 
-#if 0
+
 	if (!DWHCIDeviceInitCore (pThis))
 	{
 		//LogWrite (FromDWHCI, LOG_ERROR, "Cannot initialize core");
@@ -91,8 +91,10 @@ boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
 		_DWHCIRegister (&VendorId);
 		return FALSE;
 	}
+say("DWHCIDeviceInitCore done");
 	
-	DWHCIDeviceEnableGlobalInterrupts (pThis);
+	//DWHCIDeviceEnableGlobalInterrupts (pThis);
+say("DWHCIDeviceEnableGlobalInterrupts skipped");
 	
 	if (!DWHCIDeviceInitHost (pThis))
 	{
@@ -101,6 +103,7 @@ boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
 		_DWHCIRegister (&VendorId);
 		return FALSE;
 	}
+say("DWHCIDeviceInitHost");
 
 	// The following calls will fail if there is no device or no supported device connected
 	// to root port. This is not an error because the system may run without an USB device.
@@ -112,6 +115,7 @@ boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
 		_DWHCIRegister (&VendorId);
 		return TRUE;
 	}
+say("DWHCIDeviceEnableRootPort done");
 
 	if (!DWHCIRootPortInitialize (&pThis->m_RootPort))
 	{
@@ -120,13 +124,13 @@ boolean myDWHCIDeviceInitialize (TDWHCIDevice *pThis)
 		_DWHCIRegister (&VendorId);
 		return TRUE;
 	}
+say("DWHCIRootPortInitialize done");
 	
-	DataMemBarrier ();
+	//DataMemBarrier ();
 
 	_DWHCIRegister (&AHBConfig);
 	_DWHCIRegister (&VendorId);
 
-#endif
 	say("TODO myDWHCIDeviceInitialize");
 	return TRUE;
 }
