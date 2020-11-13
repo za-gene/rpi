@@ -1,3 +1,4 @@
+*.a
 *.list
 *.d
 kernel7.img
