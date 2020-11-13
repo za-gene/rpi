@@ -1,4 +1,5 @@
-ARMGNU ?= arm-none-eabi
+#ARMGNU ?= arm-none-eabi
+ARMGNU ?= arm-linux-gnueabihf
 
 USPIHOME   = ../..
 
@@ -7,11 +8,11 @@ LIBS	= $(USPIHOME)/lib/libuspi.a \
 	  $(USPIHOME)/env/lib/libuspienv.a
 
 AOPS = --warn --fatal-warnings 
-COPS = -Wall -Werror  -O3 -nostdlib -nostartfiles -ffreestanding \
+COPS =  -nostdlib -nostartfiles -ffreestanding \
        -I../../uspi/env/include \
        -I../../uspi/include \
        -I../..
-    
+#-mfloat-abi=hard -mfpu=neon \
 
 IMG = kernel7.img
 ELF = kernel7.elf
@@ -20,7 +21,8 @@ HEX = kernel.hex
 #BUILT = font.psf.h font.sfn.h
 $(IMG) : $(HEX)
 
-OBJS = kernel.o ../../vectors.o ../../interrupts.o ../../lfb.o  ../../font.psf.o ../../font.sfn.o ../../mbox.o # gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
+OBJS += kernel.o ../../vectors.o ../../interrupts.o ../../lfb.o  ../../font.psf.o ../../font.sfn.o \
+	../../memory.o ../../mbox.o # gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
 
 #FONTSO = font.psf.o font.sfn.o
 
@@ -64,11 +66,11 @@ clean :
 #	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
 LINKER = ../../linker.ld
-LIBUSPI = ../../uspi/lib/libuspi.a ../../uspi/env/lib/libuspienv.a
+#LIBUSPI = ../../uspi/lib/libuspi.a ../../uspi/env/lib/libuspienv.a
 
 
 $(ELF) : $(LINKER) $(OBJS) $(FONTSO) $(LIBUSPI)
-	$(ARMGNU)-ld $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER) -o $@
+	$(ARMGNU)-ld $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER)  -o $@
 	$(ARMGNU)-objdump -D $@ > kernel.list
 
 $(IMG) : $(ELF)

@@ -32,10 +32,11 @@ extern "C"
 #endif
 
 #include <stdint.h>
-#include "emb-stdio.h"				// Needed for printf
+#include <stdbool.h>
+//#include "emb-stdio.h"				// Needed for printf
 
-//#define LOG(...)
-#define LOG(...) printf(__VA_ARGS__)
+#define LOG(...)
+//#define LOG(...) printf(__VA_ARGS__)
 #define LOG_DEBUG(...)
 //#define LOG_DEBUG(...) printf(__VA_ARGS__)
 
@@ -274,7 +275,7 @@ enum DeviceClass {
  /*--------------------------------------------------------------------------}
  {	   USB device descriptor .. Table 9-8 in 9.6.1 of the USB 2.0 spec	 	 }
  {--------------------------------------------------------------------------*/
-struct usb_device_descriptor {
+struct __attribute__((__packed__)) usb_device_descriptor {
 	uint8_t  bLength;												// +0x0 Length of this descriptor
 	uint8_t  bDescriptorType;										// +0x1 Descriptor type
 	uint16_t bcdUSB;												// +0x2 (in BCD 0x210 = USB2.10)
@@ -289,12 +290,12 @@ struct usb_device_descriptor {
 	uint8_t  iProduct;												// +0xf Index of String Descriptor describing the product
 	uint8_t  iSerialNumber;											// +0x10 Index of String Descriptor with the device's serial number
 	uint8_t  bNumConfigurations;									// +0x11 Number of possible configurations
-} __packed;
+};
 
 /*--------------------------------------------------------------------------}
 {	  USB device configuration descriptor as per 9.6.3 of USB2.0 manual		}
 {--------------------------------------------------------------------------*/
-struct usb_configuration_descriptor {
+struct __attribute__((__packed__)) usb_configuration_descriptor {
 	uint8_t  bLength;												// +0x0 Length of this descriptor
 	uint8_t  bDescriptorType;										// +0x1 DEVICE descriptor type(enum DescriptorType)
 	uint16_t wTotalLength;											// +0x2 Total length of all descriptors for this configuration
@@ -311,7 +312,7 @@ struct usb_configuration_descriptor {
 		};
 	};
 	uint8_t  bMaxPower;												// +0x8 Maximum power consumed by this configuration
-} __packed;
+};
 
 
 /*--------------------------------------------------------------------------}

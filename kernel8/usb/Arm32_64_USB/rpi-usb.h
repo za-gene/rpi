@@ -289,7 +289,7 @@ struct usb_device_descriptor {
 	uint8_t  iProduct;												// +0xf Index of String Descriptor describing the product
 	uint8_t  iSerialNumber;											// +0x10 Index of String Descriptor with the device's serial number
 	uint8_t  bNumConfigurations;									// +0x11 Number of possible configurations
-} __packed;
+} __attribute__((packed));
 
 /*--------------------------------------------------------------------------}
 {	  USB device configuration descriptor as per 9.6.3 of USB2.0 manual		}
@@ -311,7 +311,7 @@ struct usb_configuration_descriptor {
 		};
 	};
 	uint8_t  bMaxPower;												// +0x8 Maximum power consumed by this configuration
-} __packed;
+} __attribute__((packed));
 
 
 /*--------------------------------------------------------------------------}

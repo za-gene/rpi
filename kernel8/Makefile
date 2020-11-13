@@ -1,12 +1,13 @@
-ARMGNU ?= arm-none-eabi
-
+#ARMGNU ?= arm-none-eabi
+#ARMGNU = arm-linux-gnueabihf
+ARMGNU = aarch64-linux-gnu
 COPS = -Wall -nostdlib -nostartfiles -ffreestanding 
 #ASMOPS = -Iinclude 
 
 #BUILD_DIR = build
 #SRC_DIR = src
 
-OBJS = interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o
+OBJS = interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o
 
 all : $(OBJS)
 

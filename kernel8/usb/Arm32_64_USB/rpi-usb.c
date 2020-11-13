@@ -13,7 +13,7 @@
 #include <stdint.h>				// C standard needed for uint8_t, uint32_t, uint64_t etc
 #include <string.h>				// C standard needed for memset
 #include <wchar.h>				// C standard needed for UTF for unicode descriptor support
-#include "rpi-smartstart.h"		// Provides timing routines and mailbox routines to power up/down the USB.  
+#include "rpi-SmartStart.h"		// Provides timing routines and mailbox routines to power up/down the USB.  
 #include "rpi-usb.h"			// This units header
 
 #define ReceiveFifoSize 20480 /* 16 to 32768 */
@@ -544,10 +544,10 @@ struct HostChannelCharacteristic {
 			unsigned odd_frame : 1;							// @29		Before enabling channel must be set to opposite of low bit of host_frame_number
 			unsigned channel_disable : 1;					// @30		Software can set this to 1 to halt the channel
 			unsigned channel_enable : 1;					// @31		Software can set this to 1 to enable the channel
-		} __packed;
+		} __attribute__((packed));
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+} __attribute__((packed));
 
 /*--------------------------------------------------------------------------}
 {                USB HOST CHANNEL SPLIT CONTROL STRUCTURE				    }
@@ -561,10 +561,10 @@ struct HostChannelSplitControl {
 			unsigned complete_split : 1;					// @16		1 to complete a Split transaction, 0 = normal transaction
 			unsigned _reserved : 14;						// @17-30
 			unsigned split_enable : 1;						// @31		Set to 1 to enable Split Transactions
-		} __packed;
+		} __attribute__((packed));
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+} __attribute__((packed));
 
 /*--------------------------------------------------------------------------}
 {                USB HOST CHANNEL TRANSFER SIZE STRUCTURE				    }
@@ -582,10 +582,10 @@ struct HostTransferSize {
 				USB_MDATA = 3,
 			} packet_id : 2;								// @29		Various packet phase ID
 			unsigned do_ping : 1;							// @31		
-		} __packed;
+		} __attribute__((packed));
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+} __attribute__((packed));
 
 /*--------------------------------------------------------------------------}
 {					  USB HOST CHANNEL STRUCTURE						    }
@@ -747,7 +747,7 @@ static_assert(sizeof(struct UsbSendControl) == 0x04, "Structure should be 32bits
 
 /* Aligned buffers for DMA which need to also be multiple of 4 bytes */
 /* Fortunately max packet size under USB2 is 1024 so that is a given */
-static uint8_t aligned_bufs[DWC_NUM_CHANNELS][USB2_MAX_PACKET_SIZE] __aligned(4);
+static uint8_t aligned_bufs[DWC_NUM_CHANNELS][USB2_MAX_PACKET_SIZE] __attribute__((aligned(4)));
 
 
 bool PhyInitialised = false;

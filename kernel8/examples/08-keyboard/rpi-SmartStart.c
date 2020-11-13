@@ -31,7 +31,8 @@
 #include <stdlib.h>								// Needed for abs
 #include <stdarg.h>								// Needed for variadic arguments
 #include <string.h>								// Needed for strlen	
-#include "Font8x16.h"							// Provides the 8x16 bitmap font for console 
+#include <memory.h>
+//#include "Font8x16.h"							// Provides the 8x16 bitmap font for console 
 #include "rpi-SmartStart.h"						// This units header
 
 /***************************************************************************}
@@ -710,6 +711,7 @@ bool ARM_setmaxspeed (printhandler prn_handler) {
 	return false;													// Max speed set failed
 }
 
+#if 0
 /*==========================================================================}
 {				      SMARTSTART DISPLAY ROUTINES							}
 {==========================================================================*/
@@ -1028,7 +1030,7 @@ BOOL CvtBmpLine (HDC hdc,
 . 10Aug17 LdB
 .--------------------------------------------------------------------------*/
 static void ClearArea16 (INTDC* dc, uint_fast32_t x1, uint_fast32_t y1, uint_fast32_t x2, uint_fast32_t y2) {
-	RGB565* __attribute__((packed, aligned(2))) video_wr_ptr = (RGB565*)(uintptr_t)(dc->fb + (y1 * dc->pitch * 2) + (x1 * 2));
+	RGB565* __attribute__((__packed__, aligned(2))) video_wr_ptr = (RGB565*)(uintptr_t)(dc->fb + (y1 * dc->pitch * 2) + (x1 * 2));
 	RGB565 Bc;
 	Bc.R = dc->BrushColor.rgbRed >> 3;
 	Bc.G = dc->BrushColor.rgbGreen >> 2;
@@ -1481,6 +1483,7 @@ BOOL Rectangle(HDC hdc,
 }
 
 
+
 bool PiConsole_Init (int Width, int Height, int Depth, printhandler prn_handler) {
 	uint32_t buffer[23];
 	if ((Width == 0) || (Height == 0)) {							// Has auto width or heigth been requested
@@ -1552,6 +1555,7 @@ bool PiConsole_Init (int Width, int Height, int Depth, printhandler prn_handler)
 	return true;
 }
 
+
 HDC GetConsoleDC(void) {
 	return (HDC)&console;
 }
@@ -1579,7 +1583,9 @@ void GotoXY(uint32_t x, uint32_t y)
 	console.cursor.x = x;
 	console.cursor.y = y;
 }
+#endif
 
+#if 0
 /* Increase program data space. As malloc and related functions depend on this,
 it is useful to have a working implementation. The following suffices for a
 standalone system; it exploits the symbol _end automatically defined by the
@@ -1599,4 +1605,4 @@ caddr_t __attribute__((weak)) _sbrk (int incr)
 
 	return (caddr_t)prev_heap_end;
 }
-
+#endif

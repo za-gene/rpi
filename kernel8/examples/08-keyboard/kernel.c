@@ -1,7 +1,11 @@
 #include <lfb.h>
+
+#include "rpi-usb.h"
+
+
 void say(char *str)
 {
-    fbputs(str);
+	fbputs(str);
 }
 
 void kernel_main()
@@ -10,7 +14,17 @@ void kernel_main()
 	say("keyobard test started");
 	say("Let's try");
 
+	UsbInitialise();
+	/* Detect the first keyboard on USB bus */
+	uint8_t firstKbd = 0;
+	for (int i = 1; i <= MaximumDevices; i++) {
+		if (IsKeyboard(i)) {
+			firstKbd = i;
+			break;
+		}
+	}
+	if (firstKbd) say("Keyboard detected\r\n");
 
-finis:
+//finis:
 	while(1);
 }

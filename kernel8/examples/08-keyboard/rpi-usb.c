@@ -12,8 +12,8 @@
 #include <stdlib.h>				// C standard needed for NULL
 #include <stdint.h>				// C standard needed for uint8_t, uint32_t, uint64_t etc
 #include <string.h>				// C standard needed for memset
-#include <wchar.h>				// C standard needed for UTF for unicode descriptor support
-#include "rpi-smartstart.h"		// Provides timing routines and mailbox routines to power up/down the USB.  
+//#include <wchar.h>				// C standard needed for UTF for unicode descriptor support
+#include "rpi-SmartStart.h"		// Provides timing routines and mailbox routines to power up/down the USB.  
 #include "rpi-usb.h"			// This units header
 
 #define ReceiveFifoSize 20480 /* 16 to 32768 */
@@ -530,7 +530,7 @@ struct __attribute__((__packed__, aligned(4))) HostPort {
 /*--------------------------------------------------------------------------}
 {                USB HOST CHANNEL CHARACTERISTIC STRUCTURE				    }
 {--------------------------------------------------------------------------*/
-struct HostChannelCharacteristic {
+struct __attribute__((__packed__, aligned(4))) HostChannelCharacteristic {
 	union {
 		struct {
 			unsigned max_packet_size : 11;					// @0-10	Maximum packet size the endpoint is capable of sending or receiving
@@ -547,12 +547,12 @@ struct HostChannelCharacteristic {
 		} __packed;
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+};
 
 /*--------------------------------------------------------------------------}
 {                USB HOST CHANNEL SPLIT CONTROL STRUCTURE				    }
 {--------------------------------------------------------------------------*/
-struct HostChannelSplitControl {
+struct __attribute__((__packed__, aligned(4))) HostChannelSplitControl {
 	union {
 		struct {
 			unsigned port_address : 7;						// @0-6		0-based index of the port on the high-speed hub Transaction Translator occurs
@@ -564,12 +564,12 @@ struct HostChannelSplitControl {
 		} __packed;
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+};
 
 /*--------------------------------------------------------------------------}
 {                USB HOST CHANNEL TRANSFER SIZE STRUCTURE				    }
 {--------------------------------------------------------------------------*/
-struct HostTransferSize {
+struct __attribute__((__packed__, aligned(4))) HostTransferSize {
 	union {
 		struct {
 			unsigned size : 19;								// @0-18	Size of data to send or receive, in bytes and can be greater than maximum packet length
@@ -585,7 +585,7 @@ struct HostTransferSize {
 		} __packed;
 		volatile uint32_t Raw32;							// Union to access all 32 bits as a uint32_t
 	};
-} __packed;
+};
 
 /*--------------------------------------------------------------------------}
 {					  USB HOST CHANNEL STRUCTURE						    }
@@ -747,7 +747,7 @@ static_assert(sizeof(struct UsbSendControl) == 0x04, "Structure should be 32bits
 
 /* Aligned buffers for DMA which need to also be multiple of 4 bytes */
 /* Fortunately max packet size under USB2 is 1024 so that is a given */
-static uint8_t aligned_bufs[DWC_NUM_CHANNELS][USB2_MAX_PACKET_SIZE] __aligned(4);
+static  uint8_t __attribute__((__aligned(4))) aligned_bufs[DWC_NUM_CHANNELS][USB2_MAX_PACKET_SIZE] ;
 
 
 bool PhyInitialised = false;
@@ -1995,6 +1995,12 @@ RESULT HCDChangeHubPortFeature (const struct UsbPipe pipe,			// Control pipe to 
 {      INTERNAL FUNCTIONS THAT OPERATE TO GET DESCRIPTORS FROM DEVICES	    }
 {==========================================================================*/
 
+// hack by mc
+int wctob(int c)
+{
+    return (char) c;
+}
+
 /*-INTERNAL: HCDReadStringDescriptor-----------------------------------------
  Reads the string descriptor at the given string index returning an ascii of
  the descriptor. Internally the descriptor is unicode so the raw descriptor
@@ -3173,6 +3179,7 @@ static int TreeLevelInUse[20] = { 0 };
 const char* SpeedString[3] = { "High", "Full", "Low" };
 
 void UsbShowTree(struct UsbDevice *root, const int level, const char tee) {
+#if 0
 	int maxPacket;
 	for (int i = 0; i < level - 1; i++)
 		if (TreeLevelInUse[i] == 0) printf("   ");
@@ -3200,6 +3207,7 @@ void UsbShowTree(struct UsbDevice *root, const int level, const char tee) {
 			TreeLevelInUse[level] = 0;								// Clear level in use flag
 		}
 	}
+#endif
 }
 
 /*--------------------------------------------------------------------------}

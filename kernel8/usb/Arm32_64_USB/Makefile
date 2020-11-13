@@ -15,19 +15,19 @@ endif
 
 
 Pi3-64: CFLAGS = -Wall -O3 -mcpu=cortex-a53+fp+simd -ffreestanding -nostartfiles -std=c11 -mstrict-align -fno-tree-loop-vectorize -fno-tree-slp-vectorize -Wno-nonnull-compare
-Pi3-64: ARMGNU = D:/gcc-linaro-7.4.1-2019.02-i686-mingw32_aarch64-elf/bin/aarch64-elf
+Pi3-64: ARMGNU = aarch64-linux-gnu
 Pi3-64: LINKERFILE = rpi64.ld
 Pi3-64: SMARTSTART = SmartStart64.S
 Pi3-64: IMGFILE = kernel8.img
 
 Pi3: CFLAGS = -Wall -O3 -mcpu=cortex-a53 -mfpu=neon-vfpv4 -mfloat-abi=hard -ffreestanding -nostartfiles -std=c11 -mno-unaligned-access -fno-tree-loop-vectorize -fno-tree-slp-vectorize -Wno-nonnull-compare
-Pi3: ARMGNU = D:/gcc_pi_7_2/bin/arm-none-eabi
+Pi3: ARMGNU = arm-none-eabi
 Pi3: LINKERFILE = rpi32.ld
 Pi3: SMARTSTART = SmartStart32.S
 Pi3: IMGFILE = kernel8-32.img
 
 Pi2: CFLAGS = -Wall -O3 -mcpu=cortex-a7 -mfpu=neon -mfloat-abi=hard -ffreestanding -nostartfiles -std=c11 -mno-unaligned-access -fno-tree-loop-vectorize -fno-tree-slp-vectorize -Wno-nonnull-compare
-Pi2: ARMGNU = D:/gcc_pi_7_2/bin/arm-none-eabi
+Pi2: ARMGNU = arm-none-eabi
 Pi2: LINKERFILE = rpi32.ld
 Pi2: SMARTSTART = SmartStart32.S
 Pi2: IMGFILE = kernel7.img
