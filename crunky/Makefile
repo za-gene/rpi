@@ -23,5 +23,5 @@ vectors.o : vectors.s
 	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
 clean :
-	rm -rf $(BUILD_DIR) *.img *.o
+	rm -rf $(BUILD_DIR) *.img *.o $(LIB)
 

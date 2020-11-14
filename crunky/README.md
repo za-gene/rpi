@@ -2,6 +2,13 @@
 
 Attempt to build a "unikernel" for Raspberry Pi 3
 
+## setup
+
+Define the environment variable CRUNKY in your .bashrc file:
+```
+export CRUNKY=/path/to/crunky
+```
+
 
 ## Dissasembly
 

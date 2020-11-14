@@ -1,17 +1,18 @@
-#ARMGNU ?= arm-none-eabi
-ARMGNU ?= arm-linux-gnueabihf
+ARMGNU ?= arm-none-eabi
+#ARMGNU ?= arm-linux-gnueabihf
 
-USPIHOME   = ../..
+#USPIHOME   = ../..
 
 
-LIBS	= $(USPIHOME)/lib/libuspi.a \
-	  $(USPIHOME)/env/lib/libuspienv.a
+#LIBS	= $(USPIHOME)/lib/libuspi.a \
+#	  $(USPIHOME)/env/lib/libuspienv.a
 
 AOPS = --warn --fatal-warnings 
 COPS =  -nostdlib -nostartfiles -ffreestanding \
-       -I../../uspi/env/include \
-       -I../../uspi/include \
-       -I../..
+	-I$(CRUNKY)
+#       -I../../uspi/env/include \
+#       -I../../uspi/include \
+#       -I../..
 #-mfloat-abi=hard -mfpu=neon \
 
 IMG = kernel7.img
@@ -79,3 +80,5 @@ $(IMG) : $(ELF)
 $(HEX) : $(ELF)
 	$(ARMGNU)-objcopy $^ -O ihex $(HEX)
 
+install:
+	cp $(IMG) /media/pi/5794-CDC0
