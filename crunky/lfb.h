@@ -25,10 +25,15 @@
  */
 
 void lfb_init();
-void lfb_showpicture();
+//void lfb_showpicture();
 void lfb_print(int x, int y, char *s);
 void lfb_proprint(int x, int y, char *s);
 void fbputchar(char c);
 void fbprint(char* str);
 void fbputs(char* str);
 void fbnewline();
+unsigned int lfb_pitch();
+unsigned char* lfb_buffer();
+unsigned int lfb_width();
+unsigned int lfb_height();
+unsigned int isrgb();

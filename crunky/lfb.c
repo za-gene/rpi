@@ -59,8 +59,14 @@ typedef struct {
 } __attribute__((packed)) sfn_t;
 extern volatile unsigned char _binary_font_sfn_start;
 
-unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
+unsigned int width, height, pitch, g_isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
+
+unsigned int lfb_pitch() { return pitch; }
+unsigned char* lfb_buffer() { return lfb; }
+unsigned int lfb_width() { return width; }
+unsigned int lfb_height() { return height; }
+unsigned int isrgb() { return g_isrgb; }
 
 #define WIDTH 1920
 #define HEIGHT 1060
@@ -117,19 +123,17 @@ void lfb_init()
         width=mbox[5];          //get actual physical width
         height=mbox[6];         //get actual physical height
         pitch=mbox[33];         //get number of bytes per line
-        isrgb=mbox[24];         //get the actual channel order
+        g_isrgb=mbox[24];         //get the actual channel order
         lfb=(void*)((unsigned long)mbox[28]);
     } else {
         //uart0_puts("Unable to set screen resolution to 1024x768x32\n");
     }
 }
 
-/**
- * Show a picture
- */
+#if 0
 void lfb_showpicture()
 {
-#if 0
+
     int x,y;
     unsigned char *ptr=lfb;
     char *data=homer_data, pixel[4];
@@ -145,8 +149,8 @@ void lfb_showpicture()
         }
         ptr+=pitch-homer_width*4;
     }
-#endif
 }
+#endif
 
 /**
  * Display a string using fixed size PSF

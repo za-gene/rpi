@@ -1,7 +1,36 @@
+/*
+ * Copyright (C) 2018 bzt (bztsrc@github)
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+//#include <gpio.h>
+//#include <mini_uart.h>
+
+
 /*  GIMP header image file format (RGB)  */
 
-static unsigned int homer_width = 96;
-static unsigned int homer_height = 64;
+unsigned int homer_width = 96;
+unsigned int homer_height = 64;
 
 /*  Call this macro repeatedly.  After each use, the pixel data can be extracted  */
 
@@ -11,7 +40,7 @@ pixel[1] = ((((data[1] - 33) & 0xF) << 4) | ((data[2] - 33) >> 2)); \
 pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33))); \
 data += 4; \
 }
-static char *homer_data =
+char *homer_data =
 	"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	"!!!!!!!!!!!!!!!!!1)$!Q5*$2=C$\"9B#!U5%BUM'3R((#Z-%S%T#!Y7!A-&!!!!"
@@ -397,3 +426,46 @@ static char *homer_data =
 	"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	"";
+
+
+
+//#include <mbox.h>
+#include <lfb.h>
+
+//#include "homer.h"
+
+//extern unsigned int homer_width;
+//extern unsigned int homer_height;
+
+void lfb_showpicture()
+{
+	int x,y;
+	unsigned char *ptr=lfb_buffer();
+	char *data=homer_data, pixel[4];
+//int width = 1920, height = 1060;
+//unsigned int pitch = 0;
+//unsigned int isrgb = 1;
+
+	ptr += (lfb_height()-homer_height)/2*lfb_pitch() + (lfb_width()-homer_width)*2;
+	for(y=0;y<homer_height;y++) {
+		for(x=0;x<homer_width;x++) {
+			HEADER_PIXEL(data, pixel);
+			// the image is in RGB. So if we have an RGB framebuffer, we can copy the pixels
+			// directly, but for BGR we must swap R (pixel[0]) and B (pixel[2]) channels.
+			*((unsigned int*)ptr)=isrgb ? *((unsigned int *)&pixel) : (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
+			ptr+=4;
+		}
+		ptr+=lfb_pitch()-homer_width*4;
+	}
+}
+void kernel_main()
+{
+	//uart_init(9600);
+	//uart_puts("Homer demo\r\n");
+	lfb_init();
+	//uart_puts("Init finished\r\n");
+	lfb_showpicture();
+	//uart_puts("Show finished\r\n");
+
+	while(1);
+}
