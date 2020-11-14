@@ -7,7 +7,7 @@ COPS = -Wall -nostdlib -nostartfiles -ffreestanding
 #BUILD_DIR = build
 #SRC_DIR = src
 
-OBJS = interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o
+OBJS = delays.o interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o
 LIB = libcrunky.a
 
 all : $(OBJS) $(LIB)
