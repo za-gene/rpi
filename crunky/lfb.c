@@ -257,7 +257,7 @@ void lfb_proprint(int x, int y, char *s)
 
 
 int g_x =10, g_y = 10;
-void fbputchar(char c)
+int fbputchar(char c)
 {
     char s[1];
 s[0] = c;
@@ -294,6 +294,7 @@ s[0] = c;
                         }
                         g_x += (font->width+1);
                 }
+return c;
 }
 
 
@@ -308,10 +309,11 @@ void fbnewline()
     fbprint("\r\n");
 }
 
-void fbputs(char* str)
+int fbputs(char* str)
 {
         fbprint(str);
         fbnewline();
+return 1;
 }
 
 
