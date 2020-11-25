@@ -2,21 +2,30 @@
 
 function print_help {
 cat <<EOF
-Description here
+picocom instantiater
+-d DEV	use device DEV
+-h 	this help
+-l 	list potential devices
 etc
 EOF
 }
  
+while getopts "d:hl" arg; do
+	case $arg in
+		d) DEV="${OPTARG}" ;;
+		h) print_help ; exit ;;
+		l) ls /dev/tty* | grep -E 'USB|ACM' ; exit;;
+	esac
+done
 
-case $1 in
-    h) print_help ; exit ;;
-esac
 
-DEV=/dev/ttyACM0
-if [ ! -e $DEV ]; then
-	DEV=/dev/ttyUSB0
+#DEV=/dev/ttyACM0
+if [ ! -e "$DEV" ]; then
+	DEV=`ls /dev/ttyUSB*`
 fi
-DEV=/dev/ttyUSB0
+#DEV=/dev/ttyUSB*
+
+echo "Connecting to $DEV ..."
 
 # --omap arg below converts \r to \r\n for better outputting on console
 picocom -b 115200 $DEV --omap crcrlf

@@ -1,7 +1,7 @@
 ARMGNU ?= arm-none-eabi
 #ARMGNU = arm-linux-gnueabihf
 #ARMGNU = aarch64-linux-gnu
-COPS = -Wall -nostdlib -nostartfiles -ffreestanding 
+COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I.
 #ASMOPS = -Iinclude 
 
 #BUILD_DIR = build
