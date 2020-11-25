@@ -6,12 +6,14 @@ COPS = -Wall -Werror  -O3 -nostdlib -nostartfiles -ffreestanding
 
 IMG = kernel7.img
 ELF = kernel7.elf
-HEX = kernel.hex
+#HEX = kernel.hex
 
 #BUILT = font.psf.h font.sfn.h
-$(IMG) : $(HEX)
+#$(IMG) : $(HEX)
 
-OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
+OBJS = kernel.o vectors.o gpio.o delays.o mini_uart.o uart.o \
+       string.o mbox.o interrupts.o \
+       ../../lfb.o
 
 FONTSO = font.psf.o font.sfn.o
 
@@ -61,6 +63,11 @@ $(ELF) : linker.ld $(OBJS) $(FONTSO)
 $(IMG) : $(ELF)
 	$(ARMGNU)-objcopy $(ELF) -O binary $@
 
-$(HEX) : $(ELF)
-	$(ARMGNU)-objcopy $^ -O ihex $(HEX)
+#$(HEX) : $(ELF)
+#	$(ARMGNU)-objcopy $^ -O ihex $(HEX)
 
+SD = /media/pi/50BD-6FEC
+
+flash :
+	cp $(IMG) $(SD)
+	umount $(SD)
