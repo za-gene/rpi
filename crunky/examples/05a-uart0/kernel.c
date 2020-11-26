@@ -23,13 +23,11 @@
  *
  */
 
-#include "uart.h"
-#include "../../lfb.h"
+#include "uart0.h"
+#include "lfb.h"
 
 void kernel_main()
 {
-    // set up serial console and linear frame buffer
-    uart0_init();
     lfb_init();
 
     // display an ASCII string on screen with PSF
@@ -38,6 +36,8 @@ void kernel_main()
     // display a UTF-8 string on screen with SSFN
     //lfb_proprint(80, 120, "Hello 多种语言 Многоязычный többnyelvű World!");
     fbputs("i'll now echo back everything you type");
+
+    uart0_init();
 
     // echo everything back
     while(1) {
