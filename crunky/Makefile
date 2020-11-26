@@ -8,8 +8,9 @@ COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I.
 #BUILD_DIR = build
 #SRC_DIR = src
 
-CR_OBJS = basal.o delays.o interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o \
-	  string.o uart.o vectors.o
+CR_OBJS = basal.o delays.o interrupts.o vectors.o lfb.o font.psf.o font.sfn.o \
+	  mbox.o memory.o mini_uart.o \
+	  string.o uart0.o vectors.o
 
 CR_LIB = libcrunky.a
 
