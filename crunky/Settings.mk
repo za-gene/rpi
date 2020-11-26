@@ -1,5 +1,7 @@
-ARMGNU ?= arm-none-eabi
+ARMGNU = arm-none-eabi
 #ARMGNU ?= arm-linux-gnueabihf
+AS = $(ARMGNU)-as
+CC = $(ARMGNU)-gcc
 
 
 IMG = kernel7.img

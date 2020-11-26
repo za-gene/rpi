@@ -8,7 +8,7 @@ OBJS = kernel.o
 
 
 %.o : %.c
-	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
+	$(AS) $(COPS) -c $^ -o $@
 
 
 

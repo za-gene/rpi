@@ -40,8 +40,8 @@ clean :
 LINKER = ../../linker.ld
 
 
-$(ELF) : $(LINKER) $(OBJS) $(FONTSO) $(LIBUSPI)
-	$(ARMGNU)-ld $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
+$(ELF) : $(LINKER) $(OBJS) $(FONTSO) $(LIBUSPI) vectors.o
+	$(ARMGNU)-ld vectors.o $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
 	$(ARMGNU)-objdump -D $@ > kernel.list
 
 $(IMG) : $(ELF)
