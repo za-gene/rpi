@@ -80,5 +80,7 @@ $(IMG) : $(ELF)
 $(HEX) : $(ELF)
 	$(ARMGNU)-objcopy $^ -O ihex $(HEX)
 
+flash : install
+
 install:
-	cp $(IMG) /media/pi/5794-CDC0
+	cp $(IMG) /media/pi/50BD-6FEC
