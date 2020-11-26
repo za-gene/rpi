@@ -1,19 +1,22 @@
-ARMGNU ?= arm-none-eabi
+include Settings.mk
+#ARMGNU ?= arm-none-eabi
 #ARMGNU = arm-linux-gnueabihf
 #ARMGNU = aarch64-linux-gnu
-COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I.
+COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I. 
 #ASMOPS = -Iinclude 
 
 #BUILD_DIR = build
 #SRC_DIR = src
 
-OBJS = basal.o delays.o interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o
-LIB = libcrunky.a
+CR_OBJS = basal.o delays.o interrupts.o vectors.o lfb.o font.psf.o font.sfn.o mbox.o memory.o \
+	  string.o uart.o vectors.o
 
-all : $(OBJS) $(LIB)
+CR_LIB = libcrunky.a
+
+all : $(CR_OBJS) $(CR_LIB)
 
 
-$(LIB) : $(OBJS)
+$(CR_LIB) : $(OBJS)
 	ar -crs $@ $^
 
 vectors.o : vectors.s
@@ -23,5 +26,5 @@ vectors.o : vectors.s
 	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
 clean :
-	rm -rf $(BUILD_DIR) *.img *.o $(LIB)
+	rm -rf *.img *.o *.a
 

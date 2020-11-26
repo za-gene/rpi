@@ -1,29 +1,20 @@
-ARMGNU ?= arm-none-eabi
-#ARMGNU ?= arm-linux-gnueabihf
+include $(CRUNKY)/Settings.mk
 
-#USPIHOME   = ../..
-
-
-#LIBS	= $(USPIHOME)/lib/libuspi.a \
-#	  $(USPIHOME)/env/lib/libuspienv.a
 
 AOPS = --warn --fatal-warnings 
-COPS =  -nostdlib -nostartfiles -ffreestanding \
-	-I$(CRUNKY)
-#       -I../../uspi/env/include \
-#       -I../../uspi/include \
-#       -I../..
-#-mfloat-abi=hard -mfpu=neon \
+COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
 
-IMG = kernel7.img
-ELF = kernel7.elf
-HEX = kernel.hex
+
 
 #BUILT = font.psf.h font.sfn.h
 $(IMG) : $(HEX)
 
-OBJS += kernel.o ../../vectors.o ../../interrupts.o ../../lfb.o  ../../font.psf.o ../../font.sfn.o \
-	../../memory.o ../../mbox.o # gpio.o delays.o mini_uart.o uart.o string.o mbox.o interrupts.o lfb.o
+CRUNKY_OBJS = vectors.o interrupts.o lfb.o  font.psf.o font.sfn.o \
+	memory.o mbox.o  gpio.o delays.o uart.o string.o # mini_uart.o
+
+LIB_CRUNKY = libcrunky.o
+
+$(LIB_CRUNKY) : $(CRUNKY_OBJS)
 
 #FONTSO = font.psf.o font.sfn.o
 
@@ -45,33 +36,12 @@ clean :
 %.o : %.c
 	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
-#kernel.o : kernel.c
-#	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
-
-#font_psf.o: font.psf
-#	$(ARMGNU)-ld -r -b binary -o font_psf.o font.psf
-
-#font_sfn.o: font.sfn
-#	$(ARMGNU)-ld -r -b binary -o font_sfn.o font.sfn
-
-#font.psf.c : font.psf
-#	xxd -i $^ $@
-
-#font.sfn.c : font.sfn
-#	xxd -i $^ $@
-
-#font.sfn.o : font.sfn.h
-#	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
-
-#font.psf.o : font.psf.h
-#	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
 
 LINKER = ../../linker.ld
-#LIBUSPI = ../../uspi/lib/libuspi.a ../../uspi/env/lib/libuspienv.a
 
 
 $(ELF) : $(LINKER) $(OBJS) $(FONTSO) $(LIBUSPI)
-	$(ARMGNU)-ld $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER)  -o $@
+	$(ARMGNU)-ld $(FONTSO)  $(OBJS) $(LIBUSPI) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
 	$(ARMGNU)-objdump -D $@ > kernel.list
 
 $(IMG) : $(ELF)

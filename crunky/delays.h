@@ -26,10 +26,11 @@
 
 #include <inttypes.h>
 
+void wait_us(uint64_t n);
+//void wait_micros(int n);
 void wait_cycles(unsigned int n);
 void wait_msec(unsigned int n);
 uint64_t get_system_timer();
-void wait_us(uint64_t n);
 void delay_ms(int ms);
 void delay_s(int secs);
 

@@ -26,7 +26,7 @@
 
 #define MMIO_BASE       0x3F000000
 
-/*
+
 #define GPFSEL0         *((volatile unsigned int*)(MMIO_BASE+0x00200000))
 #define GPFSEL1         *((volatile unsigned int*)(MMIO_BASE+0x00200004))
 #define GPFSEL2         *((volatile unsigned int*)(MMIO_BASE+0x00200008))
@@ -45,7 +45,7 @@
 #define GPPUD           *((volatile unsigned int*)(MMIO_BASE+0x00200094))
 #define GPPUDCLK0       *((volatile unsigned int*)(MMIO_BASE+0x00200098))
 #define GPPUDCLK1       *((volatile unsigned int*)(MMIO_BASE+0x0020009C))
-*/
+
 
 #define INPUT 0b000
 #define OUTPUT 0b001
