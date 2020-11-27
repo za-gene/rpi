@@ -3,6 +3,7 @@
 function print_help {
 cat <<EOF
 picocom instantiater
+-b BAUD set baud rate (default 115200)
 -d DEV	use device DEV
 -h 	this help
 -l 	list potential devices
@@ -10,8 +11,11 @@ etc
 EOF
 }
  
-while getopts "d:hl" arg; do
+BAUD=115200
+
+while getopts "b:d:hl" arg; do
 	case $arg in
+		b) BAUD="${OPTARG}" ;;
 		d) DEV="${OPTARG}" ;;
 		h) print_help ; exit ;;
 		l) ls /dev/tty* | grep -E 'USB|ACM' ; exit;;
@@ -28,4 +32,4 @@ fi
 echo "Connecting to $DEV ..."
 
 # --omap arg below converts \r to \r\n for better outputting on console
-picocom -b 115200 $DEV --omap crcrlf
+picocom -b $BAUD $DEV --omap crcrlf
