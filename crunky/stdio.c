@@ -31,6 +31,6 @@ int puts(const char *s)
 		int ok = putchar(*s++);
 		if(ok == EOF) return EOF;
 	}
-	return 1;
+	return putchar('\n');
 }
 
