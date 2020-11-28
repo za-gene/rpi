@@ -1,7 +1,7 @@
 
 
 "Master" templates:
-* Makefile : blink
+* Makefile : 05-framebuffer
 * qlaunch : 04-timer-interrupts
 
 
