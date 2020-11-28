@@ -1,4 +1,4 @@
-#include "string.h"
+#include <string.h>
 
 // based on https://en.wikibooks.org/wiki/C_Programming/String_manipulation
 void *memset(void *s, int c, size_t n)
@@ -9,3 +9,11 @@ void *memset(void *s, int c, size_t n)
 		*us++ = uc;
 	return s;
 }
+	
+char *strcpy(char *dest, const char *src)
+{
+	while((*dest++ = *src++));
+	return dest;
+}
+
+

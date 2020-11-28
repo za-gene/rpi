@@ -1,4 +1,4 @@
-# kernel8
+# crunky
 
 Attempt to build a "unikernel" for Raspberry Pi 3
 
@@ -22,3 +22,6 @@ arm-none-eabi-objdump -D kernel.elf
 
 * [usb](usb) - it's not easy, that's for sure.
 
+## Links to libraries
+
+* [printf](https://github.com/mpaland/printf) - but needs support for math, unfortunately

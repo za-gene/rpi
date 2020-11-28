@@ -10,7 +10,7 @@ COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I.
 
 CR_OBJS = basal.o delays.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 	  mbox.o memory.o mini_uart.o \
-	  stdio.o string.o uart0.o
+	  sd.o stdio.o string.o uart0.o
 
 CR_LIB = libcrunky.a
 

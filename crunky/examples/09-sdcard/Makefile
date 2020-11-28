@@ -4,7 +4,7 @@ include $(CRUNKY)/Settings.mk
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
 
 
-OBJS = kernel.o sd.o sd-test.o
+OBJS = kernel.o sd-test.o
 
 
 %.o : %.c

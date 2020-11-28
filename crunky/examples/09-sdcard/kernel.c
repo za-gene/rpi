@@ -1,4 +1,5 @@
 #include <lfb.h>
+#include <stdio.h>
 
 extern void sd_test();
 

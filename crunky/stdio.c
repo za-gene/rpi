@@ -19,18 +19,25 @@ int putchar(int c)
 	return _putchar(c);
 }
 
-void newline()
+int newline()
 {
-	putchar('\n');
+	return putchar('\n');
 }
 
-int puts(const char *s)
+int print_string(const char *s)
 {
 	if(!s) return EOF;
 	while(*s) {
 		int ok = putchar(*s++);
 		if(ok == EOF) return EOF;
 	}
-	return putchar('\n');
+	return 1;
+}
+
+int puts(const char *s)
+{
+	print_string(s);
+	newline();
+	return 1;
 }
 
