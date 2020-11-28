@@ -19,6 +19,11 @@ int putchar(int c)
 	return _putchar(c);
 }
 
+void newline()
+{
+	putchar('\n');
+}
+
 int puts(const char *s)
 {
 	if(!s) return EOF;

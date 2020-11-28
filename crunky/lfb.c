@@ -315,7 +315,8 @@ void fbprint(char* str)
 
 void fbnewline()
 {
-    fbprint("\r\n");
+    //fbprint("\r\n");
+    fbprint("\n");
 }
 
 int fbputs(char* str)
