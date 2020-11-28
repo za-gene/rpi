@@ -23,6 +23,9 @@
  *
  */
 
+#include <yastdio.h>
+#include <lfb.h>
+
 //#include "uart.h"
 #include "mbox.h"
 //#include "homer.h"
@@ -128,6 +131,12 @@ void lfb_init()
     } else {
         //uart0_puts("Unable to set screen resolution to 1024x768x32\n");
     }
+}
+
+void lfb_init_as_stdout()
+{
+	lfb_init();
+	set_putchar(fbputchar);
 }
 
 #if 0
@@ -257,10 +266,10 @@ void lfb_proprint(int x, int y, char *s)
 
 
 int g_x =10, g_y = 10;
-int fbputchar(char c)
+int fbputchar(int  c)
 {
     char s[1];
-s[0] = c;
+s[0] = (char) c;
         psf_t *font = (psf_t*)&_binary_font_psf_start; 
         // get the offset of the glyph. Need to adjust this to support unicode table
         unsigned char *glyph = (unsigned char*)&_binary_font_psf_start +

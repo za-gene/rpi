@@ -12,7 +12,7 @@ void sd_test()
 	puts((char*) buffer);
 
 	char output[] = "RASPBERRY PI WRITEBACK";
-	memcpy(buffer, output, strlen(output));
+	strcpy(buffer, output);
 	sd_writeblock(buffer, 614400, 1);
 
 }

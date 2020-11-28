@@ -25,10 +25,11 @@
  */
 
 void lfb_init();
+void lfb_init_as_stdout();
 //void lfb_showpicture();
 void lfb_print(int x, int y, char *s);
 void lfb_proprint(int x, int y, char *s);
-int fbputchar(char c);
+int fbputchar(int c);
 void fbprint(char* str);
 int fbputs(char* str);
 void fbnewline();

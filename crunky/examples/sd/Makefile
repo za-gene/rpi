@@ -4,11 +4,11 @@ include $(CRUNKY)/Settings.mk
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
 
 
-OBJS = sd.o sd-test.o
+OBJS = kernel.o sd.o sd-test.o
 
 
 %.o : %.c
-	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
+	$(CC) $(COPS) -c $^ -o $@
 
 
 
