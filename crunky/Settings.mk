@@ -9,3 +9,5 @@ ELF = kernel7.elf
 HEX = kernel.hex
 
 
+# a special case because it is the interrupt table
+VEC_O = $(CRUNKY)/vectors.o

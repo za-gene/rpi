@@ -14,14 +14,15 @@ CR_OBJS = basal.o delays.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 
 CR_LIB = libcrunky.a
 
-all : $(CR_OBJS) $(CR_LIB) vectors.o
+
+all : $(CR_OBJS) $(CR_LIB) $(VEC_O)
 
 
 $(CR_LIB) : $(CR_OBJS)
 	ar -crs $@ $^
 
-vectors.o : vectors.s
-	$(ARMGNU)-as vectors.s -o vectors.o
+$(VEC_O) : $(CRUNKY)/vectors.s
+	$(AS) $< -o $@
 
 %.o : %.c
 	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
