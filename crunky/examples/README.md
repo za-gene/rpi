@@ -10,3 +10,4 @@
 * 03-blink - ARM32/Pi3. Blink with polling delays. Nicer GPIO setup, too. Code re-org from 02.
 * 04-timer-interrupts - ARM/Pi3. Blink LED each second using timer interrupts
 * 05-uart0 - ARM/Pi3. Output to "regular" uart instead of uart1 (mini uart).
+* 10-async - blinks 2 LEDs asynchronously using async library
