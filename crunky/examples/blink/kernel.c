@@ -1,12 +1,12 @@
 #include <delays.h>
 #include <gpio.h>
-#include <mini_uart.h>
+//#include <mini_uart.h>
 
 
 void kernel_main(void)
 {
-	uart_init(9600);
-	uart_puts("Hello from from blinky sketch\r\n");
+	//uart_init(9600);
+	//uart_puts("Hello from from blinky sketch\r\n");
 	const int bcm_pin = 20;
 	gpio_sel(bcm_pin, OUTPUT); // set its pin mode to OUTPUT
 	while(1) {
