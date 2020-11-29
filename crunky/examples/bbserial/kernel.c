@@ -4,30 +4,6 @@
 #include <gpio.h>
 #include <stdbool.h>
 
-#if 0
-
-/* GPIO19 is physical pin 35, GPIO26 is physical pin 37
-*/
-
-#define pina 19
-#define pinb 26
-
-typedef struct {uint64_t start; uint64_t duration;} timer_t;
-
-timer_t timera, timerb;
-
-void start_timer(timer_t* t, int duration)
-{
-	t->start = get_system_timer(); // this is in microseconds
-	t->duration = duration; // in millis
-}
-
-bool timer_expired(timer_t* t)
-{
-	return (get_system_timer() - t->start) > t->duration *1000;
-}
-
-#endif
 
 
 typedef struct {u64 start; u64 freq; u64 ticks;} metro_t;
@@ -43,7 +19,7 @@ void wait_metro(metro_t* m)
 {
 	u64 ticks;
 	while(1) {
-		ticks = m->freq * (get_system_timer() - m->start)/250000000;
+		ticks = m->freq * (get_system_timer() - m->start)/1000000;
 		if(ticks > m->ticks) break;
 	}
 	m->ticks = ticks;
@@ -63,7 +39,7 @@ static metro_t m;
 
 void pause()
 {
-#if 0
+#if 1
 	wait_metro(&m);
 #else
 	wait_us(105);
@@ -76,13 +52,11 @@ void kernel_main()
 	gpio_sel(tx, OUTPUT);
 	gpio_set(tx);
 
-	const u64 freq = 9600;
+	const u64 freq = 9600*8;
 
 	start_metro(&m, freq);
 	for(int i = 0; i< 20; i++)
 		pause();
-
-
 
 	for(char i = 0; i< 6; i++) {
 		int c = i + '0';
@@ -98,8 +72,6 @@ void kernel_main()
 		pause();
 		pause();
 	}
-
-
 
 	while(1);
 }
