@@ -1,7 +1,5 @@
 include $(CRUNKY)/Settings.mk
 
-
 OBJS = kernel.o
 
-include ../../Germ7.mk
-
+include $(CRUNKY)/Germ7.mk
