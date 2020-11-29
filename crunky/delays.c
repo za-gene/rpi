@@ -32,9 +32,10 @@
 /**
  * Wait N CPU cycles (ARM CPU only)
  */
-void wait_cycles(unsigned int n)
+void __attribute__((optimize("O0"))) wait_cycles(unsigned int n)
 {
-    if(n) while(n--) { asm volatile("nop"); }
+    while(n-- > 0);
+    //if(n) while(n--) { asm volatile("nop"); }
 }
 
 /**

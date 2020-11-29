@@ -1,8 +1,8 @@
 include Settings.mk
+
 #ARMGNU ?= arm-none-eabi
 #ARMGNU = arm-linux-gnueabihf
 #ARMGNU = aarch64-linux-gnu
-COPS = -Wall -nostdlib -nostartfiles -ffreestanding -I. -DRPI=$(RPI)
 #ASMOPS = -Iinclude 
 
 #BUILD_DIR = build
@@ -25,7 +25,7 @@ $(VEC_O) : $(CRUNKY)/vectors.s
 	$(AS) $< -o $@
 
 %.o : %.c
-	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
+	$(CC) $(COPS) -c $^ -o $@
 
 clean :
 	rm -rf *.img *.o *.a

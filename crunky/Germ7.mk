@@ -2,7 +2,7 @@ include $(CRUNKY)/Settings.mk
 
 
 AOPS = --warn --fatal-warnings 
-COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
+#COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
 
 
 

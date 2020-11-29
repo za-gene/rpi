@@ -10,6 +10,8 @@ IMG = kernel7.img
 ELF = kernel7.elf
 HEX = kernel.hex
 
+COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY) -DRPI=$(RPI)
+
 
 # a special case because it is the interrupt table
 VEC_O = $(CRUNKY)/vectors.o

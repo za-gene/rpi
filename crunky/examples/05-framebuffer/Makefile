@@ -1,14 +1,11 @@
 include $(CRUNKY)/Settings.mk
 
 
-COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
-
-
 OBJS = kernel.o
 
 
 %.o : %.c
-	$(AS) $(COPS) -c $^ -o $@
+	$(CC) $(COPS) -c $^ -o $@
 
 
 
