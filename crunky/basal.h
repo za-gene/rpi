@@ -1,5 +1,15 @@
 #pragma once
 
+/**
+ * Datasheets (BCM*) can be found at
+ * https://github.com/raspberrypi/documentation/tree/master/hardware/raspberrypi
+ *
+ * The underlying architecture in BCM2836 is identical to BCM2836
+ *
+ * BCM2827 ARM periphral datasheet for Pi 3:
+ * https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf
+ */
+
 #include <inttypes.h>
 
 typedef uint8_t u8;
