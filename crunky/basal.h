@@ -14,3 +14,11 @@ typedef uint64_t u64;
 
 #define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
 
+#if RPI == 3
+	#define PBASE 0x3F000000
+#elif RPI == 4
+	#define PBASE 0xFE000000
+#else
+	#warning RPI definition not set
+#endif
+

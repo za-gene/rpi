@@ -1,3 +1,5 @@
+RPI ?= 3
+
 ARMGNU = arm-none-eabi
 #ARMGNU ?= arm-linux-gnueabihf
 AS = $(ARMGNU)-as
