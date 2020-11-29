@@ -50,35 +50,51 @@ void wait_metro(metro_t* m)
 
 void gpio_write(int bcm_pin, int value)
 {
-	if(value)
+	if(value != 0)
 		gpio_set(bcm_pin);
 	else
 		gpio_clr(bcm_pin);
 }
 
 
+static metro_t m;
+
+void pause()
+{
+#if 0
+	wait_metro(&m);
+#else
+	wait_us(105);
+#endif
+}
+
 void kernel_main()
 {
-	const int tx = 26;
+	const int tx = 6;
 	gpio_sel(tx, OUTPUT);
 	gpio_set(tx);
 
-	metro_t m;
-	const u64 freq = 115200;
+	const u64 freq = 9600;
+
+	start_metro(&m, freq);
+	for(int i = 0; i< 20; i++)
+		pause();
 
 
-	for(char i = 0; i< 26; i++) {
-		char c = i + 'A';
+
+	for(char i = 0; i< 6; i++) {
+		int c = i + '0';
 		start_metro(&m, freq);
 		gpio_clr(tx); // send start bit
-		wait_metro(&m);
+		pause();
 		for(int b=0; b<8; b++) {
 			gpio_write(tx, c & 1);
-			c >>= 1;
-			wait_metro(&m);
+			c = (c>>1);
+			pause();
 		}
 		gpio_set(tx); // send stop bit
-		wait_metro(&m);
+		pause();
+		pause();
 	}
 
 
