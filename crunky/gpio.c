@@ -1,6 +1,7 @@
 // released into the public domain
 
-#include "gpio.h"
+#include <gpio.h>
+#include <delays.h>
 //#include <utils.h>
 
 typedef unsigned int u32; // irrespective of architecture
@@ -22,6 +23,20 @@ void gpio_sel(int bcm_pin, int mode)
         value |= (mode << shift); // set to desired mode
         put32(gpfsel, value);
 
+	// enable the pin
+	// this is the equivalent of gpio_pin_enable() in
+	// https://www.youtube.com/watch?v=36hk_Qov5Uo at 13:57
+	// They are needed to effect GPIO oull-up/down changes
+	// As per BCM2835 datasheet p101
+	uintptr gppupd = MMIO_BASE + 0x200094; //see p100
+	put32(gppupd, 0); // disable pull-up/down
+	wait_cycles(150);
+	uintptr gppudclk = MMIO_BASE + 0x200098 + bcm_pin/32;
+	put32(gppudclk, 1 << (bcm_pin%32));
+	// enable clock
+	wait_cycles(150);
+	put32(gppupd, 0);
+	put32(gppudclk, 0);
 }
 
 void gpio_clr(int bcm_pin)

@@ -47,6 +47,7 @@ void uart_init ( int baud )
 {
 	//unsigned int selector;
 
+    // the following two paragraphs are probably better handled by gpio_sel()
 	//selector = get32(GPFSEL1);
 	GPFSEL1 &= ~(7<<12);                   // clean gpio14
 	GPFSEL1 |= 2<<12;                      // set alt5 for gpio14

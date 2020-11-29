@@ -47,8 +47,26 @@
 #define GPPUDCLK1       *((volatile unsigned int*)(MMIO_BASE+0x0020009C))
 
 
-#define INPUT 0b000
+
+/**
+ modes for the pins
+to use in gpio_sel in table 6-5 of BCM2835 datasheet
+*/
+
+#define INPUT  0b000
 #define OUTPUT 0b001
+#define ALTFN0 0b100 // alternative function 0
+#define ALTFN1 0b101 // alternative function 1
+#define ALTFN2 0b110 // alternative function 2
+#define ALTFN3 0b111 // alternative function 3
+#define ALTFN4 0b011 // alternative function 4
+#define ALTFN5 0b010 // alternative function 5
+
+
+/**
+gpio_sel:
+For mode, use one of INPUT, OUTPUT, ALTFNn (for n =0,1,..5)
+*/
 
 void gpio_sel(int bcm_pin, int mode);
 void gpio_clr(int bcm_pin);

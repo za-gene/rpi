@@ -63,7 +63,7 @@ static metro_t m;
 
 void pause()
 {
-#if 1
+#if 0
 	wait_metro(&m);
 #else
 	wait_us(105);
