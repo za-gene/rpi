@@ -1,11 +1,9 @@
 // released into the public domain
 
+#include <basal.h>
 #include <gpio.h>
-#include <delays.h>
-//#include <utils.h>
+#include <timers.h>
 
-typedef unsigned int u32; // irrespective of architecture
-typedef  unsigned long uintptr; // architecture-dependent
 
 extern void PUT32 ( unsigned int, unsigned int );
 extern unsigned int GET32 ( unsigned int);
@@ -16,7 +14,7 @@ extern unsigned int GET32 ( unsigned int);
 
 void gpio_sel(int bcm_pin, int mode)
 {
-        uintptr gpfsel = (bcm_pin/10)*4+ MMIO_BASE+ 0x200000;
+        u32 gpfsel = (bcm_pin/10)*4+ PBASE+ 0x200000;
         u32 value = get32(gpfsel);
         u32 shift = (bcm_pin%10)*3;
         value &= ~(0b111 << shift); // clear the bits
@@ -28,10 +26,10 @@ void gpio_sel(int bcm_pin, int mode)
 	// https://www.youtube.com/watch?v=36hk_Qov5Uo at 13:57
 	// They are needed to effect GPIO oull-up/down changes
 	// As per BCM2835 datasheet p101
-	uintptr gppupd = MMIO_BASE + 0x200094; //see p100
+	u32 gppupd = PBASE + 0x200094; //see p100
 	put32(gppupd, 0); // disable pull-up/down
 	wait_cycles(150);
-	uintptr gppudclk = MMIO_BASE + 0x200098 + bcm_pin/32;
+	u32 gppudclk = PBASE + 0x200098 + bcm_pin/32;
 	put32(gppudclk, 1 << (bcm_pin%32));
 	// enable clock
 	wait_cycles(150);
@@ -43,15 +41,29 @@ void gpio_sel(int bcm_pin, int mode)
 
 void gpio_clr(int bcm_pin)
 {
-        //volatile unsigned int* addr = (bcm_pin/32)*4 + MMIO_BASE + 0x200028;
-        volatile uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x200028;
+        u32 addr = (bcm_pin/32)*4 + PBASE + 0x200028;
         put32(addr, 1 << (bcm_pin%32));
 }
 
 void gpio_set(int bcm_pin)
 {
-        volatile uintptr addr = (bcm_pin/32)*4 + MMIO_BASE + 0x20001C;
+        u32 addr = (bcm_pin/32)*4 + PBASE + 0x20001C;
         put32(addr, 1 << (bcm_pin%32));
+}
+
+int gpio_get(int bcm_pin)
+{
+	u32 addr = (bcm_pin/32)*4 + PBASE + 0x200034;
+	u32 bits = get32(addr);
+	return 1 & (bits >> (bcm_pin%32));
+}
+
+void gpio_toggle(int bcm_pin)
+{
+	if(gpio_get(bcm_pin))
+		gpio_set(bcm_pin);
+	else
+		gpio_clr(bcm_pin);
 }
 
 #if 0

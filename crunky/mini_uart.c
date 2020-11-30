@@ -1,7 +1,6 @@
-//#include "utils.h"
-#include "mini_uart.h"
-#include "gpio.h"
-#include "delays.h"
+#include <mini_uart.h>
+#include <gpio.h>
+#include <timers.h>
 
 extern void PUT32 ( unsigned int, unsigned int );
 extern unsigned int GET32 ( unsigned int);
@@ -9,10 +8,13 @@ extern unsigned int GET32 ( unsigned int);
 #define get32 GET32
 #define put32 PUT32
 
-#define MMIO_BASE       0x3F000000
-#define GPFSEL1         *((volatile unsigned int*)(MMIO_BASE+0x00200004))
-#define GPPUD           *((volatile unsigned int*)(MMIO_BASE+0x00200094))
-#define GPPUDCLK0       *((volatile unsigned int*)(MMIO_BASE+0x00200098))
+/*
+#define PBASE       0x3F000000
+#define GPFSEL1         *((volatile unsigned int*)(PBASE+0x00200004))
+#define GPPUD           *((volatile unsigned int*)(PBASE+0x00200094))
+#define GPPUDCLK0       *((volatile unsigned int*)(PBASE+0x00200098))
+*/
+
 void uart_send ( char c )
 {
 	while(1) {

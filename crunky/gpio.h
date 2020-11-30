@@ -24,29 +24,7 @@
  *
  */
 
-#define MMIO_BASE       0x3F000000
-
-
-#define GPFSEL0         *((volatile unsigned int*)(MMIO_BASE+0x00200000))
-#define GPFSEL1         *((volatile unsigned int*)(MMIO_BASE+0x00200004))
-#define GPFSEL2         *((volatile unsigned int*)(MMIO_BASE+0x00200008))
-#define GPFSEL3         *((volatile unsigned int*)(MMIO_BASE+0x0020000C))
-#define GPFSEL4         *((volatile unsigned int*)(MMIO_BASE+0x00200010))
-#define GPFSEL5         *((volatile unsigned int*)(MMIO_BASE+0x00200014))
-#define GPSET0          *((volatile unsigned int*)(MMIO_BASE+0x0020001C))
-#define GPSET1          *((volatile unsigned int*)(MMIO_BASE+0x00200020))
-#define GPCLR0          *((volatile unsigned int*)(MMIO_BASE+0x00200028))
-#define GPLEV0          *((volatile unsigned int*)(MMIO_BASE+0x00200034))
-#define GPLEV1          *((volatile unsigned int*)(MMIO_BASE+0x00200038))
-#define GPEDS0          *((volatile unsigned int*)(MMIO_BASE+0x00200040))
-#define GPEDS1          *((volatile unsigned int*)(MMIO_BASE+0x00200044))
-#define GPHEN0          *((volatile unsigned int*)(MMIO_BASE+0x00200064))
-#define GPHEN1          *((volatile unsigned int*)(MMIO_BASE+0x00200068))
-#define GPPUD           *((volatile unsigned int*)(MMIO_BASE+0x00200094))
-#define GPPUDCLK0       *((volatile unsigned int*)(MMIO_BASE+0x00200098))
-#define GPPUDCLK1       *((volatile unsigned int*)(MMIO_BASE+0x0020009C))
-
-
+#include <basal.h>
 
 /**
  modes for the pins
@@ -68,9 +46,32 @@ gpio_sel:
 For mode, use one of INPUT, OUTPUT, ALTFNn (for n =0,1,..5)
 */
 
-void gpio_sel(int bcm_pin, int mode);
 void gpio_clr(int bcm_pin);
+int  gpio_get(int bcm_oin);
+void gpio_sel(int bcm_pin, int mode);
 void gpio_set(int bcm_pin);
+void gpio_toggle(int bcm_pin);
+
+
+// some of this is userd by sd.c
+#define GPFSEL0         REG(PBASE+0x00200000)
+#define GPFSEL1         REG(PBASE+0x00200004)
+#define GPFSEL2         REG(PBASE+0x00200008)
+#define GPFSEL3         REG(PBASE+0x0020000C)
+#define GPFSEL4         REG(PBASE+0x00200010)
+#define GPFSEL5         REG(PBASE+0x00200014)
+#define GPSET0          REG(PBASE+0x0020001C)
+#define GPSET1          REG(PBASE+0x00200020)
+#define GPCLR0          REG(PBASE+0x00200028)
+#define GPLEV0          REG(PBASE+0x00200034)
+#define GPLEV1          REG(PBASE+0x00200038)
+#define GPEDS0          REG(PBASE+0x00200040)
+#define GPEDS1          REG(PBASE+0x00200044)
+#define GPHEN0          REG(PBASE+0x00200064)
+#define GPHEN1          REG(PBASE+0x00200068)
+#define GPPUD           REG(PBASE+0x00200094)
+#define GPPUDCLK0       REG(PBASE+0x00200098)
+#define GPPUDCLK1       REG(PBASE+0x0020009C)
 
 #define MBOX_REQUEST    0
 
@@ -90,7 +91,7 @@ void gpio_set(int bcm_pin);
 #define MBOX_TAG_SETCLKRATE     0x38002
 #define MBOX_TAG_LAST           0
 
-#define VIDEOCORE_MBOX  (MMIO_BASE+0x0000B880)
+#define VIDEOCORE_MBOX  (PBASE+0x0000B880)
 #define MBOX_READ       ((volatile unsigned int*)(VIDEOCORE_MBOX+0x0))
 #define MBOX_POLL       ((volatile unsigned int*)(VIDEOCORE_MBOX+0x10))
 #define MBOX_SENDER     ((volatile unsigned int*)(VIDEOCORE_MBOX+0x14))

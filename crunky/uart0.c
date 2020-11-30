@@ -23,29 +23,30 @@
  *
  */
 
-#include "gpio.h"
-#include "mbox.h"
-#include "uart0.h"
+#include <basal.h>
+#include <gpio.h>
+#include <mbox.h>
+#include <uart0.h>
 
 /*
-#define MMIO_BASE       0x3F000000
-#define GPSET1          ((volatile unsigned int*)(MMIO_BASE+0x00200020))
-#define GPFSEL1         ((volatile unsigned int*)(MMIO_BASE+0x00200004))
-#define GPPUD           ((volatile unsigned int*)(MMIO_BASE+0x00200094))
-#define GPPUDCLK0       ((volatile unsigned int*)(MMIO_BASE+0x00200098))
+#define PBASE       0x3F000000
+#define GPSET1          ((volatile unsigned int*)(PBASE+0x00200020))
+#define GPFSEL1         ((volatile unsigned int*)(PBASE+0x00200004))
+#define GPPUD           ((volatile unsigned int*)(PBASE+0x00200094))
+#define GPPUDCLK0       ((volatile unsigned int*)(PBASE+0x00200098))
 */
 
 
 
 /* PL011 UART registers */
-#define UART0_DR        *((volatile unsigned int*)(MMIO_BASE+0x00201000))
-#define UART0_FR        *((volatile unsigned int*)(MMIO_BASE+0x00201018))
-#define UART0_IBRD      *((volatile unsigned int*)(MMIO_BASE+0x00201024))
-#define UART0_FBRD      *((volatile unsigned int*)(MMIO_BASE+0x00201028))
-#define UART0_LCRH      *((volatile unsigned int*)(MMIO_BASE+0x0020102C))
-#define UART0_CR        *((volatile unsigned int*)(MMIO_BASE+0x00201030))
-#define UART0_IMSC      *((volatile unsigned int*)(MMIO_BASE+0x00201038))
-#define UART0_ICR       *((volatile unsigned int*)(MMIO_BASE+0x00201044))
+#define UART0_DR        *((volatile unsigned int*)(PBASE+0x00201000))
+#define UART0_FR        *((volatile unsigned int*)(PBASE+0x00201018))
+#define UART0_IBRD      *((volatile unsigned int*)(PBASE+0x00201024))
+#define UART0_FBRD      *((volatile unsigned int*)(PBASE+0x00201028))
+#define UART0_LCRH      *((volatile unsigned int*)(PBASE+0x0020102C))
+#define UART0_CR        *((volatile unsigned int*)(PBASE+0x00201030))
+#define UART0_IMSC      *((volatile unsigned int*)(PBASE+0x00201038))
+#define UART0_ICR       *((volatile unsigned int*)(PBASE+0x00201044))
 
 /**
  * Set baud rate and characteristics (115200 8N1) and map to GPIO

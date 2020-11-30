@@ -8,9 +8,10 @@ include Settings.mk
 #BUILD_DIR = build
 #SRC_DIR = src
 
-CR_OBJS = basal.o delays.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
+CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 	  mbox.o memory.o mini_uart.o \
-	  sd.o stdio.o string.o uart0.o
+	  sd.o stdio.o string.o uart0.o \
+	  timers.o
 
 CR_LIB = libcrunky.a
 

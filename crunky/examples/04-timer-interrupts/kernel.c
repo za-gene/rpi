@@ -1,8 +1,8 @@
 #include <basal.h>
-#include "delays.h"
-#include "gpio.h"
-#include "mini_uart.h"
-#include "interrupts.h"
+#include <timers.h>
+#include <gpio.h>
+#include <mini_uart.h>
+#include <interrupts.h>
 
 //-------------------------------------------------------------------------
 //              6 is IN, 16 is OUT
@@ -35,7 +35,11 @@ extern void enable_irq ( void );
 
 #define TIME_INT 1000000        		// in microsec
 
+#if 0
 const int pin = 19;
+#else
+const int pin = 26;
+#endif
 
 
 
