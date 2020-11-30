@@ -4,11 +4,8 @@
 //#include <mini_uart.h>
 #include <interrupts.h>
 
-//-------------------------------------------------------------------------
-//              6 is IN, 16 is OUT
-//-------------------------------------------------------------------------
 
-extern void enable_irq ( void );
+
 
 #define ARM_TIMER_LOD REG(0x3F00B400)
 #define ARM_TIMER_VAL REG(0x3F00B404)
@@ -23,19 +20,11 @@ extern void enable_irq ( void );
 #define SYSTIMERCLO REG(0x3F003004)
 
 
-#define IRQ_BASIC REG(0x3F00B200)
-#define IRQ_PEND1 REG(0x3F00B204)
-#define IRQ_PEND2 REG(0x3F00B208)
-#define IRQ_FIQ_CONTROL REG(0x3F00B210)
-#define IRQ_ENABLE_BASIC REG(0x3F00B218)
-#define IRQ_DISABLE_BASIC REG(0x3F00B224)
 
-#define IRQ_ENABLE_2    REG(0x3F00B214)
-#define IRQ_DISABLE_2   REG(0x3F00B220)
 
 #define TIME_INT 1000000        		// in microsec
 
-#if 1
+#if 0
 const int pin = 19;
 #else
 const int pin = 26;
