@@ -24,7 +24,7 @@
  *
  */
 
-#include <inttypes.h>
+#include <basal.h>
 
 void wait_us(uint64_t n);
 //void wait_micros(int n);
@@ -34,3 +34,16 @@ uint64_t get_system_timer();
 void delay_ms(int ms);
 void delay_s(int secs);
 
+
+
+// Per BCM2837 s14.2  p196 for Pi3
+#define TBASE (PBASE + 0xB000)
+#define ARM_TIMER_LOD REG(TBASE + 0x400)
+#define ARM_TIMER_VAL REG(TBASE + 0x404)
+#define ARM_TIMER_CTL REG(TBASE + 0x408)
+#define ARM_TIMER_CLI REG(TBASE + 0x40C)
+#define ARM_TIMER_RIS REG(TBASE + 0x410)
+#define ARM_TIMER_MIS REG(TBASE + 0x414)
+#define ARM_TIMER_RLD REG(TBASE + 0x418)
+#define ARM_TIMER_DIV REG(TBASE + 0x41C)
+#define ARM_TIMER_CNT REG(TBASE + 0x420)
