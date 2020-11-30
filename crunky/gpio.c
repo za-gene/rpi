@@ -35,7 +35,9 @@ void gpio_sel(int bcm_pin, int mode)
 	put32(gppudclk, 1 << (bcm_pin%32));
 	// enable clock
 	wait_cycles(150);
-	put32(gppupd, 0); // TODO I have a feeling this shouldn't be here
+#if 0 // IFFY
+	put32(gppupd, 0);
+#endif
 	put32(gppudclk, 0);
 }
 
