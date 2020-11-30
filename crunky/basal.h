@@ -24,6 +24,8 @@ typedef uint64_t u64;
 
 #define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
 
+#define REG(addr) (*(volatile u32*)(addr))
+
 #if RPI == 3
 	#define PBASE 0x3F000000
 #elif RPI == 4
