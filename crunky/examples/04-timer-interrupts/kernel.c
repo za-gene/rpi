@@ -23,6 +23,7 @@ extern void enable_irq ( void );
 
 #define SYSTIMERCLO 0x3F003004
 
+/*
 #define GPFSEL0 0x3F200000
 #define GPFSEL1 0x3F200004
 #define GPSET0  0x3F20001C
@@ -38,7 +39,7 @@ extern void enable_irq ( void );
 #define GPEDS1  0x3F200044
 #define GPREN0  0x3F20004C      		//synchronous detect
 #define GPREN1  0x3F200050
-
+*/
 
 #define IRQ_BASIC 0x3F00B200
 #define IRQ_PEND1 0x3F00B204
