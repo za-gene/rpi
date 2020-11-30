@@ -61,9 +61,9 @@ int gpio_get(int bcm_pin)
 void gpio_toggle(int bcm_pin)
 {
 	if(gpio_get(bcm_pin))
-		gpio_set(bcm_pin);
-	else
 		gpio_clr(bcm_pin);
+	else
+		gpio_set(bcm_pin);
 }
 
 #if 0

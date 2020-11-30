@@ -1,7 +1,7 @@
 #include <basal.h>
 #include <timers.h>
 #include <gpio.h>
-#include <mini_uart.h>
+//#include <mini_uart.h>
 #include <interrupts.h>
 
 //-------------------------------------------------------------------------
@@ -35,7 +35,7 @@ extern void enable_irq ( void );
 
 #define TIME_INT 1000000        		// in microsec
 
-#if 0
+#if 1
 const int pin = 19;
 #else
 const int pin = 26;
@@ -43,28 +43,15 @@ const int pin = 26;
 
 
 
-volatile int toggle = 0;
 void blink_led()
 {
-	//toggle = 1 - toggle; // this line probably won't work
-	if(toggle == 0) {
-		toggle =1;
-		gpio_set(pin);
-	} else {
-		toggle = 0;
-		gpio_clr(pin);
-	}
-
-	uart_puts(".");
+	gpio_toggle(pin);
 	ARM_TIMER_CLI = 0; // clear the timer interrupt
 }
 
 void kernel_main ( void )
 {
 	gpio_sel(pin, OUTPUT);
-	gpio_clr(pin);
-	uart_init(9600);
-	uart_puts("timer example using interrupts hopefully\r\n");
 
 	ARM_TIMER_CTL = 0x003E0000;	// 0x3E is the reset for the counter
 	ARM_TIMER_LOD = TIME_INT-1;	// 1000000 is equal to 1 second
