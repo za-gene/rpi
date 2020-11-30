@@ -1,12 +1,16 @@
 #pragma once
 
 /**
+ * RPi 0  : BCM2835. 1 core @ 1GHz. 512MB RAM.
+ * RPi B+ : BCM2835
+ * RPi 2  : BCM2836 quad core @ 1GHz. 1GB RAM.
+ * RPi 3  : BCM2837
+ *
  * Datasheets (BCM*) can be found at
  * https://github.com/raspberrypi/documentation/tree/master/hardware/raspberrypi
  *
- * The underlying architecture in BCM2836 is identical to BCM2836
  *
- * BCM2827 ARM periphral datasheet for Pi 3:
+ * BCM2837 ARM periphral datasheet for Pi 3:
  * https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf
  */
 
@@ -20,13 +24,13 @@ typedef uint64_t u64;
 //u64 __aeabi_uidivmod(u32 value, u32 divisor);
 //u32 __aeabi_uidiv(u32 value, u32 divisor);
 
-#define PERIPHERAL_BASE 0x3F000000 /* RPi 2/3 */
 
 #define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
 
 #define REG(addr) (*(volatile u32*)(addr))
 
-#if RPI == 3
+
+#if (RPI == 2) || (RPI == 3)
 	#define PBASE 0x3F000000
 #elif RPI == 4
 	#define PBASE 0xFE000000
