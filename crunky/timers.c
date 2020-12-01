@@ -27,8 +27,8 @@
 #include <timers.h>
 #include <gpio.h>
 
-#define SYSTMR_LO        ((volatile unsigned int*)(PBASE+0x00003004))
-#define SYSTMR_HI        ((volatile unsigned int*)(PBASE+0x00003008))
+#define SYSTMR_LO        REG(PBASE+0x00003004)
+#define SYSTMR_HI        REG(PBASE+0x00003008)
 
 /**
  * Wait N CPU cycles (ARM CPU only)
@@ -62,14 +62,14 @@ void wait_msec(unsigned int n)
  */
 uint64_t get_system_timer()
 {
-    unsigned int h=-1, l;
+    u32 h=-1, l;
     // we must read MMIO area as two separate 32 bit reads
-    h=*SYSTMR_HI;
-    l=*SYSTMR_LO;
+    h=SYSTMR_HI;
+    l=SYSTMR_LO;
     // we have to repeat it if high word changed during read
-    if(h!=*SYSTMR_HI) {
-        h=*SYSTMR_HI;
-        l=*SYSTMR_LO;
+    if(h!=SYSTMR_HI) {
+        h=SYSTMR_HI;
+        l=SYSTMR_LO;
     }
     uint64_t res = h;
     res <<= 32;
