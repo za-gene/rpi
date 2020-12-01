@@ -21,34 +21,25 @@ $(LIB_CRUNKY) : $(CRUNKY_OBJS)
 all : $(IMG)
 
 clean :
-	rm -f *.o
-	rm -f *.bin
-	rm -f *.hex
-	rm -f *.elf
-	rm -f *.list
-	rm -f *.img
-	rm -f *.bc
-	rm -f $(BUILT)
+	rm -f *.o *.bin *.hex *.elf *.list *.img *.a $(BUILT)
 
-#vectors.o : vectors.s
-#	$(ARMGNU)-as vectors.s -o vectors.o
 
 %.o : %.c
-	$(ARMGNU)-gcc $(COPS) -c $^ -o $@
+	$(CC) $(COPS) -c $^ -o $@
 
 
-LINKER = ../../linker.ld
+LINKER = $(CRUNKY)/linker.ld
 
 
-$(ELF) : $(LINKER) $(OBJS) $(FONTSO) $(LIBUSPI) $(VEC_O)
-	$(ARMGNU)-ld $(VEC_O) $(FONTSO)  $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
-	$(ARMGNU)-objdump -D $@ > kernel.list
+$(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(VEC_O)
+	$(LD) $(VEC_O)   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
+	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)
-	$(ARMGNU)-objcopy $(ELF) -O binary $@
+	$(OBJCOPY) $(ELF) -O binary $@
 
 $(HEX) : $(ELF)
-	$(ARMGNU)-objcopy $^ -O ihex $(HEX)
+	$(OBJCOPY) $^ -O ihex $(HEX)
 
 flash : install
 
