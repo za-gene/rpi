@@ -25,3 +25,7 @@ arm-none-eabi-objdump -D kernel.elf
 ## Links to libraries
 
 * [printf](https://github.com/mpaland/printf) - but needs support for math, unfortunately
+
+## Links to other sites
+
+* [Raspberry Pi IoT In C - Almost Realtime Linux ](https://www.iot-programmer.com/index.php/books/22-raspberry-pi-and-the-iot-in-c/chapters-raspberry-pi-and-the-iot-in-c/33-raspberry-pi-iot-in-c-almost-realtime-linux?showall=1) book
