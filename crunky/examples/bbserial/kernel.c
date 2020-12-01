@@ -1,6 +1,6 @@
 #include <async.h>
 #include <basal.h>
-#include <delays.h>
+#include <timers.h>
 #include <gpio.h>
 #include <stdbool.h>
 
@@ -17,12 +17,19 @@ void start_metro(metro_t* m, u64 freq)
 
 void wait_metro(metro_t* m)
 {
+#if 0
 	u64 ticks;
 	while(1) {
 		ticks = m->freq * (get_system_timer() - m->start)/1000000;
 		if(ticks > m->ticks) break;
 	}
-	m->ticks = ticks;
+
+	u64 t = get_system_timer();
+#endif
+	m->ticks++;
+	while(get_system_timer() - m->freq * m->ticks *1000000 <  m->start);
+	//while(get_system_timer() < m->ticks 
+	//m->ticks = ticks;
 }
 
 
@@ -48,13 +55,25 @@ void pause()
 
 void kernel_main()
 {
-	const int tx = 6;
+	const int tx = 13;
 	gpio_sel(tx, OUTPUT);
 	gpio_set(tx);
 
-	const u64 freq = 9600*8;
+	const u64 freq = 128*2;
+	//start_metro(&m, freq);
+	int v = 0;
+	while(1) {
+		//delay_ms(1000000/(400*2));
+		wait_us(1000000UL/freq);
+		gpio_toggle(tx);
+		//wait_metro(&m);
+		//gpio_set(tx);
+		//wait_us(1000000UL/freq);
+		//gpio_clr(tx);
+		v = 1 -v;
+	}
 
-	start_metro(&m, freq);
+
 	for(int i = 0; i< 20; i++)
 		pause();
 
