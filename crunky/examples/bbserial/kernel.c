@@ -27,7 +27,8 @@ void wait_metro(metro_t* m)
 	u64 t = get_system_timer();
 #endif
 	m->ticks++;
-	while(get_system_timer() - m->freq * m->ticks *1000000 <  m->start);
+	//while(get_system_timer() - m->freq * m->ticks *1000000 <  m->start);
+	while(get_system_timer() - m->ticks *1000000/m->freq <  m->start);
 	//while(get_system_timer() < m->ticks 
 	//m->ticks = ticks;
 }
@@ -59,18 +60,11 @@ void kernel_main()
 	gpio_sel(tx, OUTPUT);
 	gpio_set(tx);
 
-	const u64 freq = 128*2;
-	//start_metro(&m, freq);
-	int v = 0;
+	const u64 freq = 6000*2;
+	start_metro(&m, freq);
 	while(1) {
-		//delay_ms(1000000/(400*2));
-		wait_us(1000000UL/freq);
+		wait_metro(&m);
 		gpio_toggle(tx);
-		//wait_metro(&m);
-		//gpio_set(tx);
-		//wait_us(1000000UL/freq);
-		//gpio_clr(tx);
-		v = 1 -v;
 	}
 
 
