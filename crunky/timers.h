@@ -33,6 +33,7 @@ void wait_msec(unsigned int n);
 uint64_t get_system_timer();
 void delay_ms(int ms);
 void delay_s(int secs);
+void init_arm_timer(u32 freq); // see xemaple/04-timer-interrupts for usage
 
 
 

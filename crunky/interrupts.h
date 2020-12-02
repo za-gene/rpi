@@ -1,9 +1,12 @@
 #pragma once
 
+#include <basal.h>
+
 typedef void (*funcptr)();
 
 void set_irq_handler(funcptr fn);
 void enable_irq ();
+void enable_arm_timer_irq();
 
 // Per BCM2837 s7.5 p112 for Pi3
 #define IBASE (PBASE + 0xB000) 

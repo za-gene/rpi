@@ -2,6 +2,8 @@
 
 #include <basal.h>
 
+const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
+
 //#include <stdint.h>
 
 //typedef uint32_t u32;

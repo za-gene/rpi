@@ -15,3 +15,7 @@ void __attribute__ ((interrupt ("IRQ"))) IRQ_handler()
 	_IRQ_handler();
 }
 
+void enable_arm_timer_irq()
+{
+	IRQ_ENABLE_BASIC |= (1<<0); // enable ARM timer IRQ
+}

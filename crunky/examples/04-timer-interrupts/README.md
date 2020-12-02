@@ -15,11 +15,11 @@ If you decide against defining an irq handler you could always comment out the c
 
 ## SD CARD
 
-Yourr SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course the generated kernel.img. Exclude config.txt
+Your SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course the generated kernel.img. Exclude config.txt
 
 ## REFERENCES
 
 * [BrianSideBotham](https://www.valvers.com/open-software/raspberry-pi/bare-metal-programming-in-c-part-4/) interrupt discussion
 * [jsandler](https://jsandler18.github.io/tutorial/interrupts.html)'s article on interrupts and setting up the exception vector table. It talks about the need for special prologues and epilogues for interrupt handlers. My approach does not need this because the name of the function called is hard-coded and wrapped inside the necessary special handling by the ASM which calls it.
 * [Setting up exceptions made easy](https://www.raspberrypi.org/forums/viewtopic.php?f=72&t=281156) - where I discuss some of the rationales behind setting up interrupts
-
+* db05.201 Overview of ARM Timer BCM2837 (Pi3)

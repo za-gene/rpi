@@ -101,3 +101,13 @@ void delay_s(int secs)
                 delay_ms(1000);
 }
 
+void init_arm_timer(u32 freq)
+{
+	u32 timer_clock_freq = apb_clock_freq/(ARM_TIMER_DIV+1);
+	u32 reload_value = timer_clock_freq/freq; // not worrying about decr
+	if(freq * reload_value == timer_clock_freq) reload_value--; // adjust for slight exactitude
+	ARM_TIMER_RLD = reload_value;	// RLD is copied tO LOD when it reaches 0
+	ARM_TIMER_CLI = 0;				// writing here clears the interrupt (write only)
+	ARM_TIMER_CTL |= (1<<7) // enable timer
+		| (1<<5); // enable timer interrupts
+}
