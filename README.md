@@ -34,7 +34,8 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [alarm](alarm): raises a panic call to alacrity
 * [atlast](atlast): a Forth for mcus based on Walker's Forth
 * blinky85: directory containing code for blinking an ATTiny85 from RPi - consider it a baseline for making projects using C++, and not the IDE
-* [blinkt](blinkt).
+* [blinkt](blinkt)
+* [crunky](crunky): start of a unikernel for Raspberry Pi 3
 * [dev01](dev01): meditation timer
 * [dev02](dev02): projects for the DEV02 home-made board: green_red and mhz85
 * [dev03](dev03)
@@ -43,7 +44,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [dev07](dev07): clock DS1307, MAX7219 8-segment display
 * [dev08](dev08): 555 fixed tone generator
 * [dev09](dev09): voltage generator. esp32 mcp4921 simplecli, timer interrupts
-* [kernel8](kernel8): start of a unikernel for Raspberry Pi 3
+* [hertz](hertz): frequency measurement
 * [minitone85](minitone85): working version of tone() for ATtiny85
 * [mins30-85](mins30-85): 30 minute timer for ATTiny85, programmable from the Pi (`DEV01`). 
 * [pills](pills): remember to take your pills
