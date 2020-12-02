@@ -32,6 +32,8 @@ typedef uint64_t u64;
 
 #define REG(addr) (*(volatile u32*)(addr))
 
+const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
+
 #if (RPI == 0) || (RPI == 1)
     #define PBASE 0x20000000 // peripheral memory map base
 #elif (RPI == 2) || (RPI == 3)
