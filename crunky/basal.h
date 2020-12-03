@@ -30,7 +30,7 @@ typedef uint64_t u64;
 extern const u32 apb_clock_freq; // Advanced Peripheral Bus clock freq. Pi 3
 
 #if (RPI == 0) || (RPI == 1)
-    #define PBASE 0x20000000 // peripheral memory map base
+	#define PBASE 0x20000000 // peripheral memory map base
 #elif (RPI == 2) || (RPI == 3)
 	#define PBASE 0x3F000000
 #elif RPI == 4

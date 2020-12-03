@@ -1,8 +1,6 @@
 #pragma once
 
-//#include "base.h"
-
-#define PBASE 0x3F000000
+#include <basal.h>
 
 #define AUX_ENABLES     (PBASE+0x00215004)
 #define AUX_MU_IO_REG   (PBASE+0x00215040)

@@ -1,3 +1,4 @@
+#RPI ?= 0
 RPI ?= 3
 
 ARMGNU = arm-none-eabi
@@ -8,7 +9,12 @@ OBJDUMP = $(ARMGNU)-objdump
 OBJCOPY = $(ARMGNU)-objcopy
 LD = $(ARMGNU)-ld
 
-KERNEL = kernel7
+ifeq ($(RPI),0)
+	KERNEL = kernel
+else
+	KERNEL = kernel7
+endif
+
 
 IMG = $(KERNEL).img
 ELF = $(KERNEL).elf
