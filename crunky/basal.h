@@ -22,6 +22,9 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+void put32 (u32, u32);
+u32 get32 (u32);
+
 #define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
 // 0x40000000 on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi 
 

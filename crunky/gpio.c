@@ -5,12 +5,6 @@
 #include <timers.h>
 
 
-extern void PUT32 ( unsigned int, unsigned int );
-extern unsigned int GET32 ( unsigned int);
-
-
-#define put32 PUT32
-#define get32 GET32
 
 void gpio_sel(int bcm_pin, int mode)
 {
