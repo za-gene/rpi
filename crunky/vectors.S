@@ -1,6 +1,12 @@
 ;@-------------------------------------------------------------------------
 ;@-------------------------------------------------------------------------
 
+//#include <basal.h>
+
+#if RPI == 0
+#warning "vectors reports RPI is 0"
+#endif
+
 .section .text.boot
 .globl _start
 _start:
@@ -23,6 +29,7 @@ fiq_handler:        .word hang
 
 reset:
 	
+#if RPI != 0
     mrs r0,cpsr        				;@ moving to HYPERVISOR mode
     bic r0,r0,#0x1F
     orr r0,r0,#0x13
@@ -30,6 +37,7 @@ reset:
     add r0,pc,#4
     msr ELR_hyp,r0
     eret
+#endif
 
     mov r0,#0x8000
     mov r1,#0x0000

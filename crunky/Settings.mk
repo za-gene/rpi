@@ -1,4 +1,4 @@
-#RPI ?= 0
+RPI ?= 0
 RPI ?= 3
 
 ARMGNU = arm-none-eabi
@@ -23,6 +23,6 @@ HEX = $(KERNEL).hex
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY) 
 COPS += -DRPI=$(RPI)
 
+#AOPS = -DRPI=$(RPI)
 
-# a special case because it is the interrupt table
-VEC_O = $(CRUNKY)/vectors.o
+
