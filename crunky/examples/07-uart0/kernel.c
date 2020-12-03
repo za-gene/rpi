@@ -23,12 +23,12 @@
  *
  */
 
-#include "uart0.h"
-#include "lfb.h"
+#include <uart0.h>
+#include <lfb.h>
 
 void kernel_main()
 {
-    char msg[] = "I'll now echo back everything you type";
+    char msg[] = "I'll now echo back everything you type 1";
 
     lfb_init();
     fbputs(msg);
