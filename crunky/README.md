@@ -1,5 +1,8 @@
 # crunky
 
+> 32 bits ought to be enough for anyone
+
+
 Attempt to build a "unikernel" for Raspberry Pi 3
 
 ## setup
