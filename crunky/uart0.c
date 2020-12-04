@@ -91,11 +91,17 @@ void uart0_init()
 /**
  * Send a character
  */
-void uart0_send(unsigned int c) {
+static void uart0_send(unsigned int c) {
 	/* wait until we can send */
 	do{asm volatile("nop");}while(UART0_FR&0x20);
 	/* write the character to the buffer */
 	UART0_DR=c;
+}
+
+int uart0_putchar(int c)
+{
+    uart0_send(c);
+    if(c == '\n') uart0_send('\r');
 }
 
 /**
@@ -117,10 +123,10 @@ char uart0_getc() {
 void uart0_puts(char *s) {
 	while(*s) {
 		/* convert newline to carrige return + newline */
-		if(*s=='\n')
-			uart0_send('\r');
+		//if(*s=='\n') uart0_send('\r');
 		uart0_send(*s++);
 	}
+    uart0_send('\n');
 }
 
 /**

@@ -4,11 +4,7 @@
 
 const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
 
-//#include <stdint.h>
-
-//typedef uint32_t u32;
-//typedef uint64_t u64;
-
+#if 1
 // ARM EABI unsigned integer division bit modulus support for GCC
 u64 __aeabi_uidivmod(u32 value, u32 divisor)
 {
@@ -69,3 +65,4 @@ u32 __aeabi_uidiv(u32 value, u32 divisor)
   return __aeabi_uidivmod(value, divisor);
 }
 
+#endif

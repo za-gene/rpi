@@ -2,7 +2,7 @@ RPI ?= 0
 RPI ?= 3
 
 ARMGNU = arm-none-eabi
-#ARMGNU ?= arm-linux-gnueabihf
+#ARMGNU = arm-linux-gnueabihf
 AS = $(ARMGNU)-as
 CC = $(ARMGNU)-gcc
 OBJDUMP = $(ARMGNU)-objdump
@@ -22,6 +22,7 @@ HEX = $(KERNEL).hex
 
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY) 
 COPS += -DRPI=$(RPI)
+COPS += -mfloat-abi=hard
 
 #AOPS = -DRPI=$(RPI)
 
