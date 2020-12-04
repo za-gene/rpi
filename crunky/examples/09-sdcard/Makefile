@@ -1,16 +1,5 @@
 include $(CRUNKY)/Settings.mk
 
+OBJS = kernel.o
 
-COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
-
-
-OBJS = kernel.o sd-test.o
-
-
-%.o : %.c
-	$(CC) $(COPS) -c $^ -o $@
-
-
-
-include ../../Germ7.mk
-
+include $(CRUNKY)/Germ7.mk
