@@ -1,17 +1,26 @@
 #include <mini_uart.h>
 #include <gpio.h>
 #include <timers.h>
+#include <yastdio.h>
 
-void uart_send ( char c )
+static int _uart_send (int c)
 {
 	while(1) {
 		if(get32(AUX_MU_LSR_REG)&0x20)
 			break;
 	}
 	put32(AUX_MU_IO_REG,c);
+	return 1;
 }
 
-char uart_recv ( void )
+int uart_send (int c)
+{
+	_uart_send(c);
+	if(c=='\n') _uart_send('\r');
+	return 1;
+}
+
+int uart_recv ()
 {
 	while(1) {
 		if(get32(AUX_MU_LSR_REG)&0x01)
@@ -20,7 +29,7 @@ char uart_recv ( void )
 	return(get32(AUX_MU_IO_REG)&0xFF);
 }
 
-void uart_puts(char* str)
+void uart_puts (char* str)
 {
 	for (int i = 0; str[i] != '\0'; i ++) {
 		uart_send((char)str[i]);
@@ -67,4 +76,11 @@ void uart_init ( int baud )
 	put32(AUX_MU_BAUD_REG, baudrate_reg); // baud 9600
 
 	put32(AUX_MU_CNTL_REG,3);               //Finally, enable transmitter and receiver
+}
+
+void uart_init_as_stdio(int baud)
+{
+	uart_init(baud);
+	set_putchar(uart_send);
+	set_getchar(uart_recv);
 }

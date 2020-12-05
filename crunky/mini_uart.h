@@ -16,9 +16,10 @@
 #define AUX_MU_BAUD_REG (PBASE+0x00215068)
 
 
-void uart_init ( int baud );
-char uart_recv ( void );
-void uart_send ( char c );
+void uart_init(int baud);
+void uart_init_as_stdio(int baud);
+int uart_recv();
+int uart_send(int c);
 void uart_puts(char* str);
 
 

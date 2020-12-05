@@ -19,6 +19,28 @@ int putchar(int c)
 	return _putchar(c);
 }
 
+
+// an implementation that does nothing
+int _getchar_nada()
+{
+	return EOF;
+}
+
+
+fn_getchar _getchar = _getchar_nada;
+
+void set_getchar(fn_getchar fn)
+{
+	_getchar = fn;
+}
+
+int getchar()
+{
+	return _getchar();
+}
+
+
+
 int newline()
 {
 	return putchar('\n');
