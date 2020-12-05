@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
 
+#include <stdio.h>
+
 #include "tinyprintf.h"
 
 
@@ -420,9 +422,14 @@ void tfp_format(void *putp, putcf putf, const char *fmt, va_list va)
 abort:;
 }
 
+void crunky_putf(void* unused, char c)
+{
+    putchar(c);
+}
+
 #if TINYPRINTF_DEFINE_TFP_PRINTF
-static putcf stdout_putf;
-static void *stdout_putp;
+static putcf stdout_putf = crunky_putf;
+static void *stdout_putp = NULL;
 
 void init_printf(void *putp, putcf putf)
 {
@@ -436,6 +443,14 @@ void tfp_printf(char *fmt, ...)
 	va_start(va, fmt);
 	tfp_format(stdout_putp, stdout_putf, fmt, va);
 	va_end(va);
+}
+int printf(const char *fmt, ...)
+{
+	va_list va;
+	va_start(va, fmt);
+	tfp_format(stdout_putp, stdout_putf, fmt, va);
+	va_end(va);
+    return 1; // Not actually right according to standard implementation
 }
 #endif
 

@@ -175,7 +175,7 @@ extern "C" {
 	void init_printf(void *putp, putcf putf);
 	void tfp_printf(char *fmt, ...) _TFP_SPECIFY_PRINTF_FMT(1, 2);
 # if TINYPRINTF_OVERRIDE_LIBC
-#  define printf tfp_printf
+//#  define printf tfp_printf
 # endif
 #endif
 

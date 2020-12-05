@@ -35,7 +35,7 @@
 /* Physical address and size of the peripherals block
 // May be overridden on RPi2
 */
-off_t bcm2835_peripherals_base = BCM2835_PERI_BASE;
+uint32_t bcm2835_peripherals_base = BCM2835_PERI_BASE;
 size_t bcm2835_peripherals_size = BCM2835_PERI_SIZE;
 
 #define MAP_FAILED 0xD0D0CACA // "doo-doo caca". Also used by Nvidia to detect unitialisd GPIO value on their Tegra card.
@@ -62,7 +62,7 @@ volatile uint32_t *bcm2835_spi1        = (uint32_t *)MAP_FAILED;
 // It prevents access to the kernel memory, and does not do any peripheral access
 // Instead it prints out what it _would_ do if debug were 0
 */
-static uint8_t debug = 0;
+static const uint8_t debug = 0;
 
 /* RPI 4 has different pullup registers - we need to know if we have that type */
 
@@ -175,14 +175,22 @@ uint32_t* bcm2835_regbase(uint8_t regbase)
 	return (uint32_t *)MAP_FAILED;
 }
 
+/*
 void  bcm2835_set_debug(uint8_t d)
 {
 	debug = d;
 }
+*/
 
 unsigned int bcm2835_version(void) 
 {
 	return BCM2835_VERSION;
+}
+
+
+// mcarter2020-12-05 just a stub function
+void __sync_synchronize()
+{
 }
 
 /* Read with memory barriers from peripheral
@@ -198,9 +206,13 @@ uint32_t bcm2835_peri_read(volatile uint32_t* paddr)
 	}
 	else
 	{
+#if 1 // mcarter 2020-12-05 __sync_synchronize() deprecated
 		__sync_synchronize();
 		ret = *paddr;
 		__sync_synchronize();
+#else
+		__atomic_load(paddr, &ret, __ATOMIC_SEQ_CST);
+#endif
 		return ret;
 	}
 }
@@ -235,9 +247,13 @@ void bcm2835_peri_write(volatile uint32_t* paddr, uint32_t value)
 	}
 	else
 	{
+#if 1 // mcarter 2020-12-05 __sync_synchronize() deprecated
 		__sync_synchronize();
 		*paddr = value;
 		__sync_synchronize();
+#else
+		__atomic_store_n(paddr, value, __ATOMIC_SEQ_CST);
+#endif
 	}
 }
 
@@ -662,6 +678,7 @@ int bcm2835_spi_begin(void)
 
 	/* Set the SPI CS register to the some sensible defaults */
 	paddr = bcm2835_spi0 + BCM2835_SPI0_CS/4;
+	//printf("bcm2835_spi_begin:spi0 addr: %X\n", bcm2835_spi0);
 	bcm2835_peri_write(paddr, 0); /* All 0s */
 
 	/* Clear TX and RX fifos */
@@ -1684,14 +1701,6 @@ void bcm2835_pwm_set_data(uint8_t channel, uint32_t data)
 		bcm2835_peri_write_nb(bcm2835_pwm + BCM2835_PWM1_DATA, data);
 }
 
-/* Allocate page-aligned memory. */
-void *malloc_aligned(size_t size)
-{
-	void *mem;
-	errno = posix_memalign(&mem, BCM2835_PAGE_SIZE, size);
-	return (errno ? NULL : mem);
-}
-
 
 /* Initialise this library. */
 int bcm2835_init(void)
@@ -1870,7 +1879,7 @@ int bcm2835_close(void)
 /* this is a simple test program that prints out what it will do rather than 
 // actually doing it
 */
-int main(int argc, char **argv)
+int bcm_main(int argc, char **argv)
 {
 	/* Be non-destructive */
 	bcm2835_set_debug(1);
