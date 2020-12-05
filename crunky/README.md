@@ -27,7 +27,7 @@ arm-none-eabi-objdump -D kernel.elf
 
 ## Links to libraries
 
-* [printf](https://github.com/mpaland/printf) - but needs support for math, unfortunately
+* [tinyprintf](https://github.com/cjlano/tinyprintf.git). Doesn't handle floats
 
 ## Links to other sites
 
