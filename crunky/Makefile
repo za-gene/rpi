@@ -1,12 +1,5 @@
 include Settings.mk
 
-#ARMGNU ?= arm-none-eabi
-#ARMGNU = arm-linux-gnueabihf
-#ARMGNU = aarch64-linux-gnu
-#ASMOPS = -Iinclude 
-
-#BUILD_DIR = build
-#SRC_DIR = src
 
 # a special case because it is the interrupt table
 VEC_O = $(CRUNKY)/vectors.o
@@ -16,9 +9,8 @@ CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 	  sd.o stdio.o string.o uart0.o \
 	  timers.o
 
-#CR_OBJS += printf.o
-#CR_OBJS += snprintf.o
 CR_OBJS += tinyprintf.o
+CR_OBJS += bcm2835.o
 
 
 CR_LIB = libcrunky.a
