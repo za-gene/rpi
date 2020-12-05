@@ -27,6 +27,7 @@ arm-none-eabi-objdump -D kernel.elf
 
 ## Links to libraries
 
+* [bcm2835](https://www.airspayce.com/mikem/bcm2835/) v1.68 used
 * [tinyprintf](https://github.com/cjlano/tinyprintf.git). Doesn't handle floats
 
 ## Links to other sites
