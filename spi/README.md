@@ -21,6 +21,7 @@ DUP	- SUGGESTED DUPONT COLOURS
 ## Implementation examples
 
 * [rpi-master-spi.py](rpi-master-spi.py) - example which has been proven to work
+* [rpi-spi-master-bcm2835](rpi-spi-master-bcm2835) - connects to the regular SPI slave on Raspbian
 * [stm32-spi-master-arduino](stm32-spi-master-arduino)
 * [stm32-spi-master-bare](../stm32/bare/stm32-spi-master-bare)
 * [stm32-spi-slave-arduino](stm32-sp-slave)
