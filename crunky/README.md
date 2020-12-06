@@ -23,6 +23,7 @@ arm-none-eabi-objdump -D kernel.elf
 
 ## In this directory
 
+* [interrupts](interrupts)
 * [usb](usb) - it's not easy, that's for sure.
 
 ## Links to libraries
