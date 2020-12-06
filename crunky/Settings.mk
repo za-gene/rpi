@@ -5,6 +5,7 @@ ARMGNU = arm-none-eabi
 #ARMGNU = arm-linux-gnueabihf
 AS = $(ARMGNU)-as
 CC = $(ARMGNU)-gcc
+CXX = $(ARMGNU)-g++
 OBJDUMP = $(ARMGNU)-objdump
 OBJCOPY = $(ARMGNU)-objcopy
 LD = $(ARMGNU)-ld
@@ -23,6 +24,8 @@ HEX = $(KERNEL).hex
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY) 
 COPS += -DRPI=$(RPI)
 COPS += -mfloat-abi=hard
+
+CXXFLAGS = $(COPS)
 
 #AOPS = -DRPI=$(RPI)
 

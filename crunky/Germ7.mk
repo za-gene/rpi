@@ -21,12 +21,16 @@ clean :
 %.o : %.c
 	$(CC) $(COPS) -c $^ -o $@
 
+%.o : %.cc
+	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
 LINKER = $(CRUNKY)/linker.ld
 
 
+#XCEPT = -L /usr/lib/arm-none-eabi/newlib -lsupc++
+
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky -o $@
+	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(XCEPT) -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)
