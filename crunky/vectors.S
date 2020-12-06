@@ -68,6 +68,7 @@ reset:
     ;@mov r0,#0x53
     ;@msr cpsr_c, r0
     
+    bl zero_bss
     bl kernel_main
 hang: b hang
 

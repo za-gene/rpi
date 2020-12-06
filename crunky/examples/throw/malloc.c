@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <assert.h>
+
+#undef NULL
+#define NULL 0
 
 struct chunk {
 	struct chunk *next, *prev;
@@ -46,19 +50,18 @@ void wordcpy(void *dst, void *src, size_t len)
 	static
 struct chunk* get_base(void) 
 {
-	static struct chunk *base = NULL;
+	static struct chunk *base = 0;
 
-	if (base == NULL) 
-	{
-		if ((base = sbrk(word_align(sizeof(struct chunk)))) != (void *)-1)
-		{
-			base->next = NULL;
-			base->prev = NULL;
-			base->size = 0;
-			base->free = 0;
-			//base->data = NULL;
-		}
-	}
+	if(base) return base;
+
+	puts("initialising base");
+	base = sbrk(word_align(sizeof(struct chunk)));
+	assert(base != (void*)-1);
+	base->next = NULL;
+	base->prev = NULL;
+	base->size = 0;
+	base->free = 0;
+	//base->data = NULL;
 	return base;
 }
 

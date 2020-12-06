@@ -28,7 +28,7 @@ LINKER = $(CRUNKY)/linker.ld
 
 
 #XCEPT = -L /usr/lib/arm-none-eabi/newlib -lsupc++
-#NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
+NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
 	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(NEWLIB) -o $@

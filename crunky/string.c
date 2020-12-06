@@ -1,4 +1,5 @@
 #include <string.h>
+#include <strings.h>
 
 // based on https://en.wikibooks.org/wiki/C_Programming/String_manipulation
 void *memset(void *s, int c, size_t n)
@@ -10,6 +11,11 @@ void *memset(void *s, int c, size_t n)
 	return s;
 }
 	
+void bzero(void *s, size_t n)
+{
+	memset(s, 0, n);
+}
+
 char *strcpy(char *dest, const char *src)
 {
 	while((*dest++ = *src++));
