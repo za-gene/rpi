@@ -38,6 +38,13 @@ In the code above, 100MB is reserved for "the heap". Arguably is should be large
 
 The values `__heap__start__` and `__heap__end__` are needed by `sbrk()` to delimit the start and end of the heap.
 
+Technically, it is possible just to declare the heap in source code:
+```
+char heap[100000000];
+```
+Practically, it is a bad idea, though, as the memory is embedded in the kernel image if you do that.
+So instead of having a kernel of size, say, 20K, it becomes 100M. 
+
 
 ## sbrk()
 
