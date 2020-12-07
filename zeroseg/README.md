@@ -15,10 +15,11 @@ to `sketch_feb04b`.
 ## See also
 
 * db5.105
-* db5.110 - switches (although they don't seem to work
+* db5.110 - switches (although they don't seem to work)
 
 ## Also on this site
 
+* [pi bare metal](../crunky/examples/14-zeroseg)
 * [stm8 bare metal](../stm8s103f3p6/bare/10-max7219)
 * [stm32 bare metal](../stm32/bare/14-max7219)
 
