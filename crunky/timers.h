@@ -26,7 +26,7 @@
 
 #include <basal.h>
 
-void wait_us(uint64_t n);
+void delay_us(uint64_t n);
 //void wait_micros(int n);
 void wait_cycles(unsigned int n);
 void wait_msec(unsigned int n);

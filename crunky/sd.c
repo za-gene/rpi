@@ -36,7 +36,7 @@ void uart_puts(char* str)
 
 void wait_usec(int i)
 {
-	wait_us(i);
+	delay_us(i);
 }
 
 /**

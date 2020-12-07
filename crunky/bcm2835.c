@@ -544,7 +544,7 @@ void bcm2835_delay(unsigned int millis)
 /* microseconds */
 void bcm2835_delayMicroseconds(uint64_t micros)
 {
-	wait_us(micros);
+	delay_us(micros);
 }
 
 /*

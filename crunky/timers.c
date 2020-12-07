@@ -81,7 +81,7 @@ uint64_t get_system_timer()
 /**
  * Wait N microsec (with BCM System Timer)
  */
-void wait_us(uint64_t n)
+void delay_us(uint64_t n)
 {
     uint64_t us=get_system_timer();
     // we must check if it's non-zero, because qemu does not emulate
@@ -92,7 +92,7 @@ void wait_us(uint64_t n)
 void delay_ms(int ms)
 {
         for(int i=0; i<ms; ++i)
-                wait_us(1000);
+                delay_us(1000);
 }
 
 void delay_s(int secs)
