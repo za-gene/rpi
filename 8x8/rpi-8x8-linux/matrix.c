@@ -1,8 +1,8 @@
-// not yet working
+// 2020-12-8 confirmed working
+// Remember to run as root: sudo ./matrix
+
 #include <bcm2835.h>
-//#include <mini_uart.h>
 #include <stdio.h>
-#include <timers.h>
 
 
 #define SID 0x70 // Slave ID
@@ -52,7 +52,7 @@ void write_row(uint8_t y, uint8_t xs)
 }
 
 
-void kernel_main(void)
+void main(void)
 {
 	//uart_init_as_stdio(115200);
 	puts("bcm spi master example");
