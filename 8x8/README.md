@@ -2,7 +2,7 @@
 
 Adafruit LED 8x8 green matrix with I2C pack using HT16K33 controller
 
-![](../8x8.jpg)
+![](8x8.jpg)
 
 ```
 git clone https://github.com/adafruit/Adafruit_LED_Backpack
