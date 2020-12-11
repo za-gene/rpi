@@ -1,13 +1,17 @@
 # I2C
 
 ## Connection guide
-```
-I2C | NANO | RPI      | TINY85 | ESP32 | STM32 | STM8
-+   |  3V3 | 1 3V3    | 8 VCC  |       |       |
-SDA |   A4 | 3 SDA.1  | 5 PB0  |   D21 | PB7   | PB5
-SCL |   A5 | 5 SCL.1  | 7 PB2  |   D22 | PB6   | PB4
--   |      |          |        |       |       |
-```
+
+
+| MCU     | SDA         | SCL       |
+| :------ | :---------- | :-------- |
+| ESP32   | D21         | D22       |
+| NANO    | A4          | A5        |
+| RPI     | 3 (SDA.1)   | 5 (SCL.1) |
+| STM32   | PB7         | PB6       |
+| STM8    | PB5         | PB4       |
+| TINY85  | 5 (PB0)     | 7 (PB2)   |
+
 
 ## ATTiny85 slave
 
@@ -67,7 +71,6 @@ PB7 and PB6 are 5V tolerant.
 ## Reference
 
 * [ATtiny i2c Slave](https://thewanderingengineer.com/2014/02/17/attiny-i2c-slave/)
-
+* [Basics of I2C](https://www.electronicshub.org/basics-i2c-communication/)
 * [Getting to know the Raspberry Pi I2C bus](http://www.raspberry-pi-geek.com/Archive/2015/09/Getting-to-know-the-Raspberry-Pi-I2C-bus/(offset)/2)
-
 * [Raspberry Pi I2C clock-stretching bug](http://www.advamation.com/knowhow/raspberrypi/rpi-i2c-bug.html)
