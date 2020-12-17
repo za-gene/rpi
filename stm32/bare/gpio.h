@@ -26,6 +26,7 @@
 #define PB7  0x17
 #define PB10 0x1A
 #define PB11 0x1B
+#define PB12 0x1C
 #define PB13 0x1D
 #define PC13 0x2D
 #define PC15 0x2F
