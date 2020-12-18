@@ -1,15 +1,8 @@
-# max7219 - 7 segment display
+# async
 
-Keys: SPI, max7219
+Keys: async
 
-Connections:
-* VCC to 5V
-* GND to GND
-* DIN to PA7 (MOSI)
-* CS  to PA4
-* CLK to PA5
+Demonstrates the async library by flashing a couple of LEDs.
 
-MISO is unused
-
-Works 2020-10-23
+Works 2020-12-18
 
