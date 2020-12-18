@@ -7,6 +7,11 @@
  * https://github.com/WRansohoff/STM32x0_timer_example/blob/master/device_headers/stm32f031x6.h
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #define LOW 0
 #define HIGH 1
 
@@ -46,3 +51,36 @@ void gpio_mode(u32 pin, u8 mode);
 void gpio_mode_out(u32 pin);
 void gpio_toggle(u32 pin);
 u8 gpio_read(u32 pin);
+
+// page 194
+typedef struct
+{
+	__IO uint32_t CRL; // 0x00
+	__IO uint32_t CRH; // 0x04
+	__IO uint32_t IDR; // 0x08
+	__IO uint32_t ODR; // 0x0C
+	__IO uint32_t BSRR; // 0x10
+	__IO uint32_t BRR; // 0x14
+	__IO uint32_t LCKR; //0x18
+} GPIO_t;
+
+#define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
+#define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
+#define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
+
+
+#define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
+
+#define GPIO_CRL_CNF2_Pos 10 // page 171
+#define GPIO_CRL_CNF3_Pos 14
+#define GPIO_CRL_MODE2_Pos 8
+#define GPIO_CRL_MODE3_Pos 12
+#define GPIO_CRL_CNF2 (0x3<<GPIO_CRL_CNF2_Pos)
+#define GPIO_CRL_CNF3 (0x3<<GPIO_CRL_CNF3_Pos)
+#define GPIO_CRL_MODE2 (0x3<<GPIO_CRL_MODE2_Pos)
+#define GPIO_CRL_MODE3 (0x3<<GPIO_CRL_MODE3_Pos)
+
+
+#ifdef __cplusplus
+}
+#endif

@@ -30,7 +30,7 @@ void* memcpy(void* dst, const void* src, size_t n) {
 	return dst;
 }
 
-void *memset(void *b, int c, int len)
+void *memset(void *b, int c, size_t len)
 {
 	int           i;
 	unsigned char *p = b;

@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <stddef.h> // for size_t
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -26,8 +30,8 @@ extern u32  SystemCoreClock;
 // section 3.3 Memory map page 50
 
 // forward declarations
-struct GPIO_t;
-struct USART_t;
+//struct GPIO_t;
+//struct USART_t;
 
 #define GPIO_BASE 0x40010800
 
@@ -36,9 +40,7 @@ struct USART_t;
 #define NVIC_ISER0 *(volatile uint32_t *)(0xE000E000+0x100)
 
 
-#define GPIOC ((GPIO_t*) (GPIO_BASE + 0x800))
-#define GPIOB ((GPIO_t*) (GPIO_BASE + 0x400))
-#define GPIOA ((GPIO_t*) (GPIO_BASE + 0x000))
+
 #define USART5 ((USART_t*) 0x40005000)
 #define USART4 ((USART_t*) 0x40004C00)
 #define USART3 ((USART_t*) 0x40004800)
@@ -74,16 +76,6 @@ struct USART_t;
 #define RCC_AHBENR_DMA1EN (1<<0)
 
 
-#define GPIOA_CRL     *(volatile uint32_t *)(GPIOA_BASE + 0x00)
-
-#define GPIO_CRL_CNF2_Pos 10 // page 171
-#define GPIO_CRL_CNF3_Pos 14
-#define GPIO_CRL_MODE2_Pos 8
-#define GPIO_CRL_MODE3_Pos 12
-#define GPIO_CRL_CNF2 (0x3<<GPIO_CRL_CNF2_Pos)
-#define GPIO_CRL_CNF3 (0x3<<GPIO_CRL_CNF3_Pos)
-#define GPIO_CRL_MODE2 (0x3<<GPIO_CRL_MODE2_Pos)
-#define GPIO_CRL_MODE3 (0x3<<GPIO_CRL_MODE3_Pos)
 
 #define USART_BRR_DIV_Fraction_Pos 0 // page 820
 #define USART_BRR_DIV_Mantissa_Pos 4
@@ -92,17 +84,7 @@ struct USART_t;
 #define USART_CR1_UE (1<<13)
 #define USART_SR_RXNE (1 << 5) // page 818
 #define USART_SR_TXE (1 << 7)
-// page 194
-typedef struct
-{
-	__IO uint32_t CRL; // 0x00
-	__IO uint32_t CRH; // 0x04
-	__IO uint32_t IDR; // 0x08
-	__IO uint32_t ODR; // 0x0C
-	__IO uint32_t BSRR; // 0x10
-	__IO uint32_t BRR; // 0x14
-	__IO uint32_t LCKR; //0x18
-} GPIO_t;
+
 
 
 
@@ -125,6 +107,10 @@ u32 get32(u32 addr);
 #define enable_irq() asm("CPSIE I")
 #define nop() asm volatile ("nop")
 void* memcpy(void* dst, const void* src, size_t n);
-void *memset(void *b, int c, int len);
+void *memset(void *b, int c, size_t len);
 void delayish(u32 ms);
 void delaysecsish(u32 secs);
+
+#ifdef __cplusplus
+}
+#endif
