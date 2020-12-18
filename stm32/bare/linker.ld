@@ -106,6 +106,29 @@ SECTIONS
   _end = end;
   __end = end;
 
+/* C++ stuff https://github.com/arobenko/embxx_on_rpi/blob/master/src/raspberrypi.ld
+mcarter added 2020-12-18
+*/
+    .init.array :
+    {
+        __init_array_start = .;
+        *(.init_array)
+        *(.init_array.*)
+        __init_array_end = .;
+    }
+
+    /* for C++
+        https://stackoverflow.com/questions/53751272/enabling-c-exceptions-on-arm-bare-metal-bootloader
+mcarter added 2020-12-18
+*/
+ .ARM.exidx :            /* Required for unwinding the stack? */
+    {
+        __exidx_start = .;
+        * (.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end   = .;
+    } 
+
+
   /* Space set aside for the application's heap/stack. */
   .dynamic_allocations :
   {
