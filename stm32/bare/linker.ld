@@ -9,21 +9,21 @@ EXTERN(vector_table)
 /* Label for the program's entry point */
 ENTRY(Reset_Handler)
 
-/* End of RAM/Start of stack */
-/* (20KB SRAM) */
-_estack = 0x20005000;
-
 /* Set minimum size for stack and dynamic memory. */
 /* (The linker will generate an error if there is
  * less than this much RAM leftover.) */
 /* (1KB) */
-_Min_Leftover_RAM = 0x0400;
+_Min_Heap_Size = 10K;
+/* _Min_Leftover_RAM = 0x0400; */
+_Min_Stack_Size = 0x0400;
 
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 64K
   RAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 20K
 }
+
+_estack = ORIGIN(RAM) + LENGTH(RAM); /* higher addr of user mode stack */
 
 SECTIONS
 {
@@ -115,29 +115,43 @@ mcarter added 2020-12-18
         *(.init_array)
         *(.init_array.*)
         __init_array_end = .;
-    }
+    } >RAM
 
     /* for C++
         https://stackoverflow.com/questions/53751272/enabling-c-exceptions-on-arm-bare-metal-bootloader
 mcarter added 2020-12-18
 */
- .ARM.exidx :            /* Required for unwinding the stack? */
+    .ARM.exidx :            /* Required for unwinding the stack? */
     {
         __exidx_start = .;
         * (.ARM.exidx* .gnu.linkonce.armexidx.*)
         __exidx_end   = .;
-    } 
+    } >RAM
 
 
-  /* Space set aside for the application's heap/stack. */
-  .dynamic_allocations :
-  {
-    . = ALIGN(4);
-    _ssystem_ram = .;
-    __ssystem_ram__ = _ssystem_ram;
-    . = . + _Min_Leftover_RAM;
-    . = ALIGN(4);
-    _esystem_ram = .;
-  } >RAM
+    /* Space set aside for the application's heap/stack. */
+    ._user_heap_stack :
+    {
+        . = ALIGN(4);
+        _heap_begin = .;
+        . = . + _Min_Heap_Size;
+        . = ALIGN(4);
+        _heap_end = .;
+    } >RAM
+
+    /* stack. Make sure we have enough */
+    ._usrstack :
+    {
+        . = ALIGN(4);
+        _susrstach = .;
+        . = . + _Min_Stack_Size ;
+        . = ALIGN(4);
+        _eusrstack = . ;
+    } >RAM
+    
+
+PROVIDE( _sheap = _heap_begin);
+PROVIDE( _eheap = _heap_end);
+
 }
 

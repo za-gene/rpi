@@ -28,10 +28,11 @@ LINKER = $(STM32)/linker.ld
 
 
 #XCEPT = -L /usr/lib/arm-none-eabi/newlib -lsupc++
-NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
+#NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
+NEWLIB = -L/usr/lib/arm-none-eabi/newlib/thumb/v7-m -lc_nano
 
-$(ELF) : $(LINKER) $(OBJS)  
-	$(LD)   $(OBJS) -T $(LINKER)  -L$(STM32) -lblue $(NEWLIB) -o $@
+$(ELF) : $(LINKER) $(OBJS)  ../syscalls.o
+	$(LD)   $(OBJS) -T $(LINKER)  -L$(STM32) -lblue $(NEWLIB)  ../syscalls.o -o $@
 	#$(OBJDUMP) -D $@ > $(KERNEL).list
 
 #$(IMG) : $(ELF)

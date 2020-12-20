@@ -51,6 +51,7 @@ Projects
 Notes
 * [compiling](compiling.md) and linking
 * [gpio](gpio.md) - some notes on GPIO
+* [newlib](newlib.md) - integration notes to the nano library.
 * [pwm](pwm.md) and frequency
 
 
