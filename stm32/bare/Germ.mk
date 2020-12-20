@@ -6,20 +6,20 @@ AOPS = --warn --fatal-warnings
 
 
 
-$(IMG) : $(HEX)
+#$(IMG) : $(HEX)
 
-LIB_CRUNKY = libcrunky.o
+#LIB_CRUNKY = libcrunky.o
 
-$(LIB_CRUNKY) : $(CRUNKY_OBJS)
+#$(LIB_CRUNKY) : $(CRUNKY_OBJS)
 
-all : $(IMG)
+all : app.bin
 
 clean :
 	rm -f *.o *.bin *.hex *.elf *.list *.img *.a $(BUILT)
 
 
 %.o : %.c
-	$(CC) $(COPS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 %.o : %.cc
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
@@ -30,17 +30,27 @@ LINKER = $(STM32)/linker.ld
 #XCEPT = -L /usr/lib/arm-none-eabi/newlib -lsupc++
 NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
 
-$(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(NEWLIB) -o $@
-	$(OBJDUMP) -D $@ > $(KERNEL).list
+$(ELF) : $(LINKER) $(OBJS)  
+	$(LD)   $(OBJS) -T $(LINKER)  -L$(STM32) -lblue $(NEWLIB) -o $@
+	#$(OBJDUMP) -D $@ > $(KERNEL).list
 
-$(IMG) : $(ELF)
-	$(OBJCOPY) $(ELF) -O binary $@
+#$(IMG) : $(ELF)
+#	$(OBJCOPY) $(ELF) -O binary $@
 
-$(HEX) : $(ELF)
-	$(OBJCOPY) $^ -O ihex $(HEX)
+#$(HEX) : $(ELF)
+#	$(OBJCOPY) $^ -O ihex $(HEX)
 
-#flash : install
+app.bin: app.elf
+	$(BIN) -O binary app.elf app.bin
+	arm-none-eabi-objdump -d app.elf >app.list
 
-#install:
-#	cp $(IMG) /media/pi/50BD-6FEC
+
+
+.flash: app.bin
+	touch .flash
+
+flash : .flash
+	$(STL) write app.bin 0x8000000
+
+erase:
+	$(STL) erase

@@ -1,36 +1,24 @@
-#include <functional>
-#include <string>
-
-
-using namespace std;
-
+#include <stdio.h>
 #include <gpio.h>
 
-//function<int()> life = []() { return 42; }; // this doesn't work
 
-#define LED PB13
+//#define LED PB13
 
-void delay() { delaysecsish(1); }
-
-class foo {
-	public:
-	       	foo() { gpio_write(LED,1);  delay(); };
-		~foo() { gpio_write(LED, 0); delay(); };
-};
+//void delay() { delaysecsish(1); }
 
 
-
-int main()
+void main()
 {
-	//string foo = "hello";  // seems to cause compilation errors
 
-	gpio_mode(LED, OUTPUT);
+	gpio_mode(BUILTIN_LED, OUTPUT);
 
 
 	while (1) {
-		foo x; // test of destructors and constructors
+		gpio_write(BUILTIN_LED, 1);
+		delayish(1000);
+		gpio_write(BUILTIN_LED, 0);
+		delayish(1000);
 	}
 
-	return 0;
 }
 

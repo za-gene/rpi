@@ -22,7 +22,7 @@ IMG = $(KERNEL).img
 ELF = $(KERNEL).elf
 HEX = $(KERNEL).hex
 
-all: app.bin 
+#all: app.bin 
 
 #main.o: main.cc
 #	$(CXX) $(CXXFLAGS) -c -o main.o main.cc

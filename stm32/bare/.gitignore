@@ -1,4 +1,6 @@
 .doc
 doc/
+app.img
+app.list
 app.txt
 libblue.a

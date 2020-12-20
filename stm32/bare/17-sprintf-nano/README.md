@@ -1,8 +1,7 @@
-# C++
+Test to see if sprintf nano works.
 
-Keys: C++
+Also, start of integration of nano newlib
 
-Test of C++
 
-Works 2020-12-18
+Started 2020-12-20
 
