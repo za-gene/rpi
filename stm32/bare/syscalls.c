@@ -1,14 +1,25 @@
 /**
  * Implements functions required by newlib nano
+ *
+ * errno implementation is a bit of a fudge
+ * See also:
+ * /usr/include/newlib/sys/errno.h
  */
 
-//#include <errno.h> // ENOMEM
+#include <errno.h> // ENOMEM
 //#include <stdlib.h> // for caddr_t
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/stat.h>
 
-
+#undef errno
+int errno;
+/*
+int *__errno()
+{
+	return &errno;
+}
+*/
 
 // these symbols defined in linker.ld
 extern char _sheap;
@@ -24,7 +35,7 @@ caddr_t _sbrk(int incr)
 
 	char* prev_heap_end = heap_end;
 	if((heap_end + incr) > (char*) &_eheap) {
-		//errno = ENOMEM; // TODO implement it. It will be slightly tricky, mind.		
+		errno = ENOMEM; 
 		return ((void*)-1); // error - no more memory
 	}
 	heap_end += incr;

@@ -16,7 +16,7 @@ void main()
 	beep();
 	gpio_mode(BUILTIN_LED, OUTPUT);
 	
-	puts("\nsprintf test 4");
+	puts("\nsprintf test 5");
 	/*
 	sprintf(str, "_sheap:%x", &_sheap);
 	puts(str);
