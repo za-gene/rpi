@@ -77,3 +77,10 @@ int _read(int fd, char *buf, size_t cnt)
 	return 1;
 }
 
+int _write(int file, char *ptr, int len)
+{
+	for(int i=0; i < len; i++) 
+	   putchar(*ptr++);
+	
+	return len;
+}

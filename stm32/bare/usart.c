@@ -54,6 +54,8 @@ int getchar()
 
 int putchar(int c)
 {
+    if(c == '\n') putchar('\r');
+
 	while( !( _USART->SR & USART_SR_TXE ) ) {};
 	_USART->DR = c;
 	return c;
@@ -69,7 +71,7 @@ int print(const char* s)
 int puts(const char* s)
 {
 	print(s);
-	print("\r\n");
+	putchar('\n');
 	return 0;
 }
 
