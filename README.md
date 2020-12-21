@@ -26,6 +26,11 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * telnet server: [dev03-2](dev03/dev03-2)
 * [Twiddle-factor FFT for mcus](https://blog.podkalicki.com/twiddle-factor-based-fft-for-microcontrollers/)
 
+## Libraries
+
+* [sml](https://boost-ext.github.io/sml/examples.html) - state machines. C++
+
+
 ## Projects
 
 * [0clock](0clock): nano, ds3231, zeroseg clock with timer

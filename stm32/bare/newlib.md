@@ -8,3 +8,8 @@ So the library it should be linked against is (unconfirmed):
 ```
 
 In order to use a function like `sprintf`, `_srk()` must be provided, which is part of `malloc()`.
+
+## Links to other sites
+
+* [mondougen](https://github.com/mondaugen/stm32-fmc-malloc-test/blob/master/src/syscalls.c) implementation of syscalls.c
+* [porting](https://www.cs.ccu.edu.tw/~pahsiung/courses/esd/resources/newlib.pdf) and using newlib in embedded systems. PDF
