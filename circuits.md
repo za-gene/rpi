@@ -20,3 +20,7 @@ C = 1/(2&pi;Rf)
 ## See also
 
 * [Multivibrator](https://en.wikipedia.org/wiki/Multivibrator#Astable_multivibrator) and [kit](https://www.jameco.com/z/MK102-Velleman-Dual-Flashing-LEDs-Soldering-Kit-Flash-Speed-Adjustable-_147580.html)
+
+### Circuit design software
+
+* [LibrePCB](https://librepcb.org/) - optionally available as 37M appImage
