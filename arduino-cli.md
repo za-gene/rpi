@@ -29,6 +29,16 @@ Arduino Nano                         arduino:avr:nano
 ```
 
 
+## `arduino-cli compile`
+
+Use `-h` option to obtain help
+
+Example:
+```
+arduino-cli compile --fqbn arduino:avr:nano -e $(PWD)
+```
+
+`-e` exports compiled stuff under the current folder to `build`.
 
 
 ## dunno
