@@ -1,19 +1,24 @@
-FQBN = arduino:avr:nano
-FQBN1 = $(subst :,.,$(FQBN))	
-BDIR = build/$(FQBN) # build dir
-HERE = $(shell basename $(CURDIR))
-INO  = $(HERE).ino
-HEX  = build/$(FQBN1)/$(INO).hex
-BIN  = build/$(FQBN1)/$(INO).bin
+FQBN =arduino:avr:nano
+FQBN1 =$(subst :,.,$(FQBN))	
+FQBN1:=$(strip $(FQBN1))
+BDIR =build/$(FQBN)
+#HERE = $(shell basename $(CURDIR))
+HERE =$(notdir $(CURDIR))
+INO  =$(HERE).ino
+HEX  =build/$(FQBN1)/$(INO).hex
+BIN  =build/$(FQBN1)/$(INO).bin
 PORT = $(shell ls /dev/ttyUSB*)
 
 
 #hex : $(HEX)
 
 $(BIN) : $(INO)
+	echo bin is $(BIN)
 	arduino-cli compile --fqbn $(FQBN) -e 
 
-install : 
+flash : 
 	echo port is $(PORT)
-	#arduino-cli upload -b $(FQBN) -i $(BIN) -p $(PORT)
-	arduino-cli upload -b $(FQBN):cpu=atmega328old -i build/arduino.avr.nano/arduino-cli-blink.ino.hex -p $(PORT)
+	arduino-cli upload -b $(FQBN):cpu=atmega328old -i $(HEX) -p $(PORT)
+
+clean :
+	rm -rf build
