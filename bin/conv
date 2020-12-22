@@ -1,0 +1,58 @@
+#!/usr/bin/env perl6
+
+sub rebase($name, $val, $radix) {
+	my $str = "";
+	my $v = $val;
+	my @arr = ('0' .. '9');
+	@arr.push('A');
+	@arr.push('B');
+	@arr.push('C');
+	@arr.push('D');
+	@arr.push('E');
+	@arr.push('F');
+	repeat {
+		my $dig = $v mod $radix;
+		my $c = @arr[$dig];
+		$str = $c ~ $str;
+		$v = $v div $radix;
+	} until $v == 0;
+	return $name ~ ": " ~$str;
+}
+
+
+sub MAIN ($type, $num) {
+	my $txt = lc($num);
+	my @ords = $txt.ords();
+
+	# convert to decimal
+	my $val = 0;
+	given $type {
+		when "hex"  { 
+			for @ords -> $c { 
+				if 'a'.ord <= $c <= 'f'.ord { $val = $val * 16 + $c - 'a'.ord + 10; }
+				if '0'.ord <= $c <= '9'.ord { $val = $val * 16 + $c - '0'.ord;}
+			}
+		}
+
+		when "dec"  { 
+			for @ords -> $c { 
+				if '0'.ord <= $c <= '9'.ord { $val = $val * 10 + $c - '0'.ord;}
+			}
+		}
+
+		when "bin"  { 
+			for @ords -> $c { 
+				if '0'.ord <= $c <= '1'.ord { $val = $val * 2 + $c - '0'.ord;}
+			}
+		}
+	}
+	#say "val = $val";
+
+	# convert to others
+	say rebase("BIN", $val, 2);
+	say rebase("OCT", $val, 8);
+	say rebase("DEC", $val, 10);
+	say rebase("HEX", $val, 16);
+
+
+}
