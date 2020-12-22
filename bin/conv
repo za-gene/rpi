@@ -20,6 +20,16 @@ sub rebase($name, $val, $radix) {
 }
 
 
+sub reval(@ords, $upper, $radix) {
+	my $val = 0;
+	for @ords -> $c { 
+		if '0'.ord <= $c <= $upper.ord { 
+			$val = $val * $radix + $c - '0'.ord;
+		}
+	}
+	return $val;
+}
+
 sub MAIN ($type, $num) {
 	my $txt = lc($num);
 	my @ords = $txt.ords();
@@ -33,18 +43,10 @@ sub MAIN ($type, $num) {
 				if '0'.ord <= $c <= '9'.ord { $val = $val * 16 + $c - '0'.ord;}
 			}
 		}
+		when "dec" { $val = reval(@ords, '9', 10); }
+		when "oct" { $val = reval(@ords, '7', 8); }
+		when "bin" { $val = reval(@ords, '1', 2); }
 
-		when "dec"  { 
-			for @ords -> $c { 
-				if '0'.ord <= $c <= '9'.ord { $val = $val * 10 + $c - '0'.ord;}
-			}
-		}
-
-		when "bin"  { 
-			for @ords -> $c { 
-				if '0'.ord <= $c <= '1'.ord { $val = $val * 2 + $c - '0'.ord;}
-			}
-		}
 	}
 	#say "val = $val";
 
