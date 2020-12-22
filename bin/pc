@@ -25,7 +25,7 @@ done
 
 #DEV=/dev/ttyACM0
 if [ ! -e "$DEV" ]; then
-	DEV=`ls /dev/ttyUSB*`
+	DEV=`ls /dev/tty* | grep -E 'USB|ACM'`
 fi
 #DEV=/dev/ttyUSB*
 
