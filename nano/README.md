@@ -2,6 +2,7 @@
 
 ## In this directory
 
+* [arduino-cli-blink](arduino-cli-blink) - blink sketch basic example using arduino-cli
 * [avr](avr): low-level programming without Arduino IDE
 * [benchmarks-nano](benchmarks-nano)
 * [timer](timer): setting up timer interrupts

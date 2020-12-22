@@ -56,10 +56,11 @@ arduino-cli compile --fqbn stm32duino:STM32F1:genericSTM32F103C
 arduino-cli upload --port /dev/ttyACM0 --fqbn stm32duino:STM32F1:genericSTM32F103C
 
 arduino-cli upload --port /dev/cu.usbmodem14201 --fqbn arduino:samd:mkr1000 MKR1000-DHT11/
-
-
-
 ```
+
+## Also on this site
+
+* [example using nano with old bootloader](../nano/arduino-cl-blink)
 
 ## Links to other sites
 
