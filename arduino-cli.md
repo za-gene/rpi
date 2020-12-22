@@ -1,5 +1,38 @@
 # arduino-cli
 
+## install and setup
+
+```
+curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/.local/bin sh
+
+```
+
+`arduino:avr` might no be installed.  See what's available:
+```
+arduino-cli core search arduino
+```
+
+Then install it (35M):
+```
+arduino-cli core install arduino:avr
+```
+
+Confirm installation of nano:
+```
+arduino-cli board listall | grep -i avr
+```
+outputs:
+```
+...
+Arduino Nano                         arduino:avr:nano   
+...
+```
+
+
+
+
+## dunno
+
 ```
 arduino-cli config init
 
