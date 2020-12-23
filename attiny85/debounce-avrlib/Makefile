@@ -1,5 +1,5 @@
 CXX = avr-g++
-CXXFLAGS = -g -Os -Wall -mcall-prologues -mmcu=attiny85
+CXXFLAGS = -g -Os -Wall -mcall-prologues -mmcu=attiny85 -std=c++14
 BASE=app
 
 .PHONY: install clean

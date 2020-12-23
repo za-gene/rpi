@@ -19,3 +19,4 @@ Initial value 0. If a pin is configured for input (see DDRB), then setting the b
 
 Indeterminate intial value. Setting a bit to 1 toggles the corresponding bit in PORTB. The SBI
 instruction can be used to toggle one single bit in a port.
+Use this port to **read** a pin state
