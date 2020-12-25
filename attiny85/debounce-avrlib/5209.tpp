@@ -1,6 +1,7 @@
 --title ATTINY85 2-BUTTON DEBOUNCE
 --center Dec 2020
 
+
 --newpage
 --color red
 --title WARNING
@@ -9,20 +10,15 @@ Unorthodox coding practises ahead
 
 --newpage
 --title SCHEMATIC
-...
+Pic ...
 ---
---exec feh tutorial.png
+--exec feh tutorial.png &
+
 
 --newpage
---heading COLOPHON
-
-Presentation created using "tpp"
-
+--title MODULE
+Putting it all together.
+Physical module
+Schematic pic ...
 ---
-
-what now
----
-this is fun
----
---exec echo "foobar - this is the exec output"
-more bla.
+--exec feh module.png &
