@@ -7,7 +7,7 @@
 
 typedef uint8_t u8;
 
-void bounce(u8 input, u8 output, u8* grate)
+void debounce(u8 input, u8 output, u8* grate)
 {
 	*grate <<= 1; //shift the integrator
 	*grate |= (bit_is_set(PINB, input) != 0); // update it
@@ -25,8 +25,8 @@ int main()
 	u8 grate1 = 0xFF, grate2 = 0xFF; // init integrators for outputs
 
 loop:
-	bounce(PB3, PB2, &grate2);
-	bounce(PB4, PB1, &grate1);
+	debounce(PB3, PB2, &grate2);
+	debounce(PB4, PB1, &grate1);
 	_delay_ms(3);
 	goto loop;
 
