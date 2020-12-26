@@ -6,6 +6,7 @@ BASE=app
 
 $(BASE).hex : $(BASE).elf
 	avr-objcopy -R .eeprom -O ihex $^ $@
+	avr-objdump -D $^ >app.list
 
 $(BASE).elf : main.o 
 	$(CXX) -g -mmcu=attiny85 $^ -o $@ 
@@ -20,5 +21,5 @@ install:$(BASE).hex
 	install-hex $<
 
 clean :
-	rm -f *.hex *.obj *.o *.elf
+	rm -f *.hex *.obj *.o *.elf *.list
 

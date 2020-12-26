@@ -2,45 +2,32 @@
 
 
 #include <avr/io.h>
+#include <avr/sfr_defs.h>
 #include <util/delay.h>
 
 typedef uint8_t u8;
 
-typedef struct {
-	u8 ipin; // input pin
-	u8 opin; // output pin
-	u8 grate; // "integrater" value
-} bounce_t;
-
-
-bounce_t bounces[]= {
-	bounce_t{1<<PB3, 1<<PB2, 0xFF},
-	bounce_t{1<<PB4, 1<<PB1, 0xFF},
-	0
-};
+void bounce(u8 input, u8 output, u8* grate)
+{
+	*grate <<= 1; //shift the integrator
+	*grate |= (bit_is_set(PINB, input) != 0); // update it
+	if(*grate == 0xFF) PORTB |= _BV(output);
+	if(*grate == 0x00) PORTB &= ~_BV(output);
+}
 
 
 int main()
 {
-	// initialisation of pins
-	bounce_t *b = bounces;
-	while(b->ipin) {
-		DDRB  |= b->opin; // set the output pin to output
-		PORTB |= b->opin; // set the output pin high
-		PORTB |= b->ipin; // activate pull-up resistor on input pin
-		b++; // next set of pins
-	}
+	// PB:    43210 pin config (below)
+	DDRB  = 0b00110; // set PB1,2 as outputs
+	PORTB = 0b11110; // set inputs as pullups; outputs high
 
-	for(;;) {
-		b = bounces;
-		while(b->ipin) {
-			bool on = b->ipin & PINB;
-			b->grate = (b->grate <<1) | on; // update the integrator 
+	u8 grate1 = 0xFF, grate2 = 0xFF; // init integrators for outputs
 
-			if(b->grate == 0xFF) PORTB |= b->opin;
-			if(b->grate == 0x00) PORTB &= ~b->opin;
-			b++;
-		}
-		_delay_ms(3);
-	}
+loop:
+	bounce(PB3, PB2, &grate2);
+	bounce(PB4, PB1, &grate1);
+	_delay_ms(3);
+	goto loop;
+
 }
