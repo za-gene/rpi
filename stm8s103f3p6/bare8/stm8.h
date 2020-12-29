@@ -8,6 +8,7 @@ typedef uint32_t u32;
 typedef unsigned char uchar;
 typedef unsigned long  ulong;
 
+#define REG(addr) *(volatile u8*)(addr)
 
 // MEMORY MAP
 

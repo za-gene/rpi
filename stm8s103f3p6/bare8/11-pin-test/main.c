@@ -1,6 +1,6 @@
 #include <stm8.h>
 
-#define REG(addr) *(volatile u8*)(addr)
+
 
 #define I2C_CR1 REG(0x5200)
 #define I2C_CR2 REG(0x5201)
