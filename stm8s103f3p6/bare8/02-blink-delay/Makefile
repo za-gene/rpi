@@ -1,9 +1,25 @@
-HEX = app.ihx
+#CC = sdcc
+#CFLAGS = -mstm8
+#CFLAGS += -I..
+#VPATH = ..
 
-$(HEX) : main.c
-	sdcc main.c -lstm8 -mstm8 --out-fmt-ihx -o$(HEX)
-flash:
-	stm8flash -cstlinkv2 -pstm8s103f3 -w$(HEX)
+#HEX = app.ihx
 
-clean:
-	rm app.*
+RELS = main.rel gpio.rel
+
+include ../bare8.mk
+
+#all : $(HEX)
+
+
+#%.rel : %.c
+#	$(CC) $(CFLAGS) -c $<
+
+#$(HEX) : $(RELS)
+#	$(CC) $(CFLAGS) $(RELS)  --out-fmt-ihx -o$(HEX)
+
+#flash: $(HEX)
+#	stm8flash -cstlinkv2 -pstm8s103f3 -w$(HEX)
+
+#clean:
+#	rm -f .ihx *.lst *.asm *.sym *.rst *.rel *.cdb *.ihx *.lk *.map *.mem

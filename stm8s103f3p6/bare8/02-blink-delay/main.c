@@ -1,4 +1,4 @@
-#include "../stm8.h"
+#include <gpio.h>
 
 #define TIM2_CR1 *(uchar*)0x005300 // control register
 #define TIM2_EGR *(uchar*)0x005306 // Event Generation Register
@@ -9,7 +9,7 @@
 #define TIM2_CR1_CEN (1<<0) // counter enable
 #define TIM2_EGR_UG (1<<0) // update generation
 
-#define LED (1<<5) // inbuilt led
+//#define LED (1<<5) // inbuilt led
 
 void delay(u16 ms)
 {
@@ -34,11 +34,13 @@ void delay(u16 ms)
 
 int main()
 {
-	PORTB->DDR |= LED; // PB5 is now output
-	PORTB->CR1 |= LED; // PB5 is now pushpull
+	pinMode(LED_BUILTIN, OUTPUT);
+	//PORTB->DDR |= LED; // PB5 is now output
+	//PORTB->CR1 |= LED; // PB5 is now pushpull
 
 	while (1) {
-		PORTB->ODR ^= LED; // toggle
+		digitalToggle(LED_BUILTIN);
+		//PORTB->ODR ^= LED; // toggle
 		delay(1000);
 	}
 }
