@@ -1,16 +1,16 @@
-#include <stm8.h>
+#include <gpio.h>
 
 #define BUTTON PD3
 
 void main()
 {
-	gpio_mode_out(BUILTIN_LED);
-	gpio_mode_pullup(BUTTON);
+	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(BUTTON, INPUT_PULLUP);
 
 	while (1)
 	{
-		u8 high = gpio_read(BUTTON);
-		gpio_write(BUILTIN_LED, high);
+		u8 high = digitalRead(BUTTON);
+		digitalWrite(LED_BUILTIN, high);
 	}
 }
 
