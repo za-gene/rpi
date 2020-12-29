@@ -160,13 +160,13 @@ g_pfnVectors:
   .word 0
   .word PendSV_Handler
   .word SysTick_Handler
-  .word WWDG_IRQHandler
+  .word WWDG_IRQHandler // bit 0
   .word PVD_IRQHandler
   .word TAMPER_IRQHandler
   .word RTC_IRQHandler
   .word FLASH_IRQHandler
   .word RCC_IRQHandler
-  .word EXTI0_IRQHandler
+  .word EXTI0_IRQHandler // bit 6 ? 
   .word EXTI1_IRQHandler
   .word EXTI2_IRQHandler
   .word EXTI3_IRQHandler

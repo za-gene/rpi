@@ -1,9 +1,12 @@
 CC = sdcc
-CFLAGS = -lstm8 -mstm8
+#CFLAGS = -lstm8 -mstm8
+CFLAGS = -mstm8
+CFLAGS += -I..
+VPATH = ..
 
 HEX = app.ihx
 
-RELS = main.rel 
+RELS = main.rel gpio.rel
 
 all : $(HEX)
 

@@ -11,15 +11,6 @@ typedef unsigned long  ulong;
 
 // MEMORY MAP
 
-// forward declarations
-struct PORT_t;
-
-#define PORTA ((PORT_t*) 0x005000)
-#define PORTB ((PORT_t*) 0x005005)
-#define PORTC ((PORT_t*) 0x00500A)
-#define PORTD ((PORT_t*) 0x00500F)
-#define PORTE ((PORT_t*) 0x005014)
-#define PORTF ((PORT_t*) 0x005019)
 
 #define CLK_ICKR *(uchar*)0x50c0
 #define CLK_ECKR *(uchar*)0x50c1
@@ -76,13 +67,7 @@ struct PORT_t;
 
 
 
-typedef struct {
-	uchar ODR;
-	uchar IDR;
-	uchar DDR;
-	uchar CR1;
-	uchar CR2;
-} PORT_t;
+
 
 
 // END MEMORY MAP
@@ -169,6 +154,7 @@ typedef struct {
 #define nop() __asm__("nop")
 #define enable_interrupts() __asm__("rim");
 #define disable_interrupts() __asm__("sim");
+#define is_set(register_8, bit) ((register_8 & (1<<bit)) !=0)
 #define set_bit(register_8, bit) (register_8 |= (1 << bit))
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
 #define toggle_bit(register_8, bit) (register_8 ^= (1 << bit))
