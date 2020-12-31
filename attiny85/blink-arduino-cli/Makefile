@@ -1,24 +1,25 @@
-CXX = avr-g++
-CXXFLAGS = -g -Os -Wall -mcall-prologues -mmcu=attiny85
-BASE=app
+FQBN = attiny:avr:ATtiny85
 
-.PHONY: install clean
-
-$(BASE).hex : $(BASE).elf
-	avr-objcopy -R .eeprom -O ihex $^ $@
-
-$(BASE).elf : main.o 
-	$(CXX) -g -mmcu=attiny85 $^ -o $@ 
-
-.o :.cc
-	$(CXX) -c $^ 
+FQBN1 =$(subst :,.,$(FQBN))	
+FQBN1:=$(strip $(FQBN1))
+BDIR =build/$(FQBN)
+#HERE = $(shell basename $(CURDIR))
+HERE =$(notdir $(CURDIR))
+INO  =$(HERE).ino
+HEX  =build/$(FQBN1)/$(INO).hex
+BIN  =build/$(FQBN1)/$(INO).bin
+PORT = $(shell ls /dev/ttyUSB*)
 
 
-flash : install
+#hex : $(HEX)
 
-install:$(BASE).hex
-	install-hex $<
+$(BIN) : $(INO)
+	echo bin is $(BIN)
+	arduino-cli compile --fqbn "attiny:avr:ATtinyX5" -e 
+
+flash : 
+	install-hex build/*/*.hex
+	#arduino-cli upload -b "attiny:avr:ATtinyX5" -i $(HEX)
 
 clean :
-	rm -f *.hex *.obj *.o *.elf
-
+	rm -rf build
