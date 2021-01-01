@@ -41,6 +41,8 @@ sudo apt install gcc-avr avr-libc avrdude
 
 ## Links to other sites
 
+* [ATTinyCore](https://github.com/SpenceKonde/ATTinyCore)
+* [Pin changes and timer interrupts](https://embeddedthoughts.com/2016/06/06/attiny85-introduction-to-pin-change-and-timer-interrupts/)
 * [megaphone](https://www.youtube.com/watch?v=__ECzxnvEg8)
 * [narcoleptic](https://github.com/brabl2/narcoleptic) - 
 reduced power consumption
