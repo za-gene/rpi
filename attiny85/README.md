@@ -44,4 +44,5 @@ sudo apt install gcc-avr avr-libc avrdude
 * [megaphone](https://www.youtube.com/watch?v=__ECzxnvEg8)
 * [narcoleptic](https://github.com/brabl2/narcoleptic) - 
 reduced power consumption
+* [Software UART with Timer1](https://stackoverflow.com/questions/60997804/attiny85-software-uart-with-timer1)
 
