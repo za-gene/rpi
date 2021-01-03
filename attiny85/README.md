@@ -40,6 +40,7 @@ sudo apt install gcc-avr avr-libc avrdude
 
 ## In this directory
 
+* [adc](adc.md) - Adnalog to Digital Conversion
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
 * [gpio](gpio.md) - low-level notes
 * [pwm](pwm.md)

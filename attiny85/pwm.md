@@ -22,5 +22,8 @@ void loop()
 }
 ```
 
+
+Using oscilloscope, PWM frequence is 1.93KHz
+
 See: [pwm-cli](pwm-cli)
 
