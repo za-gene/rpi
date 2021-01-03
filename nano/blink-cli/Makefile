@@ -2,7 +2,6 @@ FQBN =arduino:avr:nano
 FQBN1 =$(subst :,.,$(FQBN))	
 FQBN1:=$(strip $(FQBN1))
 BDIR =build/$(FQBN)
-#HERE = $(shell basename $(CURDIR))
 HERE =$(notdir $(CURDIR))
 INO  =$(HERE).ino
 HEX  =build/$(FQBN1)/$(INO).hex
