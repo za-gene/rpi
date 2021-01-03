@@ -35,7 +35,7 @@ void loop()
 
 ```
 
-Confirmed working 2020-01-03 using oscilloscope with SEN1=1V, SEN2=X2, time setting 0.1ms.
+Confirmed working 2021-01-03 using oscilloscope with SEN1=1V, SEN2=X2, time setting 0.1ms.
 
 See: [adc-cli](adc-cli)
 
