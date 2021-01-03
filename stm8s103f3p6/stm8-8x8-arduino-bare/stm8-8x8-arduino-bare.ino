@@ -1,6 +1,7 @@
 // attempt to convert arduino library to bare metal
 
 // 2020-10-12 confirmed working
+// 2021-01-03 not working
 
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
