@@ -31,6 +31,7 @@ sudo apt install gcc-avr avr-libc avrdude
 
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
 * [gpio](gpio.md) - low-level notes
+* [pwm](pwm.md)
 * [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6). See also [audio](../audio)
 
 
