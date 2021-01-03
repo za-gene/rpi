@@ -1,4 +1,4 @@
-#define F_CPU 1000000UL
+//#define F_CPU 1000000UL
 
 
 #include <tinySPI.h>
@@ -20,7 +20,9 @@ void transfer_7219(uint8_t address, uint8_t value) {
 
 void setup() {
 	pinMode(CS, OUTPUT);
+	digitalWrite(CS, HIGH);
 	SPI.begin();
+	SPI.setDataMode(SPI_MODE0);
 	transfer_7219(0x0F, 0x00);
 	transfer_7219(0x09, 0xFF); // Enable mode B
 	transfer_7219(0x0A, 0x0F); // set intensity (page 9)
@@ -34,6 +36,7 @@ void loop() {
 	for (uint8_t i = 0; i < 8; ++i)
 	{
 		int val = num %  10;
+		//val = 7;
 		transfer_7219(8 - i, val);
 		num = num/10;
 		delay(1);

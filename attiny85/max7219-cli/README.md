@@ -1,8 +1,7 @@
-# ADC
+# SPI master 7-segment display
 
-LED brightness via PWM and ADC.
-
+DOESNT ORK
 
 ## Work history
 
-2021-01-03 2021-01-03
+2021-01-03 Fails
