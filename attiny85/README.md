@@ -18,6 +18,17 @@ Notes:
 * An means "Analog Input n"
 * PB means PORTB
 * PB5 requires a "fuse" to be set in order to use it.
+
+
+IN DEPTH:
+Pin 1: PB5: PCINT5  ~RESET  ADC0 
+Pin 2: PB3: PCINT3  XTAL1   CLKI  ~OC1B   ADC3
+Pin 3: PB4: PCINT4  XTAL2   CLKO   OC1B   ADC2
+Pin 4: GND
+Pin 5: PB0: MOSI DI SDA AIN0 OC0A ~OC1A AREF PCINT0
+Pin 6: PB1: MISO DO AIN1 OC0B OC1A PCINT1
+Pin 7: SCK USCK SCL ADC1 T0 INT0 PCINT2
+Pin 8: VCC
 ```
 
 ## setup AVR g++
