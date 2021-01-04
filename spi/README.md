@@ -20,6 +20,8 @@ DUP	- SUGGESTED DUPONT COLOURS
 
 ## Implementation examples
 
+* [nano-spi](nano-spi.md) - discussion of the master and slave in this irectory
+
 * [rpi-master-spi.py](rpi-master-spi.py) - example which has been proven to work
 * [rpi-spi-master-bcm2835](rpi-spi-master-bcm2835) - connects to the regular SPI slave on Raspbian
 * [stm32-spi-master-arduino](stm32-spi-master-arduino)
@@ -34,6 +36,7 @@ DUP	- SUGGESTED DUPONT COLOURS
 
 * MODE 0: data is sampled at the leading rising edge
 
+![](mode0.gif)
 
 ## Links to other sites
 
