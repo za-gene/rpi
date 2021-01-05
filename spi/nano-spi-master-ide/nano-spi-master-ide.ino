@@ -11,7 +11,7 @@ void setup() {
 
 void loop() {
   digitalWrite(CS, LOW);
-  int val = SPI.transfer(666);
+  int val = SPI.transfer(42);
   digitalWrite(CS, HIGH);
   Serial.println(val);
   delay(1000);
