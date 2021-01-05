@@ -50,7 +50,7 @@ void digitalToggle(u8 pb)
 }
 
 
-u8 count = 0;
+volatile u8 count = 0;
 
 #define GIMSK_INT0 (1<<6)
 #define GIMSK_PCIE (1<<5)
@@ -101,7 +101,7 @@ int main()
 	//digitalWrite(PB1, HIGH);
 	pinMode(SCK, INPUT);
 	//old_pb2 = digitalRead(PB2);
-	MCUCR |= MCUCR_ISC01;
+	MCUCR |= (1<<MCUCR_ISC01);
 
 	//pinMode(PB3, OUTPUT);
 	//digitalWrite(PB3, HIGH);
