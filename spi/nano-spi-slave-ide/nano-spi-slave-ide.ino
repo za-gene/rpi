@@ -13,7 +13,7 @@ volatile uint8_t cnt = 0;
 
 ISR(SPI_STC_vect)
 {
-  volatile byte c = SPDR; //received. doesn't seem to work, though
+  volatile byte c = SPDR;
   SPDR = cnt;
   Serial.println("Slave recd " + String(c) + ", sent " + String(cnt));
   cnt++;
