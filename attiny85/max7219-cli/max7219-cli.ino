@@ -1,9 +1,47 @@
 //#define F_CPU 1000000UL
 
 
-#include <tinySPI.h>
+#define CS    PB4
+#define CLK   PB2
+#define MOSI  PB0 
 
-#define CS PB4
+typedef uint8_t u8;
+
+void out(u8 pin, u8 init)
+{
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, init);
+}
+
+void setup_spi() {
+	out(CS, HIGH);
+	out(CLK, LOW);
+	out(MOSI, LOW);
+}
+
+void pause(int n = 10) { delayMicroseconds(n); }
+
+void mosi(u8* tfr, u8 pin)
+{
+	u8 hi = (*tfr) & (1<<7) ? 1 : 0;
+	digitalWrite(MOSI, hi);
+	pause();
+	*tfr <<= 1;
+}
+
+
+void spi_transfer(u8 val) {
+	u8 tfr = val;
+	mosi(&tfr, CS);
+	for(int i=0; i<8; i++) {
+		digitalWrite(CLK, HIGH);
+		pause();
+		digitalWrite(CLK, LOW);
+		mosi(&tfr, CLK);
+	}
+	//digitalWrite(CS, HIGH);
+	pause();
+}
 
 /**
   Transfers data to a MAX7219/MAX7221 register.
@@ -12,17 +50,18 @@
  */
 void transfer_7219(uint8_t address, uint8_t value) {
 	digitalWrite(CS, LOW);
-	SPI.transfer(address);
-	SPI.transfer(value);
+	spi_transfer(address);
+	spi_transfer(value);
 	digitalWrite(CS, HIGH);
 }
 
 
 void setup() {
-	pinMode(CS, OUTPUT);
-	digitalWrite(CS, HIGH);
-	SPI.begin();
-	SPI.setDataMode(SPI_MODE0);
+	setup_spi();
+	//pinMode(CS, OUTPUT);
+	//digitalWrite(CS, HIGH);
+	//SPI.begin();
+	//SPI.setDataMode(SPI_MODE0);
 	transfer_7219(0x0F, 0x00);
 	transfer_7219(0x09, 0xFF); // Enable mode B
 	transfer_7219(0x0A, 0x0F); // set intensity (page 9)
@@ -37,7 +76,7 @@ void loop() {
 	{
 		int val = num %  10;
 		//val = 7;
-		transfer_7219(8 - i, val);
+		transfer_7219(i+1, val);
 		num = num/10;
 		delay(1);
 	}
