@@ -22,6 +22,7 @@ to `sketch_feb04b`.
 * [pi bare metal](../crunky/examples/14-zeroseg)
 * [stm8 bare metal](../stm8s103f3p6/bare/10-max7219)
 * [stm32 bare metal](../stm32/bare/14-max7219)
+* [t85 sw cli](../attiny85/max7219-cli)
 
 
 ## Links to other sites
