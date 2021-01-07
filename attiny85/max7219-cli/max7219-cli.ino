@@ -6,6 +6,7 @@
 #define MOSI  PB0 
 
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 void out(u8 pin, u8 init)
 {
@@ -39,7 +40,6 @@ void spi_transfer(u8 val) {
 		digitalWrite(CLK, LOW);
 		mosi(&tfr, CLK);
 	}
-	//digitalWrite(CS, HIGH);
 	pause();
 }
 
@@ -58,10 +58,6 @@ void transfer_7219(uint8_t address, uint8_t value) {
 
 void setup() {
 	setup_spi();
-	//pinMode(CS, OUTPUT);
-	//digitalWrite(CS, HIGH);
-	//SPI.begin();
-	//SPI.setDataMode(SPI_MODE0);
 	transfer_7219(0x0F, 0x00);
 	transfer_7219(0x09, 0xFF); // Enable mode B
 	transfer_7219(0x0A, 0x0F); // set intensity (page 9)
@@ -70,16 +66,17 @@ void setup() {
 }
 
 void loop() {
-	static int cnt = 0;
-	int num = cnt++;
+	static u32 cnt = 0;
+	u32 num = cnt;
 	for (uint8_t i = 0; i < 8; ++i)
 	{
-		int val = num %  10;
+		u32 val = num %  10;
 		//val = 7;
 		transfer_7219(i+1, val);
 		num = num/10;
 		delay(1);
 	}
 	delay(1000);
+	cnt++;
 }
 
