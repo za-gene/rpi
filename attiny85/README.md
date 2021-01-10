@@ -51,6 +51,7 @@ sudo apt install gcc-avr avr-libc avrdude
 ## Also on this site
 
 * [clock](clock.md) - setting the clock frequency
+* [oled85](../1306/oled85) SSD1306
 * [t85-spi-sw-master-ide](../attiny85/t85-spi-sw-master-ide) - as a transmitter
 
 

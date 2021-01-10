@@ -15,7 +15,7 @@ WROOM    GND 3V  D22 D21
 ## Also in this directory
 
 * [fonts](fonts.md) - discussion of `figlet`
-* [oled85](oled85) - for the ATTiny85. It works, but the display isn't perfect. [xlink](https://www.instructables.com/ATTiny85-connects-to-I2C-OLED-display-Great-Things/)
+* [oled85](oled85) - for the ATTiny85. It works, but the display isn't perfect. [xlink](https://www.instructables.com/ATTiny85-connects-to-I2C-OLED-display-Great-Things/).See also db5/218 for toy module demo.
 * [wroom](wroom.md)
 
 ## Links to other sites
