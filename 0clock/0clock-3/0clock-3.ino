@@ -125,6 +125,7 @@ void serialise() {
 
 FallingButton sw0(3); // 0seg left button is A0, right button is A2
 FallingButton sw_left(A0);
+FallingButton sw_right(A2);
 
 //ezButton sw0(3);
 
@@ -188,6 +189,7 @@ void loop() {
     if (timing) {
       timing = false;
       show_clock = true;
+      sound(false);
     } else {
       timing = true;
       start_time = millis();

@@ -1,10 +1,14 @@
+#!/usr/bin/env python3
 import calendar
 import datetime
 import time
-import serial
+import serial # sudo apt install python3-serial
+
+port = "/dev/ttyACM0"
+port = "/dev/ttyUSB0"
 
 def send(data):
-    ser = serial.Serial(port="/dev/ttyUSB0", baudrate = 9600) 
+    ser = serial.Serial(port=port, baudrate = 9600) 
     print(ser.portstr)       # check which port was really used
     time.sleep(4)
     bin = data.encode('utf-8')
