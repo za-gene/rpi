@@ -2,15 +2,7 @@
 
 Clock using Nano, 0seg (zerosegment display) and DS3231.
 
-Install "RTClib by Adafruit".
-
-
-## Resetting time
-
-Run
-```
-python3 settime.py
-```
+**Reset time**: see [settime](settime)
 
 ## Schematics
 
