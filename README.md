@@ -97,3 +97,9 @@ Underside shown.
 ---
 
 ![](sdcard-spi.jpg) [sdcard-spi](sdcard-spi)
+
+
+## Links to other sites
+
+* [level-shifting without components](https://mcturra2000.wordpress.com/2021/01/08/arduino-and-raspberrypi-componentless-level-shifting/)
+
