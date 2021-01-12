@@ -21,6 +21,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [audio](audio)
 * [circuits](circuits.md) - various electrical circuits
 * [debounce](debounce) a button
+* [logic analyser](logic-analyser.md)
 * [serial](serial)
 * [software](software.md)
 * telnet server: [dev03-2](dev03/dev03-2)
