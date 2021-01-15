@@ -22,3 +22,6 @@ USI_OVF_vect
 `TIM` can be replaced by `TIMER`, e.g. `TIM1_COMPA_vect` as
 `TIMER1_COMPA_vect`. 
 
+## Also in this directory
+
+* [timer1](timer1) - use of Timer1 to fire an interrupt at any frequency

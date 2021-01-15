@@ -1,4 +1,6 @@
-# tone440
+# timer1
 
-Produce a tone of 440Hz on PB1 (pin 6)
+Set up an interrupt on Timer1 to fire at a rate of 500Hz
+
+The interrupt toggles PB1
 

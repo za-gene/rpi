@@ -37,8 +37,12 @@ Pin 8: VCC
 sudo apt install gcc-avr avr-libc avrdude
 ```
 
+## Projects
 
-## In this directory
+* [timer1](timer1) - user of timer1 with interrupts
+* [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6). See also [audio](../audio)
+
+## Technical notes
 
 * [adc](adc.md) - Adnalog to Digital Conversion
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
@@ -46,8 +50,6 @@ sudo apt install gcc-avr avr-libc avrdude
 * [gpio](gpio.md) - low-level notes
 * [interrupts](interrupts.md)
 * [pwm](pwm.md)
-* [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6). See also [audio](../audio)
-
 
 ## Also on this site
 
