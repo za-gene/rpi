@@ -4,6 +4,9 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+
+#define PIN (1<<PB2)
+
 void init_timer1(unsigned long freq)
 {
         TCCR1 = 0; // stop the counter
@@ -24,12 +27,12 @@ void init_timer1(unsigned long freq)
 
 ISR(TIMER1_COMPA_vect)
 {
-	PORTB ^= (1<<PB1); // toggle
+	PORTB ^= PIN; // toggle
 }
 
 int main()
 {
-	DDRB = 1<<PB1; // set PB1 for output
+	DDRB = PIN; // sett PIN for output
 	PORTB = 0x00;  // set all pins low
 	init_timer1(5000);
 
