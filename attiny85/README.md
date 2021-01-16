@@ -39,6 +39,7 @@ sudo apt install gcc-avr avr-libc avrdude
 
 ## Projects
 
+* [serial-avrlib](serial-avrlib) - transmit-only software serial
 * [timer1](timer1) - user of timer1 with interrupts
 * [tone440](tone440) - produce a 440Hz tone on PB1 (pin 6). See also [audio](../audio)
 

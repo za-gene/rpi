@@ -4,13 +4,14 @@ CXXFLAGS = $(CFLAGS) -g -Os -Wall -mcall-prologues -mmcu=attiny85 -std=c++14
 VPATH = $(ATTINY85)
 BASE=app
 ELF=$(BASE).elf
+HEX=$(BASE).hex
 
 
-all : $(ELF)
+all : $(HEX)
 
 .PHONY: install clean
 
-$(BASE).hex : $(ELF)
+$(HEX) : $(ELF)
 	avr-objcopy -R .eeprom -O ihex $^ $@
 	avr-objdump -D $^ >app.list
 
