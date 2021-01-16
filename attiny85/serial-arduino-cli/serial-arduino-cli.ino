@@ -1,6 +1,10 @@
+// vim: ft=cpp
+
 #define F_CPU 1000000UL
 
 #include <avr/io.h> // for TCCR1, OR1C
+
+#include <timer1.h>
 
 //#include <MsTimer2.h>
 
@@ -55,7 +59,9 @@ void flash()
 void setup() 
 { 
 	pinMode(TX, OUTPUT);
-	enable_timer1_irq(9600);
+	init_timer1(F_CPU, 9600);
+	
+	//enable_timer1_irq(9600);
  //MsTimer2::set(104, flash); // 500ms period
   //MsTimer2::start();
            
