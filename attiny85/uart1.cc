@@ -87,13 +87,13 @@ void send_uart1(char c)
 }
 
 
-void print_uart1(char* str)
+void print_uart1(const char* str)
 {
-	char* s = str;
+	char* s = (char*) str;
 	while(*s) send_uart1(*s++);
 }
 
-void puts_uart1(char* str)
+void puts_uart1(const char* str)
 {
 	print_uart1(str);
 	send_uart1('\r');
