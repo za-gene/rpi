@@ -1,14 +1,14 @@
-#include <uart1.h>
-
+#include <stdint.h>
 //#include <util/delay.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
 #include <timer1.h>
+#include <uart1.h>
 
 
-//typedef uint8_t u8;
+typedef uint8_t u8;
 
 //volatile u8 tx_rdy = 1;
 //volatile u8 tx_bit = 1;
@@ -27,7 +27,7 @@ volatile uint8_t UART1;
 
 #define UART1_BIT (1<<0) // bit to send
 #define UART1_RDY (1<<1) // ready?
-#define UART1_TX  (1<<5) // TX gpio pin
+#define UART1_TX  5 // TX gpio pin
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -56,7 +56,7 @@ void send_bit(u8 b)
 	UART1 &= ~UART1_RDY;
 }
 
-void send(u8 c)
+void send_uart1(char c)
 {
 	send_bit(0); // start bit
 	for(u8 i = 0; i < 8; i++) {
@@ -70,7 +70,7 @@ void send(u8 c)
 
 
 
-void init_uart1(unsigned long f_cpu. uint8_t tx_pin)
+void init_uart1(unsigned long f_cpu, uint8_t tx_pin)
 {
 	PORTB |= (1<<tx_pin); // set TX pin high
 	DDRB |= (1<<tx_pin);  // set TX pin as output pin

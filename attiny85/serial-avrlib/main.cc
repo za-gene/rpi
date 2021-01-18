@@ -1,13 +1,16 @@
 #define F_CPU 1000000UL
+#include <util/delay.h>
+#include <avr/io.h>
+#include <uart1.h>
+
+#if 0
 
 
 //#include <avr/io.h>
-#include <util/delay.h>
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include <timer1.h>
+//#include <timer1.h>
 
 #define TX (1<<PB1)
 
@@ -15,7 +18,6 @@ typedef uint8_t u8;
 
 volatile u8 tx_rdy = 1;
 volatile u8 tx_bit = 1;
-//u8 tx_send = 0;
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -59,20 +61,25 @@ void send(u8 c)
 }
 
 
+#endif
+
+#define TX PB1
 
 int main()
 {
+	init_uart1(F_CPU, TX);
+#if 0
 	PORTB = TX; // set TX output high
 	DDRB = TX; // set TX for output
-	//PORTB = 0x00;  // set all pins low
 	init_timer1(F_CPU, 9600); 
 	//init_timer1(F_CPU, 115200); 
+#endif
 
 	for(;;) {
 		for(int c = 'A'; c < 'E'; c++)
-			send(c);
-		send('\r');
-		send('\n');
+			send_uart1(c);
+		send_uart1('\r');
+		send_uart1('\n');
 		_delay_ms(1000);
 		//PORTB ^= (1<<PB1);
 	}
