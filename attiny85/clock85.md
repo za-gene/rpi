@@ -31,10 +31,15 @@ In the file:
 
 void setup() {
 	// set clock to 8MHz
-	cli(); // disable interrupts
+	//cli(); // disable interrupts
 	CLKPR = 1 << CLKPCE; // Tell chip we want to scale the clock
 	CLKPR = 0; // prescaler is 1, giving 8MHz
-	sei(); // enable interrupts
+	//sei(); // enable interrupts
 	...
 }    
 ```
+
+It also works with avrlib.
+
+No fuse changes are required.
+

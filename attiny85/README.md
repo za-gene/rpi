@@ -47,14 +47,15 @@ sudo apt install gcc-avr avr-libc avrdude
 
 * [adc](adc.md) - Adnalog to Digital Conversion
 * [Arduino-IDE](Arduino-IDE.md) - setting it up for the ATTiny85
+* [clock](clock.md) - setting the clock frequency
 * [digistump](digistump.md)
 * [gpio](gpio.md) - low-level notes
 * [interrupts](interrupts.md)
 * [pwm](pwm.md)
+* [timer0](timer0.md) - including millis
 
 ## Also on this site
 
-* [clock](clock.md) - setting the clock frequency
 * [oled85](../1306/oled85) SSD1306
 * [t85-spi-sw-master-ide](../attiny85/t85-spi-sw-master-ide) - as a transmitter
 
