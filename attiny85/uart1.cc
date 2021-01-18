@@ -82,9 +82,23 @@ void send_uart1(char c)
 	}
 	send_bit(1); // stop bit
 	send_bit(1); // stop bit
+	send_bit(1); // stop bit
 
 }
 
+
+void print_uart1(char* str)
+{
+	char* s = str;
+	while(*s) send_uart1(*s++);
+}
+
+void puts_uart1(char* str)
+{
+	print_uart1(str);
+	send_uart1('\r');
+	send_uart1('\n');
+}
 
 
 void init_uart1(unsigned long f_cpu, uint8_t tx_pin)

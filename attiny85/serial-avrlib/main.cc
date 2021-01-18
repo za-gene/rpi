@@ -15,10 +15,7 @@ int main()
 	uint i =0;
 	for(;;) {
 		utoa(i++, str, 10);
-		char* s1= str;
-		while(*s1) send_uart1(*s1++);
-		send_uart1('\r');
-		send_uart1('\n');
-		_delay_ms(500);
+		puts_uart1(str);
+		_delay_ms(400);
 	}
 }
