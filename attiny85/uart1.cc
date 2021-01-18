@@ -10,12 +10,13 @@
 
 typedef uint8_t u8;
 
-//volatile u8 tx_rdy = 1;
-//volatile u8 tx_bit = 1;
+volatile u8 tx_rdy = 1;
+volatile u8 tx_bit = 1;
+volatile u8 _tx_pin;
 
 
 
-volatile uint8_t UART1;
+//volatile uint8_t UART1;
 
 /* bit layout of UART1
  * 76513210
@@ -25,12 +26,21 @@ volatile uint8_t UART1;
  * B: Bit to send
  */
 
-#define UART1_BIT (1<<0) // bit to send
-#define UART1_RDY (1<<1) // ready?
-#define UART1_TX  5 // TX gpio pin
+//#define UART1_BIT (1<<0) // bit to send
+//#define UART1_RDY (1<<1) // ready?
+//#define UART1_TX  5 // TX gpio pin
 
 ISR(TIMER1_COMPA_vect)
 {
+#if 1
+	if(tx_bit)
+		PORTB |= _tx_pin;
+	else
+		PORTB &= ~_tx_pin;
+	tx_rdy = 1;
+#else
+
+
 	uint8_t tx = 1 << (UART1 >> UART1_TX); // get TX gpio pin
 	if(UART1 & UART1_BIT)
 		PORTB |= tx;
@@ -38,6 +48,7 @@ ISR(TIMER1_COMPA_vect)
 		PORTB &= ~tx;
 	//tx_rdy = 1;
 	UART1 |= UART1_RDY;
+#endif
 }
 
 
@@ -45,6 +56,11 @@ ISR(TIMER1_COMPA_vect)
 
 void send_bit(u8 b)
 {
+#if 1
+	while(!tx_rdy);
+	tx_bit =b;
+	tx_rdy = 0;
+#else
 	while(!(UART1 & UART1_RDY));
 
 	//tx_bit = b;
@@ -54,6 +70,7 @@ void send_bit(u8 b)
 		UART1 &= ~UART1_BIT; 
 	//tx_rdy = 0;
 	UART1 &= ~UART1_RDY;
+#endif
 }
 
 void send_uart1(char c)
@@ -72,10 +89,18 @@ void send_uart1(char c)
 
 void init_uart1(unsigned long f_cpu, uint8_t tx_pin)
 {
+#if 1
+	_tx_pin = (1<<tx_pin);
+	PORTB |= _tx_pin;
+	DDRB  |= _tx_pin;
+	init_timer1(f_cpu, 9600);
+#else
 	PORTB |= (1<<tx_pin); // set TX pin high
 	DDRB |= (1<<tx_pin);  // set TX pin as output pin
 	//UART1 = 0;
 	UART1 = tx_pin << UART1_TX;
 	UART1 |= UART1_RDY; // set serial as ready to transmit
+	UART1 |= UART1_BIT; // default set to idle, high
 	init_timer1(f_cpu, 9600); 
+#endif
 }
