@@ -1,3 +1,4 @@
+#include <gpio.h>
 #include <stm8.h>
 #include <millis.h>
 
@@ -5,11 +6,11 @@
 
 void main()
 {
-	gpio_mode_out(PD4);
-	gpio_mode_out(PD5);
-	gpio_mode_out(PD6);
-	gpio_mode_out(CS); // apparently needed
-	gpio_mode_out(BUILTIN_LED);
+	pinMode(PD4, OUTPUT);
+	pinMode(PD5, OUTPUT);
+	pinMode(PD6, OUTPUT);
+	pinMode(CS, OUTPUT); // apparently needed
+	pinMode(LED_BUILTIN, OUTPUT);
 	//gpio_write(CS, 1);
 	init_millis();
 
@@ -29,11 +30,11 @@ void main()
 		SPI_DR = 0; // seems necessary
 		//gpio_write(CS, 1);
 
-		gpio_write(PD6, val & 0b1);
-		gpio_write(PD5, val & 0b10);
-		gpio_write(PD4, val & 0b100);
-		
-		gpio_toggle(BUILTIN_LED);
+		digitalWrite(PD6, val & 0b1);
+		digitalWrite(PD5, val & 0b10);
+		digitalWrite(PD4, val & 0b100);
+
+		digitalToggle(LED_BUILTIN);
 		//++val;
 		delay_millis(1000);
 	}

@@ -7,6 +7,7 @@ void setup() {
   digitalWrite(CS, HIGH);
   Serial.begin(115200);
   SPI.begin();
+  SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
 }
 
 void loop() {
