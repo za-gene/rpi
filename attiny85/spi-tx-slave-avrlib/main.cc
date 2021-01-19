@@ -50,6 +50,9 @@ void digitalToggle(u8 pb)
 }
 
 
+bool high(uint8_t pin) { return PINB & (1<<pin) ; }
+bool low(uint8_t pin)  { return high(pin) != 0; }
+
 volatile u8 count = 0;
 
 #define GIMSK_INT0 (1<<6)
@@ -97,24 +100,34 @@ ISR(PCINT0_vect)
 
 int main()
 {
+	CLKPR = 1 << CLKPCE; // Tell chip we want to scale the clock
+	CLKPR = 0; // prescaler is 1, giving 8MHz
+
+	u8 value = 0, bits;
 	pinMode(MISO, OUTPUT);
-	//digitalWrite(PB1, HIGH);
 	pinMode(SCK, INPUT);
-	//old_pb2 = digitalRead(PB2);
-	MCUCR |= (1<<MCUCR_ISC01);
+	//MCUCR |= (1<<MCUCR_ISC01);
 
-	//pinMode(PB3, OUTPUT);
-	//digitalWrite(PB3, HIGH);
 	pinMode(CS, INPUT);
-	//old_pb4 = digitalRead(PB4);
 
-	PCMSK |= _BV(CS); // Pin Change Mask. Handle changes on PB2 and PB4
-	GIMSK |= GIMSK_INT0 | GIMSK_PCIE; // Enable pin change interrupt in Gen Interrupt Mask
-	sei(); // enable interrupts
+	//PCMSK |= _BV(CS); // Pin Change Mask. Handle changes on PB2 and PB4
+	//GIMSK |= GIMSK_INT0 | GIMSK_PCIE; // Enable pin change interrupt in Gen Interrupt Mask
+	//sei(); // enable interrupts
 
-	pinMode(PB0, OUTPUT);
-	while(1) {
-		digitalToggle(PB0);
-		_delay_ms(500);
+	//pinMode(PB0, OUTPUT);
+send_byte:
+	bits = value;
+	while(high(CS));
+	//while(low(SCK));
+	//for(uint8_t i = 0; i< 8; i++) {
+	while(low(CS)) {
+		digitalWrite(MISO, bits>>7);
+		while(high(SCK));
+		bits <<= 1;
+		//digitalWrite(MISO, bits>>7);
+		while(low(SCK));
 	}
+	value++;
+	//while(low(CS));
+	goto send_byte;
 }

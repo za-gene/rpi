@@ -8,7 +8,8 @@ HEX=$1
 
 sudo gpio -g mode 22 out
 sudo gpio -g write 22 0
-sudo avrdude -p $AVRDUDEMCU -P /dev/spidev0.0 -c linuxspi -b 10000 \
+# -V => don't verify
+sudo avrdude -p $AVRDUDEMCU -P /dev/spidev0.0 -c linuxspi -b 10000 -V \
 	-U flash:w:$HEX
 
 sudo gpio -g write 22 1

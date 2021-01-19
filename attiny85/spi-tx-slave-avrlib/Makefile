@@ -1,4 +1,4 @@
-OBJS = main.o gpio.o
+OBJS = main.o #gpio.o
 
 include $(ATTINY85)/t85.mk
 
