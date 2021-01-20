@@ -32,7 +32,8 @@ Pi2: LINKERFILE = rpi32.ld
 Pi2: SMARTSTART = SmartStart32.S
 Pi2: IMGFILE = kernel7.img
 
-Pi1: CFLAGS = -Wall -O3 -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffreestanding -nostartfiles -std=c11 -mno-unaligned-access -fno-tree-loop-vectorize -fno-tree-slp-vectorize -Wno-nonnull-compare
+#Pi1: CFLAGS = -Wall -O3 -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -ffreestanding -nostartfiles -std=c11 -mno-unaligned-access -fno-tree-loop-vectorize -fno-tree-slp-vectorize -Wno-nonnull-compare
+Pi1: CFLAGS =  -nostdlib -nostartfiles -ffreestanding -mfloat-abi=hard -mfpu=vfp
 #Pi1: ARMGNU = D:/gcc_pi_7_2/bin/arm-none-eabi
 Pi1: ARMGNU = arm-none-eabi
 Pi1: LINKERFILE = rpi32.ld
