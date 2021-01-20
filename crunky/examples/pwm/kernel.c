@@ -30,10 +30,10 @@
 // This controls the max range of the PWM signal
 #define RANGE 1024
 
-void kernl_main()
+void kernel_main()
 {
 	if (!bcm2835_init())
-		return 1;
+		return;
 
 	// Set the output pin to Alt Fun 5, to allow PWM channel 0 to be output there
 	bcm2835_gpio_fsel(PIN, BCM2835_GPIO_FSEL_ALT5);
