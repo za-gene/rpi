@@ -26,7 +26,7 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-MYCFLAGS= -nostdlib -nostartfiles -ffreestanding -mfloat-abi=hard # mcarter
+MYCFLAGS= -nostdlib -nostartfiles -ffreestanding -mfloat-abi=hard  -march=armv6zk -mcpu=arm1176jzf-s -mfpu=vfp # mcarter
 #MYCFLAGS=
 MYLDFLAGS=
 MYLIBS=

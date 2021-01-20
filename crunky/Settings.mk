@@ -23,7 +23,9 @@ HEX = $(KERNEL).hex
 
 COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY) 
 COPS += -DRPI=$(RPI)
-COPS += -mfloat-abi=hard
+
+# for Pi0:
+COPS += -mfloat-abi=hard -march=armv6zk -mcpu=arm1176jzf-s -mfpu=vfp
 
 CXXFLAGS = $(COPS)
 

@@ -41,6 +41,8 @@ void kernel_main()
 	uart0_init();
 	uart0_puts(msg);
 
+	lua_stuff();
+
 	// echo everything back
 	while(1) {
 		int c = uart0_getc();

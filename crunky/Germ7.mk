@@ -29,9 +29,10 @@ LINKER = $(CRUNKY)/linker.ld
 
 #XCEPT = -L /usr/lib/arm-none-eabi/newlib -lsupc++
 NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
+GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(LUALIB) $(NEWLIB)  ../../nanolib-impl.o -o $@
+	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(LUALIB) $(NEWLIB)  ../../nanolib-impl.o  $(GCCLIB) -lm -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)
