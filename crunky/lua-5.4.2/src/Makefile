@@ -5,8 +5,13 @@
 
 # Your platform. See PLATS for possible values.
 PLAT= guess
+PLAT= generic # mcarter
 
 CC= gcc -std=gnu99
+CC= arm-none-eabi-gcc # mcarter
+
+MYCFLAGS= -nostdlib -nostartfiles -ffreestanding # mcarter
+
 CFLAGS= -O2 -Wall -Wextra -DLUA_COMPAT_5_3 $(SYSCFLAGS) $(MYCFLAGS)
 LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
@@ -20,7 +25,8 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-MYCFLAGS=
+MYCFLAGS= -nostdlib -nostartfiles -ffreestanding # mcarter
+#MYCFLAGS=
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=
