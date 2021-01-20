@@ -9,9 +9,15 @@ Outputs to uart0 at 115200 baud. Confirmed working on a Pi3 although qemu still 
 
 ## SD CARD
 
-Yourr SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course the generated kernel.img. Exclude config.txt
+Yorr SD will need to contain bootcode.bin, fixup.dat, start.elf, and of course the generated kernel.img. 
+Exclude config.txt.
+
+
+## STATUS
+
+2021-01-21 Pi0 confirmed working
+
 
 ## REFERENCES
-
 
 * [bztsrc](https://github.com/bztsrc/raspi3-tutorial.git)  does most of the heavy lifting for this project. Fonts were also obtained from that repo.

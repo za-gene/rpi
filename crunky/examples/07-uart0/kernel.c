@@ -47,6 +47,6 @@ void kernel_main()
     while(1) {
 	    int c = uart0_getc();
 	    fbputchar(c);
-    	    uart0_send(c);
+    	    uart0_putchar(c);
     }
 }
