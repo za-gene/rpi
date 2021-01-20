@@ -31,7 +31,7 @@ LINKER = $(CRUNKY)/linker.ld
 NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/ -lc_nano
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(NEWLIB) -o $@
+	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(LUALIB) $(NEWLIB)  ../../nanolib-impl.o -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)

@@ -6,6 +6,7 @@
 # Your platform. See PLATS for possible values.
 PLAT= guess
 PLAT= generic # mcarter
+PLAT= c89 # mcarter
 
 CC= gcc -std=gnu99
 CC= arm-none-eabi-gcc # mcarter
@@ -25,7 +26,7 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-MYCFLAGS= -nostdlib -nostartfiles -ffreestanding # mcarter
+MYCFLAGS= -nostdlib -nostartfiles -ffreestanding -mfloat-abi=hard # mcarter
 #MYCFLAGS=
 MYLDFLAGS=
 MYLIBS=
@@ -111,7 +112,7 @@ bsd:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-Wl,-E"
 
 c89:
-	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_C89" CC="gcc -std=c89"
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_C89" CC="arm-none-eabi-gcc -std=c89"
 	@echo ''
 	@echo '*** C89 does not guarantee 64-bit integers for Lua.'
 	@echo ''

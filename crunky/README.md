@@ -23,6 +23,7 @@ arm-none-eabi-objdump -D kernel.elf
 
 ## In this directory
 
+* [arch](arch.md) - architecture-specific information
 * [interrupts](interrupts.md)
 * [malloc](malloc.md) - also discusses the heap
 * [usb](usb) - it's not easy, that's for sure.

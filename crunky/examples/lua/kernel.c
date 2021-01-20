@@ -1,52 +1,50 @@
-/*
- * Copyright (C) 2018 bzt (bztsrc@github)
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- */
+#include "../../lua-5.4.2/src/lua.h"
+#include "../../lua-5.4.2/src/lauxlib.h"
+#include "../../lua-5.4.2/src/lualib.h"
+
 
 #include <uart0.h>
 #include <lfb.h>
 
+void lua_stuff()
+{
+	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
+
+	// Work with lua API
+	char * code = "print('Hello from lua')";
+	if (luaL_loadstring(L, code) == LUA_OK) {
+		if (lua_pcall(L, 0, 1, 0) == LUA_OK) {
+			// If it was executed successfuly we
+			// remove the code from the stack
+			lua_pop(L, lua_gettop(L));
+		}
+	}
+
+	lua_close(L);
+}
+
 void kernel_main()
 {
-    char msg[] = "I'll now echo back everything you type 1";
+	char msg[] = "I'll now echo back everything you type 1";
 
-    lfb_init();
-    fbputs(msg);
+	lfb_init();
+	fbputs(msg);
 
-    // display an ASCII string on screen with PSF
-    //lfb_print(80, 80, "Hello World!");
+	// display an ASCII string on screen with PSF
+	//lfb_print(80, 80, "Hello World!");
 
-    // display a UTF-8 string on screen with SSFN
-    //lfb_proprint(80, 120, "Hello 多种语言 Многоязычный többnyelvű World!");
+	// display a UTF-8 string on screen with SSFN
+	//lfb_proprint(80, 120, "Hello 多种语言 Многоязычный többnyelvű World!");
 
 
-    uart0_init();
-    uart0_puts(msg);
+	uart0_init();
+	uart0_puts(msg);
 
-    // echo everything back
-    while(1) {
-	    int c = uart0_getc();
-	    fbputchar(c);
-    	    uart0_putchar(c);
-    }
+	// echo everything back
+	while(1) {
+		int c = uart0_getc();
+		fbputchar(c);
+		uart0_putchar(c);
+	}
 }

@@ -5,7 +5,8 @@
 
 # Your platform. See PLATS for possible values.
 PLAT= guess
-PLAT= generic
+PLAT= generic #mcarter
+PLAT= c89 #mcarter
 
 # Where to install. The installation starts in the src and doc directories,
 # so take care if INSTALL_TOP is not an absolute path. See the local target.
