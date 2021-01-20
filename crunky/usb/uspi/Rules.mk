@@ -18,6 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+RASPPI = 1
+PREFIX = arm-none-eabi-
+
 ifeq ($(strip $(USPIHOME)),)
 USPIHOME = ..
 endif
@@ -41,7 +44,7 @@ AR	= $(PREFIX)ar
 
 ifeq ($(strip $(AARCH64)),0)
 ifeq ($(strip $(RASPPI)),1)
-ARCH	?= -march=armv6j -mtune=arm1176jzf-s
+#ARCH	?= -march=armv6j -mtune=arm1176jzf-s
 TARGET	?= kernel
 else ifeq ($(strip $(RASPPI)),2)
 ARCH	?= -march=armv7-a -mtune=cortex-a7

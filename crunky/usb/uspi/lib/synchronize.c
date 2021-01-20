@@ -22,8 +22,12 @@
 #include <uspi/assert.h>
 
 #ifndef AARCH64
-	#define	EnableInterrupts()	__asm volatile ("cpsie i")
-	#define	DisableInterrupts()	__asm volatile ("cpsid i")
+// mcarter 2021-01-20 having a go
+	//#define	EnableInterrupts()	__asm volatile ("cpsie i")
+	#define	EnableInterrupts()	__asm volatile ("mrs r0,cpsr\n\tbic r0,r0,#0x80\n\tmsr cpsr_c,r0")
+
+	//#define	DisableInterrupts()	__asm volatile ("cpsid i")
+	#define	DisableInterrupts()	__asm volatile ("mrs r0,cpsr\n\torr r0,r0,#0x80\n\tmsr cpsr_c,r0")
 #else
 	#define	EnableInterrupts()	__asm volatile ("msr DAIFClr, #2")
 	#define	DisableInterrupts()	__asm volatile ("msr DAIFSet, #2")

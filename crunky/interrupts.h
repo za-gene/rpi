@@ -6,6 +6,7 @@ typedef void (*funcptr)();
 
 void set_irq_handler(funcptr fn);
 void enable_irq ();
+void disable_irq ();
 void enable_arm_timer_irq();
 
 // Per BCM2837 s7.5 p112 for Pi3
