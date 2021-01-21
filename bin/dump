@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Dump an elf file, first figuring out
+# what type of elf file it is and invoking the appropriate command
+
+TYPE=`file $1`
+#echo TYPE is $TYPE
+CMD=UNKNOWN
+if [[ "$TYPE" =~ "EABI5" ]]; then
+	CMD=arm-none-eabi-objdump
+	echo matched eabi5
+fi
+
+if [[ "$TYPE" =~ "YUK" ]]; then
+	echo matched YUK
+fi
+
+if [ "$CMD" == "UNKNOWN" ]; then
+	echo ERR: Unknown file type
+	exit 1
+fi
+
+echo cmd is $CMD
+$CMD -d $1
