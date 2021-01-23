@@ -12,6 +12,13 @@ WROOM    GND 3V  D22 D21
 ```
 
 
+## Pico Micropython
+
+Load ssd1306.py into Pico. Then pico1306.py.
+
+It seems that it can get into a stuck state sometimes, so you
+may find it helps to recycle the power.
+
 ## Also in this directory
 
 * [fonts](fonts.md) - discussion of `figlet`
