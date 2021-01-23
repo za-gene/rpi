@@ -13,12 +13,12 @@ def get_temp():
     print(temperature)
     return temperature
 
-spi_miso=machine.Pin(16)
-spi_sck=machine.Pin(18)
-spi_mosi=machine.Pin(19)
+spi_miso=machine.Pin(16) # physical pin 21
+spi_sck=machine.Pin(18) # physical pin 24
+spi_mosi=machine.Pin(19) # physical pin 25
 
-rs = machine.Pin(20, machine.Pin.OUT)
-cs = machine.Pin(17, machine.Pin.OUT)
+rs = machine.Pin(20, machine.Pin.OUT) # physical pin 26
+cs = machine.Pin(17, machine.Pin.OUT) # physical pin 22
 cs.value(1)
 
 def digitalWrite(pin, val): pin.value(1 if val else 0 )
