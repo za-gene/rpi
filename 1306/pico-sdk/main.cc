@@ -1,4 +1,8 @@
 #include <stdint.h>
+#include <string.h>
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
+
 
 //# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
@@ -31,10 +35,13 @@ typedef uint8_t u8;
 
 const u8 height = 128;
 const u8 width = 64;
+const int pages = height / 8;
 const bool external_vcc = false;
 
 
 u8 scr[height*width];
+
+void write_cmd(u8 cmd);
 
 void fill_scr(u8 v)
 {
@@ -82,6 +89,7 @@ void send2(u8 v1, u8 v2)
 	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
 }
 
+void write_cmd(u8 cmd) { send2(0x80, cmd); }
 
 void show_scr()
 {
@@ -97,8 +105,16 @@ void show_scr()
 void write_cmds(u8* cmds, int n)
 {
 	for(int i=0; i<n; i++)
-		send2(0x80, cmds[i]);
+		write_cmd(cmds[i]);
 }
+
+void poweroff() { write_cmd(SET_DISP | 0x00); }
+
+void poweron() { write_cmd(SET_DISP | 0x01); }
+
+void contrast(u8 contrast) { write_cmd(SET_CONTRAST); write_cmd(contrast); }
+
+void invert(u8 invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
 
 
 void init_display()
@@ -156,19 +172,6 @@ self.buffer = bytearray(self.pages * self.width)
 super().__init__(self.buffer, self.width, self.height, framebuf.MONO_VLSB)
 self.init_display()
 
-def poweroff(self):
-self.write_cmd(SET_DISP | 0x00)
-
-def poweron(self):
-self.write_cmd(SET_DISP | 0x01)
-
-def contrast(self, contrast):
-self.write_cmd(SET_CONTRAST)
-self.write_cmd(contrast)
-
-def invert(self, invert):
-self.write_cmd(SET_NORM_INV | (invert & 1))
-
 
 class SSD1306_I2C(SSD1306):
 def __init__(self, width, height, i2c, addr=0x3C, external_vcc=False):
@@ -186,6 +189,7 @@ self.i2c.writevto(self.addr, self.write_list)
 
 int main()
 {
+	init_display();
 	for(;;);
 	return 0;
 }
