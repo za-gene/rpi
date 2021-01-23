@@ -75,6 +75,14 @@ void i2c_write_byte(u8 c)
 }
 
 
+void send2(u8 v1, u8 v2)
+{
+	u8 buf[2];
+	buf[0] = v1;
+	buf[1] = v2;
+	//write_i2c(SID, buf, 2, true);
+	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
+}
 // Issue single command to SSD1306, using I2C or hard/soft SPI as needed.
 // Because command calls are often grouped, SPI transaction and selection
 // must be started/ended in calling function for efficiency.
@@ -86,11 +94,7 @@ void ssd1306_command1(uint8_t c) {
 	i2c_write_byte(c);
 	//end_i2c();
 #else
-	u8 buf[2];
-	buf[0] = 0;
-	buf[1] = c;
-	//write_i2c(SID, buf, 2, true);
-	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
+	send2(0x80, c);
 #endif
 }
 
@@ -109,9 +113,12 @@ void send_something(const uint8_t *c, u8 init_val, uint8_t n) {
 }
 
 
+
+
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
 #if 1
-	send_something(c, 0, n);
+	for(int i = 0; i<n; i++) 
+		send2(0x80, c[i]);
 #else
 	begin_i2c(SID, false);
 	send_u8_i2c(0x00); // Co = 0, D/C = 0
@@ -228,10 +235,10 @@ void display1306(void) {
 		0,                      // Page start address
 		0xFF,                   // Page end (not really, but works here)
 		SSD1306_COLUMNADDR, 
-		0, WIDTH-1 // column end address
+		0
 	}; // Column start address
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	//ssd1306_command1(WIDTH - 1); // Column end address
+	ssd1306_command1(WIDTH - 1); // Column end address
 
 
 	uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
