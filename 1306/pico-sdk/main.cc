@@ -80,7 +80,7 @@ void i2c_write_byte(u8 c)
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-#if 1
+#if 0
 	//begin_i2c(SID, false);
 	i2c_write_byte(0);
 	i2c_write_byte(c);
@@ -89,7 +89,8 @@ void ssd1306_command1(uint8_t c) {
 	u8 buf[2];
 	buf[0] = 0;
 	buf[1] = c;
-	write_i2c(SID, buf, 2, true);
+	//write_i2c(SID, buf, 2, true);
+	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
 #endif
 }
 
@@ -100,11 +101,23 @@ void send_u8_i2c(u8 c) {
 	i2c_write_byte(c);
 }
 
+void send_something(const uint8_t *c, u8 init_val, uint8_t n) {
+	u8 bytes[n+1];
+	bytes[0] = init_val;
+	for(int i =0; i<n; i++) bytes[i+1] = c[i];	
+	i2c_write_blocking(I2C_PORT, SID, bytes, n+1, false);
+}
+
+
 void ssd1306_commandList(const uint8_t *c, uint8_t n) {
+#if 1
+	send_something(c, 0, n);
+#else
 	begin_i2c(SID, false);
 	send_u8_i2c(0x00); // Co = 0, D/C = 0
 	while (n--) send_u8_i2c(*c++);
 	end_i2c();
+#endif
 }
 
 void clear1306() {
@@ -214,18 +227,23 @@ void display1306(void) {
 		SSD1306_PAGEADDR,
 		0,                      // Page start address
 		0xFF,                   // Page end (not really, but works here)
-		SSD1306_COLUMNADDR, 0
+		SSD1306_COLUMNADDR, 
+		0, WIDTH-1 // column end address
 	}; // Column start address
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	ssd1306_command1(WIDTH - 1); // Column end address
+	//ssd1306_command1(WIDTH - 1); // Column end address
 
 
 	uint16_t count = WIDTH * ((HEIGHT + 7) / 8);
 	uint8_t *ptr = buffer1306;
+#if 1
+	send_something(ptr, 0x40, count);
+#else
 	begin_i2c(SID, false);
 	send_u8_i2c(0x40);
 	while (count--) send_u8_i2c(*ptr++);
 	end_i2c();
+#endif
 }
 
 
@@ -309,16 +327,18 @@ void draw_letter(u8 letter[]) {
 }
 
 int main() {
+	stdio_init_all();
 	//ser.begin(115200);
-	//ser.println("testing oled");
+	printf("\ntesting oled\n");
 
+	puts("init1306...");
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-	if (!init1306(SSD1306_SWITCHCAPVCC)) {
-		//ser.println(F("SSD1306 allocation failed"));
-		for (;;);
-	}
+	init1306(SSD1306_SWITCHCAPVCC);
+	
+	delayish(2000);
 	//ser.println("display begun");
 
+	puts("draw prixel...");
 	draw_pixel1306(10, 10, SSD1306_WHITE);
 
 	// Show the display buffer on the screen. You MUST call display() after
@@ -330,6 +350,7 @@ int main() {
 	// drawing operations and then update the screen all at once by calling
 	// display.display(). These examples demonstrate both approaches...
 
+	puts("draw letter...");
 	draw_letter(the_letter);
 
 	while(1);
