@@ -39,7 +39,7 @@ const int pages = height / 8;
 const bool external_vcc = false;
 
 
-u8 scr[height*width];
+u8 scr[height*width/8];
 
 void write_cmd(u8 cmd);
 
@@ -47,6 +47,7 @@ void fill_scr(u8 v)
 {
 	memset(scr, v, sizeof(scr));
 }
+
 
 
 /* Original Python
@@ -77,7 +78,13 @@ void show_scr()
 	write_cmd(SET_PAGE_ADDR);
 	write_cmd(0);
 	write_cmd(pages - 1);
-	write_data(scr);
+
+	// write screen data itself
+	// very inefficient
+	u8 buf[sizeof(scr)+1];
+	buf[0] = 0x40;
+	memcpy(buf+1, scr, sizeof(scr));
+	i2c_write_blocking(I2C_PORT, SID, buf, sizeof(buf), false);
 }
 
 
@@ -91,10 +98,6 @@ void send2(u8 v1, u8 v2)
 
 void write_cmd(u8 cmd) { send2(0x80, cmd); }
 
-void show_scr()
-{
-	// TODO
-}
 
 /* Original Python code:
    def write_cmd(self, cmd):
@@ -186,10 +189,89 @@ self.write_list[1] = buf
 self.i2c.writevto(self.addr, self.write_list)
 */
 
+void init_i2c()
+{
+	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
+	i2c_init(I2C_PORT, 100 * 1000);
+	gpio_set_function(4, GPIO_FUNC_I2C);
+	gpio_set_function(5, GPIO_FUNC_I2C);
+	gpio_pull_up(4);
+	gpio_pull_up(5);
+}
+
+void draw_pixel(int16_t x, int16_t y, int color) 
+{
+	if(x<0 || x >= width || y<0 || y>= height) return;
+
+	int offset = x +(y/8)*width;
+	switch (color) {
+		case 1: // white
+			scr[offset] |= (1 << (y & 7));
+			break;
+		case 0: // black
+			scr[offset] &= ~(1 << (y & 7));
+			break;
+		case -1: //inverse
+			scr[offset] ^= (1 << (y & 7));
+			break;
+	}
+
+}
+
+
+u8 letterH[] = {
+	0b10000010,
+	0b10000010,
+	0b10000010,
+	0b11111110,
+	0b10000010,
+	0b10000010,
+	0b10000010,
+	0b00000000
+};
+
+u8 letterP[] = {
+	0b11111100,
+	0b10000010,
+	0b10000010,
+	0b11111100,
+	0b10000000,
+	0b10000000,
+	0b10000000,
+	0b00000000
+};
+
+void draw_letter(u8 letter[]) {
+	//clear1306();
+	for (int i = 0; i < 8; i++) {
+		u8 row = letter[i];
+		for (int j = 0; j < 8; j++) {
+			u8 on = (row & 1 << 7) ? 1 : 0;
+			draw_pixel(j, i, on);
+			row <<= 1;
+		}
+	}
+	//display1306();
+	//delayish(2000);
+}
+
+void once()
+{
+	init_i2c();
+	init_display();
+	fill_scr(0);
+	draw_letter(letterH);
+#if 0
+	for(int x = 0; x< 10; x++) 
+	for(int y = 0; y< 20; y++) 
+		draw_pixel(x,y, 1);
+#endif
+	show_scr();
+	sleep_ms(500);
+}
 
 int main()
 {
-	init_display();
-	for(;;);
+	for(;;) once();
 	return 0;
 }
