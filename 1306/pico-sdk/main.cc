@@ -88,6 +88,7 @@ void show_scr()
 }
 
 
+#if 0
 void send2(u8 v1, u8 v2)
 {
 	u8 buf[2];
@@ -95,10 +96,19 @@ void send2(u8 v1, u8 v2)
 	buf[1] = v2;
 	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
 }
+#endif
 
-void write_cmd(u8 cmd) { send2(0x80, cmd); }
+void write_cmd(u8 cmd) 
+{ 
+	u8 buf[2];
+	buf[0] = 0x80;
+	buf[1] = cmd;
+	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
+	//send2(0x80, cmd); 
+}
 
 
+#if 0
 /* Original Python code:
    def write_cmd(self, cmd):
    self.temp[0] = 0x80  # Co=1, D/C#=0
@@ -110,6 +120,7 @@ void write_cmds(u8* cmds, int n)
 	for(int i=0; i<n; i++)
 		write_cmd(cmds[i]);
 }
+#endif
 
 void poweroff() { write_cmd(SET_DISP | 0x00); }
 
@@ -157,7 +168,11 @@ void init_display()
 		external_vcc ? 0x10 : 0x14,
 		SET_DISP | 0x01
 	};
-	write_cmds(cmds, sizeof(cmds));
+
+	// write all the commands
+	for(int i=0; i<sizeof(cmds); i++)
+		write_cmd(cmds[i]);
+	//write_cmds(cmds, sizeof(cmds));
 	fill_scr(0);
 	show_scr();
 }
