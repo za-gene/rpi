@@ -3,6 +3,7 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
+extern "C" const uint8_t ssd1306_font6x8[];
 
 //# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
@@ -279,22 +280,36 @@ u8 letterP[] = {
 	0b00000000
 };
 
-void draw_letter_at(u8 x, u8 y, u8 letter[])
+
+void draw_letter_at(u8 x, u8 y, char c)
 {
-	//clear1306();
-	for (int i = 0; i < 8; i++) {
-		u8 row = letter[i];
-		for (int j = 0; j < 8; j++) {
-			u8 on = (row & 1 << 7) ? 1 : 0;
-			draw_pixel(j+x, i+y, on);
-			row <<= 1;
+	//char c = 'C';
+	//c= 'Q';
+	if(c< ' ' || c>  0x7F) c = '?'; // 0x7F is the DEL key
+
+	int offset = 4 + (c - ' ' )*6;
+	for(int col = 0 ; col < 6; col++) {
+		u8 line =  ssd1306_font6x8[offset+col];
+		for(int row =0; row <8; row++) {
+			//char x = (line & (1<<7)) ? 'X' : '_';
+			draw_pixel(x+col, y+row, line & 1);
+			//cout << x;
+			line >>= 1;
 		}
+		//cout << '\n';
 	}
-	//display1306();
-	//delayish(2000);
+
+	//for(int row = 6; row<8; col++) {
+	for(int row = 0; row<8; row++) {
+		draw_pixel(x+6, y+row, 0);
+		draw_pixel(x+7, y+row, 0);
+	}
+	//cout << "________\n";
+
 }
 
-void draw_letter(u8 letter[]) { draw_letter_at(0, 0, letter); }
+
+void draw_letter(char c) { draw_letter_at(0, 0, c); }
 void pixel(int x, int y)
 {
 	//int x = 100, y=50;
@@ -302,14 +317,14 @@ void pixel(int x, int y)
 	u8 patt = 1<<(y%8);
 	//scr[1+ 0] |= 0xff;
 	scr[1+ x*8 + page] |= patt;
-	
+
 }
 void once()
 {
 	fill_scr(0);
-	draw_letter_at(0,0, letterH);
-	draw_letter_at(60,0, letterP);
-	draw_letter_at(60,30, letterP);
+	draw_letter_at(0,0, 'P');
+	draw_letter_at(60,0, 'M');
+	draw_letter_at(60,30, 'C');
 #if 0
 	for(int x = 0; x< 10; x++) 
 		for(int y = 0; y< 30; y++) 
