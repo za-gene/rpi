@@ -258,28 +258,6 @@ void draw_pixel(int16_t x, int16_t y, int color)
 }
 
 
-u8 letterH[] = {
-	0b10000010,
-	0b10000010,
-	0b10000010,
-	0b11111110,
-	0b10000010,
-	0b10000010,
-	0b10000010,
-	0b00000000
-};
-
-u8 letterP[] = {
-	0b11111100,
-	0b10000010,
-	0b10000010,
-	0b11111100,
-	0b10000000,
-	0b10000000,
-	0b10000000,
-	0b00000000
-};
-
 
 void draw_letter_at(u8 x, u8 y, char c)
 {
@@ -335,11 +313,29 @@ void once()
 	sleep_ms(500);
 }
 
+int cursorx = 0, cursory = 0;
+void ssd1306_print(const char* str)
+{
+	char c;
+	while(c = *str) {
+		str++;
+		if(c == '\n') {
+			cursorx = 0;
+			cursory += 8;
+			continue;
+		}
+		draw_letter_at(cursorx, cursory, c);
+		cursorx += 8;
+	}
+}
+
+
+
 int main()
 {
 	init_i2c();
 	init_display();
-	once();
+	//once();
 	if(0) {
 		for(int i = 0; i<64; i++) {
 			draw_pixel(i, i, 1);
@@ -348,6 +344,21 @@ int main()
 		show_scr();
 	}
 
-	for(;;) sleep_ms(500);
+	ssd1306_print("HELLO PICO\n");
+	ssd1306_print("OLED 128x64 demo\n");
+	ssd1306_print("Written in  C++");
+	show_scr();
+
+	int update = 0;
+	for(int y = 32; y < 64; y++) {
+		for(int x = 0; x < 128; x++) {
+			draw_pixel(x, y, 1);
+			if((update++ % 16) == 0)show_scr();
+			//sleep_ms(5);
+		}
+	}
+	show_scr();
+
+	for(;;);
 	return 0;
 }
