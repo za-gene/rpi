@@ -282,14 +282,16 @@ void  low_level_test() {
 		SSD1306_PAGEADDR,
 		0,                      // Page start address
 		0,                   // Page end (not really, but works here)
-		SSD1306_COLUMNADDR, 0, 0
+		SSD1306_COLUMNADDR, 0, 5
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
 
+	u8 letterP[] = {0x00, 0x7F, 0x09, 0x09, 0x09, 0x06};
 	//for(int i = 0; i<1024; i++)
 	//	send_datum(0);
 
-	send_datum(0b10101010);
+	for(int i = 0; i<6; i++)
+		send_datum(letterP[i]);
 }
 
 

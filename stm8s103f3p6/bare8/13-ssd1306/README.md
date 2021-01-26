@@ -1,6 +1,9 @@
 # SSD1306 display I2C
 
-Under development. Semi-works
+
+## Status
+
+2021-01-26 Working
 
 ## Links to other sites
 
