@@ -9,6 +9,7 @@
 #include <stm8.h>
 #include <millis.h>
 
+
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
@@ -71,13 +72,13 @@
 
 void check()
 {
-	if(I2C_SR2 & IC2_SR2_AF) gpio_write(PA2, 1);
-	if(I2C_SR2 & IC2_SR2_BERR) gpio_write(PA1, 1);
+	if(I2C_SR2 & IC2_SR2_AF) digitalWrite(PA2, 1);
+	if(I2C_SR2 & IC2_SR2_BERR) digitalWrite(PA1, 1);
 }
 
 void here()
 {
-	gpio_write(PD6, 1); // check that we make it here
+	digitalWrite(PD6, 1); // check that we make it here
 }
 
 void write_i2c_byte_1(uint8_t dat)
@@ -122,15 +123,6 @@ static void begin_i2c_write(uint8_t slave_id)
 	I2C_SR3;   // read SR3 to clear ADDR event bit
 
 }
-
-
-
-void send_cmd(u8 cmd) {
-	begin_i2c_write(SID);
-	write_i2c_byte_1(cmd);
-	end_i2c_1();
-}
-
 
 
 void init_i2c_1() {
@@ -208,7 +200,7 @@ void init_i2c_1X()
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
 	begin_i2c_write(SID);
-	write_i2c_byte_1(0);
+	write_i2c_byte_1(0x80);
 	write_i2c_byte_1(c);
 	end_i2c_1();
 }
@@ -217,11 +209,9 @@ void send_u8_i2c(u8 c) {
 	write_i2c_byte_1(c);
 }
 
-void ssd1306_commandList(const uint8_t *c, uint8_t n) {
-	begin_i2c_write(SID);
-	send_u8_i2c(0x00); // Co = 0, D/C = 0
-	while (n--) send_u8_i2c(*c++);
-	end_i2c_1();
+void ssd1306_commandList(const uint8_t *c, uint8_t n) 
+{
+	while (n--) ssd1306_command1(*c++);
 }
 
 void init1306(u8 vcs) {
@@ -279,36 +269,51 @@ void init1306(u8 vcs) {
 }
 
 
+void send_datum(u8 val)
+{
+	begin_i2c_write(SID);
+	send_u8_i2c(0x40);
+	send_u8_i2c(val);
+	end_i2c_1();
+}
+
 void  low_level_test() {
 	static const uint8_t  dlist1[] = {
 		SSD1306_PAGEADDR,
-		1,                      // Page start address
-		1,                   // Page end (not really, but works here)
-		SSD1306_COLUMNADDR, 0, 7
+		0,                      // Page start address
+		0,                   // Page end (not really, but works here)
+		SSD1306_COLUMNADDR, 0, 0
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
-	begin_i2c_write(SID);
-	send_u8_i2c(0x40);
-	send_u8_i2c(0b10101010);
-	end_i2c_1();
+
+	//for(int i = 0; i<1024; i++)
+	//	send_datum(0);
+
+	send_datum(0b10101010);
 }
+
 
 
 void gpio_mode_out_drain(u8 pin)
 {
+#if 1
+	pinMode(pin, OUTPUT);
+#else
 	PORT_t* port = pin_to_port(pin);
 	u8 pos = pin_to_pos(pin);
 	port->DDR |= (1<< pos); // direction is output
+#endif
 }
+
 
 void main() {
 #if 0
 	gpio_mode_out_drain(PB4);
 	gpio_mode_out_drain(PB5);
 #endif
-	gpio_mode_out(PA1);
-	gpio_mode_out(PA2);
-	gpio_mode_out(PD6);
+	pinMode(PA1, OUTPUT);
+	pinMode(PA2, OUTPUT);
+	pinMode(PD6, OUTPUT);
 
 	//init_millis();
 	init_i2c_1(); // this completes
