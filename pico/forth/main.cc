@@ -37,6 +37,7 @@ void exit(int status)
 
 jmp_buf env_buffer;
 
+/*
 //typedef intptr_t cell_t;
 #if(__SIZEOF_POINTER__ ==4)
 typedef int32_t cell_t;
@@ -46,6 +47,9 @@ const char* cell_fmt = "%ld ";
 typedef int64_t cell_t;
 const char* cell_fmt = "%ld ";
 #endif
+*/
+
+typedef int32_t cell_t;
 
 #define DEBUG(cmd) cmd
 #define DEBUGX(cmd)
@@ -106,7 +110,8 @@ cell_t rpop()  { return pop_x(&rstack); }
 #define RTOP rstack.contents[rstack.size-1]
 
 ubyte heap[10000];
-ubyte* hptr = heap;
+int htop = 0;
+ubyte* hptr = heap; // seems to cause problmes for some reason
 cellptr W; // cfa  of the word to execute
 
 bool compiling = false;
@@ -212,12 +217,22 @@ cell_t dref (T addr) { return *(cell_t*)addr; }
 //cell_t dref (void* addr) { return *(cell_t*)addr; }
 //cell_t dref (cell_t addr) { return *(cell_t*)addr; }
 
-void store (cell_t pos, cell_t val) { *(cell_t*)pos = val; }
+void store (int pos, cell_t val) 
+{ 
+	union {
+		cell_t i;
+		ubyte arr[4];
+	} bint = val;
+
+	ubyte arr[4] = (ubyte []) val;
+	my_memcpy(heap+(void*)pos, &val, sizeof(cell_t));
+}
+
 
 void heapify (cell_t v)
 {
-	store((cell_t)hptr, v);
-	hptr += sizeof(cell_t);
+	store(htop, v);
+	htop += sizeof(cell_t);
 }
 
 
@@ -985,9 +1000,10 @@ codeptr cfa_find_zstr(const char* zstr)
 	return (codeptr)pop();
 }
 
-int main()
+int main ()
 {
 	stdio_init_all();
+	hptr = heap; // does this cure failure on pico?
 	assert(sizeof(size_t) == sizeof(cell_t));
 	compiling = false;
 	add_primitives();
