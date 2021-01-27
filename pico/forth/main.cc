@@ -23,6 +23,13 @@
 
 #include "forth.h"
 
+void *my_memcpy(void* dest, const void *src, size_t n)
+{
+	char* d = (char*) dest;
+	char* s = (char*) src;
+	while(n--) *d++ = *s++;
+}
+
 void exit(int status)
 {
 	while(1);
@@ -114,7 +121,7 @@ void word_pad_cstr(const char* zstr)
 {
 	// convert a 0-terminated string to counted string
 	ubyte len = strlen(zstr);
-	memcpy(word_pad+1, zstr, len);
+	my_memcpy(word_pad+1, zstr, len);
 	*word_pad = len;
 	//debug_cstr(word_pad);
 }
@@ -233,12 +240,12 @@ void create_full_header(ubyte flags, const char* cstr, codeptr fn)
 {
 	//ubyte noff = 0; // name offset
 	ubyte len = *cstr;
-	memcpy(hptr, cstr, len+1);
+	my_memcpy(hptr, cstr, len+1);
 	hptr += len +1;
 	dent_s dw;
 	dw.prev = latest;
 	dw.flags = flags | len;
-	memcpy(hptr, &dw, sizeof(dw));
+	my_memcpy(hptr, &dw, sizeof(dw));
 	latest = (dent_s*) hptr;
 	hptr += sizeof(dw);
 	heapify((cell_t) fn);
@@ -945,7 +952,7 @@ void add_derived()
 	const char** strs = derived;
 	while(*strs) {
 		ntib = strlen(*strs);
-		memcpy(tib, *strs, ntib);
+		my_memcpy(tib, *strs, ntib);
 		in = 0;
 		INTERPRET();
 		(void) *strs++;

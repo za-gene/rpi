@@ -1,16 +1,29 @@
-add_executable(forth
-        forth.cpp
+cmake_minimum_required(VERSION 3.12)
+
+# Pull in PICO SDK (must be before project)
+#include(pico_sdk_import.cmake)
+include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
+
+project(app C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+#set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
+
+pico_sdk_init() # Initialize the SDK
+
+
+add_executable(app
+        main.cc
         )
 
-# Pull in our pico_stdlib which aggregates commonly used features
-target_link_libraries(forth pico_stdlib)
 
 # enable usb output, disable uart output
-#pico_enable_stdio_usb(forth 1)
-pico_enable_stdio_uart(forth 1)
+#pico_enable_stdio_usb(app 1)
+pico_enable_stdio_uart(app 1)
 
-# create map/bin/hex/uf2 file etc.
-pico_add_extra_outputs(forth)
 
-# add url via pico_set_program_url
-example_auto_set_url(forth)
+# Pull in our pico_stdlib which aggregates commonly used features
+target_link_libraries(app pico_stdlib)
+
+pico_add_extra_outputs(app) # create map/bin/hex file etc.
