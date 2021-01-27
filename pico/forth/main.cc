@@ -50,6 +50,7 @@ const char* cell_fmt = "%ld ";
 */
 
 typedef int32_t cell_t;
+const char* cell_fmt = "%ld ";
 
 #define DEBUG(cmd) cmd
 #define DEBUGX(cmd)
@@ -219,13 +220,16 @@ cell_t dref (T addr) { return *(cell_t*)addr; }
 
 void store (int pos, cell_t val) 
 { 
-	union {
+	union bytes {
 		cell_t i;
 		ubyte arr[4];
-	} bint = val;
-
-	ubyte arr[4] = (ubyte []) val;
-	my_memcpy(heap+(void*)pos, &val, sizeof(cell_t));
+	};
+	bytes bs;
+	bs.i = val;
+	heap[pos++] = bs.arr[0];
+	heap[pos++] = bs.arr[1];
+	heap[pos++] = bs.arr[2];
+	heap[pos++] = bs.arr[3];
 }
 
 
