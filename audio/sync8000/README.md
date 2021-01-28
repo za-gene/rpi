@@ -1,6 +1,7 @@
-# timer1
+# sync8000
 
-Set up an interrupt on Timer1 to fire at a rate of 500Hz
+Produces a pulse at 8kHz. Designed as a DAC metronome.
 
-The interrupt toggles PB1
+## Status
 
+2021-01-28 Works

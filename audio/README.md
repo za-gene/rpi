@@ -5,6 +5,7 @@
 * [pwm-audio-sdcard-nano](pwm-audio-sdcard-nano) - Nano RAW player using PWM and sound card
 * [sketch_jun09a](sketch_jun09a) - Arduino emulating DAC using PWM - poor output quality
 * [sketch_jun18](sketch_jun18) - Arduino slave with 5v SD card communicating via I2C with ESP32 master using built-in DAC. Uses a level shifter. 
+* [sync8000](sync8000) - Produces a pulse at 8kHz. Designed as a DAC metronome. Uses ATTiny85.
 
 
 

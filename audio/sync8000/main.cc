@@ -33,6 +33,8 @@ ISR(TIMER1_COMPA_vect)
 
 int main()
 {
+	CLKPR = 1<<CLKPCE; // 8Hz
+	CLKPR = 0;
 	DDRB = PIN; // set PIN for output
 	PORTB = 0x00;  // set all pins low
 	init_timer1(8000);
