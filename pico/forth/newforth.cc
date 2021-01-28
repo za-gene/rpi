@@ -63,7 +63,18 @@ void push_heap_u32(u32 val)
 
 void push_heap(u8* bytes, int len)
 {
-	while(len>0) push_heap_byte(bytes[len--]);
+	while(len--) push_heap_byte(*bytes++);
+}
+
+
+u32 get32(int pos)
+{
+	u32 val = 0;
+	for(int i=0; i<4; i++) {
+		val <<= 8;
+		val += heap[pos+i];
+       	}
+	return val;
 }
 
 // heap functions end
@@ -102,8 +113,15 @@ void p_words()
 	int words = latest;
 	while(words >=0) {
 		word_t* word = (word_t*) (*heap+word);
-		putchar('.');
-		words = word->prev;
+		int len = heap[words] & ~(1<<7);
+#if 1
+		printf("\nword len=%d\n", len);
+		for(int i = 0; i<len; i++) putchar( heap[words-len+i]); 
+		putchar('\n');
+#endif
+		words = get32(words+1);
+		printf("next word: %d\n", words);
+		//words = word->prev;
 
 	}
 }
@@ -128,9 +146,17 @@ void add_primitives()
 }
 
 
+void dump_heap()
+{
+	FILE* fp = fopen("heap.bin", "w");
+	fwrite(heap, sizeof(heap), 1, fp);
+	fclose(fp);
+}
+
 int main ()
 {
 	add_primitives();
+	dump_heap();
 	p_words();
 
 	puts("Bye");
