@@ -4,8 +4,9 @@
 #include "hardware/spi.h"
 
 
-int main() {
-
+int main() 
+{
+	stdio_init_all();
 
 	for(;;);
 

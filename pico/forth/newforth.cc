@@ -26,6 +26,7 @@
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
+typedef int32_t i32;
 
 using fn_t = std::function<void(void)>;
 
@@ -35,12 +36,12 @@ using fn_t = std::function<void(void)>;
 // dictionary begin
 
 typedef struct {
-	int prev; // point to a position on the heap
 	u8 flags;
+	int prev; // point to a position on the heap
 } word_t;
 
 
-int latest = -1;
+i32 latest = 1<<30;
 
 
 // dictionary end
@@ -67,9 +68,9 @@ void push_heap(u8* bytes, int len)
 }
 
 
-u32 get32(int pos)
+i32 get32(int pos)
 {
-	u32 val = 0;
+	i32 val = 0;
 	for(int i=0; i<4; i++) {
 		val <<= 8;
 		val += heap[pos+i];
@@ -103,6 +104,7 @@ void create_full_header(u8 flags, const char* cstr, u32 fn)
 	latest = htop;
 	push_heap((u8*) &word, sizeof(word_t));
 	push_heap_u32(fn);
+	printf("create_full_header:latest:%d\n", latest);
 }
 
 
@@ -110,17 +112,17 @@ void p_hi() { puts("hello world"); }
 
 void p_words()
 {
-	int words = latest;
-	while(words >=0) {
+	int link = latest;
+	while(link < (1<<30)) {
 		word_t* word = (word_t*) (*heap+word);
-		int len = heap[words] & ~(1<<7);
+		int len = heap[link] & ~(1<<7);
 #if 1
 		printf("\nword len=%d\n", len);
-		for(int i = 0; i<len; i++) putchar( heap[words-len+i]); 
+		for(int i = 0; i<len; i++) putchar( heap[link-len+i]); 
 		putchar('\n');
 #endif
-		words = get32(words+1);
-		printf("next word: %d\n", words);
+		link = get32(link+1);
+		printf("link: %d\n", link);
 		//words = word->prev;
 
 	}
@@ -140,7 +142,7 @@ void add_primitives()
 	int primn = 0;
 	while((p->zname)) {
 		word_pad_cstr(p->zname);
-		create_full_header(p->flags, word_pad,  (1<<30) & primn++);
+		create_full_header(p->flags, word_pad,  (1<<30) | primn++);
 		p++;
 	}
 }
