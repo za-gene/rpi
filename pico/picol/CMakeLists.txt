@@ -12,7 +12,7 @@ pico_sdk_init() # Initialize the SDK
 
 
 add_executable(app
-        main.cc
+        picol.c
         )
 
 pico_enable_stdio_usb(app 1)
