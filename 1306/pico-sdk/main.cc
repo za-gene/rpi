@@ -26,9 +26,10 @@ extern "C" const uint8_t ssd1306_font6x8[];
 typedef uint8_t u8;
 
 #define I2C_PORT i2c0
-#define SID 0x3C // I2C 1306 slave ID ... for 64 height display. 32 height is 0x3D
+//#define SID 0x3C // I2C 1306 slave ID ... for 64 height display. 32 height is 0x3D
 
 const u8 height = 64;
+const u8 SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
 const u8 width = 128;
 const int pages = height / 8;
 const bool external_vcc = false;
@@ -211,16 +212,6 @@ void pixel(int x, int y)
 	scr[1+ x*8 + page] |= patt;
 
 }
-void once()
-{
-	fill_scr(0);
-	draw_letter_at(0,0, 'P');
-	draw_letter_at(60,0, 'M');
-	draw_letter_at(60,30, 'C');
-	for(int i = 0; i< 60; i++) pixel(i, i);
-	show_scr();
-	sleep_ms(500);
-}
 
 int cursorx = 0, cursory = 0;
 void ssd1306_print(const char* str)
@@ -244,21 +235,13 @@ int main()
 {
 	init_i2c();
 	init_display();
-	if(0) {
-		for(int i = 0; i<64; i++) {
-			draw_pixel(i, i, 1);
-			draw_pixel(i, 63-i, 1);
-		}
-		show_scr();
-	}
 
 	ssd1306_print("HELLO PICO\n");
-	ssd1306_print("OLED 128x64 demo\n");
 	ssd1306_print("Written in  C++");
 	show_scr();
 
 	int update = 0;
-	for(int y = 32; y < 64; y++) {
+	for(int y = height/2; y < height; y++) {
 		for(int x = 0; x < 128; x++) {
 			draw_pixel(x, y, 1);
 			if((update++ % 16) == 0)show_scr();
