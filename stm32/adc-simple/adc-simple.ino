@@ -14,7 +14,7 @@ auto& ser = Serial1;
 void setup()
 {
 
-  ser.begin(9600);
+  ser.begin(115200);
   ser.println("Capture Card setup");
 
   // The clock value is not used
