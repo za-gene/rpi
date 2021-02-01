@@ -26,7 +26,6 @@ extern "C" const uint8_t ssd1306_font6x8[];
 typedef uint8_t u8;
 
 #define I2C_PORT i2c0
-//#define SID 0x3C // I2C 1306 slave ID ... for 64 height display. 32 height is 0x3D
 
 const u8 height = 64;
 const u8 SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
@@ -66,7 +65,7 @@ void show_scr()
 
 	write_cmd(SET_PAGE_ADDR); // 0x22
 	write_cmd(0);
-	write_cmd(7);
+	write_cmd(pages-1);
 
 
 	scr[0] = 0x40; // the data instruction	
@@ -119,11 +118,11 @@ void init_display()
 		SET_DISP_CLK_DIV, // 0xD5
 		0x80,
 
-		SET_PRECHARGE,
+		SET_PRECHARGE, // 0xD9
 		//0x22 if self.external_vcc else 0xF1,
 		external_vcc ? 0x22 : 0xF1,
 
-		SET_VCOM_DESEL,
+		SET_VCOM_DESEL, // 0xDB
 		//0x30,  //# 0.83*Vcc
 		0x40, // changed by mcarter
 
@@ -144,7 +143,6 @@ void init_display()
 	// write all the commands
 	for(int i=0; i<sizeof(cmds); i++)
 		write_cmd(cmds[i]);
-	//write_cmds(cmds, sizeof(cmds));
 	fill_scr(0);
 	show_scr();
 }
@@ -205,6 +203,7 @@ void draw_letter_at(u8 x, u8 y, char c)
 
 
 void draw_letter(char c) { draw_letter_at(0, 0, c); }
+
 void pixel(int x, int y)
 {
 	int page = y/8;
