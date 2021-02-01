@@ -12,6 +12,8 @@ STM32    GND 3V  PB6 PB7
 WROOM    GND 3V  D22 D21
 ```
 
+**NB** A lot of code out there has addresses of 0x3C for 128x64 OLEDs, and 0x3D for 128x32 OLEDs.
+A scan using `i2cdetect -y 1` showed that both types have addresses of 0x3C.
 
 ## Pico Micropython
 

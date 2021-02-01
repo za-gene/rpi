@@ -13,17 +13,16 @@
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
-//#include "I2C.h"
 
-#define HEIGHT 64
-#if HEIGHT == 64
-	#define SID 0x3C
+#if 1 
+	#define HEIGHT 32
 #else
-	#define SID 0x3D
+	#define HEIGHT 64
 #endif
 
-
 #define WIDTH 128
+#define SID 0x3C
+const u8 pages = HEIGHT/8-1;
 
 #define REG(addr) *(volatile u8*)(addr)
 
@@ -220,6 +219,40 @@ void ssd1306_commandList(const uint8_t *c, uint8_t n)
 	while (n--) ssd1306_command1(*c++);
 }
 
+void send_datum(u8 val)
+{
+	begin_i2c_write(SID);
+	send_u8_i2c(0x40);
+	send_u8_i2c(val);
+	end_i2c_1();
+}
+
+
+void triplet(u8 v1, u8 v2, u8 v3)
+{
+	ssd1306_command1(v1);
+	ssd1306_command1(v2);
+	ssd1306_command1(v3);
+}
+
+
+void clr_scr()
+{
+	// seems to work for both screens
+	// not sure how efficient it is, though
+	int pages = HEIGHT/8;
+	triplet(SSD1306_PAGEADDR, 0, pages-1);
+	triplet(SSD1306_COLUMNADDR, 0, 127);
+
+	begin_i2c_write(SID);
+        send_u8_i2c(0x40);
+	for(int i = 0; i<128*pages; i++)
+		send_u8_i2c(0);
+        end_i2c_1();
+
+
+}
+
 void init1306(u8 vcs) {
 	//clear1306();
 	u8 vccstate = vcs;
@@ -255,19 +288,14 @@ void init1306(u8 vcs) {
 		SSD1306_DISPLAYALLON_RESUME, // 0xA4
 		SSD1306_NORMALDISPLAY,       // 0xA6
 		SSD1306_DEACTIVATE_SCROLL,
-		SSD1306_DISPLAYON
+		SSD1306_DISPLAYON // 0xAF
 	};
 	ssd1306_commandList(init1, sizeof(init1));
+	clr_scr();
 }
 
 
-void send_datum(u8 val)
-{
-	begin_i2c_write(SID);
-	send_u8_i2c(0x40);
-	send_u8_i2c(val);
-	end_i2c_1();
-}
+
 
 void  low_level_test() {
 	static const uint8_t  dlist1[] = {
@@ -284,6 +312,9 @@ void  low_level_test() {
 
 	for(int i = 0; i<6; i++)
 		send_datum(letterP[i]);
+
+	//for(int i = 0; i<6; i++)
+	//	send_datum(letterP[i]);
 }
 
 
