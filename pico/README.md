@@ -26,7 +26,9 @@ int main()
     }
 ```
 
+## Technical notes
 
+* [boot](boot.md) - booting into program mode
 
 
 
