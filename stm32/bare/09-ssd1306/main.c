@@ -93,17 +93,13 @@ bool init1306(uint8_t vcs) {
   init_i2c();
 
   uint8_t comPins = 0x02;
-  u8 contrast = 0x8F;
 
   if ((WIDTH == 128) && (HEIGHT == 32)) {
     comPins = 0x02;
-    contrast = 0x8F;
   } else if ((WIDTH == 128) && (HEIGHT == 64)) {
     comPins = 0x12;
-    contrast = (vccstate == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF;
   } else if ((WIDTH == 96) && (HEIGHT == 16)) {
     comPins = 0x2; // ada x12
-    contrast = (vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0xAF;
   } else {
     // Other screen varieties -- TBD
   }
@@ -126,7 +122,7 @@ bool init1306(uint8_t vcs) {
     SSD1306_SEGREMAP | 0x1,
     SSD1306_COMSCANDEC,
     SSD1306_SETCOMPINS, comPins,
-    SSD1306_SETCONTRAST, contrast,
+    SSD1306_SETCONTRAST, 0xFF, // 0x81
     SSD1306_SETPRECHARGE, // 0xd9
     (vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
     SSD1306_SETVCOMDETECT, // 0xDB
@@ -271,10 +267,7 @@ int main() {
 	//ser.println("testing oled");
 	
 	// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-	if (!init1306(SSD1306_SWITCHCAPVCC)) {
-		//ser.println(F("SSD1306 allocation failed"));
-		for (;;);
-	}
+init1306(SSD1306_SWITCHCAPVCC)) 
 	  //ser.println("display begun");
 	
 	 draw_pixel1306(10, 10, SSD1306_WHITE);

@@ -15,8 +15,14 @@
 
 //#include "I2C.h"
 
-#define SID 0x3C // I2C 1306 slave ID ... for 64 height display.
 #define HEIGHT 64
+#if HEIGHT == 64
+	#define SID 0x3C
+#else
+	#define SID 0x3D
+#endif
+
+
 #define WIDTH 128
 
 #define REG(addr) *(volatile u8*)(addr)
@@ -221,22 +227,8 @@ void init1306(u8 vcs) {
 	//i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
 	//init_i2c_1();
 
-	uint8_t comPins = 0x02;
-	u8 contrast = 0x8F;
-
-	if ((WIDTH == 128) && (HEIGHT == 32)) {
-		comPins = 0x02;
-		contrast = 0x8F;
-	} else if ((WIDTH == 128) && (HEIGHT == 64)) {
-		comPins = 0x12;
-		contrast = (vccstate == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF;
-	} else if ((WIDTH == 96) && (HEIGHT == 16)) {
-		comPins = 0x2; // ada x12
-		contrast = (vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0xAF;
-	} else {
-		// Other screen varieties -- TBD
-	}
-
+	u8 comPins = 0x12;
+	if(HEIGHT==32) comPins = 0x02;
 
 
 	u8 init1[] = {
@@ -254,8 +246,8 @@ void init1306(u8 vcs) {
 		0x00, // 0x0 act like ks0108
 		SSD1306_SEGREMAP | 0x1,
 		SSD1306_COMSCANDEC,
-		SSD1306_SETCOMPINS, comPins,
-		SSD1306_SETCONTRAST, contrast,
+		SSD1306_SETCOMPINS, comPins, // 0xDA
+		SSD1306_SETCONTRAST, 0xFF,
 		SSD1306_SETPRECHARGE, // 0xd9
 		(vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
 		SSD1306_SETVCOMDETECT, // 0xDB
@@ -322,7 +314,6 @@ void main() {
 	//here();
 	//while(1);
 	init1306(SSD1306_SWITCHCAPVCC); // this completes
-	while(1)
 	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
