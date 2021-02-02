@@ -57,7 +57,7 @@ static void end_i2c_1()
 
 	//for(u32 i = 0; i< 1000UL; i++) nop();
 
-	for(u8 i = 0; i< 100; i++) nop();
+	for(u8 i = 0; i< 10; i++) nop();
 	//nop();
 	//while(!(I2C_SR1 & I2C_SR1_TXE) || !(I2C_SR1 & I2C_SR1_BTF));
 	//pause();
@@ -236,7 +236,6 @@ void init1306() {
 
 const uint8_t digital_font5x7_123[] =
 {
-	0x00, 0x05, 0x07, 0x30,
 	0x36, 0x41, 0x41, 0x36, 0x00, // char '0' (0x30/48)
 	0x00, 0x00, 0x00, 0x36, 0x00, // char '1' (0x31/49)
 	0x30, 0x49, 0x49, 0x06, 0x00, // char '2' (0x32/50)
@@ -247,6 +246,7 @@ const uint8_t digital_font5x7_123[] =
 	0x00, 0x01, 0x01, 0x36, 0x00, // char '7' (0x37/55)
 	0x36, 0x49, 0x49, 0x36, 0x00, // char '8' (0x38/56)
 	0x06, 0x49, 0x49, 0x36, 0x00, // char '9' (0x39/57)
+	0x00, 0x00, 0x00, 0x00, 0x00, // 10 space
 };
 
 
@@ -256,7 +256,7 @@ void draw_digit(u8 n)
 	begin_i2c_write(SID);
 	send_u8_i2c(0x40);
 	//send_u8_i2c(val);
-	int offset = n*5 + 4;
+	int offset = n*5;
 	for(int i =offset; i< offset + 5; i++)
 		send_u8_i2c(digital_font5x7_123[i]);
 	end_i2c_1();
@@ -276,18 +276,29 @@ void home()
 
 void draw_num(int n)
 {
+	char str[] = "0000000";
+	const u8 len = sizeof(str);
+	u8 i;
+	for(i = 0; i<len; i++) {
+		str[len-i-1] = (char)(n % 10) + '0';
+		n = n/10;
+	}
 
-	//for(int i = 0; i< 10; i++)
-	draw_digit(n);
-}
-void  low_level_test() {
-	for(int i =0; i< 100; i++) {
-		home();
-		int hi = i /10;
-		int lo = i%10;
-		draw_num(hi);
-		draw_num(lo);
-		delay_millis(1000);
+
+	bool allow_spaces = true;
+	for(i = 0; i<len; i++) {
+		u8 n = str[i] - '0';
+
+		if(i+1 == len) { allow_spaces = 0;}
+		if(allow_spaces) {
+			if(n==0) {
+				n=10; // space
+			} else {
+				allow_spaces = false;
+			}
+		}
+
+		draw_digit(n);
 	}
 }
 
@@ -336,7 +347,6 @@ void main() {
 	//while(1);
 	//init1306(SSD1306_SWITCHCAPVCC); // this completes
 	init1306();
-	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
 	//send_cmd(0xAE); // turn display off - which doesn't seem to work
@@ -344,5 +354,10 @@ void main() {
 	//gpio_write(PD6, 1); // check that we make it to end
 	//here();
 
-	while(1);
+	int i = 0;
+	while(1) {
+		home();
+		draw_num(i++);
+		delay_millis(1000);
+	}
 }
