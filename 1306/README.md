@@ -27,6 +27,7 @@ may find it helps to recycle the power.
 * [fonts](fonts.md) - discussion of `figlet`
 * [oled85](oled85) - for the ATTiny85. It works, but the display isn't perfect. [xlink](https://www.instructables.com/ATTiny85-connects-to-I2C-OLED-display-Great-Things/).See also db5/218 for toy module demo.
 * [pico-sdk](pico-sdk) - written in C++
+* [stm8-1306-arduino](stm8-1306-arduino) 
 * [wroom](wroom.md)
 
 ## Links to other sites

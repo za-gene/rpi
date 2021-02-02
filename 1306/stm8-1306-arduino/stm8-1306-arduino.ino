@@ -1,10 +1,8 @@
 /*
-   2021-02-02 under construction, but working.
+   2021-02-02 Works
 */
 
-//#include "Wire8.h"
 #include <I2C.h>
-//#include "I2C.h"
 
 typedef uint8_t u8;
 typedef uint32_t u32;
@@ -52,10 +50,10 @@ typedef uint32_t u32;
 
 #define WIDTH  128
 
-#if 0
-  #define HEIGHT  32
-#else  
-  #define HEIGHT  64
+#if 1
+#define HEIGHT  32
+#else
+#define HEIGHT  64
 #endif
 
 
@@ -84,7 +82,7 @@ void home()
   static const uint8_t  dlist1[] = {
     SSD1306_PAGEADDR,
     0,                      // Page start address
-    HEIGHT/8-1,                   // Page end (not really, but works here)
+    HEIGHT / 8 - 1,               // Page end (not really, but works here)
     SSD1306_COLUMNADDR, 0, 127
   };
   ssd1306_commandList(dlist1, sizeof(dlist1));
@@ -92,20 +90,20 @@ void home()
 
 void clr_scr() {
   home();
-  for(int i = 0; i< HEIGHT/8*128/5; i++)
-  draw_glyph(10);
-  
+  for (int i = 0; i < HEIGHT / 8 * 128 / 5+1; i++)
+    draw_glyph(10);
+
 }
 
 bool init1306() {
   uint8_t comPins = 0x12;
   if (HEIGHT == 32) comPins = 0x02;
 
-  u8 init1[] = {
+  const u8 init1[] = {
     SSD1306_DISPLAYOFF,         // 0xAE
     SSD1306_SETDISPLAYCLOCKDIV, 0x80, // 0xD5
     SSD1306_SETMULTIPLEX, HEIGHT - 1, // 0xA8
-    
+
     SSD1306_SETDISPLAYOFFSET, 0x00, // 0xD3
     SSD1306_SETSTARTLINE | 0x0, // line #0
     SSD1306_CHARGEPUMP, 0x14,       // 0x8D
@@ -128,7 +126,7 @@ bool init1306() {
   return true;
 }
 
-uint8_t digital_font5x7_123[] =
+const uint8_t digital_font5x7_123[] =
 {
   0x36, 0x41, 0x41, 0x36, 0x00, // char '0' (0x30/48)
   0x00, 0x00, 0x00, 0x36, 0x00, // char '1' (0x31/49)
@@ -153,22 +151,47 @@ void draw_glyph(u8 n) {
   send_data(digital_font5x7_123 + n * 5, 5);
 }
 
-void  low_level_test() {
-  home();
- 
-  draw_glyph(9);
-  draw_glyph(1);
-  draw_glyph(2);
+
+
+void draw_num(int n)
+{
+  char str[] = "0000000";
+  const u8 len = sizeof(str);
+  u8 i;
+  for (i = 0; i < len; i++) {
+    str[len - i - 1] = (char)(n % 10) + '0';
+    n = n / 10;
+  }
+
+
+  bool allow_spaces = true;
+  for (i = 0; i < len; i++) {
+    u8 n = str[i] - '0';
+
+    if (i + 1 == len) {
+      allow_spaces = 0;
+    }
+    if (allow_spaces) {
+      if (n == 0) {
+        n = 10; // space
+      } else {
+        allow_spaces = false;
+      }
+    }
+
+    draw_glyph(n);
+  }
 }
+
 
 
 void setup() {
-  //Wire.begin();
   I2C_begin();
   init1306();
-  //I2C_end(); // dunno if needed
-  low_level_test();
-
 }
 void loop() {
+  static int i = 0;
+  home();
+  draw_num(i++);
+  delay(1000);
 }
