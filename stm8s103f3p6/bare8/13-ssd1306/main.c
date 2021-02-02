@@ -15,7 +15,7 @@
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
 
-#if 1 
+#if 0 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -202,12 +202,6 @@ void clr_scr()
 }
 
 void init1306() {
-	//clear1306();
-	//u8 vccstate = vcs;
-
-	//i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
-	//init_i2c_1();
-
 	u8 comPins = 0x12;
 	if(HEIGHT==32) comPins = 0x02;
 
@@ -229,15 +223,16 @@ void init1306() {
 		SSD1306_SEGREMAP | 0x1,
 		SSD1306_COMSCANDEC,
 		SSD1306_SETCOMPINS, comPins, // 0xDA
-		SSD1306_SETCONTRAST, 0xFF,
+		//SSD1306_SETCONTRAST, 0xFF, // 0x81, default is 0x7F
 		SSD1306_SETPRECHARGE, // 0xd9
 		//(vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
 		0xF1,
 		SSD1306_SETVCOMDETECT, // 0xDB
 		0x40,
-		SSD1306_DISPLAYALLON_RESUME, // 0xA4
-		SSD1306_NORMALDISPLAY,       // 0xA6
-		SSD1306_DEACTIVATE_SCROLL,
+		//SSD1306_DISPLAYALLON_RESUME, // 0xA4
+		0xA4, // Entire display on, output follows RAM content
+		//SSD1306_NORMALDISPLAY,       // 0xA6
+		//SSD1306_DEACTIVATE_SCROLL,
 		SSD1306_DISPLAYON // 0xAF
 	};
 	ssd1306_commandList(init1, sizeof(init1));
