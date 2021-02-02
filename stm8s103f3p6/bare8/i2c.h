@@ -15,24 +15,26 @@
 #define I2C_CCRH REG(0x521C)
 #define I2C_TRISER REG(0x521D)
 
+#define I2C_OARH_ADDMODE (1<<7) // hmmm, goes to 10-bit addr
+
 #define I2C_MAX_STANDARD_FREQ ((uint32_t)100000)
 
-#undef I2C_CR1_PE
+//#undef I2C_CR1_PE
 
 #define I2C_CR1_PE (1<<0)
 
-#undef I2C_CR2_START 
-#undef I2C_CR2_STOP 
-#undef I2C_CR2_ACK
+//#undef I2C_CR2_START 
+//#undef I2C_CR2_STOP 
+//#undef I2C_CR2_ACK
 
 
 #define I2C_CR2_START (1<<0)
 #define I2C_CR2_STOP (1<<1)
 #define I2C_CR2_ACK (1<<2)
 
-#undef I2C_SR1_SB
-#undef I2C_SR1_RXNE
-#undef I2C_SR1_TXE
+//#undef I2C_SR1_SB
+//#undef I2C_SR1_RXNE
+//#undef I2C_SR1_TXE
 
 
 #define I2C_SR1_SB (1<<0)

@@ -25,10 +25,6 @@
 #define SID 0x3C
 const u8 pages = HEIGHT/8-1;
 
-#define REG(addr) *(volatile u8*)(addr)
-
-
-
 void check()
 {
 	if(I2C_SR2 & IC2_SR2_AF) digitalWrite(PA2, 1);
@@ -61,11 +57,13 @@ static void end_i2c_1()
 
 	//for(u32 i = 0; i< 1000UL; i++) nop();
 
-	while(!(I2C_SR1 & I2C_SR1_TXE) || !(I2C_SR1 & I2C_SR1_BTF));
+	for(u8 i = 0; i< 100; i++) nop();
+	//nop();
+	//while(!(I2C_SR1 & I2C_SR1_TXE) || !(I2C_SR1 & I2C_SR1_BTF));
 	//pause();
 	//check();
 	I2C_CR2 |= I2C_CR2_STOP;
-	//while(I2C_SR3 & I2C_SR3_MSL);
+	//while(I2C_CR2 & I2C_CR2_STOP);
 }
 
 
@@ -91,12 +89,14 @@ void init_i2c_1() {
 	uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
 	//Serial_println_u(I2C_MAX_STANDARD_FREQ);
 	uint8_t InputClockFrequencyMHz = 2; // 16;
+	InputClockFrequencyMHz  = 2;
 	I2C_FREQR = InputClockFrequencyMHz;
 	I2C_TRISER = InputClockFrequencyMHz + 1; // max rise time
 
 	// set clock control frequency registers
 	uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz / 2));
-	if (speed < (uint16_t)0x0004) speed = (uint16_t)0x0004; // must be at least 4
+	//if (speed < (uint16_t)0x0004) speed = (uint16_t)0x0004; // must be at least 4
+	speed = 4;
 	I2C_CCRL = (uint8_t)speed;
 	I2C_CCRH = (uint8_t)(speed >> 8);
 
@@ -104,15 +104,6 @@ void init_i2c_1() {
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
 }
 
-//I2C_FREQR_FREQ1 
-#define I2C_OARH_ADDMODE (1<<7) // hmmm, goes to 10-bit addr
-void init_i2c_1X()
-{
-	I2C_FREQR = 0x2; // mc
-	I2C_CCRL = 0x0A; // 100kHz
-	//I2C_OARH = I2C_OARH_ADDMODE; // 7-bit addressing
-	I2C_CR1 |= I2C_CR1_PE;
-}
 
 #define SSD1306_BLACK 0   ///< Draw 'off' pixels
 #define SSD1306_WHITE 1   ///< Draw 'on' pixels
@@ -210,9 +201,9 @@ void clr_scr()
 
 }
 
-void init1306(u8 vcs) {
+void init1306() {
 	//clear1306();
-	u8 vccstate = vcs;
+	//u8 vccstate = vcs;
 
 	//i2caddr = addr ? addr : ((HEIGHT == 32) ? 0x3C : 0x3D);
 	//init_i2c_1();
@@ -231,7 +222,8 @@ void init1306(u8 vcs) {
 		0x0,                      // no offset
 		SSD1306_SETSTARTLINE | 0x0, // line #0
 		SSD1306_CHARGEPUMP,        // 0x8D
-		(vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0x14,
+		//(vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0x14,
+		0x14,
 		SSD1306_MEMORYMODE, // 0x20
 		0x00, // 0x0 act like ks0108
 		SSD1306_SEGREMAP | 0x1,
@@ -239,7 +231,8 @@ void init1306(u8 vcs) {
 		SSD1306_SETCOMPINS, comPins, // 0xDA
 		SSD1306_SETCONTRAST, 0xFF,
 		SSD1306_SETPRECHARGE, // 0xd9
-		(vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
+		//(vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
+		0xF1,
 		SSD1306_SETVCOMDETECT, // 0xDB
 		0x40,
 		SSD1306_DISPLAYALLON_RESUME, // 0xA4
@@ -263,8 +256,8 @@ void  low_level_test() {
 	};
 	ssd1306_commandList(dlist1, sizeof(dlist1));
 
-	//u8 letterP[] = {0x00, 0x7F, 0x09, 0x09, 0x09, 0x06};
-	u8 letterP[] = {0xFF, 0x7F, 0x09, 0x09, 0x09, 0x06};
+	u8 letterP[] = {0x00, 0x7F, 0x09, 0x09, 0x09, 0x06};
+	//u8 letterP[] = {0xFF, 0x7F, 0x09, 0x09, 0x09, 0x06};
 	//for(int i = 0; i<1024; i++)
 	//	send_datum(0);
 
@@ -302,7 +295,8 @@ void main() {
 	init_i2c_1(); // this completes
 	//here();
 	//while(1);
-	init1306(SSD1306_SWITCHCAPVCC); // this completes
+	//init1306(SSD1306_SWITCHCAPVCC); // this completes
+	init1306();
 	low_level_test();
 
 	//for(u32 i = 0; i < 5000; i++) nop();
