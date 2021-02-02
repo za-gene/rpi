@@ -31,6 +31,7 @@ may find it helps to recycle the power.
 
 ## Links to other sites
 
+* [fonts](https://github.com/lexus2k/ssd1306/blob/master/src/ssd1306_fonts.c) - variety to choose from
 * [oscilloscope.py](https://gist.github.com/blippy/dd93dc64640f31dd9616af8e35cc602a) - seems a slow old thing
 * [STM8_I2C_OLED](https://github.com/tugaozi/STM8_I2C_OLED) seems "bare metal"
 

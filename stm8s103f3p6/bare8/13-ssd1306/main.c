@@ -15,7 +15,7 @@
 // /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
 
-#if 0 
+#if 1 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -210,22 +210,16 @@ void init1306() {
 		SSD1306_DISPLAYOFF,         // 0xAE
 		SSD1306_SETDISPLAYCLOCKDIV, // 0xD5
 		0x80, // the suggested ratio 0x80
-		SSD1306_SETMULTIPLEX, // 0xA8
-		HEIGHT - 1,
-		SSD1306_SETDISPLAYOFFSET, // 0xD3
-		0x0,                      // no offset
+		//SSD1306_SETDISPLAYOFFSET, // 0xD3
+		//0x0,                      // no offset
 		SSD1306_SETSTARTLINE | 0x0, // line #0
 		SSD1306_CHARGEPUMP,        // 0x8D
-		//(vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0x14,
 		0x14,
-		SSD1306_MEMORYMODE, // 0x20
-		0x00, // 0x0 act like ks0108
+		SSD1306_MEMORYMODE, 0, // 0x20, write across then down
 		SSD1306_SEGREMAP | 0x1,
 		SSD1306_COMSCANDEC,
 		SSD1306_SETCOMPINS, comPins, // 0xDA
-		//SSD1306_SETCONTRAST, 0xFF, // 0x81, default is 0x7F
 		SSD1306_SETPRECHARGE, // 0xd9
-		//(vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
 		0xF1,
 		SSD1306_SETVCOMDETECT, // 0xDB
 		0x40,
@@ -233,6 +227,7 @@ void init1306() {
 		0xA4, // Entire display on, output follows RAM content
 		//SSD1306_NORMALDISPLAY,       // 0xA6
 		//SSD1306_DEACTIVATE_SCROLL,
+		SSD1306_SETMULTIPLEX, HEIGHT-1, // 0xA8 
 		SSD1306_DISPLAYON // 0xAF
 	};
 	ssd1306_commandList(init1, sizeof(init1));
