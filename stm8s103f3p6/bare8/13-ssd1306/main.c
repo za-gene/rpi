@@ -8,7 +8,7 @@
 
 
 
-#if 0 
+#if 1 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -64,18 +64,19 @@ static void begin_i2c_trans(uint8_t slave_id)
 }
 
 
-void init_i2c_1() {
+/** set it to a 100kb standard rate, "probably" */
+void init_i2c() {
 	I2C_CR1 &= ~I2C_CR1_PE; // disable I2C
-	uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
-	uint8_t InputClockFrequencyMHz = 2; // 16;
-	InputClockFrequencyMHz  = 2;
-	I2C_FREQR = InputClockFrequencyMHz;
-	I2C_TRISER = InputClockFrequencyMHz + 1; // max rise time
+	//uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
+	//uint8_t InputClockFrequencyMHz = 2; // 16;
+	//InputClockFrequencyMHz  = 2;
+	I2C_FREQR = 2;
+	I2C_TRISER = 2 + 1; // max rise time. Doesn't seem to like I2C_TRISER = I2C_FREQR + 1;
 
-	uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz / 2));
-	speed = 4;
-	I2C_CCRL = (uint8_t)speed;
-	I2C_CCRH = (uint8_t)(speed >> 8);
+	//uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz / 2));
+	//speed = 4;
+	I2C_CCRL = 4;
+	I2C_CCRH = 0;
 
 
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
@@ -248,7 +249,7 @@ void main() {
 	pinMode(PD6, OUTPUT);
 
 	init_millis();
-	init_i2c_1();
+	init_i2c();
 	init1306();
 
 	int i = 0;
