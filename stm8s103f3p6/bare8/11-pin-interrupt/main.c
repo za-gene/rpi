@@ -1,33 +1,69 @@
 #include <stm8.h>
+#include <gpio.h>
 
+#define FALLING		0b10
+#define RISING 		0b01
+#define CHANGING	0b11
 
+#define EXTI_CR1 REG(0x50A0)
+#define EXTI_CR2 REG(0x50A1)
 
-#define I2C_CR1 REG(0x5200)
-#define I2C_CR2 REG(0x5201)
+void put8(u8* addr, u8 value)
+{
+	*addr = value;
+}
 
-#define I2C_CR1_PE (1<<0)
+u8 get8(u8* addr)
+{
+	return *addr;
+}
 
-#define I2C_CR2_START (1<<0)
-#define I2C_CR2_ACK (1<<2)
+/** mode should be one of FALLING, RISING or CHANGING
+*/ 
+
+void set_external_interrupt(PORT_t* port, u8 mode)
+{
+
+	disable_interrupts();
+	if(port> PORTD) goto finis;
+
+	u8* reg;
+	u8 offset;
+
+	if(port == PORTD) {
+		reg =  (u8*) 0x50A1; // EXTI_CR2;
+		offset = 0;
+	} else {
+		reg =  (u8*) 0x50A0; // EXTI_CR1;
+		offset = (port-PORTA)/5*2; // sizeof(PORT_t) s/b 5
+	}
+
+	u8 mask = 0b11 << offset;
+	u8 val = get8(reg);
+	val &= ~mask;
+	val |= (mode << offset);
+	put8(reg, val);
+finis:
+	enable_interrupts();
+}
+
+#define IN PD3
+#define OUT PC7
+
+void my_portd_falling_isr() __interrupt(EXTI3_ISR)
+{
+	digitalToggle(OUT);
+}
+
 
 void main()
 {
-	gpio_mode_out(PC3);
-	gpio_write(PC3, 1);
+	pinMode(IN, INPUT_PULLUP);
+	pinMode(OUT, OUTPUT);
 
-	gpio_mode_out(PB4);
-	gpio_mode_out(PB5);
+	set_external_interrupt(PORTD, FALLING);
+	enable_interrupts();
 
-	I2C_CR1 |= I2C_CR1_PE; // enable peripheral
-	I2C_CR2 |= I2C_CR2_ACK; // generate a start condition
-	I2C_CR2 |= I2C_CR2_START; // generate a start condition
-
-	/*
-	gpio_write(PB4, 0);
-
-	//PORTB->DDR |= (1<< 5); 
-	gpio_write(PB5, 0);
-*/
-	while(1);
+	while(1) wfi(); // round and around, waiting for interrupts
 }
 

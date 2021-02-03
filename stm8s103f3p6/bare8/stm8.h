@@ -134,11 +134,11 @@ typedef unsigned long  ulong;
 #define TLI_ISR                 0
 #define AWU_ISR                 1
 #define CLK_ISR                 2
-#define EXTI0_ISR               3
-#define EXTI1_ISR               4
-#define EXTI2_ISR               5
-#define EXTI3_ISR               6
-#define EXTI4_ISR               7
+#define EXTI0_ISR               3   // Port A external interrupts
+#define EXTI1_ISR               4   // Port B external interrupts
+#define EXTI2_ISR               5   // Port C external interrupts
+#define EXTI3_ISR               6   // Port D external interrupts
+#define EXTI4_ISR               7   // Port E external interrupts
 #define SPI_ISR                 10
 #define TIM1_OVF_ISR            11
 #define TIM1_CC_ISR             12
@@ -155,6 +155,7 @@ typedef unsigned long  ulong;
 #define nop() __asm__("nop")
 #define enable_interrupts() __asm__("rim");
 #define disable_interrupts() __asm__("sim");
+#define wfi() __asm__("wfi"); // wait for interrupt
 #define is_set(register_8, bit) ((register_8 & (1<<bit)) !=0)
 #define set_bit(register_8, bit) (register_8 |= (1 << bit))
 #define clear_bit(register_8, bit) (register_8 &= ~(1 << bit))
