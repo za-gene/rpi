@@ -1,8 +1,3 @@
-// attempt to convert arduino library to bare metal
-
-// I've made a right mess of this code
-
-
 #include <stdbool.h>
 
 #include <gpio.h>
@@ -12,11 +7,8 @@
 #include <ssd1306.h>
 
 
-// /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
-// /home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
 
-
-#if 0 
+#if 1 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -40,9 +32,7 @@ void here()
 void write_i2c_byte_1(uint8_t dat)
 {
 	while (!(I2C_SR1 & I2C_SR1_TXE));
-	//while (!(I2C_SR1 & I2C_SR1_BTF));
 	I2C_DR = dat;
-	//check();
 }
 
 void pause()
@@ -52,19 +42,8 @@ void pause()
 
 static void end_i2c_1()
 {
-	// seems to have problems
-	//while(!(I2C_SR1 & I2C_SR1_BTF));
-	//while(!(I2C_SR1 & I2C_SR1_TXE));
-
-	//for(u32 i = 0; i< 1000UL; i++) nop();
-
 	for(u8 i = 0; i< 10; i++) nop();
-	//nop();
-	//while(!(I2C_SR1 & I2C_SR1_TXE) || !(I2C_SR1 & I2C_SR1_BTF));
-	//pause();
-	//check();
 	I2C_CR2 |= I2C_CR2_STOP;
-	//while(I2C_CR2 & I2C_CR2_STOP);
 }
 
 
@@ -87,16 +66,14 @@ static void begin_i2c_write(uint8_t slave_id)
 
 
 void init_i2c_1() {
+	I2C_CR1 &= ~I2C_CR1_PE; // disable I2C
 	uint32_t OutputClockFrequencyHz = I2C_MAX_STANDARD_FREQ;
-	//Serial_println_u(I2C_MAX_STANDARD_FREQ);
 	uint8_t InputClockFrequencyMHz = 2; // 16;
 	InputClockFrequencyMHz  = 2;
 	I2C_FREQR = InputClockFrequencyMHz;
 	I2C_TRISER = InputClockFrequencyMHz + 1; // max rise time
 
-	// set clock control frequency registers
 	uint16_t speed = (uint16_t)((InputClockFrequencyMHz * 1000000) / (OutputClockFrequencyHz / 2));
-	//if (speed < (uint16_t)0x0004) speed = (uint16_t)0x0004; // must be at least 4
 	speed = 4;
 	I2C_CCRL = (uint8_t)speed;
 	I2C_CCRH = (uint8_t)(speed >> 8);
