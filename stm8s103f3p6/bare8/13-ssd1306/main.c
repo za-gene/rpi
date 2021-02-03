@@ -8,7 +8,7 @@
 
 
 
-#if 1 
+#if 0 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -16,29 +16,6 @@
 
 #define WIDTH 128
 #define SID 0x3C
-const u8 pages = HEIGHT/8-1;
-
-void check()
-{
-	if(I2C_SR2 & IC2_SR2_AF) digitalWrite(PA2, 1);
-	if(I2C_SR2 & IC2_SR2_BERR) digitalWrite(PA1, 1);
-}
-
-void here()
-{
-	digitalWrite(PD6, 1); // check that we make it here
-}
-
-
-void pause()
-{
-	for(u32 i = 0; i< 1000UL; i++) nop();
-}
-
-
-
-
-
 
 
 // Issue single command to SSD1306, using I2C or hard/soft SPI as needed.
@@ -198,11 +175,8 @@ void draw_num(int n)
 
 
 
-void main() {
-	pinMode(PA1, OUTPUT);
-	pinMode(PA2, OUTPUT);
-	pinMode(PD6, OUTPUT);
-
+void main() 
+{
 	init_millis();
 	init_i2c();
 	init1306();
