@@ -29,11 +29,6 @@ void here()
 	digitalWrite(PD6, 1); // check that we make it here
 }
 
-void write_i2c_byte_1(uint8_t dat)
-{
-	while (!(I2C_SR1 & I2C_SR1_TXE));
-	I2C_DR = dat;
-}
 
 void pause()
 {
@@ -42,8 +37,14 @@ void pause()
 
 static void end_i2c_1()
 {
-	for(u8 i = 0; i< 10; i++) nop();
+#if 0
+	for(u8 i = 0; i< 100; i++) nop();
 	I2C_CR2 |= I2C_CR2_STOP;
+#else
+	while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+	I2C_CR2 |= I2C_CR2_STOP;
+	while (I2C_CR2 & I2C_CR2_STOP);
+#endif
 }
 
 
@@ -58,14 +59,12 @@ static void end_i2c_1()
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
 	begin_i2c_trans(SID);
-	write_i2c_byte_1(0x80);
-	write_i2c_byte_1(c);
+	write_i2c_byte(0x80);
+	write_i2c_byte(c);
 	end_i2c_1();
 }
 
-void send_u8_i2c(u8 c) {
-	write_i2c_byte_1(c);
-}
+
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) 
 {
@@ -75,8 +74,8 @@ void ssd1306_commandList(const uint8_t *c, uint8_t n)
 void send_datum(u8 val)
 {
 	begin_i2c_trans(SID);
-	send_u8_i2c(0x40);
-	send_u8_i2c(val);
+	write_i2c_byte(0x40);
+	write_i2c_byte(val);
 	end_i2c_1();
 }
 
@@ -98,9 +97,9 @@ void clr_scr()
 	triplet(SSD1306_COLUMNADDR, 0, 127);
 
 	begin_i2c_trans(SID);
-	send_u8_i2c(0x40);
+	write_i2c_byte(0x40);
 	for(int i = 0; i<128*pages; i++)
-		send_u8_i2c(0);
+		write_i2c_byte(0);
 	end_i2c_1();
 
 
@@ -159,11 +158,11 @@ const uint8_t digital_font5x7_123[] =
 void draw_digit(u8 n)
 {
 	begin_i2c_trans(SID);
-	send_u8_i2c(0x40);
+	write_i2c_byte(0x40);
 	//send_u8_i2c(val);
 	int offset = n*5;
 	for(int i =offset; i< offset + 5; i++)
-		send_u8_i2c(digital_font5x7_123[i]);
+		write_i2c_byte(digital_font5x7_123[i]);
 	end_i2c_1();
 }
 
