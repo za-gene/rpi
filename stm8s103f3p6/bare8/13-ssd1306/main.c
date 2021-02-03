@@ -18,11 +18,7 @@
 #define SID 0x3C
 
 
-// Issue single command to SSD1306, using I2C or hard/soft SPI as needed.
-// Because command calls are often grouped, SPI transaction and selection
-// must be started/ended in calling function for efficiency.
-// This is a private function, not exposed (see ssd1306_command() instead).
-void ssd1306_command1(uint8_t c) {
+void send_ssd1306_command(uint8_t c) {
 	begin_i2c_trans(SID);
 	write_i2c_byte(0x80);
 	write_i2c_byte(c);
@@ -33,23 +29,15 @@ void ssd1306_command1(uint8_t c) {
 
 void ssd1306_commandList(const uint8_t *c, uint8_t n) 
 {
-	while (n--) ssd1306_command1(*c++);
-}
-
-void send_datum(u8 val)
-{
-	begin_i2c_trans(SID);
-	write_i2c_byte(0x40);
-	write_i2c_byte(val);
-	end_i2c_trans();
+	while (n--) send_ssd1306_command(*c++);
 }
 
 
 void triplet(u8 v1, u8 v2, u8 v3)
 {
-	ssd1306_command1(v1);
-	ssd1306_command1(v2);
-	ssd1306_command1(v3);
+	send_ssd1306_command(v1);
+	send_ssd1306_command(v2);
+	send_ssd1306_command(v3);
 }
 
 
@@ -70,32 +58,23 @@ void clr_scr()
 
 }
 
-void init1306() {
+void init_ssd1306() {
 	u8 comPins = 0x12;
 	if(HEIGHT==32) comPins = 0x02;
 
 
 	u8 init1[] = {
 		SSD1306_DISPLAYOFF,         // 0xAE
-		SSD1306_SETDISPLAYCLOCKDIV, // 0xD5
-		0x80, // the suggested ratio 0x80
-		//SSD1306_SETDISPLAYOFFSET, // 0xD3
-		//0x0,                      // no offset
+		SSD1306_SETDISPLAYCLOCKDIV, 0x80, // 0xD5
 		SSD1306_SETSTARTLINE | 0x0, // line #0
-		SSD1306_CHARGEPUMP,        // 0x8D
-		0x14,
+		SSD1306_CHARGEPUMP, 0x14,       // 0x8D
 		SSD1306_MEMORYMODE, 0, // 0x20, write across then down
 		SSD1306_SEGREMAP | 0x1,
 		SSD1306_COMSCANDEC,
 		SSD1306_SETCOMPINS, comPins, // 0xDA
-		SSD1306_SETPRECHARGE, // 0xd9
-		0xF1,
-		SSD1306_SETVCOMDETECT, // 0xDB
-		0x40,
-		//SSD1306_DISPLAYALLON_RESUME, // 0xA4
-		0xA4, // Entire display on, output follows RAM content
-		//SSD1306_NORMALDISPLAY,       // 0xA6
-		//SSD1306_DEACTIVATE_SCROLL,
+		SSD1306_SETPRECHARGE, 0xF1, // 0xd9
+		SSD1306_SETVCOMDETECT, 0x40, // 0xDB
+		SSD1306_DISPLAYALLON_RESUME, // 0xA4
 		SSD1306_SETMULTIPLEX, HEIGHT-1, // 0xA8 
 		SSD1306_DISPLAYON // 0xAF
 	};
@@ -124,7 +103,6 @@ void draw_digit(u8 n)
 {
 	begin_i2c_trans(SID);
 	write_i2c_byte(0x40);
-	//send_u8_i2c(val);
 	int offset = n*5;
 	for(int i =offset; i< offset + 5; i++)
 		write_i2c_byte(digital_font5x7_123[i]);
@@ -179,7 +157,7 @@ void main()
 {
 	init_millis();
 	init_i2c();
-	init1306();
+	init_ssd1306();
 
 	int i = 0;
 	while(1) {
