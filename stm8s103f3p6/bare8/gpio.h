@@ -36,6 +36,7 @@ u8 digitalRead(u8 pin);
 void pinMode(u8 pin, u8 value);
 
 
+
 typedef struct {
 	uchar ODR;
 	uchar IDR;
@@ -44,17 +45,19 @@ typedef struct {
 	uchar CR2;
 } PORT_t;
 
+PORT_t* gpio_base(u8 pin);
+
+
+/*
+// forward declarations
+struct PORT_t;
+
 #define PORTA ((PORT_t*) 0x005000)
 #define PORTB ((PORT_t*) 0x005005)
 #define PORTC ((PORT_t*) 0x00500A)
 #define PORTD ((PORT_t*) 0x00500F)
 #define PORTE ((PORT_t*) 0x005014)
 #define PORTF ((PORT_t*) 0x005019)
-
-/*
-// forward declarations
-struct PORT_t;
-
 
 */
 

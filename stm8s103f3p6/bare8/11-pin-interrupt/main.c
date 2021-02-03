@@ -24,22 +24,22 @@ u8 get8(u8* addr)
 /** mode should be one of FALLING, RISING or CHANGING
 */ 
 
-void set_external_interrupt(PORT_t* port, u8 mode)
+void enable_pin_irq(u8 pin, u8 mode)
 {
 
 	disable_interrupts();
-#if 0
-	if(port> PORTE) goto finis;
+	u8 port = pin >> 4;
+	if(port>4) goto finis; // must be in ports A..E
 
 	u8* reg;
 	u8 offset;
 
-	if(port == PORTE) {
+	if(port == 4) { //PORT E
 		reg =  (u8*) 0x50A1; // EXTI_CR2;
 		offset = 0;
-	} else {
+	} else { //PORTS A..D
 		reg =  (u8*) 0x50A0; // EXTI_CR1;
-		offset = (port-PORTA)/5*2; // sizeof(PORT_t) s/b 5
+		offset = port*2; 
 	}
 
 	u8 mask = 0b11 << offset;
@@ -47,10 +47,11 @@ void set_external_interrupt(PORT_t* port, u8 mode)
 	val &= ~mask;
 	val |= (mode << offset);
 	put8(reg, val);
-#endif
-EXTI_CR1 = 0b10000000;
-EXTI_CR2 = 0b0;
-//	digitalWrite(OUT, REG(0x50A1) & 0b10);
+
+	// activate the interrupt for the pin
+	PORT_t* p = gpio_base(pin);
+	u8 bit = pin & 0xF;
+	p->CR2 |= (1<<bit);
 finis:
 	enable_interrupts();
 }
@@ -59,21 +60,16 @@ finis:
 void my_portd_falling_isr() __interrupt(PORTD_ISR)
 {
 	digitalToggle(OUT);
-	//digitalWrite(OUT, LOW);
 }
 
 
 void main()
 {
-	//pinMode(IN, INPUT_PULLUP);
-	pinMode(IN, INPUT);
+	pinMode(IN, INPUT_PULLUP);
 	pinMode(OUT, OUTPUT);
+	enable_pin_irq(IN, FALLING);
 
-	set_external_interrupt(PORTD, FALLING);
-
-	while(1) wfi();
-	//	digitalWrite(OUT, digitalRead(IN));
-       	//digitalToggle(OUT); wfi(); // round and around, waiting for interrupts
+	while(1);
 }
 
 
