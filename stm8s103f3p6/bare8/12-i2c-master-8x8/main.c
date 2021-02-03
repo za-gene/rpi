@@ -8,21 +8,6 @@
 
 #define SID 0x70 // Slave ID
 
-
-
-
-static void end_i2c_trans(void)
-{
-	while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
-
-	I2C_CR2 |= I2C_CR2_STOP;
-	while (I2C_CR2 & I2C_CR2_STOP);
-}
-
-
-
-
-
 void send_cmd(u8 cmd) {
 	begin_i2c_trans(SID);
 	write_i2c_byte(cmd);
@@ -70,7 +55,7 @@ void main() {
 	send_cmd(0x81); // display on
 	send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
 
-	pattern[0] = 0b11111111;
+	//pattern[0] = 0b11111111;
 
 	while(1) {
 		for (int i = 0; i < 8; ++i) {
