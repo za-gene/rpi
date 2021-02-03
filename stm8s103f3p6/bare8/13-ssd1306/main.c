@@ -8,7 +8,7 @@
 
 
 
-#if 1 
+#if 0 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
@@ -49,13 +49,12 @@ static void end_i2c_1()
 
 
 
-static void begin_i2c_write(uint8_t slave_id)
+static void begin_i2c_trans(uint8_t slave_id)
 {
 
 	I2C_CR2 |= I2C_CR2_ACK;  // set ACK
 	I2C_CR2 |= I2C_CR2_START;  // send start sequence
 	while (!(I2C_SR1 & I2C_SR1_SB)); // EV5
-	here();
 	I2C_DR = (slave_id << 1); 
 
 	// EV6 ADDR=1, cleared by reading SR1 register, then SR3
@@ -89,7 +88,7 @@ void init_i2c_1() {
 // must be started/ended in calling function for efficiency.
 // This is a private function, not exposed (see ssd1306_command() instead).
 void ssd1306_command1(uint8_t c) {
-	begin_i2c_write(SID);
+	begin_i2c_trans(SID);
 	write_i2c_byte_1(0x80);
 	write_i2c_byte_1(c);
 	end_i2c_1();
@@ -106,7 +105,7 @@ void ssd1306_commandList(const uint8_t *c, uint8_t n)
 
 void send_datum(u8 val)
 {
-	begin_i2c_write(SID);
+	begin_i2c_trans(SID);
 	send_u8_i2c(0x40);
 	send_u8_i2c(val);
 	end_i2c_1();
@@ -129,7 +128,7 @@ void clr_scr()
 	triplet(SSD1306_PAGEADDR, 0, pages-1);
 	triplet(SSD1306_COLUMNADDR, 0, 127);
 
-	begin_i2c_write(SID);
+	begin_i2c_trans(SID);
 	send_u8_i2c(0x40);
 	for(int i = 0; i<128*pages; i++)
 		send_u8_i2c(0);
@@ -190,7 +189,7 @@ const uint8_t digital_font5x7_123[] =
 
 void draw_digit(u8 n)
 {
-	begin_i2c_write(SID);
+	begin_i2c_trans(SID);
 	send_u8_i2c(0x40);
 	//send_u8_i2c(val);
 	int offset = n*5;
@@ -240,56 +239,17 @@ void draw_num(int n)
 }
 
 
-#if 0
-return;
 
-u8 letterP[] = {0x00, 0x7F, 0x09, 0x09, 0x09, 0x06};
-//u8 letterP[] = {0xFF, 0x7F, 0x09, 0x09, 0x09, 0x06};
-//for(int i = 0; i<1024; i++)
-//	send_datum(0);
-
-for(int i = 0; i<6; i++)
-send_datum(letterP[i]);
-
-//for(int i = 0; i<6; i++)
-//	send_datum(letterP[i]);
-#endif
-
-
-
-void gpio_mode_out_drain(u8 pin)
-{
-#if 1
-	pinMode(pin, OUTPUT);
-#else
-	PORT_t* port = pin_to_port(pin);
-	u8 pos = pin_to_pos(pin);
-	port->DDR |= (1<< pos); // direction is output
-#endif
-}
 
 
 void main() {
-#if 0
-	gpio_mode_out_drain(PB4);
-	gpio_mode_out_drain(PB5);
-#endif
 	pinMode(PA1, OUTPUT);
 	pinMode(PA2, OUTPUT);
 	pinMode(PD6, OUTPUT);
 
 	init_millis();
-	init_i2c_1(); // this completes
-	//here();
-	//while(1);
-	//init1306(SSD1306_SWITCHCAPVCC); // this completes
+	init_i2c_1();
 	init1306();
-
-	//for(u32 i = 0; i < 5000; i++) nop();
-	//send_cmd(0xAE); // turn display off - which doesn't seem to work
-
-	//gpio_write(PD6, 1); // check that we make it to end
-	//here();
 
 	int i = 0;
 	while(1) {
