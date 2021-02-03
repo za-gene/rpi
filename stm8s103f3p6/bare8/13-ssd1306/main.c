@@ -8,7 +8,7 @@
 
 
 
-#if 0 
+#if 1 
 #define HEIGHT 32
 #else
 #define HEIGHT 64
