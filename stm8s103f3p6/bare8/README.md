@@ -21,6 +21,16 @@ Take a look at the compiled app.map. You will be able to check that the hex file
 
 
 
+## Clues
+
+For clues on implementations, see the following directories:
+```
+/home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/libraries/I2C
+/home/pi/.arduino15/packages/sduino/hardware/stm8/0.5.0/STM8S_StdPeriph_Driver/src
+
+```
+
+
 ## See also
 
 * [header](https://github.com/junaidpv/stm8/blob/master/inc/stm8s.h) file that "inspired" `stm8.h`
