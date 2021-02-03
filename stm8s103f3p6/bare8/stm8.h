@@ -134,11 +134,11 @@ typedef unsigned long  ulong;
 #define TLI_ISR                 0
 #define AWU_ISR                 1
 #define CLK_ISR                 2
-#define EXTI0_ISR               3   // Port A external interrupts
-#define EXTI1_ISR               4   // Port B external interrupts
-#define EXTI2_ISR               5   // Port C external interrupts
-#define EXTI3_ISR               6   // Port D external interrupts
-#define EXTI4_ISR               7   // Port E external interrupts
+#define PORTA_ISR               3   // Port A external interrupts
+#define PORTB_ISR               4   // Port B external interrupts
+#define PORTC_ISR               5   // Port C external interrupts
+#define PORTD_ISR               6   // Port D external interrupts
+#define PORTE_ISR               7   // Port E external interrupts
 #define SPI_ISR                 10
 #define TIM1_OVF_ISR            11
 #define TIM1_CC_ISR             12
