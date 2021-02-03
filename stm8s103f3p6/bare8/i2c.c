@@ -35,3 +35,17 @@ void init_i2c()
 
 	I2C_CR1 |= I2C_CR1_PE; // enable I2C
 }
+
+/** write a single byte to I2C. NB that who must be within an I2C transaction 
+for it to work 
+E.g.
+begin_i2c_trans(sid);
+write_i2c_byte(0x42);
+// end I2C transaction ... which can be a little flakey, it seems
+*/
+
+void write_i2c_byte(uint8_t dat)
+{
+	while (!(I2C_SR1 & I2C_SR1_TXE));
+	I2C_DR = dat;
+}

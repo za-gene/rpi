@@ -4,6 +4,7 @@
 
 void begin_i2c_trans(uint8_t slave_id);
 void init_i2c();
+void write_i2c_byte(uint8_t dat); // within a transaction
 
 
 
