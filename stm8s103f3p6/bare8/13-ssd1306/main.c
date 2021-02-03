@@ -35,18 +35,6 @@ void pause()
 	for(u32 i = 0; i< 1000UL; i++) nop();
 }
 
-static void end_i2c_1()
-{
-#if 0
-	for(u8 i = 0; i< 100; i++) nop();
-	I2C_CR2 |= I2C_CR2_STOP;
-#else
-	while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
-	I2C_CR2 |= I2C_CR2_STOP;
-	while (I2C_CR2 & I2C_CR2_STOP);
-#endif
-}
-
 
 
 
@@ -61,7 +49,7 @@ void ssd1306_command1(uint8_t c) {
 	begin_i2c_trans(SID);
 	write_i2c_byte(0x80);
 	write_i2c_byte(c);
-	end_i2c_1();
+	end_i2c_trans();
 }
 
 
@@ -76,7 +64,7 @@ void send_datum(u8 val)
 	begin_i2c_trans(SID);
 	write_i2c_byte(0x40);
 	write_i2c_byte(val);
-	end_i2c_1();
+	end_i2c_trans();
 }
 
 
@@ -100,7 +88,7 @@ void clr_scr()
 	write_i2c_byte(0x40);
 	for(int i = 0; i<128*pages; i++)
 		write_i2c_byte(0);
-	end_i2c_1();
+	end_i2c_trans();
 
 
 }
@@ -163,7 +151,7 @@ void draw_digit(u8 n)
 	int offset = n*5;
 	for(int i =offset; i< offset + 5; i++)
 		write_i2c_byte(digital_font5x7_123[i]);
-	end_i2c_1();
+	end_i2c_trans();
 }
 
 void home()

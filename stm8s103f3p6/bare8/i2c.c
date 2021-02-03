@@ -2,6 +2,7 @@
 
 
 
+/** begin I2C transaction */
 void begin_i2c_trans(uint8_t slave_id)
 {
 
@@ -14,6 +15,22 @@ void begin_i2c_trans(uint8_t slave_id)
 	while (!(I2C_SR1 & I2C_SR1_ADDR));
 	I2C_SR3;   // read SR3 to clear ADDR event bit
 
+}
+
+
+/** begin I2C transaction 
+2021-02-03 confirmed working with SSD1306 and 8x8
+*/
+void end_i2c_trans()
+{
+#if 0
+	for(u8 i = 0; i< 100; i++) nop();
+	I2C_CR2 |= I2C_CR2_STOP;
+#else
+	while (!((I2C_SR1 & (I2C_SR1_TXE | I2C_SR1_BTF)) == (I2C_SR1_TXE | I2C_SR1_BTF)));
+	I2C_CR2 |= I2C_CR2_STOP;
+	while (I2C_CR2 & I2C_CR2_STOP);
+#endif
 }
 
 
@@ -41,7 +58,8 @@ for it to work
 E.g.
 begin_i2c_trans(sid);
 write_i2c_byte(0x42);
-// end I2C transaction ... which can be a little flakey, it seems
+...
+end_ic2_trans();
 */
 
 void write_i2c_byte(uint8_t dat)
