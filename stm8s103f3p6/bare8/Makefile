@@ -1,7 +1,7 @@
 CC = sdcc
 CFLAGS = -lstm8 -mstm8 -I .
 
-RELS = millis.rel gpio.rel
+RELS = millis.rel gpio.rel i2c.rel
 
 stm8.lib : $(RELS)
 	#sdcclib  $@ millis.rel

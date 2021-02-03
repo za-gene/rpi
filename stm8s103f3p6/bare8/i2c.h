@@ -2,6 +2,11 @@
 
 #include <stm8.h>
 
+void begin_i2c_trans(uint8_t slave_id);
+void init_i2c();
+
+
+
 #define I2C_CR1   REG(0x5210)
 #define I2C_CR2   REG(0x5211)
 #define I2C_FREQR   REG(0x5212)
