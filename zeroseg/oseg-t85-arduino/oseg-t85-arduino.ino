@@ -1,3 +1,5 @@
+#define F_CPU 8000000
+
 //#include <tinySPI.h> // doesn't seem to work
 
 /* use usual pins for SPI:
@@ -11,6 +13,7 @@
 #define MOSI PB0
 #define SCK PB2 // traditionally reserved for MISO, but we don't need it
 
+typedef uint32_t u32; 
 
 void transfer_7219(uint8_t address, uint8_t value) {
 	digitalWrite(CS, LOW); 
@@ -32,13 +35,15 @@ void init_7219() {
 }
 
 void setup() {
+	CLKPR = 1<< CLKPCE; // tell the chip we're goint ot scale it
+	CLKPR = 0; // to 8MHz
 	init_7219();
 
 }
 
 void loop() {
-	static int cnt = 0;
-	int num = cnt;
+	static u32 cnt = 0; // "int" is too limiting
+	u32 num = cnt;
 	for (uint8_t i = 0; i < 8; ++i)
 	{
 		u8 c = num % 10;
@@ -54,10 +59,9 @@ void loop() {
 		c |= sep;
 		
 		transfer_7219(i+1, c);
-		//transfer_7219(8 - i, 3);
 		delay(1);
 	}
 	cnt++;
-	delay(10);
+	//delay(10);
 
 }
