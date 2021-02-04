@@ -43,6 +43,7 @@ void init_7219() {
 
 void display_count(u32 cnt) {
 	//static u32 cnt = 0; // "int" is too limiting
+	static u8 heart_beat = 0;
 	u32 num = cnt;
 	for (uint8_t i = 0; i < 8; ++i)
 	{
@@ -53,8 +54,14 @@ void display_count(u32 cnt) {
 		// add in thousands separators
 		if((i>0) && (i % 3 == 0)) {sep = 1<<7; }
 
+		// maybe put int a heartbeat
+		if(i==0) {
+			heart_beat = 1 - heart_beat;
+			if(heart_beat) {sep = 1<<7; }
+		}
+
 		// blank if end of number
-		if((c==0) && (num==0)) { sep = 0; c = 0b1111; }
+		if((c==0) && (num==0) && (i>0)) { sep = 0; c = 0b1111; }
 
 		c |= sep;
 
@@ -76,16 +83,13 @@ void init_falling()
 	// set up PB2 to detect falling edges
 	GIMSK |= (1<<6);	// INT0 bit
 	MCUCR |= 0b10;		// falling edge
-	sei();                 // enables interrupts
-
-	//pinMode(LED, OUTPUT);
 }
+
+volatile u32 g_num_falls = 0;
 
 ISR(INT0_vect)
 {
-	static volatile int on = false;
-	on = 1 - on;	
-	//digitalWrite(LED, on);
+	g_num_falls++;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -120,8 +124,8 @@ ISR(TIMER1_COMPA_vect)
 	if(++cnt % 1000 != 0) return;
 	cnt = 0;
 
-	static volatile u32 displayx = 0;
-	display_count(displayx++);
+	//static volatile u32 displayx = 0;
+	display_count(g_num_falls);
 	digitalWrite(LED, 1 - digitalRead(LED));
 }
 
