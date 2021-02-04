@@ -1,8 +1,10 @@
-# PWM
+# INT0 interrupt test
 
-LED brightness via PWM.
+Toggle an LED at every firing of INT0 (which is on PB2,
+and detects falling).
 
 
-## Work history
 
-2021-01-03 works
+## News
+
+2021-02-04 confirmed working
