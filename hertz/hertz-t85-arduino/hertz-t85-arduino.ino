@@ -117,16 +117,21 @@ void init_timer1(unsigned long freq)
 	sei();
 }
 
+volatile u8 timer1_triggered =1;
+volatile u32 timer1_hz_count = 0;
 ISR(TIMER1_COMPA_vect)
 {
+	// remember: interrupts aren't nested
 	static volatile u16 cnt = 0;
+	if(++cnt != 1000) return;
 	//cnt++;
-	if(++cnt % 1000 != 0) return;
+	//if(++cnt % 1000 != 0) return;
 	cnt = 0;
 
-	//static volatile u32 displayx = 0;
-	display_count(g_num_falls);
-	digitalWrite(LED, 1 - digitalRead(LED));
+	timer1_triggered = 1;
+	timer1_hz_count = g_num_falls;
+	g_num_falls = 0;
+
 }
 
 
@@ -146,5 +151,11 @@ void setup() {
 }
 
 void loop() {
+	if(timer1_triggered) {
+		timer1_triggered = 0;
+		//static volatile u32 displayx = 0;
+		display_count(timer1_hz_count);
+		digitalWrite(LED, 1 - digitalRead(LED));
+	}
 }
 
