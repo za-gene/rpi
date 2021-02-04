@@ -9,15 +9,13 @@
 
 #define CS PB1
 #define MOSI PB0
-#define SCK PB2
-//#define CS (1<<4)
+#define SCK PB2 // traditionally reserved for MISO, but we don't need it
+
 
 void transfer_7219(uint8_t address, uint8_t value) {
 	digitalWrite(CS, LOW); 
 	shiftOut(MOSI, SCK, MSBFIRST, address);
 	shiftOut(MOSI, SCK, MSBFIRST, value);
-	//SPI.transfer(address);
-	//SPI.transfer(value);
 	digitalWrite(CS, HIGH);
 }
 
@@ -26,8 +24,6 @@ void init_7219() {
 	digitalWrite(CS, HIGH);
 	pinMode(MOSI, OUTPUT);
 	pinMode(SCK, OUTPUT);
-	//SPI.setBitOrder(MSBFIRST);
-	//SPI.begin();
 	transfer_7219(0x0F, 0x00);
 	transfer_7219(0x09, 0xFF); // Enable mode B
 	transfer_7219(0x0A, 0x0F); // set intensity (page 9)
@@ -45,12 +41,23 @@ void loop() {
 	int num = cnt;
 	for (uint8_t i = 0; i < 8; ++i)
 	{
-		transfer_7219(i+1, num % 10);
-		//transfer_7219(8 - i, 3);
+		u8 c = num % 10;
 		num /= 10;
+		u8 sep = 0; // thousands separator
+
+		// add in thousands separators
+		if((i>0) && (i % 3 == 0)) {sep = 1<<7; }
+
+		// blank if end of number
+		if((c==0) && (num==0)) { sep = 0; c = 0b1111; }
+
+		c |= sep;
+		
+		transfer_7219(i+1, c);
+		//transfer_7219(8 - i, 3);
 		delay(1);
 	}
 	cnt++;
-	delay(1000);
+	delay(10);
 
 }
