@@ -54,7 +54,7 @@ void loop() {
 		if((i>0) && (i % 3 == 0)) {sep = 1<<7; }
 
 		// blank if end of number
-		if((c==0) && (num==0)) { sep = 0; c = 0b1111; }
+		if((c==0) && (num==0) && (i>0)) { sep = 0; c = 0b1111; }
 
 		c |= sep;
 		
