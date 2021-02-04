@@ -31,7 +31,7 @@ You've two options:
 
 ## INT0
 
-Untested code:
+In brief:
 
 ```
 #include "avr/interrupt.h"
@@ -55,6 +55,7 @@ ISR(INT0_vect)
 }
 ```
 
+Example: [int0-cli](int0-cli) (tested, and working)
 
 ## PCINT0
 
@@ -82,7 +83,7 @@ ISR(PCINT0_vect)
 }
 ```
 
-Example: [int0-cli](int0-cli)
+
 
 ## Also in this directory
 
