@@ -14,9 +14,12 @@ typedef uint32_t u32;
 /////////////////////////////////////////////////////////////////////////
 // DISPLAY
 
-#define CS PB1
-#define MOSI PB0
-#define SCK PB2 // traditionally reserved for MISO, but we don't need it
+
+// We use completely non-standard pins
+// We are bit-banging anyway
+#define CS 	PB0
+#define MOSI 	PB1
+#define SCK 	PB3
 
 
 void transfer_7219(uint8_t address, uint8_t value) {
@@ -38,15 +41,8 @@ void init_7219() {
 	transfer_7219(0x0C, 0x01); // Turn on chip
 }
 
-void init_display() {
-	CLKPR = 1<< CLKPCE; // tell the chip we're goint ot scale it
-	CLKPR = 0; // to 8MHz
-	init_7219();
-
-}
-
-void display_count() {
-	static u32 cnt = 0; // "int" is too limiting
+void display_count(u32 cnt) {
+	//static u32 cnt = 0; // "int" is too limiting
 	u32 num = cnt;
 	for (uint8_t i = 0; i < 8; ++i)
 	{
@@ -65,7 +61,7 @@ void display_count() {
 		transfer_7219(i+1, c);
 		delay(1);
 	}
-	cnt++;
+	//cnt++;
 	//delay(10);
 
 }
@@ -73,10 +69,7 @@ void display_count() {
 /////////////////////////////////////////////////////////////////////////
 // FALLING
 
-#include "avr/interrupt.h"
 
-
-#define LED PB4
 
 void init_falling()
 {
@@ -85,14 +78,14 @@ void init_falling()
 	MCUCR |= 0b10;		// falling edge
 	sei();                 // enables interrupts
 
-	pinMode(LED, OUTPUT);
+	//pinMode(LED, OUTPUT);
 }
 
 ISR(INT0_vect)
 {
 	static volatile int on = false;
 	on = 1 - on;	
-	digitalWrite(LED, on);
+	//digitalWrite(LED, on);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -127,6 +120,8 @@ ISR(TIMER1_COMPA_vect)
 	if(++cnt % 1000 != 0) return;
 	cnt = 0;
 
+	static volatile u32 displayx = 0;
+	display_count(displayx++);
 	digitalWrite(LED, 1 - digitalRead(LED));
 }
 
@@ -135,10 +130,15 @@ ISR(TIMER1_COMPA_vect)
 // ENSEMBLE
 
 void setup() {
-	init_display();
+#if F_CPU == 8000000
+	CLKPR = 1<< CLKPCE; // tell the chip we're goint ot scale it
+	CLKPR = 0; // to 8MHz
+#endif
+	init_7219();
 	init_falling();
 	init_timer1(1000); // use 1000Hz because there is a minumum
 	sei();
+	pinMode(LED, OUTPUT);
 }
 
 void loop() {
