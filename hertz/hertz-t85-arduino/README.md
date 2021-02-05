@@ -2,6 +2,7 @@
 
 Simple counter to a zero-seg display
 
+Schematic db5.235 . Device is labelled 5235
 
 ## NEWS
 
