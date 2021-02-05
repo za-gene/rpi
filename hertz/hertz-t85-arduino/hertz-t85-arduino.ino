@@ -41,6 +41,13 @@ void init_7219() {
 	transfer_7219(0x0C, 0x01); // Turn on chip
 }
 
+
+void nops(u32 n) 
+{ 
+	while(n--) { asm volatile ("nop"); }
+}
+
+
 void display_count(u32 cnt) {
 	//static u32 cnt = 0; // "int" is too limiting
 	static u8 heart_beat = 0;
@@ -66,7 +73,7 @@ void display_count(u32 cnt) {
 		c |= sep;
 
 		transfer_7219(i+1, c);
-		delay(1);
+		nops(1000);
 	}
 	//cnt++;
 	//delay(10);
@@ -143,6 +150,10 @@ void setup() {
 	CLKPR = 1<< CLKPCE; // tell the chip we're goint ot scale it
 	CLKPR = 0; // to 8MHz
 #endif
+
+	// scrap any timers that might have been set up
+	TIMSK = 0; // Timer/Counter Interrupt Mask Register
+
 	init_7219();
 	init_falling();
 	init_timer1(1000); // use 1000Hz because there is a minumum
