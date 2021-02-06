@@ -35,13 +35,13 @@ NEWLIB += -lstdc++_nano  -lsupc++_nano
 NEWLIB += -lc_nano
 #NEWLIB += -lg
 NEWLIB += -lg_nano
-#GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
+GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
 	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)   \
-        $(LUALIB)  $(NEWLIB)    $(LD_CRUNKY) -lg  -lstdc++ $(GCCLIB) -lm -o $@
+        $(LUALIB)    $(LD_CRUNKY) $(NEWLIB)  ../../nanolib-impl.o $(GCCLIB)  -lm -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)

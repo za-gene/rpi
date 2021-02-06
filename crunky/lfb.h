@@ -24,6 +24,10 @@
  *
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void lfb_init();
 void lfb_init_as_stdout();
 //void lfb_showpicture();
@@ -38,3 +42,7 @@ unsigned char* lfb_buffer();
 unsigned int lfb_width();
 unsigned int lfb_height();
 unsigned int isrgb();
+
+#ifdef __cplusplus
+}
+#endif

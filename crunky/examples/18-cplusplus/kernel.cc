@@ -1,4 +1,4 @@
-#include <mini_uart.h>
+#include <uart0.h>
 #include <stdio.h>
 
 //#include <string>
@@ -54,7 +54,7 @@ void test_throw()
 extern "C" void kernel_main(void)
 {
 	//uart_init(9600);
-	uart_init_as_stdio(115200);
+	uart0_init_as_stdio();
 
 	Foo foo();
 

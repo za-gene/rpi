@@ -23,9 +23,18 @@
  *
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void uart0_init();
+void uart0_init_as_stdio();
 //void uart0_send(unsigned int c);
-char uart0_getc();
+int uart0_getc();
 void uart0_puts(char *s);
 void uart0_hex(unsigned int d);
 int uart0_putchar(int c);
+
+#ifdef __cplusplus
+}
+#endif

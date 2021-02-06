@@ -91,11 +91,12 @@ void uart0_init()
 /**
  * Send a character
  */
-static void uart0_send(unsigned int c) {
+static int uart0_send(int c) {
 	/* wait until we can send */
 	do{asm volatile("nop");}while(UART0_FR&0x20);
 	/* write the character to the buffer */
 	UART0_DR=c;
+    return c;
 }
 
 int uart0_putchar(int c)
@@ -107,12 +108,12 @@ int uart0_putchar(int c)
 /**
  * Receive a character
  */
-char uart0_getc() {
-	char r;
+int uart0_getc() {
+	int r;
 	/* wait until something is in the buffer */
 	do{asm volatile("nop");}while(UART0_FR & 0x10);
 	/* read it and return */
-	r=(char)(UART0_DR);
+	r=(int)(UART0_DR);
 	/* convert carrige return to newline */
 	return r=='\r'?'\n':r;
 }
@@ -142,4 +143,11 @@ void uart0_hex(unsigned int d) {
 		n+=n>9?0x37:0x30;
 		uart0_send(n);
 	}
+}
+
+void uart0_init_as_stdio()
+{
+    uart0_init();
+    set_putchar(uart0_send);
+	set_getchar(uart0_getc);
 }

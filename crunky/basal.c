@@ -37,6 +37,10 @@ void set_putchar(fn_putchar fn)
 	_putchar = fn;
 }
 
+int putchar(int c)
+{
+	return _putchar(c);
+}
 
 
 // an implementation that does nothing
@@ -54,6 +58,10 @@ void set_getchar(fn_getchar fn)
 }
 
 
+int getchar()
+{
+	return _getchar();
+}
 
 
 int newline()
@@ -77,7 +85,7 @@ int print_string(const char *s)
 ///////////////////////////////////////////////////////////////////////
 // MATHS
 
-#if 1
+#if 0
 // ARM EABI unsigned integer division bit modulus support for GCC
 u64 __aeabi_uidivmod(u32 value, u32 divisor)
 {

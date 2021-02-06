@@ -15,6 +15,10 @@
  * https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <inttypes.h>
 
 typedef uint8_t u8;
@@ -48,5 +52,9 @@ extern const u32 apb_clock_freq; // Advanced Peripheral Bus clock freq. Pi 3
 	#define PBASE 0xFE000000
 #else
 	#warning RPI definition not set
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 

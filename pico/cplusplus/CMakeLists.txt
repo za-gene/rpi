@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init() # Initialize the SDK
 
+#add_compile_options(-fexceptions) # doesn't seem to work
 
 add_executable(app
 	main.cc
