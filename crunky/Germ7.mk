@@ -29,7 +29,7 @@ LINKER = $(CRUNKY)/linker.ld
 
 NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/
 #NEWLIB += -lstdc++_nano  -lsupc++_nano
-NEWLIB += -lc_nano
+#NEWLIB += -lc_nano
 #NEWLIB += -lg
 #NEWLIB += -lg_nano
 #GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
