@@ -22,6 +22,14 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
+
+// stdio support
+typedef int (*fn_putchar)(int);
+typedef int (*fn_getchar)();
+void set_putchar(fn_putchar fn);
+void set_getchar(fn_getchar fn);
+
+
 void put32 (u32, u32);
 u32 get32 (u32);
 

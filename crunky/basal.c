@@ -1,7 +1,9 @@
 /* infrastructural support */
 
+#include <stdio.h>
+
 #include <basal.h>
-#include <tinyprintf.h>
+//#include <tinyprintf.h>
 
 
 const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
@@ -12,12 +14,64 @@ const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock fr
 // ASSERTIONS
 void __assert_func (const char * filename, int lineno, const char * funcname, const char *expr)
 {
-	tfp_printf("assertion failed:%s:%d:%s():%s\n", filename, lineno, funcname, expr);
+	printf("assertion failed:%s:%d:%s():%s\n", filename, lineno, funcname, expr);
 	while(1);
 }
 
 
 ///////////////////////////////////////////////////////////////////////
+// STDIO
+
+
+
+// an implementation that does nothing
+int _putchar_nada(int c)
+{
+	return EOF;
+}
+
+fn_putchar _putchar = _putchar_nada;
+
+void set_putchar(fn_putchar fn)
+{
+	_putchar = fn;
+}
+
+
+
+// an implementation that does nothing
+int _getchar_nada()
+{
+	return EOF;
+}
+
+
+fn_getchar _getchar = _getchar_nada;
+
+void set_getchar(fn_getchar fn)
+{
+	_getchar = fn;
+}
+
+
+
+
+int newline()
+{
+	return putchar('\n');
+}
+
+int print_string(const char *s)
+{
+	if(!s) return EOF;
+	while(*s) {
+		int ok = putchar(*s++);
+		if(ok == EOF) return EOF;
+	}
+	return 1;
+}
+
+
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -83,5 +137,13 @@ u32 __aeabi_uidiv(u32 value, u32 divisor)
   // Use the division modulus, ignoring/truncating the remainder
   return __aeabi_uidivmod(value, divisor);
 }
+
+// ARM EABI unsigned integer division support for GCC
+int __aeabi_idiv(int value, int divisor)
+{
+  // Use the division modulus, ignoring/truncating the remainder
+  return __aeabi_uidivmod(value, divisor);
+}
+
 
 #endif

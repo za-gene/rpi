@@ -23,7 +23,8 @@
  *
  */
 
-#include <yastdio.h>
+//#include <yastdio.h>
+#include <basal.h>
 #include <lfb.h>
 
 //#include "uart.h"

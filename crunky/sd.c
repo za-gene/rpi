@@ -24,14 +24,14 @@
  */
 
 #include <basal.h>
-#include <yastdio.h>
+#include <stdio.h>
 #include <gpio.h>
 #include <timers.h>
 #include <sd.h>
 
 void uart_puts(char* str)
 {
-	print_string(str);
+	printf("%s\n", str);
 }
 
 void wait_usec(int i)

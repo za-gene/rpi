@@ -28,20 +28,20 @@ LINKER = $(CRUNKY)/linker.ld
 
 
 NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard
-#NEWLIB += -lstdc++_nano  -lsupc++_nano
+NEWLIB += -lstdc++_nano  -lsupc++_nano
 #NEWLIB += -lstdc++
-NEWLIB += -lsupc++
 #NEWLIB += -lsupc++
-#NEWLIB += -lc_nano
+#NEWLIB += -lsupc++
+NEWLIB += -lc_nano
 #NEWLIB += -lg
-#NEWLIB += -lg_nano
+NEWLIB += -lg_nano
 #GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
 	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)   \
-        $(LUALIB)  $(NEWLIB)  $(GCCLIB)  $(LD_CRUNKY) -lg  ../../nanolib-impl.o -lstdc++ -lm -o $@
+        $(LUALIB)  $(NEWLIB)    $(LD_CRUNKY) -lg  -lstdc++ $(GCCLIB) -lm -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)

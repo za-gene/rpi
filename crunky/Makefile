@@ -7,10 +7,9 @@ VEC_O = $(CRUNKY)/vectors.o
 CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 	  mbox.o memory.o mini_uart.o \
 	  nanolib-impl.o \
-	  sd.o stdio.o uart0.o \
+	  sd.o uart0.o \
 	  timers.o
 
-CR_OBJS += tinyprintf.o
 CR_OBJS += bcm2835.o
 
 

@@ -1,7 +1,7 @@
 #include <mini_uart.h>
 #include <gpio.h>
 #include <timers.h>
-#include <yastdio.h>
+//#include <yastdio.h>
 
 static int _uart_send (int c)
 {

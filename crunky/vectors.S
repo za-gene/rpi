@@ -4,7 +4,7 @@
 //#include <basal.h>
 
 #if RPI == 0
-#warning "vectors reports RPI is 0"
+//#warning "vectors reports RPI is 0"
 #endif
 
 .section .text.boot

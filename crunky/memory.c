@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <memory.h>
 
+/*
 void *memcpy(void *dest, const void *src, size_t n)
 {
 	char *d = (char*)dest;
@@ -9,7 +10,7 @@ void *memcpy(void *dest, const void *src, size_t n)
 		while(n--) *d++ = *s++;
 	return dest;
 }
-
+*/
 
 
 extern uintptr_t __heap_start__[];
