@@ -1,7 +1,7 @@
 #include <uart0.h>
 #include <stdio.h>
 
-//#include <string>
+#include <string>
 
 class Foo {
 	public:
@@ -62,7 +62,8 @@ extern "C" void kernel_main(void)
 	test_foo();
 	test_throw();
 
-	//std::string str("my string");
+	std::string str("my string");
+	printf("std::string is %s\n", str.c_str());
 
 	puts("I will now echo what you type");
 	while (1) {
