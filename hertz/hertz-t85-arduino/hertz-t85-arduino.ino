@@ -124,15 +124,16 @@ void init_timer1(unsigned long freq)
 	sei();
 }
 
+const u16 timer1_freq = 1000;
+const u32 fudged_freq = (u32)timer1_freq *10170/10000; // improve the accuracy
+
 volatile u8 timer1_triggered =1;
 volatile u32 timer1_hz_count = 0;
 ISR(TIMER1_COMPA_vect)
 {
 	// remember: interrupts aren't nested
 	static volatile u16 cnt = 0;
-	if(++cnt != 1000) return;
-	//cnt++;
-	//if(++cnt % 1000 != 0) return;
+	if(++cnt != fudged_freq) return;
 	cnt = 0;
 
 	timer1_triggered = 1;
@@ -156,7 +157,7 @@ void setup() {
 
 	init_7219();
 	init_falling();
-	init_timer1(1000); // use 1000Hz because there is a minumum
+	init_timer1(timer1_freq); // use 1000Hz because there is a minumum
 	sei();
 	pinMode(LED, OUTPUT);
 }
