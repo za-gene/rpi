@@ -43,7 +43,6 @@ mcarter added 2021-02-06
         __exidx_end   = .;
     } 
 
-
 	.crunky_heap : {
 		. = ALIGN(4);
 		_sheap = .;
@@ -53,6 +52,7 @@ mcarter added 2021-02-06
 		_eheap = .;
 		__heap_end__ = _eheap;
 	}
+
 
 
 }

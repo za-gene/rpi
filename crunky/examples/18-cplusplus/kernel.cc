@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include <string>
+#include <vector>
 
 class Foo {
 	public:
@@ -38,13 +39,17 @@ void test_foo()
 
 void test_throw()
 {
-#if 0	
+#if 0	 // causes crash.
 	puts("test_throw:begin");
 	try {
 		throw 20;
+		std::vector<int> vec;
+		vec.at(2);
 		puts("this is never printed");
-	} catch (int e) {
-		printf("Caught exception number %d\n", e);
+	} catch(int e) {
+		printf("Caught int exception\n");
+	} catch (std::exception& e) {
+		printf("Caught exception.\n");
 	}
 	puts("test_throw:exiting");
 #endif

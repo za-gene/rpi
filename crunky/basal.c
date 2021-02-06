@@ -39,6 +39,7 @@ void set_putchar(fn_putchar fn)
 
 int putchar(int c)
 {
+    if(c == '\n') _putchar('\r');
 	return _putchar(c);
 }
 
