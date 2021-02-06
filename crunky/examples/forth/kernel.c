@@ -20,6 +20,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <uart0.h>
+
 #include "forth.h"
 
 
@@ -197,9 +199,9 @@ void undefined(const char* token){
 }
 
 #define dref(x) _Generic((x), codeptr: dref_codeptr, \
-    cellptr: dref_cellptr,  \
-    void*: dref_voidptr, \
-    default: dref_cell_t)(x)
+cellptr: dref_cellptr,  \
+void*: dref_voidptr, \
+default: dref_cell_t)(x)
 
 cell_t dref_cell_t (cell_t addr) { return *(cell_t*)addr; }
 cell_t dref_cellptr (cellptr addr) { return *(cell_t*)addr; }
@@ -985,6 +987,9 @@ codeptr cfa_find_zstr(const char* zstr)
 int main_routine()
 {
 	assert(sizeof(size_t) == sizeof(cell_t));
+	uart0_init();
+	puts("Forth ...");
+
 	compiling = false;
 	add_primitives();
 	cfa_docol = cfa_find_zstr("DOCOL");
