@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <basal.h>
 
 #define AUX_ENABLES     (PBASE+0x00215004)
@@ -22,4 +26,7 @@ int uart_recv();
 int uart_send(int c);
 void uart_puts(char* str);
 
+#ifdef __cplusplus
+}
+#endif
 

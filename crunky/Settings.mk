@@ -28,6 +28,7 @@ COPS += -DRPI=$(RPI)
 COPS += -mfloat-abi=hard -march=armv6zk -mcpu=arm1176jzf-s -mfpu=vfp
 
 CXXFLAGS = $(COPS)
+CXXFLAGS += -fno-exceptions
 
 #AOPS = -DRPI=$(RPI)
 
