@@ -6,11 +6,10 @@ project(app C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-#set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
+set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 pico_sdk_init() # Initialize the SDK
 
-#add_compile_options(-fexceptions) # doesn't seem to work
 
 add_executable(app
 	main.cc

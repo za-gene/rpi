@@ -13,6 +13,16 @@ int main() {
 	std::vector<int> vec;
 	vec.push_back(22);
 
-	//throw 666;
+	try {
+		throw 666;
+		puts("this is never printed");
+	} catch (int e) {
+		printf("Caught error %d\n", e);
+	}
+
+
+	puts("Halting successfully");
+	while(1);
+
 	return 0;
 }
