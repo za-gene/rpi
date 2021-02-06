@@ -323,6 +323,7 @@ void p_words() {
 		print_cstr(cstr);		
 		puts("");
 		dw = dw->prev;
+		getchar(); // TODO remove. It's for debugging purposes
 	}
 }
 
@@ -926,10 +927,12 @@ void add_primitives()
 	prim_s* p = prims;
 	//char *zname;
 	while((p->zname)) {
+		printf("add_primitives:%s\n", p->zname);
 		word_pad_cstr(p->zname);
 		create_full_header(p->flags, word_pad, p->fn);
 		p++;
 	}
+	puts("add_primitives:exiting");
 }
 
 
@@ -984,6 +987,14 @@ codeptr cfa_find_zstr(const char* zstr)
 	return (codeptr)pop();
 }
 
+void dbug_words()
+{
+	puts("dbug_words...");
+	p_words();
+	//process_token("words");
+	puts("dbug_words:exiting");
+}
+
 int main_routine()
 {
 	assert(sizeof(size_t) == sizeof(cell_t));
@@ -992,6 +1003,7 @@ int main_routine()
 
 	compiling = false;
 	add_primitives();
+	dbug_words();
 	cfa_docol = cfa_find_zstr("DOCOL");
 	assert(cfa_docol);
 	cfa_exit = cfa_find_zstr("EXIT");
@@ -1008,12 +1020,6 @@ int main_routine()
 	puts("skipped derived");
 #endif
 
-	if(0) {
-		puts("words are");
-		p_words();
-		//process_token("words");
-		puts("fin");
-	}
 
 	//	int val; 
 	setjmp(env_buffer);
