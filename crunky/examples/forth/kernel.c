@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <uart0.h>
+#include <mini_uart.h>
 
 #include "forth.h"
 
@@ -987,7 +987,7 @@ codeptr cfa_find_zstr(const char* zstr)
 int main_routine()
 {
 	assert(sizeof(size_t) == sizeof(cell_t));
-	uart0_init();
+	uart_init_as_stdio(115200);
 	puts("Forth ...");
 
 	compiling = false;
@@ -1001,7 +1001,7 @@ int main_routine()
 	cfa_lit = cfa_find_zstr("LIT");
 	assert(cfa_lit);
 
-	//puts("added primitives");
+	puts("added primitives");
 #if 1
 	add_derived();
 #else
@@ -1017,7 +1017,10 @@ int main_routine()
 
 	//	int val; 
 	setjmp(env_buffer);
+	puts("About to call ABORT()");
 	ABORT();
+
+	while(1);
 
 	return 0;
 }
