@@ -1,6 +1,7 @@
 #include <mini_uart.h>
 #include <stdio.h>
 
+//#include <string>
 
 class Foo {
 	public:
@@ -57,9 +58,11 @@ extern "C" void kernel_main(void)
 
 	Foo foo();
 
-	puts("C++ test 1");
+	puts("C++ test 2");
 	test_foo();
 	test_throw();
+
+	//std::string str("my string");
 
 	puts("I will now echo what you type");
 	while (1) {
