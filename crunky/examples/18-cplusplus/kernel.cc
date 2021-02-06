@@ -57,7 +57,7 @@ extern "C" void kernel_main(void)
 
 	Foo foo();
 
-	puts("C++ test");
+	puts("C++ test 1");
 	test_foo();
 	test_throw();
 

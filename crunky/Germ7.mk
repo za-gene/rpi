@@ -35,7 +35,8 @@ NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard/
 #GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 $(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky $(LUALIB) $(NEWLIB)  ../../nanolib-impl.o  $(GCCLIB) -lm -o $@
+	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)  -L$(CRUNKY) -lcrunky \
+        $(LUALIB)  $(NEWLIB)  $(GCCLIB) -lm -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)
