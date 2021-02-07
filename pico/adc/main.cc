@@ -1,31 +1,31 @@
+/* loop through the ADCs printing their values in a round-robin fashion
+ * User ADC inputs are on 0-3 (GPIO 26-29), the temperature sensor is on ADC 4
+ */
+
 #include <stdio.h>
-#include <string.h>
 #include "pico/stdlib.h"
-//#include "hardware/spi.h"
 #include "hardware/gpio.h"
+#include "hardware/adc.h"
 
-
-#define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
 
 int main() 
 {
 	stdio_init_all();
 
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
+	adc_init();
+	int i;
+	for(i=0; i<4; i++) adc_gpio_init(26+i);
+	adc_set_round_robin(0x1f); // all of the adcs in a round-robin fashion
 
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
-
-	for(;;) {
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);
+again:
+	for(i=0;i<5;i++) {
+		//adc_select_input(i);
+		uint16_t v = adc_read(); // result in range 0-4095 inc.
+		printf("%5d ", (int) v);
 	}
+	puts("");
+	sleep_ms(2000);
+	goto again;
 
 	return 0;
 }
