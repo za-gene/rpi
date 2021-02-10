@@ -1,30 +1,38 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
+#include "hardware/clocks.h"
+#include "hardware/pwm.h"
 
-#define SPK 15
 
-bool repeating_timer_callback(struct repeating_timer *t) {
-	static bool hi = false;
-	gpio_put(SPK, hi);
-	hi = ! hi;
-	return true;
-}
+typedef uint16_t u16;
+typedef uint32_t u32;
 
 
 int main() 
 {
-	gpio_init(SPK);
-	gpio_set_dir(SPK, GPIO_OUT);
+	// set your desired inputs here
+	const u32 f_pwm = 440; // frequency we want to generate
+	const u16 duty = 60; // duty cycle, in percent
 
-	struct repeating_timer timer;
+	gpio_set_function(0, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
+	uint slice_num = pwm_gpio_to_slice_num(0); // get PWM slice for GPIO 0 (it's slice 0)
 
-	long int us = 1'000'000UL/8000/2;
-	// negative means regardless of how long it took to execute
-	add_repeating_timer_us(-us, repeating_timer_callback, NULL, &timer);
+
+	// set frequency
+	// determine top given Hz - assumes free-running counter rather than phase-correct
+	u32 f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
+	float divider = f_sys / 1'000'000UL;  // let's arbitrarily choose to run pwm clock at 1MHz
+	pwm_set_clkdiv(slice_num, divider); // pwm clock should now be running at 1MHz
+	u32 top =  1'000'000UL/f_pwm -1; // TOP is u16 has a max of 65535, being 65536 cycles
+	pwm_set_wrap(slice_num, top);
+
+	// set duty cycle
+	u16 level = (top+1) * duty / 100 -1; // calculate channel level from given duty cycle in %
+	pwm_set_chan_level(slice_num, 0, level); 
+	pwm_set_enabled(slice_num, true); // let's go!
 
 	for(;;);
-
 	return 0;
 }
 
