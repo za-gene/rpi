@@ -14,6 +14,6 @@ add_executable(app
 pico_enable_stdio_usb(app 1)
 
 # Pull in our pico_stdlib which pulls in commonly used features
-target_link_libraries(app pico_stdlib hardware_spi hardware_adc)
+target_link_libraries(app pico_stdlib hardware_spi hardware_adc hardware_pwm)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
