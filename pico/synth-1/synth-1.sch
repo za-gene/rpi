@@ -1,0 +1,408 @@
+EESchema Schematic File Version 4
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title "Stylus synthesiser"
+Date "10-Feb-2021"
+Rev "1"
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Device:R_Small R1
+U 1 1 60243C58
+P 6850 4100
+F 0 "R1" V 6654 4100 50  0000 C CNN
+F 1 "220" V 6745 4100 50  0000 C CNN
+F 2 "" H 6850 4100 50  0001 C CNN
+F 3 "~" H 6850 4100 50  0001 C CNN
+	1    6850 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243E41
+P 6200 4100
+F 0 "R1" V 6004 4100 50  0000 C CNN
+F 1 "220" V 6095 4100 50  0000 C CNN
+F 2 "" H 6200 4100 50  0001 C CNN
+F 3 "~" H 6200 4100 50  0001 C CNN
+	1    6200 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243E7A
+P 7550 4100
+F 0 "R1" V 7354 4100 50  0000 C CNN
+F 1 "220" V 7445 4100 50  0000 C CNN
+F 2 "" H 7550 4100 50  0001 C CNN
+F 3 "~" H 7550 4100 50  0001 C CNN
+	1    7550 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243EB8
+P 6550 4100
+F 0 "R1" V 6354 4100 50  0000 C CNN
+F 1 "220" V 6445 4100 50  0000 C CNN
+F 2 "" H 6550 4100 50  0001 C CNN
+F 3 "~" H 6550 4100 50  0001 C CNN
+	1    6550 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243EF7
+P 7250 4100
+F 0 "R1" V 7054 4100 50  0000 C CNN
+F 1 "220" V 7145 4100 50  0000 C CNN
+F 2 "" H 7250 4100 50  0001 C CNN
+F 3 "~" H 7250 4100 50  0001 C CNN
+	1    7250 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243F2E
+P 7850 4100
+F 0 "R1" V 7654 4100 50  0000 C CNN
+F 1 "220" V 7745 4100 50  0000 C CNN
+F 2 "" H 7850 4100 50  0001 C CNN
+F 3 "~" H 7850 4100 50  0001 C CNN
+	1    7850 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243F6D
+P 8150 4100
+F 0 "R1" V 7954 4100 50  0000 C CNN
+F 1 "220" V 8045 4100 50  0000 C CNN
+F 2 "" H 8150 4100 50  0001 C CNN
+F 3 "~" H 8150 4100 50  0001 C CNN
+	1    8150 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243FBA
+P 8450 4100
+F 0 "R1" V 8254 4100 50  0000 C CNN
+F 1 "220" V 8345 4100 50  0000 C CNN
+F 2 "" H 8450 4100 50  0001 C CNN
+F 3 "~" H 8450 4100 50  0001 C CNN
+	1    8450 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 60243FF7
+P 8750 4100
+F 0 "R1" V 8554 4100 50  0000 C CNN
+F 1 "220" V 8645 4100 50  0000 C CNN
+F 2 "" H 8750 4100 50  0001 C CNN
+F 3 "~" H 8750 4100 50  0001 C CNN
+	1    8750 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R1
+U 1 1 6024401A
+P 9100 4100
+F 0 "R1" V 8904 4100 50  0000 C CNN
+F 1 "220" V 8995 4100 50  0000 C CNN
+F 2 "" H 9100 4100 50  0001 C CNN
+F 3 "~" H 9100 4100 50  0001 C CNN
+	1    9100 4100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8550 4100 8600 4100
+$Comp
+L Connector:Screw_Terminal_01x01 J1
+U 1 1 6025837A
+P 6100 4350
+F 0 "J1" V 5973 4430 50  0000 L CNN
+F 1 "C4" V 6064 4430 50  0000 L CNN
+F 2 "" H 6100 4350 50  0001 C CNN
+F 3 "~" H 6100 4350 50  0001 C CNN
+	1    6100 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J2
+U 1 1 60258897
+P 6400 4350
+F 0 "J2" V 6273 4430 50  0000 L CNN
+F 1 "D4" V 6364 4430 50  0000 L CNN
+F 2 "" H 6400 4350 50  0001 C CNN
+F 3 "~" H 6400 4350 50  0001 C CNN
+	1    6400 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J3
+U 1 1 60258DAF
+P 6700 4350
+F 0 "J3" V 6573 4430 50  0000 L CNN
+F 1 "E4" V 6664 4430 50  0000 L CNN
+F 2 "" H 6700 4350 50  0001 C CNN
+F 3 "~" H 6700 4350 50  0001 C CNN
+	1    6700 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J4
+U 1 1 602592D9
+P 7050 4350
+F 0 "J4" V 6923 4430 50  0000 L CNN
+F 1 "F4" V 7014 4430 50  0000 L CNN
+F 2 "" H 7050 4350 50  0001 C CNN
+F 3 "~" H 7050 4350 50  0001 C CNN
+	1    7050 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J5
+U 1 1 602597F5
+P 7400 4350
+F 0 "J5" V 7273 4430 50  0000 L CNN
+F 1 "G4" V 7364 4430 50  0000 L CNN
+F 2 "" H 7400 4350 50  0001 C CNN
+F 3 "~" H 7400 4350 50  0001 C CNN
+	1    7400 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J6
+U 1 1 60259D21
+P 7700 4350
+F 0 "J6" V 7573 4430 50  0000 L CNN
+F 1 "A5" V 7664 4430 50  0000 L CNN
+F 2 "" H 7700 4350 50  0001 C CNN
+F 3 "~" H 7700 4350 50  0001 C CNN
+	1    7700 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J7
+U 1 1 6025A283
+P 8000 4350
+F 0 "J7" V 7873 4430 50  0000 L CNN
+F 1 "B5" V 7964 4430 50  0000 L CNN
+F 2 "" H 8000 4350 50  0001 C CNN
+F 3 "~" H 8000 4350 50  0001 C CNN
+	1    8000 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J8
+U 1 1 6025A7AD
+P 8300 4350
+F 0 "J8" V 8173 4430 50  0000 L CNN
+F 1 "C5" V 8264 4430 50  0000 L CNN
+F 2 "" H 8300 4350 50  0001 C CNN
+F 3 "~" H 8300 4350 50  0001 C CNN
+	1    8300 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J9
+U 1 1 6025ACD1
+P 8600 4350
+F 0 "J9" V 8473 4430 50  0000 L CNN
+F 1 "D5" V 8564 4430 50  0000 L CNN
+F 2 "" H 8600 4350 50  0001 C CNN
+F 3 "~" H 8600 4350 50  0001 C CNN
+	1    8600 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J10
+U 1 1 6025B1FD
+P 8900 4350
+F 0 "J10" V 8773 4430 50  0000 L CNN
+F 1 "E5" V 8864 4430 50  0000 L CNN
+F 2 "" H 8900 4350 50  0001 C CNN
+F 3 "~" H 8900 4350 50  0001 C CNN
+	1    8900 4350
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x01 J11
+U 1 1 6025B739
+P 9200 4350
+F 0 "J11" V 9073 4430 50  0000 L CNN
+F 1 "F5" V 9164 4430 50  0000 L CNN
+F 2 "" H 9200 4350 50  0001 C CNN
+F 3 "~" H 9200 4350 50  0001 C CNN
+	1    9200 4350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6100 4100 6100 4150
+Wire Wire Line
+	6300 4100 6400 4100
+Wire Wire Line
+	6650 4100 6700 4100
+Wire Wire Line
+	6950 4100 7050 4100
+Wire Wire Line
+	7350 4100 7400 4100
+Wire Wire Line
+	7650 4100 7700 4100
+Wire Wire Line
+	7950 4100 8000 4100
+Wire Wire Line
+	8250 4100 8300 4100
+Wire Wire Line
+	8850 4100 8900 4100
+Wire Wire Line
+	9200 4100 9200 4150
+Wire Wire Line
+	6400 4100 6400 4150
+Connection ~ 6400 4100
+Wire Wire Line
+	6400 4100 6450 4100
+Wire Wire Line
+	6700 4100 6700 4150
+Connection ~ 6700 4100
+Wire Wire Line
+	6700 4100 6750 4100
+Wire Wire Line
+	7050 4100 7050 4150
+Connection ~ 7050 4100
+Wire Wire Line
+	7050 4100 7150 4100
+Wire Wire Line
+	7400 4100 7400 4150
+Connection ~ 7400 4100
+Wire Wire Line
+	7400 4100 7450 4100
+Wire Wire Line
+	7700 4100 7700 4150
+Connection ~ 7700 4100
+Wire Wire Line
+	7700 4100 7750 4100
+Wire Wire Line
+	8000 4100 8000 4150
+Connection ~ 8000 4100
+Wire Wire Line
+	8000 4100 8050 4100
+Wire Wire Line
+	8300 4100 8300 4150
+Connection ~ 8300 4100
+Wire Wire Line
+	8300 4100 8350 4100
+Wire Wire Line
+	8600 4100 8600 4150
+Connection ~ 8600 4100
+Wire Wire Line
+	8600 4100 8650 4100
+Wire Wire Line
+	8900 4100 8900 4150
+Connection ~ 8900 4100
+Wire Wire Line
+	8900 4100 9000 4100
+Wire Wire Line
+	6100 4100 6100 3650
+Wire Wire Line
+	6100 3650 9450 3650
+Connection ~ 6100 4100
+$Comp
+L Device:R_Small R2
+U 1 1 6027569E
+P 9650 4000
+F 0 "R2" H 9709 4046 50  0000 L CNN
+F 1 "100K" H 9709 3955 50  0000 L CNN
+F 2 "" H 9650 4000 50  0001 C CNN
+F 3 "~" H 9650 4000 50  0001 C CNN
+	1    9650 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9200 4100 9650 4100
+Connection ~ 9200 4100
+Wire Wire Line
+	9650 4100 9850 4100
+Connection ~ 9650 4100
+$Comp
+L Connector:Screw_Terminal_01x01 JS
+U 1 1 602793E0
+P 7700 4700
+F 0 "JS" V 7666 4612 50  0000 R CNN
+F 1 "STYLUS" V 7575 4612 50  0000 R CNN
+F 2 "" H 7700 4700 50  0001 C CNN
+F 3 "~" H 7700 4700 50  0001 C CNN
+	1    7700 4700
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9650 3650 9950 3650
+Wire Wire Line
+	9950 3650 9950 4900
+Wire Wire Line
+	9950 4900 7700 4900
+Connection ~ 9650 3650
+Wire Wire Line
+	9650 3650 9650 3900
+Text Notes 7550 3400 0    50   ~ 0
+Piano stylus keyboard\n
+$Comp
+L pico_rp2040:PICO_RP2040 U?
+U 1 1 6027BF55
+P 4700 2750
+F 0 "U?" H 4675 4115 50  0000 C CNN
+F 1 "PICO_RP2040" H 4675 4024 50  0000 C CNN
+F 2 "" H 4600 4200 50  0001 C CNN
+F 3 "" H 4600 4200 50  0001 C CNN
+	1    4700 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 2500 9450 2500
+Wire Wire Line
+	9450 2500 9450 3650
+Wire Wire Line
+	9850 2200 9850 4100
+Wire Wire Line
+	5350 2200 9850 2200
+Wire Wire Line
+	5300 2700 9650 2700
+Wire Wire Line
+	9650 2700 9650 3650
+$Comp
+L Device:Speaker LS1
+U 1 1 6027E3FF
+P 3450 3700
+F 0 "LS1" H 3415 3283 50  0000 C CNN
+F 1 "Speaker" H 3415 3374 50  0000 C CNN
+F 2 "" H 3450 3500 50  0001 C CNN
+F 3 "~" H 3440 3650 50  0001 C CNN
+	1    3450 3700
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3650 3700 4050 3700
+Wire Wire Line
+	4050 3500 3650 3500
+Wire Wire Line
+	3650 3500 3650 3600
+Wire Notes Line
+	10100 3250 10100 5000
+Wire Notes Line
+	10100 5000 6000 5000
+Wire Notes Line
+	6000 5000 6000 3250
+Wire Notes Line
+	6000 3250 10100 3250
+Text Notes 6500 4550 0    50   ~ 0
+Stylus should contact J1-J11 to make a tone
+$EndSCHEMATC
