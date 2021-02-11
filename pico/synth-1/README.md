@@ -1,12 +1,13 @@
-# freq-adj
+# synth-1
 
-frequency generator whose values can be set up over the USB serial port
+Stylus synthesiser.
 
 
 ## Status
 
-2021-01-26 Working
+2021-02-11 Working
+
 
 ## Links to other sites
 
-* [blog](https://mcturra2000.wordpress.com/2021/01/26/raspberrypi-pico-lets-make-an-atrocious-synthesiser/) entry
+* [blog](https://mcturra2000.wordpress.com/2021/02/11/raspberrypi-pico-a-stylus-piano-synthesiser/) write-up
