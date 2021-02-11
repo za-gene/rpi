@@ -317,8 +317,12 @@ int main()
 	init_i2c();
 	init_display();
 
+	ssd1306_print("HELLO PICO...\n"); // demonstrate some text
+	show_scr();
+	sleep_ms(2000);
+	fill_scr(0); // emptry the screen
+
 	drawBitmap(0, 0, splash1_data, 64, 64, 1);
-	
 	show_scr();
 
 	for(;;);
