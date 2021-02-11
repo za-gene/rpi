@@ -21,3 +21,7 @@ target_link_libraries(app pico_stdlib hardware_i2c)
 # create map/bin/hex file etc.
 pico_add_extra_outputs(app)
 
+add_custom_target(flash
+    COMMAND cp app.uf2 /media/pi/RPI-RP2
+    DEPENDS app
+)
