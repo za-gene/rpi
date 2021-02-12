@@ -21,6 +21,11 @@ aarch64-linux-gnu-objdump -D kernel8.elf | less
 arm-none-eabi-objdump -D kernel.elf 
 ```
 
+## FAT32 and SD
+
+Adapted from https://github.com/bztsrc/raspi3-tutorial
+
+
 ## In this directory
 
 * [arch](arch.md) - architecture-specific information
