@@ -25,6 +25,10 @@ arm-none-eabi-objdump -D kernel.elf
 
 Adapted from https://github.com/bztsrc/raspi3-tutorial
 
+File reading is in example 21. It crashes, though. It's clear that there's support for reading, though.
+The use of memory is very suspicious for fat.c. Create a file called `test.txt` on the first FAT32
+partition. You should see at least some dumping out of the contents of the file.
+
 
 ## In this directory
 
