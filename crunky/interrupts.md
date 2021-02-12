@@ -32,3 +32,22 @@ enable_irq:
     bx lr
 ```
 
+## Writing an interrupt
+
+Define an interrupt like so:
+```
+void my_interrupt () __attribute__ ((interrupt ("IRQ")));
+```
+
+Permissible value for this parameter are: IRQ, FIQ, SWI, ABORT amd UNDEF 
+([xlink](https://gcc.gnu.org/onlinedocs/gcc/ARM-Function-Attributes.html)).
+
+Alternatively, use the form:
+```
+void __attribute__ ((interrupt ("IRQ"))) IRQ_handler()
+{
+	// do something
+}
+```
+
+
