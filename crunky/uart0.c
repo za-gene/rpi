@@ -96,13 +96,13 @@ static int uart0_send(int c) {
 	do{asm volatile("nop");}while(UART0_FR&0x20);
 	/* write the character to the buffer */
 	UART0_DR=c;
-    return c;
+	return c;
 }
 
 int uart0_putchar(int c)
 {
-    uart0_send(c);
-    if(c == '\n') uart0_send('\r');
+	uart0_send(c);
+	if(c == '\n') uart0_send('\r');
 }
 
 /**
@@ -128,7 +128,7 @@ void uart0_puts(char *s) {
 		//if(*s=='\n') uart0_send('\r');
 		uart0_send(*s++);
 	}
-    uart0_send('\n');
+	uart0_send('\n');
 }
 
 /**
@@ -148,7 +148,7 @@ void uart0_hex(unsigned int d) {
 
 void uart0_init_as_stdio()
 {
-    uart0_init();
-    set_putchar(uart0_send);
+	uart0_init();
+	set_putchar(uart0_send);
 	set_getchar(uart0_getc);
 }
