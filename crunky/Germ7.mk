@@ -1,8 +1,22 @@
 include $(CRUNKY)/Settings.mk
 
+VPATH=$(CRUNKY)
 
 AOPS = --warn --fatal-warnings 
 #COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
+
+CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
+          mbox.o memory.o mini_uart.o \
+          nanolib-impl.o \
+          sd.o uart0.o \
+          timers.o
+
+CR_OBJS += vectors.o
+CR_OBJS += bcm2835.o
+CR_OBJS += fat.o
+
+
+
 
 
 
@@ -39,9 +53,12 @@ GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
-$(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) 
-	$(LD)    $(OBJS) -T $(LINKER)   \
-        $(LUALIB)    $(LD_CRUNKY) $(NEWLIB)  ../../nanolib-impl.o $(GCCLIB)  -lm -o $@
+#LIBS = $(NEWLIB) $(LD_CRUNKY) $(GCCLIB) -lm
+#LIBS = $(LD_CRUNKY) $(NEWLIB) $(GCCLIB) -lm
+LIBS =  $(NEWLIB) $(GCCLIB) -lm
+
+$(ELF) : $(LINKER) $(CR_OBJS) $(OBJS)  $(LIBUSPI) 
+	$(LD)    $(CR_OBJS) $(OBJS) -T $(LINKER)  $(LIBS) -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 
 $(IMG) : $(ELF)

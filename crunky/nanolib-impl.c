@@ -12,10 +12,20 @@
 #include <basal.h>
 
 
+extern fn_putchar basal_putchar;
+extern fn_getchar basal_getchar;
+
+void __assert_func (const char * filename, int lineno, const char * funcname, const char *expr)
+{
+	printf("assertion failed:%s:%d:%s():%s\n", filename, lineno, funcname, expr);
+	while(1);
+}
+
 
 
 int _open(const char *pathname, int flags)
 {
+	puts("_open called");
 	static int fd = 0;
 	return fd++;
 }
@@ -49,9 +59,10 @@ int _unlink(const char *pathname)
 
 ssize_t _write(int fd, const void *buf, size_t count)
 {
+	//puts("_write called");
 	char* b = (char*) buf;
 	for(int i = 0; i<count; i++)
-		putchar(b[i]);
+		basal_putchar(b[i]);
 	return count;
 }
 
@@ -89,16 +100,40 @@ void  _exit(int status)
    }
    */
 
+/** _read() would normally be called if we hadn't specified getchar().
+ * We need to specify getchar() and not let read() handle it because 
+ * newlib will keep calling until a newline, which is not what we want
+ */
+
 ssize_t _read(int fd, void *buf, size_t count)
 {
+	//printf("read called with fd %d, count %d\n", fd, count);
+	//printf("zass 1\n");
 	ssize_t i = 0;	
+	//printf("zass 2\n");
 	//while(count--)
 	//	*buf = (char) getchar();
-	char* b = (char*) b;
-	while(i<count)
-		b[i++] = (char) getchar();
+	char* b = (char*) buf;
+	//printf("zass 3\n");
+	size_t nread = 0;
+	//printf("zass 4\n");
+
+	if(count==0) return 0;
+
+	// call to stdin should jusst return 1 char
+	b[0] = basal_getchar();
+	return 1;
+	while(nread<count) {
+		printf("X");
+		char c= basal_getchar();
+		printf(".");
+		b[nread++] = c;
+		if(c=='\n') break;
+		//nread++;
 		//*(buf+ i++) =(char)  getchar();
-	return count;
+	}
+	puts("exiting _read");
+	return nread;
 }
 
 // just a dummy

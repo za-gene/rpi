@@ -11,58 +11,51 @@ const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock fr
 
 
 ///////////////////////////////////////////////////////////////////////
-// ASSERTIONS
-void __assert_func (const char * filename, int lineno, const char * funcname, const char *expr)
-{
-	printf("assertion failed:%s:%d:%s():%s\n", filename, lineno, funcname, expr);
-	while(1);
-}
-
 
 ///////////////////////////////////////////////////////////////////////
 // STDIO
 
 
 
-// an implementation that does nothing
-int _putchar_nada(int c)
-{
-	return EOF;
-}
-
-fn_putchar _putchar = _putchar_nada;
+fn_putchar basal_putchar = 0;
 
 void set_putchar(fn_putchar fn)
 {
-	_putchar = fn;
+	basal_putchar = fn;
 }
+
+
 
 int putchar(int c)
 {
-    if(c == '\n') _putchar('\r');
-	return _putchar(c);
+	if(!basal_putchar) return EOF;
+    if(c == '\n') basal_putchar('\r');
+	return basal_putchar(c);
 }
 
 
-// an implementation that does nothing
-int _getchar_nada()
+
+fn_getchar basal_getchar = 0; // _getchar_nada;
+
+int getchar()
 {
-	return EOF;
+	
+	if(!basal_getchar) return EOF;
+		return basal_getchar();
 }
-
-
-fn_getchar _getchar = _getchar_nada;
 
 void set_getchar(fn_getchar fn)
 {
-	_getchar = fn;
+	basal_getchar = fn;
 }
 
 
+/*
 int getchar()
 {
 	return _getchar();
 }
+*/
 
 
 int newline()

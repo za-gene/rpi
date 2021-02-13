@@ -115,7 +115,8 @@ int uart0_getc() {
 	/* read it and return */
 	r=(int)(UART0_DR);
 	/* convert carrige return to newline */
-	return r=='\r'?'\n':r;
+	//return r=='\r'?'\n':r;
+	return r;
 }
 
 /**
