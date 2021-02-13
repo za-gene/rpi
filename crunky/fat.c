@@ -23,6 +23,10 @@
  *
  */
 
+/** The following video explains FAT32 structure:
+https://www.youtube.com/watch?v=tEYgVwN1nRk
+*/
+
 #include <string.h>
 #include <stdio.h>
 #include <sd.h>
@@ -60,25 +64,25 @@ static unsigned int partitionlba = 0;
 
 // the BIOS Parameter Block (in Volume Boot Record)
 typedef struct {
-    char            jmp[3];
-    char            oem[8];
-    unsigned char   bps0;
-    unsigned char   bps1;
-    unsigned char   spc;
-    unsigned short  rsc;
-    unsigned char   nf;
-    unsigned char   nr0;
-    unsigned char   nr1;
-    unsigned short  ts16;
-    unsigned char   media;
-    unsigned short  spf16;
-    unsigned short  spt;
-    unsigned short  nh;
+    char            jmp[3]; // a jump instruction to run an OS. We definitely won't be using it
+    char            oem[8]; // the name of the program that formatted the partition (e.g. mkfsvfat)
+    unsigned char   bps0;   // bytes per sector
+    unsigned char   bps1;   // ditto
+    unsigned char   spc;    // how many sectors there are per cluster
+    unsigned short  rsc;    // number of reserved sectors, so that we can get to the FAT
+    unsigned char   nf;     // number of copies of FAT (usually there are 2)
+    unsigned char   nr0;    // how many files are in root directory (legacy)
+    unsigned char   nr1;    // ditto
+    unsigned short  ts16;   // total count of sectors (short = 2 bytes, I think)
+    unsigned char   media;  // media type (is it a hard drive, floppy disk, etc.)
+    unsigned short  spf16;  // num sectors for the FAT (relevant to FAT16 only). 0 for FAT32
+    unsigned short  spt;    // sectors per track. Pretty irrelevant for us
+    unsigned short  nh;     // hidden sectors (??)
     unsigned int    hs;
-    unsigned int    ts32;
+    unsigned int    ts32;   
     unsigned int    spf32;
     unsigned int    flg;
-    unsigned int    rc;
+    unsigned int    rc;     // root cluster. How many sectors in FAT. 
     char            vol[6];
     char            fst[8];
     char            dmy[20];

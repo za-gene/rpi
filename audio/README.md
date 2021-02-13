@@ -1,5 +1,28 @@
 # audio
 
+## Conversion
+
+Note that sox cannot handle mp3 files, so you need to convert them to wav first.
+
+**mp3 to wav**:
+```
+ffpmeg -i song.mp3 song.wav
+```
+I found that a 1.7M mp3 at 44.1kHz file lasting 1m09s expanded to a 12.3M wav file.
+
+**wav to raw**:
+```
+sox song.wav -e unsigned -b 8 -r 8k -c 1 song.raw
+``
+Reduced the wav file to 560k. `-b` is bytes per sample, `-r` is rate,
+`-c` is the channel number
+
+**play it**:
+```
+aplay song.raw
+```
+
+
 ## In this directory
 
 * [pwm-audio-sdcard-nano](pwm-audio-sdcard-nano) - Nano RAW player using PWM and sound card
