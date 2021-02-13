@@ -10,6 +10,7 @@ CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 	  sd.o uart0.o \
 	  timers.o
 
+CR_OBJS += vectors.o
 CR_OBJS += bcm2835.o
 CR_OBJS += fat.o
 

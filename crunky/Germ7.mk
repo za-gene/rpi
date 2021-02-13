@@ -39,8 +39,8 @@ GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
 LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
-$(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) $(CRUNKY)/vectors.o
-	$(LD) $(CRUNKY)/vectors.o   $(OBJS) -T $(LINKER)   \
+$(ELF) : $(LINKER) $(OBJS)  $(LIBUSPI) 
+	$(LD)    $(OBJS) -T $(LINKER)   \
         $(LUALIB)    $(LD_CRUNKY) $(NEWLIB)  ../../nanolib-impl.o $(GCCLIB)  -lm -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).list
 

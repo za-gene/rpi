@@ -21,7 +21,7 @@ void kernel_main ( void )
 {
 	gpio_sel(pin, OUTPUT);
 
-	u32 freq = 500*2;
+	u32 freq = 250*2;
 	init_arm_timer(freq);
 
 	enable_arm_timer_irq();
