@@ -88,10 +88,8 @@ void uart0_init()
 	UART0_CR = 0x301;     // enable Tx, Rx, FIFO
 }
 
-/**
- * Send a character
- */
-static int uart0_send(int c) {
+static int _uart0_send(int c)
+{
 	/* wait until we can send */
 	do{asm volatile("nop");}while(UART0_FR&0x20);
 	/* write the character to the buffer */
@@ -99,10 +97,21 @@ static int uart0_send(int c) {
 	return c;
 }
 
+
+/**
+ * Send a character
+ */
+static int uart0_send(int c) {
+	_uart0_send(c);
+	if(c=='\n') _uart0_send('\r');
+	return c;
+}
+
 int uart0_putchar(int c)
 {
 	uart0_send(c);
 	if(c == '\n') uart0_send('\r');
+	return c;
 }
 
 /**

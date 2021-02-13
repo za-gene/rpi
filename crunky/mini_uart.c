@@ -10,14 +10,14 @@ static int _uart_send (int c)
 			break;
 	}
 	put32(AUX_MU_IO_REG,c);
-	return 1;
+	return c;
 }
 
 int uart_send (int c)
 {
 	_uart_send(c);
 	if(c=='\n') _uart_send('\r');
-	return 1;
+	return c;
 }
 
 int uart_recv ()
