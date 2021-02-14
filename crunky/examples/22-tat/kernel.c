@@ -10,6 +10,8 @@
 void kernel_main()
 {
 	uart0_init_as_stdio();
+	puts("Initialising card");
+	sd_init();
 	puts("Mounting partition...");
 	tat_mount();
 	puts("Calling ls...");

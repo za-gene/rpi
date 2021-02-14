@@ -1,0 +1,7 @@
+# prep the card
+
+losetup /dev/loop0 /dev/sdd
+./tatty store README.md text
+./tatty store ~/Music/song.raw song
+./tatty ls
+./tatty cat text
