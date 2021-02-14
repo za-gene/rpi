@@ -240,6 +240,11 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 	return sd_err!=SD_OK || c!=num? 0 : num*512;
 }
 
+int sd_readablock(unsigned int lba, unsigned char *buffer)
+{
+    return sd_readblock(lba, buffer, 1);
+}
+
 /**
  * write a block to the sd card and return the number of bytes written
  * returns 0 on error.
