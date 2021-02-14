@@ -1,4 +1,4 @@
-tat : tat.c
+tat : tatty.c
 	gcc -ggdb $^ -o $@
 
 clean :

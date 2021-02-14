@@ -99,6 +99,7 @@ void tat_fmt()
 		tae_t* tae = &tat.taes[i];
 		tae->start = i*reserve + 1;
 		tae->res = reserve;
+		tae->size = 0;
 		tae->flags = 0;
 		strcpy(tae->name, "EMPTY");
 	}
@@ -108,9 +109,10 @@ void tat_fmt()
 
 void tat_ls()
 {
+	printf("%2s %7s %7s %7s %7s %s\n", "#", "Start", "Alloc", "Size", "Flags", "Name");
 	for(int i=0; i<NTAES; i++) {
 		tae_t* tae = &tat.taes[i];
-		printf("%d %d %d %d %d %s\n", i, tae->start, tae->res, tae->size, tae->flags, tae->name);
+		printf("%2d %7d %7d %7d %7d %s\n", i, tae->start, tae->res, tae->size, tae->flags, tae->name);
 	}
 }
 
@@ -250,7 +252,7 @@ int main(int argc, char* argv[])
 	printf("Size of alloaction table is %d\n", sizeof(tat));
 
 
-#if 1
+#if 0
 	char *dev = "tat.fs";
 #else
 	char *dev = "/dev/loop0";
