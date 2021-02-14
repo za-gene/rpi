@@ -75,21 +75,32 @@ void tat_mount()
 }
 
 
+// ugly ugly hacks. You can only open one file at a time
+tae_t* g_cur_tae;
+u32 g_seek;
+
+int tat_open(char* path)
+{
+	g_seek = 0;
+	int slot;
+	//tae_t* tae;
+	for(slot=0; slot<NTAES; slot++) {
+		g_cur_tae = &tat.taes[slot];
+		if((g_cur_tae->flags & 1) && streq(g_cur_tae->name, path)) return slot+2; 
+	}
+	return -1;
+}
+
 void tat_cat(char* path)
 {
-	int slot;
-	tae_t* tae;
-	for(slot=0; slot<NTAES; slot++) {
-		tae = &tat.taes[slot];
-		if((tae->flags & 1) && streq(tae->name, path)) break; 
-	}
+	int fd  = tat_open(path);
 
-	if(slot == NTAES) {
+	if(fd == -1) {
 		puts("File not found");
 		return;
 	}
 
-	//lseek(part_fd, tae->start, SEEK_SET);
+	tae_t* tae = g_cur_tae;
 	char buffer[512];
 	int size = tae->size;
 	u32 offset_block = part_start + tae->start;
