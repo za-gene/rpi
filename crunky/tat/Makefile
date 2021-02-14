@@ -1,7 +1,8 @@
-CFLAGS = -ggdb -I.
+VPATH=..
+CFLAGS = -ggdb -I..
 
-tat : tatty.c tat.c
+tatty : tatty.c tat.c
 	gcc $(CFLAGS)  $^ -o $@
 
 clean :
-	rm tat
+	rm tatty

@@ -1,12 +1,11 @@
 #include <lfb.h>
 #include <stdio.h>
-
-extern void sd_test();
-
-#include <stdio.h>
 #include <string.h>
 
-#include "sd.h"
+#include <sd.h>
+#include <tat/tat.h>
+#include <uart0.h>
+
 
 void sd_test()
 {
@@ -23,9 +22,11 @@ void sd_test()
 }
 void kernel_main()
 {
-	lfb_init_as_stdout();
+	//lfb_init_as_stdout();
 
-	sd_test();
+
+	//sd_test();
+	tat_mount();
 
 	puts("That's me done");
 	puts("I'm just going to hang now");
