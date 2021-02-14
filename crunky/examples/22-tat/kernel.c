@@ -16,6 +16,8 @@ void kernel_main()
 	tat_mount();
 	puts("Calling ls...");
 	tat_ls();
+	puts("Calling cat on text (assuming it exists)...");
+	tat_cat("text");
 
 	puts("That's me done");
 	puts("I'm just going to hang now");

@@ -17,7 +17,7 @@ int part_fd; // a file descriptor for the partition
 extern u32 part_start; // partition at which the block starts
 extern u32 part_size; // number of blocks in partition
 
-int streq(char* cmd, char* str) {
+static int streq(char* cmd, char* str) {
 	return strcmp(cmd, str) == 0;
 }
 
@@ -133,47 +133,6 @@ void tat_store(char* real, char* as)
 
 }
 
-#ifndef max
-#define max(a, b) ((a)>(b)? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a, b) ((a)<(b)? (a) : (b))
-#endif
-
-void tat_cat(char* path)
-{
-	int slot;
-	tae_t* tae;
-	for(slot=0; slot<NTAES; slot++) {
-		tae = &tat.taes[slot];
-		if((tae->flags & 1) && streq(tae->name, path)) break; 
-	}
-
-	if(slot == NTAES) {
-		puts("File not found");
-		return;
-	}
-
-	//lseek(part_fd, tae->start, SEEK_SET);
-	char buffer[512];
-	int size = tae->size;
-	u32 offset_block = part_start + tae->start;
-	printf("file size %d\n", size);
-	for(;;) {
-		if(size == 0) break;
-		printf("size = %d\n", size);
-		if(size <=0) break;
-		sd_readablock(offset_block++, buffer);
-		int nread = min(size, 512);
-		//ssize_t nread = read(part_fd, buffer, min(size, sizeof(buffer)));
-		write(0, buffer, nread);
-		if(size<sizeof(buffer)) break;
-		size -= sizeof(buffer);
-	}
-
-}
-
 
 
 int main(int argc, char* argv[])
@@ -187,7 +146,7 @@ int main(int argc, char* argv[])
 	printf("Size of alloaction table is %d\n", sizeof(tat));
 
 
-#if 0
+#if 1
 	char *dev = "tat.fs";
 #else
 	char *dev = "/dev/loop0";

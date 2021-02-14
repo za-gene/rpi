@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <tat.h>
 
@@ -8,6 +9,22 @@ u32 part_size = 0; // number of blocks in partition
 
 
 int sd_readablock(uint block_num, uchar* buffer);
+
+#ifndef max
+#define max(a, b) ((a)>(b)? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a, b) ((a)<(b)? (a) : (b))
+#endif
+
+
+/** a convenience function
+ */
+static int streq(char* cmd, char* str) {
+	return strcmp(cmd, str) == 0;
+}
+
 
 void tat_ls()
 {
@@ -55,4 +72,38 @@ void tat_mount()
 		putchar(buffer[i]);
 	}
 	//write(1, buffer, 512);
+}
+
+
+void tat_cat(char* path)
+{
+	int slot;
+	tae_t* tae;
+	for(slot=0; slot<NTAES; slot++) {
+		tae = &tat.taes[slot];
+		if((tae->flags & 1) && streq(tae->name, path)) break; 
+	}
+
+	if(slot == NTAES) {
+		puts("File not found");
+		return;
+	}
+
+	//lseek(part_fd, tae->start, SEEK_SET);
+	char buffer[512];
+	int size = tae->size;
+	u32 offset_block = part_start + tae->start;
+	printf("file size %d\n", size);
+	for(;;) {
+		if(size == 0) break;
+		printf("size = %d\n", size);
+		if(size <=0) break;
+		sd_readablock(offset_block++, buffer);
+		int nread = min(size, 512);
+		//ssize_t nread = read(part_fd, buffer, min(size, sizeof(buffer)));
+		write(0, buffer, nread);
+		if(size<sizeof(buffer)) break;
+		size -= sizeof(buffer);
+	}
+
 }

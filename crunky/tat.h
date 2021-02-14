@@ -28,6 +28,6 @@ struct  __attribute__((__packed__)) {
 
 void tat_ls();
 void tat_mount();
-
+void tat_cat(char* path);
 
 
