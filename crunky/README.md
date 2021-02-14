@@ -3,7 +3,11 @@
 > 32 bits ought to be enough for anyone
 
 
-Attempt to build a "unikernel" for Raspberry Pi 3
+Attempt to build a "unikernel" for Raspberry Pi 0.
+
+The Pi0 has an ARM11 core using the ARMv6 ISA (Instruction Set Architecture).
+
+An ARM processor that supports ARMv8 has 4 exception levels ([link](https://s-matyukevich.github.io/raspberry-pi-os/docs/lesson02/rpi-os.html)).
 
 ## setup
 
