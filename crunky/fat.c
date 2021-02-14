@@ -58,7 +58,7 @@ void fat_uart_hex(unsigned int d) {
 /* According to https://support.microsoft.com/en-us/topic/description-of-default-cluster-sizes-for-fat32-file-system-905ea1b1-5c4e-a03f-3863-e4846a878d31
 * the maximum cluster size of a FAT32 file system is 32K
 */
-unsigned char block[32*1024]; 
+unsigned char block[32*1024 + 1000]; 
 
 static unsigned int partitionlba = 0;
 
@@ -253,10 +253,12 @@ unsigned int fat_getcluster(char *fn)
  */
 char *fat_readfile(unsigned int cluster)
 {
+#define block1 block
+//unsigned char block1[10000];
     // BIOS Parameter Block
-    bpb_t *bpb=(bpb_t*)block; // changed from &_end, prolly a terrible idea
+    bpb_t *bpb=(bpb_t*)block1; // changed from &_end, prolly a terrible idea
     // File allocation tables. We choose between FAT16 and FAT32 dynamically
-    unsigned int *fat32=(unsigned int*)(block+bpb->rsc*512); // block was &_end
+    unsigned int *fat32=(unsigned int*)(block1+bpb->rsc*512); // block was &_end
     unsigned short *fat16=(unsigned short*)fat32;
     // Data pointers
     unsigned int data_sec, s;
@@ -271,7 +273,7 @@ char *fat_readfile(unsigned int cluster)
     // add partition LBA
     data_sec+=partitionlba;
     // dump important properties
-    fat_uart_puts("FAT Bytes per Sector: ");
+    fat_uart_puts("FAT Bytes per Sector mc: ");
     fat_uart_hex(bpb->bps0 + (bpb->bps1 << 8));
     fat_uart_puts("\nFAT Sectors per Cluster: ");
     fat_uart_hex(bpb->spc);
@@ -284,19 +286,30 @@ char *fat_readfile(unsigned int cluster)
     fat_uart_puts("\nFAT First data sector: ");
     fat_uart_hex(data_sec);
     fat_uart_puts("\n");
+fat_uart_puts("\nFAT 0\n");
     // load FAT table
-    s=sd_readblock(partitionlba+1,(unsigned char*)block+512,(bpb->spf16?bpb->spf16:bpb->spf32)+bpb->rsc);
+    s=sd_readblock(partitionlba+1,(unsigned char*)block1+512,(bpb->spf16?bpb->spf16:bpb->spf32)+bpb->rsc);
+fat_uart_puts("\nFAT 1\n");
     // end of FAT in memory
-    data=ptr=block+512+s;
+    data=ptr=block1+512+s;
+fat_uart_puts("\nFAT 2\n");
     // iterate on cluster chain
     while(cluster>1 && cluster<0xFFF8) {
+fat_uart_puts("\nFAT 3\n");
+
         // load all sectors in a cluster
-        sd_readblock((cluster-2)*bpb->spc+data_sec,ptr,bpb->spc);
+        int bytes_read = sd_readblock((cluster-2)*bpb->spc+data_sec,ptr,bpb->spc);
+fat_uart_puts("\nFAT 4\n");
+
+        fat_uart_puts("fat_readfile:bytes_read=");
+        fat_uart_hex(bytes_read);
+fat_uart_puts("\n");
         // move pointer, sector per cluster * bytes per sector
         ptr+=bpb->spc*(bpb->bps0 + (bpb->bps1 << 8));
         // get the next cluster in chain
         cluster=bpb->spf16>0?fat16[cluster]:fat32[cluster];
     }
+puts("fat_readfile:exiting\n");
     return (char*)data;
 }
 
