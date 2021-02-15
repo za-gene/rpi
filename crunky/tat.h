@@ -30,5 +30,5 @@ void tat_ls();
 void tat_mount();
 void tat_cat(char* path);
 int tat_open(char* path);
-
+int tat_size();
 

@@ -122,6 +122,13 @@ void tat_store(char* real, char* as)
 
 }
 
+void print_size(char* path)
+{
+	int fd = tat_open(path);
+	assert(fd != -1);
+	printf("%d\n", tat_size());
+}
+
 
 
 int main(int argc, char* argv[])
@@ -157,6 +164,7 @@ int main(int argc, char* argv[])
 	if(streq(cmd, "store")) tat_store(argv[2], argv[3]);
 	if(streq(cmd, "cat")) tat_cat(argv[2]);
 	if(streq(cmd, "mount")) tat_mount();
+	if(streq(cmd, "size")) print_size(argv[2]);
 
 	close(part_fd);
 

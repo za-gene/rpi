@@ -82,6 +82,8 @@ int tat_open(char* path)
 	return -1;
 }
 
+int tat_size() { return g_cur_tae->size; }
+
 int tat_read(char* buffer)
 {
 	int nread = min(512, g_cur_tae->size - g_seek);
