@@ -23,7 +23,7 @@ static int streq(char* cmd, char* str) {
 
 int sd_readblock(uint lba, uchar* buffer, uint num)
 {
-	puts("sd_block called");
+	//puts("sd_block called");
 	assert(sizeof(off_t)>= sizeof(u32));
 	u32 offset = (u32)lba * 512;
 	lseek(part_fd, offset, SEEK_SET);
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	printf("Size of alloaction table is %d\n", sizeof(tat));
+	//printf("Size of allocation table is %d\n", sizeof(tat));
 
 
 #if 1

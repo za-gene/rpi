@@ -20,7 +20,7 @@ int sd_readablock(uint block_num, uchar* buffer);
 
 
 /** a convenience function
- */
+*/
 static int streq(char* cmd, char* str) {
 	return strcmp(cmd, str) == 0;
 }
@@ -52,26 +52,15 @@ void tat_mount()
 	char buffer[512];
 	sd_readablock(0, buffer);
 	memcpy(&pinfo, buffer+0x01CE, sizeof(pinfo));
-	printf("ID: %x\n", pinfo.id);
+	//printf("ID: %x\n", pinfo.id);
 	u32 start_block = pinfo.rel/256;
 	part_start = start_block;
-	printf("Start block (of size 512): %d\n", start_block);
+	//printf("Start block (of size 512): %d\n", start_block);
 	u32 num_blocks = pinfo.nsecs/256;
 	part_size = num_blocks;
-	printf("Size in blocks: %d\n", num_blocks);
-
+	//printf("Size in blocks: %d\n", num_blocks);
 	sd_readablock(part_start, (uchar*) &tat);
-
-	// dump first sector of partition
-	//sd_readblock(pinfo.rel*2, buffer, 1);
-	//assert(pinfo.rel*2 == 314572800UL);
 	return;
-	sd_readablock(start_block, buffer);
-	for(int i=0; i <50; i++) {
-		//printf("%d ", (int) buffer[i]);
-		putchar(buffer[i]);
-	}
-	//write(1, buffer, 512);
 }
 
 
@@ -83,7 +72,7 @@ u32 g_seek;
 int tat_open(char* path)
 {
 	g_seek = 0;
-    //g_block = g_cur_tae->start;
+	//g_block = g_cur_tae->start;
 	int slot;
 	//tae_t* tae;
 	for(slot=0; slot<NTAES; slot++) {
@@ -95,14 +84,14 @@ int tat_open(char* path)
 
 int tat_read(char* buffer)
 {
-    int nread = min(512, g_cur_tae->size - g_seek);
-    if(nread==0) return 0;
-    //if(g_seek >= g_cur_tae->size
-    sd_readablock(g_seek/512 + g_cur_tae->start + part_start, buffer);
-    g_seek += nread;
-    return nread;
+	int nread = min(512, g_cur_tae->size - g_seek);
+	if(nread==0) return 0;
+	//if(g_seek >= g_cur_tae->size
+	sd_readablock(g_seek/512 + g_cur_tae->start + part_start, buffer);
+	g_seek += nread;
+	return nread;
 }
-    
+
 void tat_cat(char* path)
 {
 	int fd  = tat_open(path);
@@ -113,29 +102,9 @@ void tat_cat(char* path)
 	}
 
 	char buffer[512];
-    //int eof;
-    int nread;
-    while(nread = tat_read(buffer)) {
-        write(0, buffer, nread);
-    }
-    return;
-        
-
-    
-	tae_t* tae = g_cur_tae;
-	int size = tae->size;
-	u32 offset_block = part_start + tae->start;
-	printf("file size %d\n", size);
-	for(;;) {
-		if(size == 0) break;
-		printf("size = %d\n", size);
-		if(size <=0) break;
-		sd_readablock(offset_block++, buffer);
-		int nread = min(size, 512);
-		//ssize_t nread = read(part_fd, buffer, min(size, sizeof(buffer)));
-		write(0, buffer, nread);
-		if(size<sizeof(buffer)) break;
-		size -= sizeof(buffer);
+	//int eof;
+	int nread;
+	while(nread = tat_read(buffer)) {
+		write(1, buffer, nread);
 	}
-
 }
