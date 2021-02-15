@@ -78,10 +78,12 @@ void tat_mount()
 // ugly ugly hacks. You can only open one file at a time
 tae_t* g_cur_tae;
 u32 g_seek;
+//u32 g_block;
 
 int tat_open(char* path)
 {
 	g_seek = 0;
+    //g_block = g_cur_tae->start;
 	int slot;
 	//tae_t* tae;
 	for(slot=0; slot<NTAES; slot++) {
@@ -91,6 +93,16 @@ int tat_open(char* path)
 	return -1;
 }
 
+int tat_read(char* buffer)
+{
+    int nread = min(512, g_cur_tae->size - g_seek);
+    if(nread==0) return 0;
+    //if(g_seek >= g_cur_tae->size
+    sd_readablock(g_seek/512 + g_cur_tae->start + part_start, buffer);
+    g_seek += nread;
+    return nread;
+}
+    
 void tat_cat(char* path)
 {
 	int fd  = tat_open(path);
@@ -100,8 +112,17 @@ void tat_cat(char* path)
 		return;
 	}
 
-	tae_t* tae = g_cur_tae;
 	char buffer[512];
+    //int eof;
+    int nread;
+    while(nread = tat_read(buffer)) {
+        write(0, buffer, nread);
+    }
+    return;
+        
+
+    
+	tae_t* tae = g_cur_tae;
 	int size = tae->size;
 	u32 offset_block = part_start + tae->start;
 	printf("file size %d\n", size);

@@ -62,17 +62,6 @@ void tat_fmt()
 
 	u32 reserve = (part_size -1)/NTAES; // the blocks we will reserve for each file
 
-
-/*
-	struct stat statbuf;
-	fstat(part_fd, &statbuf);
-	u32 size = statbuf.st_size;
-	printf("Total size:%d\n", size);
-
-	u32 offset = sizeof(tat);
-	u32 file_size = (size -offset)/NTAES;
-	printf("Each file is of size %d\n", file_size);
-*/
 	strncpy(tat.magic, "TATFS01.", sizeof(tat.magic)); // no null-termination
 	for(int i=0; i<NTAES; i++) {
 		tae_t* tae = &tat.taes[i];
@@ -163,22 +152,11 @@ int main(int argc, char* argv[])
 		puts("found format");
 		tat_fmt();
 	} 
-	/*
-	else {
-		// load tat
-		lseek(part_fd, 0, SEEK_SET);
-		read(part_fd, &tat, sizeof(tat));
-	}
-	*/
 
 	if(streq(cmd, "ls")) tat_ls();
-
 	if(streq(cmd, "store")) tat_store(argv[2], argv[3]);
-
 	if(streq(cmd, "cat")) tat_cat(argv[2]);
-
 	if(streq(cmd, "mount")) tat_mount();
-	//tat_store_tat();
 
 	close(part_fd);
 
