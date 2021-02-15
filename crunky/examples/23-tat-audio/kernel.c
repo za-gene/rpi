@@ -12,7 +12,7 @@ typedef unsigned char uchar;
 
 #define PIN RPI_GPIO_P1_12
 #define PWM_CHANNEL 0
-#define RANGE 1024
+#define RANGE 256
 
 
 void kernel_main()
@@ -49,7 +49,7 @@ void kernel_main()
 
 	int idx = 0;
 	while(1) {
-		puts("Playing song");
+		if(idx== 0) puts("Starting song");
 		uchar vol = data[idx++];
 		//printf("%d\n", vol);
 		if(idx == size) idx = 0;

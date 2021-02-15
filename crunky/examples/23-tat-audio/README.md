@@ -1,7 +1,8 @@
-# sdcard
+# play a song on a sound card
 
-works 2020-11-28 (both reading and writing)
+Takes awhile for the song to load, mind, as it preloads it.
 
-## Links to other sites
 
-* [#rakulang: let’s dump the partition table)(https://mcturra2000.wordpress.com/2020/11/25/rakulang-lets-dump-the-partition-table/)
+## NEWS
+
+2021-02-11 Started, and confirmed working
