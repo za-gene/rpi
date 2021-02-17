@@ -92,4 +92,4 @@ Use D2 and D4, as in the Wiring section above for the Uno. Test using sketch bli
 
 ## Also on this site
 
-*[pico-sdk](../pico/blinkt) implementation
+* [pico-sdk](../pico/blinkt) implementation
