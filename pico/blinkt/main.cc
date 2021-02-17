@@ -4,6 +4,10 @@
 //#include "hardware/spi.h"
 #include "hardware/gpio.h"
 
+
+#define clockPin 14
+#define dataPin  15
+
 typedef uint8_t u8;
 
 
