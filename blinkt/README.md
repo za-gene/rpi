@@ -86,6 +86,10 @@ Wire up according to this diagram:
 
 ![blinkt85](blinkt85.svg)
 
-WROOM
+## WROOM
 
 Use D2 and D4, as in the Wiring section above for the Uno. Test using sketch blinktlow.
+
+## Also on this site
+
+*[pico-sdk](../pico/blinkt) implementation
