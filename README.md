@@ -47,9 +47,10 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [dev01](dev01): meditation timer
 * [dev02](dev02): projects for the DEV02 home-made board: green_red and mhz85
 * [dev03](dev03)
+* dev04 WITHDRAWN
 * [dev05](dev05): ATTiny85 programmer for the Pi
 * [dev06](8x8/dev06): 8x8, nano
-* [dev07](dev07): clock DS1307, MAX7219 8-segment display
+* dev07 WITHDRAWN
 * [dev08](dev08): 555 fixed tone generator
 * [dev09](dev09): voltage generator. esp32 mcp4921 simplecli, timer interrupts
 * [hertz](hertz): frequency measurement
