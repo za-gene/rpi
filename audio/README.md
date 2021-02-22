@@ -13,7 +13,7 @@ I found that a 1.7M mp3 at 44.1kHz file lasting 1m09s expanded to a 12.3M wav fi
 **wav to raw**:
 ```
 sox song.wav -e unsigned -b 8 -r 8k -c 1 song.raw
-``
+```
 Reduced the wav file to 560k. `-b` is bytes per sample, `-r` is rate,
 `-c` is the channel number
 
@@ -25,6 +25,7 @@ aplay song.raw
 
 ## In this directory
 
+* [freqs](freqs) - list of frequencies
 * [pwm-audio-sdcard-nano](pwm-audio-sdcard-nano) - Nano RAW player using PWM and sound card
 * [sketch_jun09a](sketch_jun09a) - Arduino emulating DAC using PWM - poor output quality
 * [sketch_jun18](sketch_jun18) - Arduino slave with 5v SD card communicating via I2C with ESP32 master using built-in DAC. Uses a level shifter. 
