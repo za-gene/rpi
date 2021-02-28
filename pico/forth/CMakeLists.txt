@@ -12,9 +12,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init() # Initialize the SDK
 
+flex_target(Scanner scanner.l lex.yy.c)
 
 add_executable(app
         newforth.cc
+	scanner.l
         )
 
 

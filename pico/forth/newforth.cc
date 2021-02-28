@@ -18,11 +18,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <iostream>
 //#include <stdlib.h>
 #ifdef PICO_BOARD
 	#include "pico/stdlib.h"
-	#warning "compiling for pico"
+#else
+	void stdio_init_all() {}
 #endif
+
 #include <functional>
 #include <vector>
 
@@ -38,6 +41,7 @@ using namespace std;
 typedef void (*fnptr)();
 
 
+extern int yylex (void);
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -172,9 +176,23 @@ int main ()
 {
 	stdio_init_all();
 	//getchar();
-	puts("hi from newforth");
+	puts("abba: a basic basic");
 
-	u32 prog[] = {Call(p_words), Call(p_halt)};
+	/*
+	string line;
+	getline(cin, line);
+	cout << "Input line was " << line << endl;
+
+	for(auto& c : line) {
+		if(isspace(c)) continue;
+		while(!
+	}
+	*/
+
+	while(yylex());
+	puts("Finished lexing");
+
+	u32 prog[] = {Call(p_hi), Call(p_words), Call(p_halt)};
 	eval(prog);
 
 	puts("Bye");
