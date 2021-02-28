@@ -21,6 +21,7 @@
 //#include <stdlib.h>
 //#include "pico/stdlib.h"
 #include <functional>
+#include <vector>
 
 
 typedef uint8_t u8;
@@ -28,7 +29,11 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef int32_t i32;
 
-using fn_t = std::function<void(void)>;
+using namespace std;
+
+//using fn_t = std::function<void(void)>;
+typedef void (*fnptr)();
+
 
 
 
@@ -58,7 +63,7 @@ void push_heap_u32(u32 val)
 	for(int i=0; i<4; i++) {
 		heap[htop++] = val & 0xff;
 		val >>= 8;
-       	}
+	}
 }
 
 
@@ -74,7 +79,7 @@ i32 get32(int pos)
 	for(int i=0; i<4; i++) {
 		val <<= 8;
 		val += heap[pos+i];
-       	}
+	}
 	return val;
 }
 
@@ -110,56 +115,59 @@ void create_full_header(u8 flags, const char* cstr, u32 fn)
 
 void p_hi() { puts("hello world"); }
 
+
+
+//typedef function<void()> prim_t;
+
 void p_words()
 {
-	int link = latest;
-	while(link < (1<<30)) {
-		word_t* word = (word_t*) (*heap+word);
-		int len = heap[link] & ~(1<<7);
-#if 1
-		printf("\nword len=%d\n", len);
-		for(int i = 0; i<len; i++) putchar( heap[link-len+i]); 
-		putchar('\n');
-#endif
-		link = get32(link+1);
-		printf("link: %d\n", link);
-		//words = word->prev;
-
-	}
+	puts("p_words1 called");
 }
 
-typedef struct {u8 flags; const char* zname; fn_t fn; } prim_t;
-prim_t prims[] =  {
-	{0,	"WORDS", p_words},
-	{0,	"HI",	p_hi},
+void p_halt()
+{
+	puts("p_halt called");
+	exit(1);
+}
 
-	{0,0,0}
+//typedef fn_t* fnptr;
+typedef struct {const char* name; fnptr fn; } prim_t;
+
+auto prims = vector<prim_t> {
+	{"WORDS", p_words},
+	{"HALT", p_halt},
+	{"HI", p_hi}
 };
 
-void add_primitives()
+u32 Call(fnptr prim)
 {
-	prim_t* p = prims;
-	int primn = 0;
-	while((p->zname)) {
-		word_pad_cstr(p->zname);
-		create_full_header(p->flags, word_pad,  (1<<30) | primn++);
-		p++;
+	for(int i = 0; i<prims.size(); i++) {
+		if(prims[i].fn == prim) {
+			return i;
+		}
 	}
+
+	puts("Err: prim not found");
+	return 666;
 }
 
 
-void dump_heap()
+void eval(u32* ins)
 {
-	FILE* fp = fopen("heap.bin", "w");
-	fwrite(heap, sizeof(heap), 1, fp);
-	fclose(fp);
+	int ip = 0;
+	//int fn_idx;
+
+	while(1) {
+		int fn_idx    	= ins[ip++];
+		auto& fn = prims[fn_idx].fn;
+		fn();
+	}
 }
 
 int main ()
 {
-	add_primitives();
-	dump_heap();
-	p_words();
+	u32 prog[] = {Call(p_words), Call(p_halt)};
+	eval(prog);
 
 	puts("Bye");
 	return 0;

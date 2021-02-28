@@ -48,6 +48,7 @@ partition. You should see at least some dumping out of the contents of the file.
 
 ## Links to other sites
 
+* [dtc-raspberry-bare-metal](https://github.com/dtczhl/dtc-raspberry-bare-metal)
 * [keyboard](https://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/os/input01.html#keyboards) - possible implementation of reading keyboard. Using assembler.
 * [Raspberry Pi IoT In C - Almost Realtime Linux ](https://www.iot-programmer.com/index.php/books/22-raspberry-pi-and-the-iot-in-c/chapters-raspberry-pi-and-the-iot-in-c/33-raspberry-pi-iot-in-c-almost-realtime-linux?showall=1) book
 * [VMWos](http://www.deater.net/weave/vmwprod/vmwos/) - homebrew OS for RPi
