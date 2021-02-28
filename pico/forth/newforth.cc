@@ -29,7 +29,13 @@
 #include <functional>
 #include <vector>
 
-#include "tokens.h"
+//#include "tokens.h"
+
+	
+
+enum tokens { PRINT = 257, ID };
+
+
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -173,17 +179,17 @@ void eval(u32* ins)
 }
 
 
-string myyytext;
+string yytext;
 
-int myyylex()
+int yylex()
 {
 	int c;
 
-	myyytext = "";
+	yytext = "";
 	while((c = getchar()) && isspace(c));
-	myyytext = c;
-	while((c = getchar()) && !isspace(c)) { myyytext += c; }
-	cout << "token:<" << myyytext << ">\n";
+	yytext = c;
+	while((c = getchar()) && !isspace(c)) { yytext += c; }
+	cout << "token:<" << yytext << ">\n";
 	return 1;
 }
 
@@ -204,7 +210,7 @@ int main ()
 	}
 	*/
 
-	while(myyylex());
+	while(yylex());
 	puts("Finished lexing");
 
 	u32 prog[] = {Call(p_hi), Call(p_words), Call(p_halt)};

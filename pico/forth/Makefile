@@ -1,9 +1,9 @@
 
-newforth : newforth.cc lex.yy.c
+newforth : newforth.cc
 	g++ -ggdb $^ -o $@
 
-lex.yy.c : scanner.l
-	flex scanner.l
+#lex.yy.c : scanner.l
+#	flex scanner.l
 
 clean :
 	rm -f newforth heap.bin
