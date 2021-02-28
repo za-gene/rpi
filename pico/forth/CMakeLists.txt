@@ -14,11 +14,10 @@ pico_sdk_init() # Initialize the SDK
 
 
 add_executable(app
-        main.cc
+        newforth.cc
         )
 
 
-# enable usb output, disable uart output
 #pico_enable_stdio_usb(app 1)
 pico_enable_stdio_uart(app 1)
 

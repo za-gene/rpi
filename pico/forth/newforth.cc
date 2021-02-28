@@ -19,7 +19,10 @@
 #include <stdio.h>
 #include <string.h>
 //#include <stdlib.h>
-//#include "pico/stdlib.h"
+#ifdef PICO_BOARD
+	#include "pico/stdlib.h"
+	#warning "compiling for pico"
+#endif
 #include <functional>
 #include <vector>
 
@@ -127,6 +130,7 @@ void p_words()
 void p_halt()
 {
 	puts("p_halt called");
+	while(1);
 	exit(1);
 }
 
@@ -166,6 +170,10 @@ void eval(u32* ins)
 
 int main ()
 {
+	stdio_init_all();
+	//getchar();
+	puts("hi from newforth");
+
 	u32 prog[] = {Call(p_words), Call(p_halt)};
 	eval(prog);
 
