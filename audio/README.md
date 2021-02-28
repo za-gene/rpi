@@ -22,6 +22,12 @@ Reduced the wav file to 560k. `-b` is bytes per sample, `-r` is rate,
 aplay song.raw
 ```
 
+## Electricity
+
+I played a 440Hz square wave out of the audio jack of my PC. It had voltages -0.22V to +0.22V.
+
+Smartphones typically output ~1V with powe 50mW (implying a current of 50mA).
+
 
 ## In this directory
 
