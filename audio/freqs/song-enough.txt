@@ -1,0 +1,31 @@
+#source: https://s3.amazonaws.com/halleonard-pagepreviews/HL_DDS_58822561Dw7KRn7X.png
+g5 8
+g5 8
+g5 8
+g5 8
+g5 8
+g5 4
+g5 8
+
+e5 8
+c5 8
+c5 16
+c5 16
+c5 8
+c5 4
+c5 8
+c5 8
+
+c5 8
+c5 8
+d5 8
+e5 8
+c5 4
+c5 8
+c5 8
+
+c5 8
+c5 8
+d5 8
+e5 8
+c5 1
