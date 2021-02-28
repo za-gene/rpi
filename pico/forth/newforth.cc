@@ -29,6 +29,7 @@
 #include <functional>
 #include <vector>
 
+#include "tokens.h"
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -41,7 +42,6 @@ using namespace std;
 typedef void (*fnptr)();
 
 
-extern int yylex (void);
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -172,6 +172,21 @@ void eval(u32* ins)
 	}
 }
 
+
+string myyytext;
+
+int myyylex()
+{
+	int c;
+
+	myyytext = "";
+	while((c = getchar()) && isspace(c));
+	myyytext = c;
+	while((c = getchar()) && !isspace(c)) { myyytext += c; }
+	cout << "token:<" << myyytext << ">\n";
+	return 1;
+}
+
 int main ()
 {
 	stdio_init_all();
@@ -189,7 +204,7 @@ int main ()
 	}
 	*/
 
-	while(yylex());
+	while(myyylex());
 	puts("Finished lexing");
 
 	u32 prog[] = {Call(p_hi), Call(p_words), Call(p_halt)};
