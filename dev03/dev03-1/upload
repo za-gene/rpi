@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-DEV=`ls /dev/ttyU* | tail -1`
-echo "DEV: $DEV"
-
-# pip3 install --user pyserial
-rshell --buffer-size=30 -p $DEV cp clockesp.py /pyboard

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-python3 unout.py
-
-jupyter nbconvert --to script clockesp.ipynb
-sed -i 's/^%.*//' clockesp.py
