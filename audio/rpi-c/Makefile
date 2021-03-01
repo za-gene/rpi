@@ -1,2 +1,2 @@
 song : main.cc
-	g++ $^ -o $@
+	g++ $^ -o $@ -lbcm2835
