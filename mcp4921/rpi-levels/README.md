@@ -1,9 +1,6 @@
 # pi c
 
-Playing a song from the Pi through MCP4921. Tested with audio jack. Tiny speakers didn't
-seem to work. Power was probably very low.
-
-There didn't appear to be any timing issues.
+Testing of mcp4921 where you set levels manually.
 
 
 ## Connection
@@ -27,4 +24,4 @@ COLS:
 
 ## NEWS
 
-2021-03-01 Started. Working
+2021-03-02 Started.  Working

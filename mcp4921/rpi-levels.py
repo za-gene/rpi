@@ -1,3 +1,6 @@
+# Appears not to work for some reason.
+# Use the C++ program rpi-levels instead
+
 import spidev, time
 
 def get_level():
