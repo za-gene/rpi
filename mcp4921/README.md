@@ -61,6 +61,7 @@ See also db5.177 for stm32
 
 * `esp32-led`: basic check on MCP4921 using an LED on the device's output pin (i.e. pin 8)
 * [nano-sdcard](nano-sdcard) Arduino Nano (or Uno), SD card, interrupt-driven, using MC4921. **Recommended** Works better than the WROOM
+* rpi-levels.py - set and test levels interactively
 * [sketch_jun13b](sketch_jun13b) WROOM, hard-coded, interrupt-driven, using both MCP4921 and internal DAC.
 * `stm-led`: as esp32-led, but for STM32, and using alternate SPI
 * `stm-white`: modified `stm-led` to produce white noise
