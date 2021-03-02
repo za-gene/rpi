@@ -9,7 +9,7 @@ MCP INFO PI
 1   3V3   1
 2   CS   24
 3   SCK  23
-4   MOSI 18
+4   MOSI 19
 5   GND   6
 6   3V3   1
 7   GND   6
