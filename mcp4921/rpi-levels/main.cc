@@ -18,11 +18,12 @@ int main()
 	string line;
 
 	while(1) {
-		printf("Enter level: 0-4095");
+		printf("Enter level: 0-4095: ");
 		try {
 			getline(cin, line);
 			int level = stoi(line);
 			if(level<0 || level > 4095) throw std::invalid_argument("Out of bounds");
+			cout << "Theoretical voltage: " << (float)level *3.3/4096 << "\n";
 			mcp.write(level);
 			bcm2835_delayMicroseconds(125);
 		} catch (const std::invalid_argument& e) {

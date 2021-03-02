@@ -2,6 +2,24 @@
 
 Testing of mcp4921 where you set levels manually.
 
+## Results
+
+```
+level   voltage     amps
+    0     1.1mV      9uA
+  100    80.2mV   4.54mA
+  200     161mV    9.0mA
+  250     200mV   11.2mA
+  400     321mV   13.8mA
+  500     402mV   13.6mA
+ 1000     805mV   13.5mA
+ 2000     1.61V   13.5mA
+ 4000     3.21V   13.5mA
+ 4095     3.29V   13.5mA
+```
+
+There is a close match between measured voltage and theoretical voltage.
+
 
 ## Connection
 
