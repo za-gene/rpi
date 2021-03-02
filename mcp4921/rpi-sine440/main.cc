@@ -1,33 +1,42 @@
 //#include <fstream>
 //#include <sstream>
-#include <iostream>
+//#include <iostream>
 #include <string>
 
+#include <math.h>
 #include <bcm2835.h>
 
 #include "mcp4921.h"
 
 using namespace std;
 
+typedef uint16_t u16;
+
+
 mcp4921 mcp;
+
+#define SAMPLES 64
+u16 sines[SAMPLES];
 
 
 int main()
 {
 
-	string line;
+	// initialise
+	const double hi = 4095, freq = 440;
+	double lo = 1.0/3.3 * hi; // 1V
+	lo = 0;
+	for (int i = 0; i < SAMPLES; i++) {
+		double v = sin((double) i * 2.0 * 3.1412 / SAMPLES);
+		v = (v+1.0)*(hi-lo)/2.0 + lo;
+		sines[i] = v;
+		printf("%d %d\n", i, sines[i]);
+	}
 
-	while(1) {
-		printf("Enter level: 0-4095: ");
-		try {
-			getline(cin, line);
-			int level = stoi(line);
-			if(level<0 || level > 4095) throw std::invalid_argument("Out of bounds");
-			cout << "Theoretical voltage: " << (float)level *3.3/4096 << "\n";
-			mcp.write(level);
-			bcm2835_delayMicroseconds(125);
-		} catch (const std::invalid_argument& e) {
-			cerr << "Invalid argument. " << e.what() << "\n";
+	while(1)  {
+		for (int i = 0; i < SAMPLES; i++) {
+			mcp.write(sines[i]);
+			bcm2835_delayMicroseconds(1e6/freq/SAMPLES);
 		}
 	}
 

@@ -1,5 +1,6 @@
 # pi c
 
+Produce a 440Hz sine wave.
 
 ## Connection
 
@@ -22,4 +23,4 @@ COLS:
 
 ## NEWS
 
-2021-03-02 Started.  
+2021-03-02 Started. Works, but seems to have timing glitches
