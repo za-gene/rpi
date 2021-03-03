@@ -1,3 +1,5 @@
+/* iffy: blinkt doesn't seem to work with this project */
+
 #include <stdio.h>
 #include <string.h>
 #include "pico/stdlib.h"
@@ -12,6 +14,26 @@
 #define	PIN_MOSI	3
 #define PIN_MISO 	4
 #define	PIN_CS 		5
+
+class digiout {
+	public:
+		digiout(uint8_t pin);
+		void put(bool value);
+	private:
+		uint8_t _pin;
+};
+
+digiout::digiout(uint8_t pin)
+{
+	_pin = pin;
+     	gpio_init(pin);
+        gpio_set_dir(pin, GPIO_OUT);
+}
+
+void digiout::put(bool value)
+{
+	gpio_put(_pin, value != 0);
+}
 
 class pwm {
 	public:
@@ -52,6 +74,7 @@ void pwm::set_level(uint16_t vol)
 
 
 pwm pwm0;
+digiout pin16(16);
 
 int main() 
 {
@@ -59,9 +82,17 @@ int main()
 	//puts("dpc started");
 	//while(1) putchar('.');
 
+	pin16.put(1);
+	/*
 	blinkt_init(16, 17);
-	blinkt_set_pixel_colour(1, 0, 10, 0);
+	sleep_ms(100);
 	blinkt_show();
+	sleep_ms(100);
+	blinkt_set_pixel_colour(1, 10, 0, 0);
+	sleep_ms(100);
+	blinkt_show();
+	*/
+	while(1);
 
 	spi_init(spi0, 4'000'000);
 	spi_set_slave(spi0, true);
