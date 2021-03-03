@@ -7,8 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init() # Initialize the SDK
 
+include_directories(..)
+
 add_executable(app
         main.cc
+	../blinkt.cc
         )
 
 pico_enable_stdio_usb(app 1)

@@ -5,10 +5,12 @@ project(app C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-pico_sdk_init() # Initialize the SDK
+pico_sdk_init()
+include_directories(..)
 
 add_executable(app
         main.cc
+        ../blinkt.cc
         )
 
 pico_enable_stdio_usb(app 1)
