@@ -59,25 +59,29 @@ pwm::pwm()
 
 	// run the clock at 44.1kHz
 	uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
-	float divider = f_sys / 1'000'000UL;  
-	divider = 1.0;
+	const int top = 4095;
+	const int f_pwm = 8000;
+	float scale = (top+1) * f_pwm;
+	float divider = f_sys / scale;  
+	//divider = 1.0;
 	pwm_set_clkdiv(_slice_num, divider); // pwm clock should now be running at 1MHz
 
-	pwm_set_wrap(_slice_num, 4095);
-	set_level(0) ;
+	pwm_set_wrap(_slice_num, top);
+	set_level(2000) ;
 	pwm_set_enabled(_slice_num, true); // let's go!
+	pwm_set_chan_level(_slice_num, PWM_CHAN_B, 200); // GPIO15 is a trigger
 
 }
 
 void pwm::set_level(uint16_t vol)
 {
-	pwm_set_chan_level(_slice_num, 0, vol); 
+	pwm_set_chan_level(_slice_num, PWM_CHAN_A, vol); 
 	//pwm_set_enabled(_slice_num, true); // let's go!
 }
 
 
 
-pwm pwm0;
+pwm a_pwm;
 digiout pin16(16);
 
 int main() 
@@ -114,7 +118,7 @@ int main()
 		spi_read16_blocking(spi0, tx, &rx, 1);
 		rx &= 0xfff; // 12-bit value
 		//printf("Received %d\n", rx);
-		pwm0.set_level(rx);
+		a_pwm.set_level(rx);
 	}
 
 	/*
