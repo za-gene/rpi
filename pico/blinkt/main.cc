@@ -5,8 +5,8 @@
 #include "hardware/gpio.h"
 
 
-#define clockPin 14
-#define dataPin  15
+#define dataPin  16
+#define clockPin 17
 
 typedef uint8_t u8;
 
