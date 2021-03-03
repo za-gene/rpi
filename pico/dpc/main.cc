@@ -12,9 +12,6 @@
 #define PIN_MISO 	4
 #define	PIN_CS 		5
 
-#define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
-
 class pwm {
 	public:
 		pwm();
@@ -31,7 +28,8 @@ pwm::pwm()
 
 	// run the clock at 44.1kHz
 	uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
-	float divider = f_sys / 8'000UL;  
+	float divider = f_sys / 1'000'000UL;  
+	divider = 1.0;
 	pwm_set_clkdiv(_slice_num, divider); // pwm clock should now be running at 1MHz
 
 	pwm_set_wrap(_slice_num, 4095);
@@ -43,6 +41,7 @@ pwm::pwm()
 void pwm::set_level(uint16_t vol)
 {
 	pwm_set_chan_level(_slice_num, 0, vol); 
+	//pwm_set_enabled(_slice_num, true); // let's go!
 }
 
 
@@ -51,8 +50,8 @@ pwm pwm0;
 
 int main() 
 {
-	stdio_init_all();
-	puts("dpc started");
+	//stdio_init_all();
+	//puts("dpc started");
 	//while(1) putchar('.');
 
 	spi_init(spi0, 4'000'000);
@@ -63,11 +62,14 @@ int main()
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 
+	//pwm0.set_level(4096/2);
+	//while(1);
+
 	for(;;) {
 		uint16_t rx, tx = 42;
 		spi_read16_blocking(spi0, tx, &rx, 1);
 		rx &= 0xfff; // 12-bit value
-		printf("Received %d\n", rx);
+		//printf("Received %d\n", rx);
 		pwm0.set_level(rx);
 	}
 
