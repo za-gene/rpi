@@ -43,14 +43,18 @@ class pwm {
 		uint _slice_num;
 };
 
+digiout pin17(17);
+
 pwm::pwm()
 {
 	// the PWM channel number is documents in the datasheet, s4.5.2 p535
 	// GPIO14 is 7A, 15 is 7B
-	gpio_set_function(14, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
-	gpio_set_function(15, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
-	_slice_num = pwm_gpio_to_slice_num(14); // get PWM slice for GPIO 0 (it's slice
-	//gassert(pwm_gpio_to_channel(14) == pwm_gpio_to_channel(15) == 7);
+	gpio_set_function(14, GPIO_FUNC_PWM); 
+	gpio_set_function(15, GPIO_FUNC_PWM); 
+	_slice_num = pwm_gpio_to_slice_num(14); 
+	// assert that they're both on slice 7, as expected
+	bool same_slice = _slice_num == 7 && pwm_gpio_to_slice_num(15) == 7;
+	pin17.put(same_slice);
 
 
 	// run the clock at 44.1kHz
@@ -82,7 +86,7 @@ int main()
 	//puts("dpc started");
 	//while(1) putchar('.');
 
-	pin16.put(1);
+	pin16.put(1); // simply confirms that pico is running
 	/*
 	blinkt_init(16, 17);
 	sleep_ms(100);
@@ -92,7 +96,7 @@ int main()
 	sleep_ms(100);
 	blinkt_show();
 	*/
-	while(1);
+	//while(1);
 
 	spi_init(spi0, 4'000'000);
 	spi_set_slave(spi0, true);
