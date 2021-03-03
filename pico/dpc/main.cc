@@ -6,6 +6,7 @@
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
 
+#include "blinkt.h"
 
 #define	PIN_SCK		2
 #define	PIN_MOSI	3
@@ -22,8 +23,12 @@ class pwm {
 
 pwm::pwm()
 {
-	gpio_set_function(0, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
-	_slice_num = pwm_gpio_to_slice_num(0); // get PWM slice for GPIO 0 (it's slice
+	// the PWM channel number is documents in the datasheet, s4.5.2 p535
+	// GPIO14 is 7A, 15 is 7B
+	gpio_set_function(14, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
+	gpio_set_function(15, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
+	_slice_num = pwm_gpio_to_slice_num(14); // get PWM slice for GPIO 0 (it's slice
+	//gassert(pwm_gpio_to_channel(14) == pwm_gpio_to_channel(15) == 7);
 
 
 	// run the clock at 44.1kHz
@@ -53,6 +58,10 @@ int main()
 	//stdio_init_all();
 	//puts("dpc started");
 	//while(1) putchar('.');
+
+	blinkt_init(16, 17);
+	blinkt_set_pixel_colour(1, 0, 10, 0);
+	blinkt_show();
 
 	spi_init(spi0, 4'000'000);
 	spi_set_slave(spi0, true);
