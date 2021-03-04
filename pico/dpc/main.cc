@@ -10,6 +10,9 @@
 
 #include "blinkt.h"
 
+using u8 = uint8_t;
+using u16 = uint16_t;
+
 #define	PIN_SCK		2
 #define	PIN_MOSI	3
 #define PIN_MISO 	4
@@ -59,8 +62,9 @@ pwm::pwm()
 
 	// run the clock at 44.1kHz
 	uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
-	const int top = 4095;
-	const int f_pwm = 8000;
+	//const int top = 4095;
+	const int top = 255;
+	const int f_pwm = 16000;
 	float scale = (top+1) * f_pwm;
 	float divider = f_sys / scale;  
 	//divider = 1.0;
@@ -86,8 +90,8 @@ digiout pin16(16);
 
 int main() 
 {
-	//stdio_init_all();
-	//puts("dpc started");
+	stdio_init_all();
+	puts("dpc started");
 	//while(1) putchar('.');
 
 	//pin16.put(1); // simply confirms that pico is running
@@ -104,7 +108,7 @@ int main()
 
 	spi_init(spi0, 4'000'000);
 	spi_set_slave(spi0, true);
-	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST); 
+	//spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST); 
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_CS,   GPIO_FUNC_SPI);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
@@ -113,14 +117,23 @@ int main()
 	//pwm0.set_level(4096/2);
 	//while(1);
 
+#define NVALS 20
+	u16 vals[NVALS];
+	int i = 0;
 	for(;;) {
-		uint16_t rx, tx = 42;
-		spi_read16_blocking(spi0, tx, &rx, 1);
-		pin16.put( (rx >> 12) == 0b11);
-		rx &= 0xfff; // 12-bit value
+		//if(i==NVALS) break;
+		//uint16_t rx, tx = 42;
+		u8 rx, tx = 42;
+		spi_read_blocking(spi0, tx, &rx, 1);
+		//pin16.put( (rx >> 12) == 0b11);
+		//rx &= 0xfff; // 12-bit value
+		//vals[i++] = rx;
 		//printf("Received %d\n", rx);
 		a_pwm.set_level(rx);
 	}
+
+	// display vals
+	for(i=0; i<NVALS; i++) printf("%d 0x%x\n", i, vals[i]);
 
 	/*
 	gpio_init(BTN);
