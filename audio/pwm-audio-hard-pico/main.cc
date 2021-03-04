@@ -56,10 +56,11 @@ digiout pin16(16);
 digiout pin17(17);
 
 
-void pwm_wrap_isr()
+void my_pwm_wrap_isr()
 {
+	//pin16.put(1);
 	pin16.toggle();
-	//irq_clear(PWM_IRQ_WRAP);
+	irq_clear(PWM_IRQ_WRAP);
 }
 
 pwm::pwm()
@@ -89,7 +90,8 @@ pwm::pwm()
 	pwm_set_chan_level(_slice_num, PWM_CHAN_B, 200); // GPIO15 is a trigger
 
 	pwm_set_irq_enabled(_slice_num, true);
-	irq_add_shared_handler(PWM_IRQ_WRAP, pwm_wrap_isr, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+	//irq_add_shared_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr);
 	//irq_set_enabled(PWM_IRQ_WRAP, true);
 }
 
@@ -134,7 +136,7 @@ int main()
 
 	int i =0;
 	for(;;) {
-		pin16.toggle();
+		//pin16.toggle();
 		uint16_t v = track_raw[i++];
 		if(i == sizeof(track_raw)) i = 0;
 		a_pwm.set_level(v << 4);
