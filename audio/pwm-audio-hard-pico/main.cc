@@ -16,6 +16,10 @@
 #define PIN_MISO 	4
 #define	PIN_CS 		5
 
+using u16 = uint16_t;
+
+void my_pwm_wrap_isr();
+
 class digiout {
 	public:
 		digiout(uint8_t pin);
@@ -29,8 +33,8 @@ class digiout {
 digiout::digiout(uint8_t pin)
 {
 	_pin = pin;
-     	gpio_init(pin);
-        gpio_set_dir(pin, GPIO_OUT);
+	gpio_init(pin);
+	gpio_set_dir(pin, GPIO_OUT);
 }
 
 void digiout::put(bool value)
@@ -56,13 +60,6 @@ digiout pin16(16);
 digiout pin17(17);
 
 
-void my_pwm_wrap_isr()
-{
-	//pin16.put(1);
-	pin16.toggle();
-	//irq_clear(PWM_IRQ_WRAP);
-	pwm_clear_irq(7); // gpio 14 and 15 on slice 7
-}
 
 pwm::pwm()
 {
@@ -107,23 +104,21 @@ void pwm::set_level(uint16_t vol)
 
 pwm a_pwm;
 
+void my_pwm_wrap_isr()
+{
+	static int i = 0;
+	u16 v = track_raw[i++];
+	if(i == sizeof(track_raw)) i = 0;
+	a_pwm.set_level(v << 4);
+
+	//pin16.put(1);
+	pin16.toggle();
+	//irq_clear(PWM_IRQ_WRAP);
+	pwm_clear_irq(7); // pwm gpio 14 and 15 on slice 7
+}
+
 int main() 
 {
-	//stdio_init_all();
-	//puts("dpc started");
-	//while(1) putchar('.');
-
-	//pin16.put(1); // simply confirms that pico is running
-	/*
-	blinkt_init(16, 17);
-	sleep_ms(100);
-	blinkt_show();
-	sleep_ms(100);
-	blinkt_set_pixel_colour(1, 10, 0, 0);
-	sleep_ms(100);
-	blinkt_show();
-	*/
-	//while(1);
 
 	spi_init(spi0, 4'000'000);
 	spi_set_slave(spi0, true);
@@ -134,8 +129,9 @@ int main()
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 
 	//pwm0.set_level(4096/2);
-	//while(1);
+	while(1); // actual playing of track is handled by my_pwm_wrap_isr()
 
+	/*
 	int i =0;
 	for(;;) {
 		//pin16.toggle();
@@ -144,22 +140,8 @@ int main()
 		a_pwm.set_level(v << 4);
 		sleep_us(125);
 	}
-
-	/*
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
-
-	for(;;) {
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);
-	}
 	*/
+
 
 	return 0;
 }
