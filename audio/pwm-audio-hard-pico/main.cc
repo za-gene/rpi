@@ -60,7 +60,8 @@ void my_pwm_wrap_isr()
 {
 	//pin16.put(1);
 	pin16.toggle();
-	irq_clear(PWM_IRQ_WRAP);
+	//irq_clear(PWM_IRQ_WRAP);
+	pwm_clear_irq(7); // gpio 14 and 15 on slice 7
 }
 
 pwm::pwm()
@@ -89,10 +90,11 @@ pwm::pwm()
 	pwm_set_enabled(_slice_num, true); // let's go!
 	pwm_set_chan_level(_slice_num, PWM_CHAN_B, 200); // GPIO15 is a trigger
 
+	pwm_clear_irq(_slice_num);
 	pwm_set_irq_enabled(_slice_num, true);
 	//irq_add_shared_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
 	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr);
-	//irq_set_enabled(PWM_IRQ_WRAP, true);
+	irq_set_enabled(PWM_IRQ_WRAP, true);
 }
 
 void pwm::set_level(uint16_t vol)
