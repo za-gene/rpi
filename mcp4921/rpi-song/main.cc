@@ -1,9 +1,15 @@
 #include <fstream>
 #include <sstream>
 #include <bcm2835.h>
+#include <signal.h>
+#include <unistd.h>
+
 
 
 using namespace std;
+using u16 = uint16_t;
+
+string song;
 
 std::string slurp(const char *filename)
 {
@@ -24,9 +30,23 @@ void dac_write(uint16_t value) {
 	bcm2835_spi_writenb(buf, 2);
 }
 
+int i =0;
+//bool finis = false;
+void alarm_isr(int sig_num)
+{
+	if(sig_num != SIGALRM) return;
+	if(i == song.size()) {
+		bcm2835_spi_end();
+		bcm2835_close();
+		exit(0);
+	}
+	dac_write((u16) song[i++] << 4);
+}
+
 int main()
 {
-	string song{slurp("song.raw")};
+	//string song{slurp("song.raw")};
+	song = slurp("song.raw");
 
 	bcm2835_init();
 	bcm2835_spi_begin();
@@ -38,13 +58,15 @@ int main()
 	bcm2835_spi_chipSelect(BCM2835_SPI_CS0);                      // The default
 	bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);      // the default
 
-	//int i = 0;
-	for(unsigned char c : song) {
-		dac_write((uint16_t) c << 4);
-		//dac_write(i);
-		//i = 1 - i;
-		bcm2835_delayMicroseconds(125);
-	}
+	signal(SIGALRM, alarm_isr);
+	ualarm(125, 125);
+	/*
+	   for(unsigned char c : song) {
+	   dac_write((uint16_t) c << 4);
+	   bcm2835_delayMicroseconds(125);
+	   }
+	   */
+	while(1) sleep(10);
 
 	bcm2835_spi_end();
 	bcm2835_close();
