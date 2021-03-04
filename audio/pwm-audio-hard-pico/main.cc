@@ -7,8 +7,9 @@
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
+#include "hardware/irq.h"
 
-#include "blinkt.h"
+#include "track.h"
 
 #define	PIN_SCK		2
 #define	PIN_MOSI	3
@@ -19,7 +20,9 @@ class digiout {
 	public:
 		digiout(uint8_t pin);
 		void put(bool value);
+		void toggle();
 	private:
+		bool _on = false;
 		uint8_t _pin;
 };
 
@@ -32,7 +35,13 @@ digiout::digiout(uint8_t pin)
 
 void digiout::put(bool value)
 {
-	gpio_put(_pin, value != 0);
+	_on = value !=0;
+	gpio_put(_pin, _on);
+}
+
+void digiout::toggle()
+{
+	put(!_on);
 }
 
 class pwm {
@@ -43,7 +52,16 @@ class pwm {
 		uint _slice_num;
 };
 
+digiout pin16(16);
 digiout pin17(17);
+
+
+void my_pwm_wrap_isr()
+{
+	//pin16.put(1);
+	pin16.toggle();
+	irq_clear(PWM_IRQ_WRAP);
+}
 
 pwm::pwm()
 {
@@ -71,6 +89,10 @@ pwm::pwm()
 	pwm_set_enabled(_slice_num, true); // let's go!
 	pwm_set_chan_level(_slice_num, PWM_CHAN_B, 200); // GPIO15 is a trigger
 
+	pwm_set_irq_enabled(_slice_num, true);
+	//irq_add_shared_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr);
+	//irq_set_enabled(PWM_IRQ_WRAP, true);
 }
 
 void pwm::set_level(uint16_t vol)
@@ -82,7 +104,6 @@ void pwm::set_level(uint16_t vol)
 
 
 pwm a_pwm;
-digiout pin16(16);
 
 int main() 
 {
@@ -113,13 +134,13 @@ int main()
 	//pwm0.set_level(4096/2);
 	//while(1);
 
+	int i =0;
 	for(;;) {
-		uint16_t rx, tx = 42;
-		spi_read16_blocking(spi0, tx, &rx, 1);
-		pin16.put( (rx >> 12) == 0b11);
-		rx &= 0xfff; // 12-bit value
-		//printf("Received %d\n", rx);
-		a_pwm.set_level(rx);
+		//pin16.toggle();
+		uint16_t v = track_raw[i++];
+		if(i == sizeof(track_raw)) i = 0;
+		a_pwm.set_level(v << 4);
+		sleep_us(125);
 	}
 
 	/*
