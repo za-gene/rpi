@@ -50,4 +50,7 @@ void __attribute__ ((interrupt ("IRQ"))) IRQ_handler()
 }
 ```
 
+## Links to other sites
 
+* [ARM system calls](https://wiki.osdev.org/ARM_System_Calls) (swi)
+* [pi baremetal interrupts](https://github.com/brianwiddas/pi-baremetal/blob/master/interrupts.c)
