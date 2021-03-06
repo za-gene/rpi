@@ -46,7 +46,7 @@ void alarm_isr(int sig_num)
 int main()
 {
 	//string song{slurp("song.raw")};
-	song = slurp("song.raw");
+	song = slurp("song16k.raw");
 
 	bcm2835_init();
 	bcm2835_spi_begin();
@@ -59,7 +59,8 @@ int main()
 	bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);      // the default
 
 	signal(SIGALRM, alarm_isr);
-	ualarm(125, 125);
+	float freq = 1'000'000 / 16'000;
+	ualarm(freq, freq);
 	/*
 	   for(unsigned char c : song) {
 	   dac_write((uint16_t) c << 4);

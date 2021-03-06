@@ -27,4 +27,4 @@ COLS:
 
 ## NEWS
 
-2021-03-01 Started. Working
+2021-03-01 Started. Working with 8kHz and 16kHz
