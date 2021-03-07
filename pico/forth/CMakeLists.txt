@@ -14,12 +14,12 @@ pico_sdk_init() # Initialize the SDK
 
 #flex_target(Scanner scanner.l lex.yy.c)
 
-find_package(FLEX)
-FLEX_TARGET(MyScanner scanner.l ../lex.yy.c)
+#find_package(FLEX)
+#FLEX_TARGET(MyScanner scanner.l ../lex.yy.c)
 #ADD_FLEX_BISON_DEPENDENCY(MyScanner)
 
 add_executable(app
-	lex.yy.c
+	#	lex.yy.c
         newforth.cc
 	#${FLEX_MyScanner_OUTPUTS}
 

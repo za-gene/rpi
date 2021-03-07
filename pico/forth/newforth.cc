@@ -21,9 +21,11 @@
 #include <iostream>
 //#include <stdlib.h>
 #ifdef PICO_BOARD
-	#include "pico/stdlib.h"
+#include "pico/stdlib.h"
+bool echo_char = true;
 #else
-	void stdio_init_all() {}
+void stdio_init_all() {}
+bool echo_char = false;
 #endif
 
 #include <functional>
@@ -31,7 +33,7 @@
 
 //#include "tokens.h"
 
-	
+
 
 enum tokens { PRINT = 257, ID };
 
@@ -149,8 +151,8 @@ typedef struct {const char* name; fnptr fn; } prim_t;
 
 auto prims = vector<prim_t> {
 	{"WORDS", p_words},
-	{"HALT", p_halt},
-	{"HI", p_hi}
+		{"HALT", p_halt},
+		{"HI", p_hi}
 };
 
 u32 Call(fnptr prim)
@@ -178,6 +180,13 @@ void eval(u32* ins)
 	}
 }
 
+int readchar()
+{
+	int c = getchar();
+	if(echo_char) putchar(c);
+	return c;
+}
+
 
 string yytext;
 
@@ -186,32 +195,71 @@ int yylex()
 	int c;
 
 	yytext = "";
-	while((c = getchar()) && isspace(c));
+	while((c = readchar()) && isspace(c));
 	yytext = c;
-	while((c = getchar()) && !isspace(c)) { yytext += c; }
+	while((c = readchar()) && !isspace(c)) { yytext += c; }
 	cout << "token:<" << yytext << ">\n";
 	return 1;
+}
+
+vector<u32> prog;
+
+bool cmd_is(string text)
+{
+	return yytext == text;
+}
+
+
+// top level parsing
+int top()
+{
+loop:
+	yylex();
+	if(cmd_is("run")) {
+		puts("found run");
+		return 0;
+	}
+	if(cmd_is("hi")) {
+		prog.push_back(Call(p_hi));
+	}
+	if(cmd_is("words")) {
+		prog.push_back(Call(p_words));
+	}
+
+	goto loop;
 }
 
 int main ()
 {
 	stdio_init_all();
 	//getchar();
-	puts("abba: a basic basic");
+	puts("abba: a basic basic. type run to execute");
 
 	/*
-	string line;
-	getline(cin, line);
-	cout << "Input line was " << line << endl;
+	   string line;
+	   getline(cin, line);
+	   cout << "Input line was " << line << endl;
 
-	for(auto& c : line) {
-		if(isspace(c)) continue;
-		while(!
-	}
-	*/
+	   for(auto& c : line) {
+	   if(isspace(c)) continue;
+	   while(!
+	   }
+	   */
 
-	while(yylex());
+	prog.reserve(10000);
+	top();
+	//while(yylex());
 	puts("Finished lexing");
+
+	int ip = 0;
+	while(ip < prog.size()) {
+		int fn_idx = prog[ip++];
+		auto& fn = prims[fn_idx].fn;
+		fn();
+	}
+	puts("finished evaluation program");
+
+
 
 	u32 prog[] = {Call(p_hi), Call(p_words), Call(p_halt)};
 	eval(prog);
