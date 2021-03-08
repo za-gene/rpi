@@ -10,6 +10,7 @@
 
 
 
+#include <algorithm>
 #include <assert.h>
 #include <ctype.h>
 #include <setjmp.h>
@@ -17,7 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 //#include <stdlib.h>
 #ifdef PICO_BOARD
@@ -52,8 +53,13 @@ using namespace std;
 
 //using fn_t = std::function<void(void)>;
 typedef void (*fnptr)();
+typedef struct {const char* name; fnptr parse; fnptr fn; } prim_t;
 
+int yylex();
+extern vector<prim_t> prims;
+int xstoi(string str);
 
+vector<u32> prog;
 i32 regs[15];
 
 
@@ -115,12 +121,6 @@ void eval_hi() { puts("hello world"); }
 
 
 
-//typedef function<void()> prim_t;
-
-void p_words()
-{
-	puts("p_words1 called");
-}
 
 void p_halt()
 {
@@ -129,22 +129,6 @@ void p_halt()
 	exit(1);
 }
 
-
-void eval_twice()
-{
-	printf("Twice %d is %d\n", regs[0], 2*regs[0]);
-}
-
-
-typedef struct {const char* name; fnptr fn; } prim_t;
-
-auto prims = vector<prim_t> 
-{
-		{"WORDS", p_words},
-	{"TWICE", eval_twice},
-		{"HALT", p_halt},
-		{"HI", eval_hi}
-};
 
 u32 Call(fnptr prim)
 {
@@ -164,6 +148,14 @@ u32 Load(u8 reg, u32 value)
 }
 
 
+void eval_twice()
+{
+	printf("Twice %d is %d\n", regs[0], 2*regs[0]);
+}
+
+
+string yytext;
+
 int readchar()
 {
 	int c = getchar();
@@ -172,7 +164,21 @@ int readchar()
 }
 
 
-string yytext;
+
+
+
+void parse_hi()
+{
+	prog.push_back(Call(eval_hi));
+}
+
+void parse_twice()
+{
+	yylex();
+	prog.push_back(Load(0, xstoi(yytext)));
+	prog.push_back(Call(eval_twice));
+}
+
 
 int yylex()
 {
@@ -186,51 +192,44 @@ int yylex()
 	return 1;
 }
 
-vector<u32> prog;
 
-bool cmd_is(string text)
-{
-	return yytext == text;
-}
-
-//u32 as_num(strin
+/*
+   bool cmd_is(string text)
+   {
+   return yytext == text;
+   }
+   */
 
 int xstoi(string str)
 {
 	try {
 		return stoi(str);
 	} catch (const invalid_argument& ex) {
-	       throw 100;
+		throw 100;
 	}
 }	
 
+//auto prims = vector<prim_t> 
+vector<prim_t> prims = 
+{
+	{"TWICE", parse_twice, eval_twice},
+	{"HI", parse_hi, eval_hi}
+};
 // top level parsing
 void parse_top()
 {
-//loop:
+
+	//loop:
 	yylex();
-	/*
-	if(cmd_is("run")) {
-		puts("found run");
-		return 0;
-	}
-	*/
-	if(cmd_is("hi")) {
-		prog.push_back(Call(eval_hi));
-		return;
-		//goto loop;
-	}
-	if(cmd_is("words")) {
-		prog.push_back(Call(p_words));
-		return;
-		//goto loop;
-	}
-	if(cmd_is("twice")) {
-		yylex();
-		prog.push_back(Load(0, xstoi(yytext)));
-		prog.push_back(Call(eval_twice));
-		return;
-		//goto loop;
+	string upper = yytext;
+	for(int i=0; i< upper.size(); i++) upper[i] = toupper(upper[i]);
+	//transform(upper.begin(), upper.end(), upper.begin(), toupper);
+	//for(int i = 0; i<prims; i++ 
+	for(const auto& prim: prims) {
+		if(prim.name == upper) {
+			prim.parse();
+			return;
+		}
 	}
 	throw 100;
 
