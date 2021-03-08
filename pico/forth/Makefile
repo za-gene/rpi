@@ -1,6 +1,7 @@
+CXXFLAGS = -ggdb -std=c++17
 
 newforth : newforth.cc
-	g++ -ggdb $^ -o $@
+	g++ $(CXXFLAGS) $^ -o $@
 
 #lex.yy.c : scanner.l
 #	flex scanner.l

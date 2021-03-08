@@ -16,21 +16,26 @@
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
 //#include <stdlib.h>
+
 #ifdef PICO_BOARD
-#include "pico/stdlib.h"
-bool echo_char = true;
+	#include "pico/stdlib.h"
+	bool echo_char = true;
+	extern void init_abba_pico();
+	void init_extras() { init_abba_pico(); }
 #else
-void stdio_init_all() {}
-bool echo_char = false;
+	void stdio_init_all() {}
+	bool echo_char = false;
+	void init_extras() { }
 #endif
 
 #include <functional>
 #include <vector>
+
+#include "abba.h"
 
 //#include "tokens.h"
 
@@ -44,23 +49,12 @@ enum tokens { PRINT = 257, ID };
 
 enum opcodes { CALL = 1, LOAD};
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef int32_t i32;
-
 using namespace std;
 
-//using fn_t = std::function<void(void)>;
-typedef void (*fnptr)();
-typedef struct {const char* name; fnptr parse; fnptr fn; } prim_t;
 
-int yylex();
 extern vector<prim_t> prims;
-int xstoi(string str);
 
 vector<u32> prog;
-i32 regs[15];
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -154,7 +148,6 @@ void eval_twice()
 }
 
 
-string yytext;
 
 int readchar()
 {
@@ -164,6 +157,7 @@ int readchar()
 }
 
 
+void push_bcode(u32 bcode) { prog.push_back(bcode); }
 
 
 
@@ -269,6 +263,7 @@ int main ()
 {
 	stdio_init_all();
 	//getchar();
+	init_extras();
 	puts("abba: a basic basic. type run to execute");
 
 	prog.reserve(10000);	

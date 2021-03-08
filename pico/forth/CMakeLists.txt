@@ -22,6 +22,7 @@ pico_sdk_init() # Initialize the SDK
 add_executable(app
 	#	lex.yy.c
         newforth.cc
+	abba-pico.cc
 	#${FLEX_MyScanner_OUTPUTS}
 
         )
@@ -33,6 +34,6 @@ pico_enable_stdio_uart(app 1)
 
 # Pull in our pico_stdlib which aggregates commonly used features
 #target_link_libraries(app ${FLEX_LIBRARIES} pico_stdlib)
-target_link_libraries(app pico_stdlib)
+target_link_libraries(app pico_stdlib hardware_pwm hardware_gpio hardware_clocks)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
