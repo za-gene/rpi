@@ -37,7 +37,7 @@ bool echo_char = false;
 
 enum tokens { PRINT = 257, ID };
 
-
+enum opcodes { CALL = 1, LOAD};
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -50,6 +50,7 @@ using namespace std;
 typedef void (*fnptr)();
 
 
+i32 regs[15];
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -128,7 +129,7 @@ void create_full_header(u8 flags, const char* cstr, u32 fn)
 }
 
 
-void p_hi() { puts("hello world"); }
+void eval_hi() { puts("hello world"); }
 
 
 
@@ -146,20 +147,28 @@ void p_halt()
 	exit(1);
 }
 
-//typedef fn_t* fnptr;
+
+void eval_twice()
+{
+	printf("Twice %d is %d\n", regs[0], 2*regs[0]);
+}
+
+
 typedef struct {const char* name; fnptr fn; } prim_t;
 
-auto prims = vector<prim_t> {
-	{"WORDS", p_words},
+auto prims = vector<prim_t> 
+{
+		{"WORDS", p_words},
+	{"TWICE", eval_twice},
 		{"HALT", p_halt},
-		{"HI", p_hi}
+		{"HI", eval_hi}
 };
 
 u32 Call(fnptr prim)
 {
 	for(int i = 0; i<prims.size(); i++) {
 		if(prims[i].fn == prim) {
-			return i;
+			return (CALL<<24) + i;
 		}
 	}
 
@@ -167,18 +176,11 @@ u32 Call(fnptr prim)
 	return 666;
 }
 
-
-void eval(u32* ins)
+u32 Load(u8 reg, u32 value)
 {
-	int ip = 0;
-	//int fn_idx;
-
-	while(1) {
-		int fn_idx    	= ins[ip++];
-		auto& fn = prims[fn_idx].fn;
-		fn();
-	}
+	return (LOAD<<24) + value;
 }
+
 
 int readchar()
 {
@@ -209,6 +211,7 @@ bool cmd_is(string text)
 	return yytext == text;
 }
 
+//u32 as_num(strin
 
 // top level parsing
 int top()
@@ -220,11 +223,20 @@ loop:
 		return 0;
 	}
 	if(cmd_is("hi")) {
-		prog.push_back(Call(p_hi));
+		prog.push_back(Call(eval_hi));
+		goto loop;
 	}
 	if(cmd_is("words")) {
 		prog.push_back(Call(p_words));
+		goto loop;
 	}
+	if(cmd_is("twice")) {
+		yylex();
+		prog.push_back(Load(0, atoi(yytext.c_str())));
+		prog.push_back(Call(eval_twice));
+		goto loop;
+	}
+
 
 	goto loop;
 }
@@ -235,35 +247,31 @@ int main ()
 	//getchar();
 	puts("abba: a basic basic. type run to execute");
 
-	/*
-	   string line;
-	   getline(cin, line);
-	   cout << "Input line was " << line << endl;
-
-	   for(auto& c : line) {
-	   if(isspace(c)) continue;
-	   while(!
-	   }
-	   */
-
 	prog.reserve(10000);
 	top();
-	//while(yylex());
 	puts("Finished lexing");
 
 	int ip = 0;
 	while(ip < prog.size()) {
-		int fn_idx = prog[ip++];
-		auto& fn = prims[fn_idx].fn;
-		fn();
+		int ins = prog[ip++];
+		u8 opcode = ins >> 24;
+		u32 opvalue = ins & 0xFFFFFF;
+		switch(opcode) {
+			case CALL : {
+					    //int fn_idx = prog[opvalue];
+					    auto& fn = prims[opvalue].fn;
+					    fn();
+					    break;
+				    }
+			case LOAD : {
+					    regs[0] = opvalue;
+					    break;
+				    }
+
+			default:
+				    throw 16;
+		}
 	}
-	puts("finished evaluation program");
-
-
-
-	u32 prog[] = {Call(p_hi), Call(p_words), Call(p_halt)};
-	eval(prog);
-
 	puts("Bye");
 	return 0;
 }
