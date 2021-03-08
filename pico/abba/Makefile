@@ -1,10 +1,8 @@
 CXXFLAGS = -ggdb -std=c++17
+BINS = abba
 
-newforth : newforth.cc
+abba : abba.cc
 	g++ $(CXXFLAGS) $^ -o $@
 
-#lex.yy.c : scanner.l
-#	flex scanner.l
-
 clean :
-	rm -f newforth heap.bin
+	rm -f $(BINS)

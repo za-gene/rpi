@@ -21,7 +21,7 @@ pico_sdk_init() # Initialize the SDK
 
 add_executable(app
 	#	lex.yy.c
-        newforth.cc
+        abba.cc
 	abba-pico.cc
 	#${FLEX_MyScanner_OUTPUTS}
 
