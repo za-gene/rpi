@@ -33,6 +33,10 @@ bool echo_char = false;
 
 //#include "tokens.h"
 
+/* EXCEPTIONS
+ * 100 invalid_argument (string to number)
+ */
+
 
 
 enum tokens { PRINT = 257, ID };
@@ -105,28 +109,6 @@ i32 get32(int pos)
 
 
 ////////////////////////////////////////////////////////////////////////////
-
-static char word_pad[64]; // scratch counted buffer to hold word found
-
-void word_pad_cstr(const char* zstr)
-{
-	u8 len = strlen(zstr);
-	memcpy(word_pad+1, zstr, len);
-	*word_pad = len;
-}
-
-void create_full_header(u8 flags, const char* cstr, u32 fn)
-{
-	u8 len = *cstr;
-	push_heap((u8*) cstr, len+1);
-	word_t word;
-	word.prev = latest;
-	word.flags = flags | len;
-	latest = htop;
-	push_heap((u8*) &word, sizeof(word_t));
-	push_heap_u32(fn);
-	printf("create_full_header:latest:%d\n", latest);
-}
 
 
 void eval_hi() { puts("hello world"); }
@@ -213,42 +195,52 @@ bool cmd_is(string text)
 
 //u32 as_num(strin
 
-// top level parsing
-int top()
+int xstoi(string str)
 {
-loop:
+	try {
+		return stoi(str);
+	} catch (const invalid_argument& ex) {
+	       throw 100;
+	}
+}	
+
+// top level parsing
+void parse_top()
+{
+//loop:
 	yylex();
+	/*
 	if(cmd_is("run")) {
 		puts("found run");
 		return 0;
 	}
+	*/
 	if(cmd_is("hi")) {
 		prog.push_back(Call(eval_hi));
-		goto loop;
+		return;
+		//goto loop;
 	}
 	if(cmd_is("words")) {
 		prog.push_back(Call(p_words));
-		goto loop;
+		return;
+		//goto loop;
 	}
 	if(cmd_is("twice")) {
 		yylex();
-		prog.push_back(Load(0, atoi(yytext.c_str())));
+		prog.push_back(Load(0, xstoi(yytext)));
 		prog.push_back(Call(eval_twice));
-		goto loop;
+		return;
+		//goto loop;
 	}
+	throw 100;
 
 
-	goto loop;
+	//goto loop;
 }
 
-int main ()
+void repl()
 {
-	stdio_init_all();
-	//getchar();
-	puts("abba: a basic basic. type run to execute");
-
-	prog.reserve(10000);
-	top();
+	parse_top();
 	puts("Finished lexing");
 
 	int ip = 0;
@@ -270,6 +262,23 @@ int main ()
 
 			default:
 				    throw 16;
+		}
+	}
+}
+
+int main ()
+{
+	stdio_init_all();
+	//getchar();
+	puts("abba: a basic basic. type run to execute");
+
+	prog.reserve(10000);	
+	while(1) {
+		try { 
+			prog.clear();
+			repl();
+		} catch(int ex) {
+			printf("Error: exception number %d\n", ex);
 		}
 	}
 	puts("Bye");
