@@ -7,6 +7,7 @@ include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
 project(app C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
+set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 #set(PICO_EXAMPLES_PATH ${PROJECT_SOURCE_DIR})
 

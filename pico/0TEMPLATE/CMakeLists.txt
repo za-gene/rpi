@@ -5,12 +5,14 @@ project(app C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+#set(PICO_CXX_ENABLE_EXCEPTIONS 1)
+
 pico_sdk_init()
 include_directories(..)
 
 add_executable(app
         main.cc
-        ../blinkt.cc
+        #../bslinkt.cc
         )
 
 pico_enable_stdio_usb(app 1)
