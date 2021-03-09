@@ -183,7 +183,7 @@ int yylex()
 	while((c = readchar()) && isspace(c));
 	yytext = c;
 	while((c = readchar()) && !isspace(c)) { yytext += c; }
-	cout << "token:<" << yytext << ">\n";
+	//cout << "token:<" << yytext << ">\n";
 	yyupper = toupper(yytext);
 	return 1;
 }
@@ -250,8 +250,9 @@ void parse_top()
 
 void repl()
 {
+	printf("> ");
 	parse_top();
-	puts("Finished lexing");
+	//puts("Finished lexing");
 
 	int ip = 0;
 	while(ip < prog.size()) {
