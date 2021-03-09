@@ -138,7 +138,7 @@ u32 Call(fnptr prim)
 
 u32 Load(u8 reg, u32 value)
 {
-	return (LOAD<<24) + value;
+	return (LOAD<<24) + (reg << 16) + value;
 }
 
 
@@ -174,6 +174,7 @@ void parse_twice()
 }
 
 
+std::string yyupper;
 int yylex()
 {
 	int c;
@@ -183,16 +184,16 @@ int yylex()
 	yytext = c;
 	while((c = readchar()) && !isspace(c)) { yytext += c; }
 	cout << "token:<" << yytext << ">\n";
+	yyupper = toupper(yytext);
 	return 1;
 }
 
 
-/*
-   bool cmd_is(string text)
-   {
-   return yytext == text;
-   }
-   */
+
+bool cmd_is(std::string text)
+{
+   return yyupper == text;
+}
 
 int xstoi(string str)
 {
@@ -209,18 +210,34 @@ vector<prim_t> prims =
 	{"TWICE", parse_twice, eval_twice},
 	{"HI", parse_hi, eval_hi}
 };
+
+std::string toupper(std::string str)
+{
+	string result = str;
+	for(int i=0; i< result.size(); i++) result[i] = toupper(result[i]);
+	return result;
+
+}
+
+void embed_num(u8 reg_num, u32 num)
+{
+	push_bcode(Load(reg_num, num));
+}
+
+void embed_num(u8 reg_num, std::string str)
+{
+	push_bcode(Load(reg_num, xstoi(str)));
+}
+
 // top level parsing
 void parse_top()
 {
 
 	//loop:
 	yylex();
-	string upper = yytext;
-	for(int i=0; i< upper.size(); i++) upper[i] = toupper(upper[i]);
-	//transform(upper.begin(), upper.end(), upper.begin(), toupper);
-	//for(int i = 0; i<prims; i++ 
+	//string upper = toupper(yytext);
 	for(const auto& prim: prims) {
-		if(prim.name == upper) {
+		if(prim.name == yyupper) {
 			prim.parse();
 			return;
 		}
@@ -240,7 +257,8 @@ void repl()
 	while(ip < prog.size()) {
 		int ins = prog[ip++];
 		u8 opcode = ins >> 24;
-		u32 opvalue = ins & 0xFFFFFF;
+		u8 reg_num = (ins >> 16) & 0xFF;
+		u32 opvalue = ins & 0xFFFF;
 		switch(opcode) {
 			case CALL : {
 					    //int fn_idx = prog[opvalue];
@@ -249,7 +267,7 @@ void repl()
 					    break;
 				    }
 			case LOAD : {
-					    regs[0] = opvalue;
+					    regs[reg_num] = opvalue;
 					    break;
 				    }
 

@@ -26,6 +26,8 @@ extern vector<prim_t> prims;
 
 #define SPK 14
 
+enum baby_cmd { BABY_STEP, BABY_FREQ};
+
 void set_spk_freq(u32 f_pwm)
 {
 
@@ -73,9 +75,17 @@ void set_baby_timer_ms(u32 pulse_ms)
 
 void eval_baby()
 {
-	u32 f_pwm = regs[0];
-	//f_pwm = 440;
-	set_spk_freq(f_pwm);
+	printf("eval_baby:reg 0=%d, reg 1=%d\n", regs[0], regs[1]);
+	switch(regs[0]) {
+		case BABY_STEP :
+			set_baby_timer_ms(regs[1]);
+			break;
+		case BABY_FREQ:
+			set_spk_freq(regs[1]);
+			break;
+		default:
+			throw 101;
+	}
 
 }
 
@@ -83,7 +93,15 @@ void eval_baby()
 void parse_baby()
 {
 	yylex();
-	push_bcode(Load(0, xstoi(yytext)));
+	if(cmd_is("STEP")) {
+		embed_num(0, BABY_STEP);
+		yylex();
+		embed_num(1, yytext);
+	} else {
+		embed_num(0, BABY_FREQ);
+		embed_num(1, yytext);
+	}
+
 	push_bcode(Call(eval_baby));
 }
 

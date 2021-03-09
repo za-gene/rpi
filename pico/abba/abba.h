@@ -21,3 +21,8 @@ int yylex();
 int xstoi(std::string str);
 inline i32 regs[15];
 inline std::string yytext;
+//inline std::string yy;
+void embed_num(u8 reg_num, std::string str);
+void embed_num(u8 reg_num, u32 num);
+bool cmd_is(std::string text);
+std::string toupper(std::string str);
