@@ -23,6 +23,7 @@ add_executable(app
 	#	lex.yy.c
         abba.cc
 	abba-pico.cc
+	../blinkt.cc
 	#${FLEX_MyScanner_OUTPUTS}
 
         )
@@ -34,6 +35,11 @@ pico_enable_stdio_uart(app 1)
 
 # Pull in our pico_stdlib which aggregates commonly used features
 #target_link_libraries(app ${FLEX_LIBRARIES} pico_stdlib)
-target_link_libraries(app pico_stdlib hardware_pwm hardware_gpio hardware_clocks)
+target_link_libraries(app pico_stdlib hardware_pwm hardware_gpio hardware_clocks hardware_timer)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
+
+add_custom_target(flash
+    COMMAND cp app.uf2 /media/pi/RPI-RP2
+    DEPENDS app
+)

@@ -3,8 +3,11 @@
 #include "hardware/clocks.h"
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
+//#include "hardware/timer.h"
+#include "pico/stdlib.h"
 
 #include "abba.h"
+#include "../blinkt.h"
 
 using namespace std;
 
@@ -42,6 +45,32 @@ void set_spk_freq(u32 f_pwm)
 	pwm_set_chan_level(slice_num, 0, level);
 }
 
+static u8 baby_pos = 0;
+
+bool baby_timer_step(struct repeating_timer *t)
+{
+	for(u8 i = 0; i< 8; i++) {
+		if(i == baby_pos)
+			blinkt_set_pixel_colour(i, 0, 0, 10);
+		else
+			blinkt_set_pixel_colour(i, 0, 0, 0);
+	}
+	blinkt_show();
+
+	baby_pos++;
+	if(baby_pos == 8) baby_pos = 0;
+	
+	return true;
+}
+
+void set_baby_timer_ms(u32 pulse_ms)
+{
+	static struct repeating_timer baby_timer;
+	cancel_repeating_timer(&baby_timer);
+	add_repeating_timer_ms(pulse_ms, baby_timer_step, 0 , &baby_timer);
+
+}
+
 void eval_baby()
 {
 	u32 f_pwm = regs[0];
@@ -69,6 +98,10 @@ void init_abba_pico()
 	gpio_set_function(SPK, GPIO_FUNC_PWM); 
 	uint slice_num = pwm_gpio_to_slice_num(SPK);
 	pwm_set_enabled(slice_num, true);
+
+
+	set_baby_timer_ms(1000);
+	blinkt_init(16, 17);
 
 	prims.insert(prims.end(), pico_prims.begin(), pico_prims.end());
 }
