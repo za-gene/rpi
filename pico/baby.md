@@ -74,5 +74,6 @@ Sound is turned on.
 
 ## In conclusion
 
-If you have any questions on the sequencer post them on [this](XXX) reddit thread.
+If you have any questions on the sequencer post them on 
+[this](https://www.reddit.com/r/raspberry_pi/comments/m2ujc1/a_baby_8_sequencer_for_the_pico/) reddit thread.
 
