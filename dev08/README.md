@@ -1,6 +1,8 @@
 # dev08 
 
-Squarewave generator designed for 480Hz output (untested). The circuit uses an **NE555** 
+Squarewave generator. Theoretical frequency: 480Hz. Observed with oscilloscope: 480Hz with 66% duty cycle.
+The circuit uses an **NE555** 
+
 
 ## Schematics
 
