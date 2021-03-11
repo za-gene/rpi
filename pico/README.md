@@ -31,8 +31,9 @@ int main()
 * [boot](boot.md) - booting into program mode
 
 
-## Also in thsi directory
+## Also in this directory
 
+* [baby](baby.md) 8 sequencer
 * [kicad](kicad) - MCU layout for the KiCad electronic circuit design program
 
 
