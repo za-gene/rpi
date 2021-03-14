@@ -54,3 +54,4 @@ void __attribute__ ((interrupt ("IRQ"))) IRQ_handler()
 
 * [ARM system calls](https://wiki.osdev.org/ARM_System_Calls) (swi)
 * [pi baremetal interrupts](https://github.com/brianwiddas/pi-baremetal/blob/master/interrupts.c)
+* [swi](https://www.raspberrypi.org/forums/viewtopic.php?f=72&t=303749) on forum
