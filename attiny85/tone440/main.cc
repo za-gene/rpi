@@ -7,7 +7,9 @@
 #include <stdlib.h>
 
 
-#define NOISE_PIN (1<<PB4)
+// noise pin seems to interfere with output, so disable it
+//
+#define NOISE_PIN (1<<PB0)
 
 int main()
 {
@@ -20,7 +22,7 @@ int main()
 	// white noise on pin PB4 (physical pin 3)
 	DDRB |= NOISE_PIN;
 	for(;;) {
-		//continue;
+		continue;
 		if((random() % 2) == 0)
 			PORTB |= NOISE_PIN;
 		else
