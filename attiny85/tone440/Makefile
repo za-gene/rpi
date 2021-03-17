@@ -14,6 +14,8 @@ $(BASE).elf : main.o minitone85.o
 	$(CXX) -c $^ 
 
 
+flash : install
+
 install:$(BASE).hex
 	install-hex $<
 

@@ -4,9 +4,10 @@
 #include <avr/io.h>
 #include <avr/iotnx5.h> // for CLKPR
 #include <util/delay.h>
+#include <stdlib.h>
 
 
-
+#define NOISE_PIN (1<<PB4)
 
 int main()
 {
@@ -16,5 +17,13 @@ int main()
 	PORTB = 0x00;  // set all pins low
 	miniTone(440); 
 
-	for(;;); // forever
+	// white noise on pin PB4 (physical pin 3)
+	DDRB |= NOISE_PIN;
+	for(;;) {
+		//continue;
+		if((random() % 2) == 0)
+			PORTB |= NOISE_PIN;
+		else
+			PORTB &= ~NOISE_PIN;
+	}
 }
