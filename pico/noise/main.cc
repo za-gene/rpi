@@ -20,14 +20,16 @@ int main()
 
 	//io_rw_32 bit = 0;
 	//int bit = 0;
+	bool bit = false;
 	for(;;) {
 		const int pause = 1'000'000/440/2;
-		io_rw_32 bit = rosc_hw->randombit;
+		//io_rw_32 bit = rosc_hw->randombit;
 		//bit = 1 - bit;
+		bit = ~bit;
 		gpio_put(OUT, bit);
 		//sleep_us(pause);
 		//sleep_ms(500);
-		sleep_us(10);
+		sleep_us(pause);
 	}
 
 	return 0;
