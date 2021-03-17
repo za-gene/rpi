@@ -3,31 +3,31 @@
 #include "pico/stdlib.h"
 //#include "hardware/spi.h"
 #include "hardware/gpio.h"
-#include "hardwarw/xosc.h"
+#include "hardware/xosc.h"
+#include "hardware/structs/rosc.h"
 
 
-#define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
+#define OUT 16 // Speaker where we output noise
 
 int main() 
 {
-	stdio_init_all();
+	//stdio_init_all();
 
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
+	gpio_init(OUT);
+	gpio_set_dir(OUT, GPIO_OUT);
 
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
+	xosc_init(); // I think you need to enable the xosc before using random bit generator
 
-	xosc_init();
-
+	//io_rw_32 bit = 0;
+	//int bit = 0;
 	for(;;) {
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);
+		const int pause = 1'000'000/440/2;
+		io_rw_32 bit = rosc_hw->randombit;
+		//bit = 1 - bit;
+		gpio_put(OUT, bit);
+		//sleep_us(pause);
+		//sleep_ms(500);
+		sleep_us(10);
 	}
 
 	return 0;
