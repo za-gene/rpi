@@ -65,3 +65,7 @@ See also db5.177 for stm32
 * [sketch_jun13b](sketch_jun13b) WROOM, hard-coded, interrupt-driven, using both MCP4921 and internal DAC.
 * `stm-led`: as esp32-led, but for STM32, and using alternate SPI
 * `stm-white`: modified `stm-led` to produce white noise
+
+## Elsewhere
+
+* db05/275 contains circuit for amplification (**good**)
