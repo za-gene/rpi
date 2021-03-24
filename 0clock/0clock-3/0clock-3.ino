@@ -1,8 +1,8 @@
 #include <debounce.h> // a project here that does falling buttons
 
 /*  blue button sw0 turns timer on or off
- *  left button on zeroseg toggles between timer and clock display
- */
+    left button on zeroseg toggles between timer and clock display
+*/
 
 //#include <ezButton.h>
 
@@ -84,50 +84,22 @@ void init_7219() {
 
 
 
-template<int N, typename T>
-struct Buffer {
-  int capacity = N;
-  int size = 0;
-  T data[N];
-  void push(T value) {
-    if (size < capacity) data[size++] = value;
-  };
-  void zap() {
-    for (int i = 0; i < capacity; ++i) data[i] = 0;
-    size = 0;
-  }
-};
-
-
 
 // COMMON COMPONENTS end
 ///////////////////////////////////////////////////////////
-void do_set(char *buf) {
-  buf[15] = 0;
-  buf[24] = 0;
-  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  rtc.adjust(DateTime(buf + 4, buf + 16));
-  Serial.println(buf + 4);
-  Serial.println(buf + 16);
 
-}
-Buffer<30, char> input;
-void serialise() {
-  if (!Serial.available()) return;
-  char c = Serial.read();
-  input.push(c);
-  if (c != '\r') return;
-  if (strncmp("SET", input.data, 3) != 0) return;
-  do_set(input.data);
-  input.zap();
-}
+enum state_t {st_normal, st_adjusting, st_timing};
 
+state_t state = st_normal;
 
 FallingButton sw0(3); // 0seg left button is A0, right button is A2
 FallingButton sw_left(A0);
 FallingButton sw_right(A2);
+//FallingButton sw_adj(2); // adjust time up or down
 
 //ezButton sw0(3);
+
+#define SW_ADJ 2
 
 #define BZR 8
 void setup() {
@@ -143,6 +115,8 @@ void setup() {
   rtc.disableAlarm(0);
   rtc.disableAlarm(1);
   rtc.disableAlarm(2);
+
+  pinMode(SW_ADJ, INPUT_PULLUP);
 }
 
 void show_dec(int pos, int val, bool dp = false) {
@@ -171,6 +145,7 @@ void update_counter_display(ulong elapsed) {
   }
 }
 
+/*
 void update_display(ulong elapsed_secs) {
   if (show_clock) {
     update_regular_display();
@@ -178,40 +153,88 @@ void update_display(ulong elapsed_secs) {
     update_counter_display(elapsed_secs);
   }
 }
-
-void loop() {
-  serialise();
+*/
 
 
-  static bool timing = false;
-  static ulong start_time;
-  if (sw0.falling()) {
-    if (timing) {
-      timing = false;
-      show_clock = true;
-      sound(false);
-    } else {
-      timing = true;
-      start_time = millis();
-      show_clock = false;
-    }
+bool sw_adj_low = false;
+
+void do_adjusting() {
+  if (!sw_adj_low) {
+    state = st_normal;
+    return;
   }
 
-  if (sw_left.falling()) {
-    show_clock = !show_clock;
+  if (sw_left.falling())
+    digitalWrite(BZR, 1);
+  if (sw_right.falling())
+    digitalWrite(BZR, 0);
+
+}
+
+static ulong start_time;
+
+void do_normal() {
+  if (sw_adj_low) {
+    state = st_adjusting;
+    return;
+  }
+
+  if (sw0.falling()) {
+    start_time = millis();
+    show_clock = false;
+    state = st_timing;
+    return;
+  }
+  
+  update_regular_display();
+}
+
+
+void do_timing() {
+  if (sw0.falling()) {
+    show_clock = true;
+    sound(false);
+    state = st_normal;
+
   }
 
   ulong elapsed = 0;
-  if (timing) {
-    elapsed = millis() - start_time;
-    long over_time = elapsed - 30UL * 1000UL * 60UL;
-    if (over_time > 0) {
-      ulong segment = over_time % 5000;
-      sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
-    }
+  elapsed = millis() - start_time;
+  long over_time = elapsed - 30UL * 1000UL * 60UL;
+  if (over_time > 0) {
+    ulong segment = over_time % 5000;
+    sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
   }
 
-  update_display(elapsed / 1000);
+  update_counter_display(elapsed / 1000);
+
+
+}
+
+void loop() {
+
+  sw_adj_low = 1 - digitalRead(SW_ADJ);
+  //do_state_machine();
+
+  switch (state) {
+    case st_normal:
+      do_normal();
+      break;
+    case st_adjusting:
+      do_adjusting();
+      break;
+    case st_timing:
+      do_timing();
+      break;
+  }
+
+
+  /*
+    if (sw_left.falling()) {
+      show_clock = !show_clock;
+    }
+  */
+
 }
 
 void sound(bool on) {
