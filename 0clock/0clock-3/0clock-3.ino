@@ -25,16 +25,19 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 RTC_DS3231 rtc;
 DateTime get_time() {
   // only call the RTC occasionally to prevent peculiar noise coming from module
-  static DateTime dt = rtc.now();
-  static auto snap = millis();
-  if (millis() - snap > 1000UL * 60UL) {
+  DateTime dt = rtc.now();
+  /*
+    static auto snap = millis();
+    if (millis() - snap > 1000UL * 60UL) {
     Serial.println("Refreshing RTC");
     dt = rtc.now();
     snap = millis();
-  }
+    }
+    auto tim = dt.unixtime() + (millis() - snap) / 1000;
 
+  */
 
-  auto tim = dt.unixtime() + (millis() - snap) / 1000;
+  auto tim = dt.unixtime();
   tim = myTZ.toLocal(tim, &tcr);
   DateTime dt_local{tim};
   return dt_local;
@@ -146,13 +149,13 @@ void update_counter_display(ulong elapsed) {
 }
 
 /*
-void update_display(ulong elapsed_secs) {
+  void update_display(ulong elapsed_secs) {
   if (show_clock) {
     update_regular_display();
   } else {
     update_counter_display(elapsed_secs);
   }
-}
+  }
 */
 
 
@@ -164,11 +167,19 @@ void do_adjusting() {
     return;
   }
 
+  int delta = 0;
   if (sw_left.falling())
-    digitalWrite(BZR, 1);
+    delta = -1;
   if (sw_right.falling())
-    digitalWrite(BZR, 0);
+    delta = 1;
 
+  if (delta != 0) {
+    auto dt = rtc.now();
+    dt = dt + TimeSpan(delta * 60);
+    rtc.adjust(dt);
+    update_regular_display();
+
+  }
 }
 
 static ulong start_time;
@@ -185,7 +196,7 @@ void do_normal() {
     state = st_timing;
     return;
   }
-  
+
   update_regular_display();
 }
 
