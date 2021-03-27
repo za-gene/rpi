@@ -2,6 +2,8 @@
 
 Fixed frequency generator using repeating_timer_callback()
 
-## Status
+## News
+
+2021-03-27 Cinfirmed working
 
 

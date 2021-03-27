@@ -19,7 +19,8 @@ int main()
 
 	struct repeating_timer timer;
 
-	long int us = 1'000'000UL/8000/2;
+	constexpr int freq = 440;
+	long int us = 1'000'000UL/freq/2;
 	// negative means regardless of how long it took to execute
 	add_repeating_timer_us(-us, repeating_timer_callback, NULL, &timer);
 
