@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
-dtach -c /tmp/openocd -z openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg
+if [ ! -f /tmp/openocd ]; then
+	dtach -n /tmp/openocd -z openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg
+fi
 
 gdb-multiarch
