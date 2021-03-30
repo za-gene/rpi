@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+dtach -c /tmp/openocd -z openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg
+
+gdb-multiarch
