@@ -47,6 +47,7 @@ If all else fails:
 * [bare-metal](bare) - low-level stuff
 * [benchmarks](benchmarks) - how fast does everything work?
 * [debugging](debugging.txt)
+* [divider](divider) - frequency (aka clock) divider
 * [sketch_oct18a](sketch_oct18a) = Arduino, HardwareTimer, pmwWrite
 * [song-player](song-player) - 3V3 SD card, MCP4921 and LED confirmation. Plays raw song.
 * [stm32-timer-led](stm32-timer-led) - using a timer to blink an LED once per second using a timer set a frequency of 8kHz
