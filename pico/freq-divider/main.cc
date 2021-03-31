@@ -1,13 +1,14 @@
-#include <stdio.h>
-#include <string.h>
-//#include "pico/stdlib.h"
+//#include <stdio.h>
+//#include <string.h>
+#include "pico/stdlib.h"
 //#include "hardware/spi.h"
-#include "hardware/gpio.h"
+//#include "hardware/gpio.h"
 
 
 //#define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
+//#define LED 25 // GPIO of built-in LED
 
+#if 0
 void freq_input_rise_isr(uint gpio, uint32_t events)
 {
 	static uint32_t cnt = 0;
@@ -19,7 +20,7 @@ void freq_input_rise_isr(uint gpio, uint32_t events)
 	}
 	cnt++;
 }
-
+#endif
 
 int main() 
 {
@@ -27,11 +28,14 @@ int main()
 
 #if 0
 	for(int i = 1; i < 11; i++) {
+		gpio_init(i);
 		gpio_set_dir(i, GPIO_OUT);
 	}
 #endif
+	const uint LED = PICO_DEFAULT_LED_PIN;
+	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
-	gpio_put(LED, true);
+	gpio_put(LED, 1);
 	//gpio_set_irq_enabled_with_callback(0, GPIO_IRQ_EDGE_RISE, true, &freq_input_rise_isr);
 	//gpio_init(BTN);
 	//gpio_set_dir(BTN, GPIO_IN);
@@ -51,8 +55,8 @@ int main()
 	*/
 
 	//gpio_put(1, 1);
-	while(1);
+	while(1) sleep_ms(250);
 
-	return 0;
+	//return 0;
 }
 

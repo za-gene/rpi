@@ -20,7 +20,7 @@ add_executable(app
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(app 
 	pico_stdlib 
-	hardware_gpio
+	#hardware_gpio
 	#hardware_irq
 )
 
