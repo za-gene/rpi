@@ -110,8 +110,21 @@ void contrast(u8 contrast) { write_cmd(SET_CONTRAST); write_cmd(contrast); }
 void invert(u8 invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
 
 
-void init_display()
+static void init_i2c()
 {
+	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
+	i2c_init(I2C_PORT, 100 * 1000);
+	gpio_set_function(4, GPIO_FUNC_I2C);
+	gpio_set_function(5, GPIO_FUNC_I2C);
+	gpio_pull_up(4);
+	gpio_pull_up(5);
+}
+
+void init_display(int h)
+{
+	init_i2c();
+	height = h;
+
 	static u8 cmds[] = {
 		SET_DISP | 0x00,  // display off 0x0E | 0x00
 
@@ -169,15 +182,6 @@ void init_display()
 	show_scr();
 }
 
-void init_i2c()
-{
-	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
-	i2c_init(I2C_PORT, 100 * 1000);
-	gpio_set_function(4, GPIO_FUNC_I2C);
-	gpio_set_function(5, GPIO_FUNC_I2C);
-	gpio_pull_up(4);
-	gpio_pull_up(5);
-}
 
 void draw_pixel(int16_t x, int16_t y, int color) 
 {
@@ -243,9 +247,9 @@ void draw_letter_at(u8 x, u8 y, char c)
 }
 
 
-void draw_letter(char c) { draw_letter_at(0, 0, c); }
+// void draw_letter(char c) { draw_letter_at(0, 0, c); }
 
-int cursorx = 0, cursory = 0;
+static int cursorx = 0, cursory = 0;
 void ssd1306_print(const char* str)
 {
 	char c;
@@ -277,10 +281,11 @@ void setCursory(int y)
 
 int main()
 {
-	init_i2c();
+	//init_i2c();
 
-	if(0) height = 64;
-	init_display();
+	int h = 32;
+	if(1) h = 64;
+	init_display(h);
 
 	ssd1306_print("HELLO PICO...\n"); // demonstrate some text
 	show_scr();
