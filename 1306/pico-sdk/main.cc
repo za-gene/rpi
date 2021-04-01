@@ -30,12 +30,15 @@ typedef uint8_t u8;
 
 //#define OLED_128x32
 
+/*
 #ifdef OLED_128x32
 	const u8 height = 32;
 #else
 	const u8 height = 64;
 #endif
+*/
 
+static u8 height = 32;
 //const u8 SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
 const u8 SID = 0x3C ; // different height displays have different addr
 const u8 width = 128;
@@ -55,12 +58,17 @@ void fill_scr(u8 v)
 }
 
 
+void send_data(u8* data, int nbytes)
+{
+	i2c_write_blocking(I2C_PORT, SID, data, nbytes, false);
+}
+
 void send2(u8 v1, u8 v2)
 {
 	u8 buf[2];
 	buf[0] = v1;
 	buf[1] = v2;
-	i2c_write_blocking(I2C_PORT, SID, buf, 2, false);
+	send_data(buf, 2);
 }
 
 
@@ -81,7 +89,7 @@ void show_scr()
 
 	scr[0] = 0x40; // the data instruction	
 	int size = pages()*width +1;
-	i2c_write_blocking(I2C_PORT, SID, scr, size, false);
+	send_data(scr, size);
 }
 
 
@@ -115,7 +123,7 @@ void init_display()
 		SET_SEG_REMAP | 0x01,  //# column addr 127 mapped to SEG0
 
 		SET_MUX_RATIO, // 0xA8
-		height - 1,
+		(u8)(height - 1),
 
 		SET_COM_OUT_DIR | 0x08,  //# scan from COM[N] to COM0  (0xC0 | val)
 		SET_DISP_OFFSET, // 0xD3
@@ -124,7 +132,7 @@ void init_display()
 		//SET_COM_PIN_CFG, // 0xDA
 		//0x02 if self.width > 2 * self.height else 0x12,
 		//width > 2*height ? 0x02 : 0x12,
-		SET_COM_PIN_CFG, height == 32 ? 0x02 : 0x12,
+		SET_COM_PIN_CFG, (u8)(height == 32 ? 0x02 : 0x12),
 
 		//# timing and driving scheme
 		SET_DISP_CLK_DIV, // 0xD5
@@ -278,6 +286,8 @@ void setCursory(int y)
 int main()
 {
 	init_i2c();
+
+	if(0) height = 64;
 	init_display();
 
 	ssd1306_print("HELLO PICO...\n"); // demonstrate some text
