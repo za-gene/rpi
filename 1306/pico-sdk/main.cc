@@ -311,6 +311,18 @@ void ssd1306_print(const char* str)
 }
 
 
+void setCursorx(int x)
+{
+	const int pos = 8;
+	cursorx = pos * x;
+}
+
+
+void setCursory(int y)
+{
+	const int pos = 8;
+	cursory = pos * y;
+}
 
 int main()
 {
@@ -320,9 +332,19 @@ int main()
 	ssd1306_print("HELLO PICO...\n"); // demonstrate some text
 	show_scr();
 	sleep_ms(2000);
-	fill_scr(0); // emptry the screen
+	fill_scr(0); // empty the screen
 
 	drawBitmap(0, 0, splash1_data, 64, 64, 1);
+	show_scr();
+
+	sleep_ms(2000);
+	setCursorx(0);
+	setCursory(0);
+	ssd1306_print("Testing cursor");
+	show_scr();
+	sleep_ms(2000);
+	setCursorx(0);
+	ssd1306_print("Overwritten   ");
 	show_scr();
 
 	for(;;);

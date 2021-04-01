@@ -12,6 +12,8 @@ SDA is configured for GP4, and SCL on GP5 of Pico.
 
 ## News
 
+2021-04-01 Added setCursorx(), setCursory() (https://github.com/blippy/rpi/issues/4)
+
 2021-02-11 Added bitmap displays
 
 2021-01-25 Confirmed working
