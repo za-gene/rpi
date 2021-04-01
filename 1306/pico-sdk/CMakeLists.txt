@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 add_executable(app
-        main.cc font.cc splash.cc
+        main.cc font.cc oled.cc splash.cc
         )
 
 # Pull in our pico_stdlib which pulls in commonly used features
