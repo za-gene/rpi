@@ -40,7 +40,7 @@ typedef uint8_t u8;
 const u8 SID = 0x3C ; // different height displays have different addr
 const u8 width = 128;
 const int pages = height / 8;
-const bool external_vcc = false;
+//const bool external_vcc = false;
 
 
 u8 scr[pages*width+1]; // extra byte holds data send instruction
@@ -129,7 +129,8 @@ void init_display()
 
 		SET_PRECHARGE, // 0xD9
 		//0x22 if self.external_vcc else 0xF1,
-		external_vcc ? 0x22 : 0xF1,
+		//external_vcc ? 0x22 : 0xF1,
+		0xF1,
 
 		SET_VCOM_DESEL, // 0xDB
 		//0x30,  //# 0.83*Vcc
@@ -144,7 +145,8 @@ void init_display()
 
 		SET_CHARGE_PUMP, // 0x8D
 		//0x10 if self.external_vcc else 0x14,
-		external_vcc ? 0x10 : 0x14,
+		//external_vcc ? 0x10 : 0x14,
+		0x14,
 
 		SET_DISP | 0x01
 	};
