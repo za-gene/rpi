@@ -24,7 +24,7 @@ extern "C" const uint8_t ssd1306_font6x8[];
 #define SET_VCOM_DESEL 0xDB
 #define SET_CHARGE_PUMP 0x8D
 
-typedef uint8_t u8;
+//typedef uint8_t uint8_t;
 
 #define I2C_PORT i2c0
 
@@ -32,40 +32,40 @@ typedef uint8_t u8;
 
 /*
 #ifdef OLED_128x32
-const u8 height = 32;
+const uint8_t height = 32;
 #else
-const u8 height = 64;
+const uint8_t height = 64;
 #endif
 */
 
-static u8 height = 32;
-//const u8 SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
-const u8 SID = 0x3C ; // different height displays have different addr
-const u8 width = 128;
+static uint8_t height = 32;
+//const uint8_t SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
+const uint8_t SID = 0x3C ; // different height displays have different addr
+const uint8_t width = 128;
 //const int pages = height / 8;
 //const bool external_vcc = false;
 
 int pages() { return height/8; }
 
-//u8 scr[pages*width+1]; // extra byte holds data send instruction
-u8 scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
+//uint8_t scr[pages*width+1]; // extra byte holds data send instruction
+uint8_t scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
 
-void write_cmd(u8 cmd);
+void write_cmd(uint8_t cmd);
 
-void fill_scr(u8 v)
+void fill_scr(uint8_t v)
 {
 	memset(scr, v, sizeof(scr));
 }
 
 
-void send_data(u8* data, int nbytes)
+void send_data(uint8_t* data, int nbytes)
 {
 	i2c_write_blocking(I2C_PORT, SID, data, nbytes, false);
 }
 
-void send2(u8 v1, u8 v2)
+void send2(uint8_t v1, uint8_t v2)
 {
-	u8 buf[2];
+	uint8_t buf[2];
 	buf[0] = v1;
 	buf[1] = v2;
 	send_data(buf, 2);
@@ -94,7 +94,7 @@ void show_scr()
 
 
 
-void write_cmd(u8 cmd) 
+void write_cmd(uint8_t cmd) 
 { 
 	send2(0x80, cmd);
 }
@@ -105,9 +105,9 @@ void poweroff() { write_cmd(SET_DISP | 0x00); }
 
 void poweron() { write_cmd(SET_DISP | 0x01); }
 
-void contrast(u8 contrast) { write_cmd(SET_CONTRAST); write_cmd(contrast); }
+void contrast(uint8_t contrast) { write_cmd(SET_CONTRAST); write_cmd(contrast); }
 
-void invert(u8 invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
+void invert(uint8_t invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
 
 
 static void init_i2c()
@@ -125,7 +125,7 @@ void init_display(int h)
 	init_i2c();
 	height = h;
 
-	static u8 cmds[] = {
+	static uint8_t cmds[] = {
 		SET_DISP | 0x00,  // display off 0x0E | 0x00
 
 		SET_MEM_ADDR, // 0x20
@@ -136,7 +136,7 @@ void init_display(int h)
 		SET_SEG_REMAP | 0x01,  //# column addr 127 mapped to SEG0
 
 		SET_MUX_RATIO, // 0xA8
-		(u8)(height - 1),
+		(uint8_t)(height - 1),
 
 		SET_COM_OUT_DIR | 0x08,  //# scan from COM[N] to COM0  (0xC0 | val)
 		SET_DISP_OFFSET, // 0xD3
@@ -145,7 +145,7 @@ void init_display(int h)
 		//SET_COM_PIN_CFG, // 0xDA
 		//0x02 if self.width > 2 * self.height else 0x12,
 		//width > 2*height ? 0x02 : 0x12,
-		SET_COM_PIN_CFG, (u8)(height == 32 ? 0x02 : 0x12),
+		SET_COM_PIN_CFG, (uint8_t)(height == 32 ? 0x02 : 0x12),
 
 		//# timing and driving scheme
 		SET_DISP_CLK_DIV, // 0xD5
@@ -192,7 +192,7 @@ void draw_pixel(int16_t x, int16_t y, int color)
 	int bit = 1<<(y % 8);
 	int xincr = 8;
 	xincr =	height/8;
-	u8* ptr = scr + x*xincr + page  + 1; 
+	uint8_t* ptr = scr + x*xincr + page  + 1; 
 
 	switch (color) {
 		case 1: // white
@@ -226,13 +226,13 @@ void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
 	}
 }
 
-void draw_letter_at(u8 x, u8 y, char c)
+void draw_letter_at(uint8_t x, uint8_t y, char c)
 {
 	if(c< ' ' || c>  0x7F) c = '?'; // 0x7F is the DEL key
 
 	int offset = 4 + (c - ' ' )*6;
 	for(int col = 0 ; col < 6; col++) {
-		u8 line =  ssd1306_font6x8[offset+col];
+		uint8_t line =  ssd1306_font6x8[offset+col];
 		for(int row =0; row <8; row++) {
 			draw_pixel(x+col, y+row, line & 1);
 			line >>= 1;
