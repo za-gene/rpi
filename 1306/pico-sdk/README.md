@@ -1,6 +1,10 @@
 # OLED
 
-Demo code for 128x64 I2C OLED.
+Demo code for 128x64 and 128x32 I2C OLED.
+
+**NB** If you specify the height to be 32 on a 64 height display, you
+will get double-height output, which could be useful.
+
 
 ## Connections
 
@@ -12,7 +16,8 @@ SDA is configured for GP4, and SCL on GP5 of Pico.
 
 ## News
 
-2021-04-01 Added setCursorx(), setCursory() (https://github.com/blippy/rpi/issues/4)
+2021-04-01 Added setCursorx(), setCursory() (https://github.com/blippy/rpi/issues/4). Both 32- and
+64- height screens work.
 
 2021-02-11 Added bitmap displays
 
