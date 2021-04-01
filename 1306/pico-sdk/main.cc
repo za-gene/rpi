@@ -18,7 +18,7 @@ extern "C" const uint8_t ssd1306_font6x8[];
 #define SET_MUX_RATIO 0xA8
 #define SET_COM_OUT_DIR 0xC0
 #define SET_DISP_OFFSET 0xD3
-#define SET_COM_PIN_CFG 0xDA
+#define SET_COM_PIN_CFG 0xDA	// s10.1.18 page 40
 #define SET_DISP_CLK_DIV 0xD5
 #define SET_PRECHARGE 0xD9
 #define SET_VCOM_DESEL 0xDB
@@ -121,7 +121,7 @@ void init_display()
 		//SET_COM_PIN_CFG, // 0xDA
 		//0x02 if self.width > 2 * self.height else 0x12,
 		//width > 2*height ? 0x02 : 0x12,
-		//SET_COM_PIN_CFG, height == 32 ? 0x02 : 0x12,
+		SET_COM_PIN_CFG, height == 32 ? 0x02 : 0x12,
 
 		//# timing and driving scheme
 		SET_DISP_CLK_DIV, // 0xD5
@@ -173,7 +173,7 @@ void draw_pixel(int16_t x, int16_t y, int color)
 	if(x<0 || x >= width || y<0 || y>= height) return;
 
 	int page = y/8;
-	page = y/pages;
+	//page = y/pages;
 	int bit = 1<<(y % 8);
 	int xincr = 8;
 	xincr =	height/8;
