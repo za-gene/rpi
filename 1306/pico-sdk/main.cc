@@ -32,9 +32,9 @@ typedef uint8_t u8;
 
 /*
 #ifdef OLED_128x32
-	const u8 height = 32;
+const u8 height = 32;
 #else
-	const u8 height = 64;
+const u8 height = 64;
 #endif
 */
 
@@ -112,7 +112,7 @@ void invert(u8 invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
 
 void init_display()
 {
-	u8 cmds[] = {
+	static u8 cmds[] = {
 		SET_DISP | 0x00,  // display off 0x0E | 0x00
 
 		SET_MEM_ADDR, // 0x20
@@ -205,21 +205,21 @@ void draw_pixel(int16_t x, int16_t y, int color)
 }
 
 void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
-                              int16_t h, uint16_t color) {
+		int16_t h, uint16_t color) 
+{
+	int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
+	uint8_t byte = 0;
 
-  int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
-  uint8_t byte = 0;
-
-  for (int16_t j = 0; j < h; j++, y++) {
-    for (int16_t i = 0; i < w; i++) {
-      if (i & 7)
-        byte <<= 1;
-      else
-        byte = bitmap[j * byteWidth + i / 8];
-      if (byte & 0x80)
-        draw_pixel(x + i, y, color);
-    }
-  }
+	for (int16_t j = 0; j < h; j++, y++) {
+		for (int16_t i = 0; i < w; i++) {
+			if (i & 7)
+				byte <<= 1;
+			else
+				byte = bitmap[j * byteWidth + i / 8];
+			if (byte & 0x80)
+				draw_pixel(x + i, y, color);
+		}
+	}
 }
 
 void draw_letter_at(u8 x, u8 y, char c)
@@ -244,14 +244,6 @@ void draw_letter_at(u8 x, u8 y, char c)
 
 
 void draw_letter(char c) { draw_letter_at(0, 0, c); }
-
-void pixel(int x, int y)
-{
-	int page = y/8;
-	u8 patt = 1<<(y%8);
-	scr[1+ x*8 + page] |= patt;
-
-}
 
 int cursorx = 0, cursory = 0;
 void ssd1306_print(const char* str)
