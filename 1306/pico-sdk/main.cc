@@ -44,7 +44,7 @@ const int pages = height / 8;
 
 
 //u8 scr[pages*width+1]; // extra byte holds data send instruction
-u8 scr[1025];
+u8 scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
 
 void write_cmd(u8 cmd);
 
