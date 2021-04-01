@@ -28,7 +28,7 @@ typedef uint8_t u8;
 
 #define I2C_PORT i2c0
 
-#define OLED_128x32
+//#define OLED_128x32
 
 #ifdef OLED_128x32
 	const u8 height = 32;
@@ -39,9 +39,10 @@ typedef uint8_t u8;
 //const u8 SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
 const u8 SID = 0x3C ; // different height displays have different addr
 const u8 width = 128;
-const int pages = height / 8;
+//const int pages = height / 8;
 //const bool external_vcc = false;
 
+int pages() { return height/8; }
 
 //u8 scr[pages*width+1]; // extra byte holds data send instruction
 u8 scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
@@ -75,11 +76,11 @@ void show_scr()
 
 	write_cmd(SET_PAGE_ADDR); // 0x22
 	write_cmd(0);
-	write_cmd(pages-1);
+	write_cmd(pages()-1);
 
 
 	scr[0] = 0x40; // the data instruction	
-	int size = pages*width +1;
+	int size = pages()*width +1;
 	i2c_write_blocking(I2C_PORT, SID, scr, size, false);
 }
 
