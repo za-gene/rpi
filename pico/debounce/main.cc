@@ -13,6 +13,7 @@ void toggle()
 	gpio_xor_mask(1<<LED); // toggle LED
 }
 
+#if 0
 #define NUM_PINS 30 // GPIO pins are 0-29 inc.. There are no GPIO30 or GPIO31
 
 #define FOR_PINS for(int i = 0; i< NUM_PINS; i++)
@@ -79,6 +80,7 @@ bool debounce_rising(uint gpio)
 	rising_mask &= ~(1<<gpio);
 	return yes;
 }
+#endif
 
 class Debounce {
 	public:
