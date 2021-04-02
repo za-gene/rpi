@@ -12,6 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
+	drum.cc
         #../bslinkt.cc
         )
 
@@ -31,6 +32,3 @@ add_custom_target(flash
     DEPENDS app
 )
 
-add_custom_target(Electric-Tom-1.c
-	COMMAND xxd Electric-Tom-1.raw
-)

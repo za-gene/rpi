@@ -5,6 +5,9 @@
 #include "hardware/gpio.h"
 
 
+extern unsigned char Electronic_Tom_1_raw[];
+extern unsigned int Electronic_Tom_1_raw_len;
+
 #define BTN 14 // GPIO number, not physical pin
 #define LED 25 // GPIO of built-in LED
 
