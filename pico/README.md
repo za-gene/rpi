@@ -29,6 +29,7 @@ int main()
 ## Technical notes
 
 * [boot](boot.md) - booting into program mode
+* [pwm](pwm.md)
 
 
 ## Also in this directory
