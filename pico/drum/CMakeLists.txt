@@ -13,7 +13,7 @@ include_directories(..)
 add_executable(app
         main.cc
 	drum.cc
-        #../bslinkt.cc
+        ../debounce/debounce.cc
         )
 
 pico_enable_stdio_usb(app 1)
@@ -23,6 +23,7 @@ target_link_libraries(app
 	pico_stdlib 
 	#hardware_spi
 	hardware_gpio
+	hardware_pwm
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
