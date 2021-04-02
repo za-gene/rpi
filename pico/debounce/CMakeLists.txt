@@ -12,6 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
+	debounce.cc
         #../bslinkt.cc
         )
 
