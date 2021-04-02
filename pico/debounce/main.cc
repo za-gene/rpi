@@ -24,10 +24,17 @@ static bool repeating_timer_callback(struct repeating_timer *t)
 	FOR_PINS {
 		if(mask & 1) {
 			int old_val = integrators[i];
-			integrators[i] <<1;
+			integrators[i] <<= 1;
 			integrators[i] |= (values & 1);
-			if(old_val != 0xFF && integrators[i] == 0xFF) rising_mask |= (1<<i);
-			if(old_val != 0 && integrators[i] == 0) falling_mask |= (1<<i);
+			if(old_val != 0xFF && integrators[i] == 0xFF) {
+		//gpio_put(LED, 1);
+				rising_mask |= (1<<i);
+				//falling_mask |= (1<<i);
+			}
+			if(old_val != 0 && integrators[i] == 0) {
+		//gpio_put(LED, 1);
+				falling_mask |= (1<<i);
+			}
 
 		}
 		mask >>= 1;
@@ -80,8 +87,12 @@ int main()
 	gpio_set_dir(LED, GPIO_OUT);
 
 	for(;;) {
-		if(debounce_falling(sw)) 
-			gpio_xor_mask(1<<LED); // toggle LED
+		if(debounce_falling(sw)) {
+		gpio_put(LED, 1);
+
+		//	gpio_xor_mask(1<<LED); // toggle LED
+
+		}
 	}
 
 	return 0;
