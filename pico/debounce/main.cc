@@ -8,6 +8,11 @@
 //#define BTN 14 // GPIO number, not physical pin
 #define LED 25 // GPIO of built-in LED
 
+void toggle()
+{
+	gpio_xor_mask(1<<LED); // toggle LED
+}
+
 #define NUM_PINS 30 // GPIO pins are 0-29 inc.. There are no GPIO30 or GPIO31
 
 #define FOR_PINS for(int i = 0; i< NUM_PINS; i++)
@@ -27,12 +32,12 @@ static bool repeating_timer_callback(struct repeating_timer *t)
 			integrators[i] <<= 1;
 			integrators[i] |= (values & 1);
 			if(old_val != 0xFF && integrators[i] == 0xFF) {
-		//gpio_put(LED, 1);
+				//gpio_put(LED, 1);
 				rising_mask |= (1<<i);
 				//falling_mask |= (1<<i);
 			}
 			if(old_val != 0 && integrators[i] == 0) {
-		//gpio_put(LED, 1);
+				//gpio_put(LED, 1);
 				falling_mask |= (1<<i);
 			}
 
@@ -75,24 +80,74 @@ bool debounce_rising(uint gpio)
 	return yes;
 }
 
+class Debounce {
+	public:
+		Debounce(uint gpio, uint delay = 4);
+		bool falling();
+		bool rising();
+	private:
+		void update();
+		uint _gpio;
+		uint8_t _integrator = 0xFF;
+		bool _falling = false;
+		bool _rising = false;
+		uint _delay;
+};
+
+Debounce::Debounce(uint gpio, uint delay)
+{
+	gpio_init(gpio);
+	gpio_set_dir(gpio, GPIO_IN);
+	gpio_pull_up(gpio);
+	_gpio = gpio;
+	_delay = delay;
+}
+
+void Debounce::update()
+{
+	static absolute_time_t later = make_timeout_time_ms(0);
+	if(absolute_time_diff_us(get_absolute_time(), later)>0) return;
+	later = make_timeout_time_ms(_delay);
+	uint8_t prev = _integrator;
+	uint8_t up = gpio_get(_gpio) ? 0 : 1;
+	_integrator <<= 1;
+	_integrator |= up;
+	if(prev != 0xFF && _integrator == 0xFF) _falling = true;
+	if(prev != 0 && _integrator == 0) _rising = true;
+}
+
+bool Debounce::falling()
+{
+	update();
+	if(_falling) {
+		_falling = false;
+		return true;
+	}
+	return false;
+}
+
+bool Debounce::rising()
+{
+	update();
+	if(_rising) {
+		_rising = false;
+		return true;
+	}
+	return false;
+}
+
 int main() 
 {
 	stdio_init_all();
 
-	const uint sw = 16;
-	//Debounce button(16);
-	debounce_gpio(sw);
+	Debounce button(17);
 
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
 
 	for(;;) {
-		if(debounce_falling(sw)) {
-		gpio_put(LED, 1);
-
-		//	gpio_xor_mask(1<<LED); // toggle LED
-
-		}
+		if(button.falling()) toggle();
+		//if(button.rising()) toggle();
 	}
 
 	return 0;
