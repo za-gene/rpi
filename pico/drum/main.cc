@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include "pico/stdlib.h"
-//#include "hardware/spi.h"
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 #include "hardware/clocks.h"
@@ -17,7 +13,6 @@ extern unsigned char Electronic_Tom_1_raw[];
 extern unsigned int Electronic_Tom_1_raw_len;
 
 #define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
 #define SPK 15
 
 uint slice_num;
@@ -27,22 +22,17 @@ bool start = false;
 
 void my_pwm_wrap_isr()
 {
-	static int i = 0;
+	static int i = -1; // init to -1 so that we don't trigger the sample at bootup
 	if(start) {
 		start = false;
 		i = 0;
 	}
 
-	if(i< Electronic_Tom_1_raw_len) {
+	if(-1 < i && i< Electronic_Tom_1_raw_len) {
 		u16 v = Electronic_Tom_1_raw[i++];
-		//if(i == Electronic_Tom_1_raw_len) i = 0;
-		//a_pwm.set_level(v << 4);
 		pwm_set_gpio_level(SPK, v);
 	}
 
-	//pin16.put(1);
-	//pin16.toggle();
-	//irq_clear(PWM_IRQ_WRAP);
 	pwm_clear_irq(slice_num); 
 }
 
@@ -59,19 +49,18 @@ float pwm_divider(float freq, int top)
 
 int main() 
 {
-	stdio_init_all();
 	slice_num = pwm_gpio_to_slice_num(SPK);
 
 	int top = 255;
 	int sampling_freq = 44'100;
 	//sampling_freq = 440;
 	float divider = pwm_divider(sampling_freq, top);
-	pwm_set_clkdiv(slice_num, divider); // pwm clock should now be running at 1MHz
+	pwm_set_clkdiv(slice_num, divider);
 
 	gpio_set_function(SPK, GPIO_FUNC_PWM);
 	pwm_set_wrap(slice_num, top);
 	pwm_set_enabled(slice_num, true);
-	pwm_set_gpio_level(SPK, top/2);
+	pwm_set_gpio_level(SPK, 0);
 
 	pwm_clear_irq(slice_num);
 	pwm_set_irq_enabled(slice_num, true);
@@ -82,10 +71,6 @@ int main()
 	Debounce btn(17);
 	for(;;) {
 		if(btn.falling()) start = true;
-		//gpio_put(LED, 1);
-		//sleep_ms(100);
-		//gpio_put(LED, 0);
-		//sleep_ms(1000);
 	}
 
 	return 0;

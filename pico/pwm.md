@@ -3,6 +3,9 @@
 ## Calculate divider from freq and top
 
 ```
+/** NB clock divider must be in range 1.f <= value < 256.f
+*/
+
 float pwm_divider(int freq, int top)
 {
         uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
