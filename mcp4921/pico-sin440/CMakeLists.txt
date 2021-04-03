@@ -23,7 +23,7 @@ target_link_libraries(app
 	#hardware_clocks
 	hardware_gpio
 	#hardware_pwm
-	#hardware_spi
+	hardware_spi
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
