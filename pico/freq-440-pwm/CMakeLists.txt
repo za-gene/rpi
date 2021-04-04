@@ -24,3 +24,9 @@ pico_add_extra_outputs(app)
 
 # add url via pico_set_program_url
 # example_auto_set_url(blink)
+
+add_custom_target(flash
+    COMMAND cp app.uf2 /media/pi/RPI-RP2
+    DEPENDS app
+)
+
