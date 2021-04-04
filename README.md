@@ -49,7 +49,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * dev03 WITHDRAWN
 * dev04 WITHDRAWN
 * [dev05](dev05): ATTiny85 programmer for the Pi
-* [dev06](8x8/dev06): 8x8, nano
+* dev06 WITHDRAWN
 * dev07 WITHDRAWN
 * [dev08](dev08): 555 fixed tone generator
 * [dev09](dev09): voltage generator. esp32 mcp4921 simplecli, timer interrupts
