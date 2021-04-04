@@ -8,6 +8,7 @@
 typedef uint16_t u16;
 typedef uint32_t u32;
 
+#define SPK 15
 
 int main() 
 {
@@ -15,8 +16,8 @@ int main()
 	const u32 f_pwm = 440; // frequency we want to generate
 	const u16 duty = 60; // duty cycle, in percent
 
-	gpio_set_function(0, GPIO_FUNC_PWM); // Tell GPIO 0 it is allocated to the PWM
-	uint slice_num = pwm_gpio_to_slice_num(0); // get PWM slice for GPIO 0 (it's slice 0)
+	gpio_set_function(SPK, GPIO_FUNC_PWM);
+	uint slice_num = pwm_gpio_to_slice_num(SPK); 
 
 
 	// set frequency
@@ -29,7 +30,7 @@ int main()
 
 	// set duty cycle
 	u16 level = (top+1) * duty / 100 -1; // calculate channel level from given duty cycle in %
-	pwm_set_chan_level(slice_num, 0, level); 
+	pwm_set_gpio_level(SPK, level); 
 	pwm_set_enabled(slice_num, true); // let's go!
 
 	for(;;);
