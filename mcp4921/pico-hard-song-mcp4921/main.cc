@@ -17,21 +17,29 @@ using u16 = uint16_t;
 
 #define PULSE 18
 
-//#define SAMPLES 100
-//u16 sines[SAMPLES];
-
 #define USE_POLL // using looping instead of timer callback to write to DAC
 
-bool do_write = false;
+static bool do_write = false;
 
 void write_to_dac()
 {
-	if(!do_write) return;
+	//if(do_write == false) return;
 	do_write = false;
 	static int idx = 0;
-	u16 src = data_bin[idx];
+	u8 datum = data_bin[idx];
+	u16 src = datum;
+	src <<= 2;
+	if(src>4095) src = 4095;
 	src |= 0b0011'0000'0000'0000;
+#if 0
+	u8 bytes[2];
+	bytes[1] = src & 0xFF;
+	src >>= 8;
+	bytes[0] = (u8) src;
+	spi_write_blocking(spi0, bytes, 2);
+#else
 	spi_write16_blocking(spi0, &src, 1);
+#endif
 	idx++;
 	if(idx == data_bin_len) idx = 0;
 }
@@ -55,7 +63,9 @@ int main()
 {
 	stdio_init_all();
 
-	spi_init(spi0, 1'200'000);
+	int spi_speed = 1'200'000;
+	spi_speed = 600'000;
+	spi_init(spi0, spi_speed);
 	//spi_set_slave(spi0, true);
 	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
@@ -64,9 +74,10 @@ int main()
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 
 	struct repeating_timer timer;
-	const int freq = 44'100;
-	add_repeating_timer_us(-1.0e6/freq, repeating_timer_callback, NULL, &timer);
-	//add_repeating_timer_us(-23, repeating_timer_callback, NULL, &timer);
+	double freq = 44'100;
+	//freq = 8'000;
+	freq = 22'000;
+	//add_repeating_timer_us(-1.0e6/freq, repeating_timer_callback, NULL, &timer);
 
 	//gpio_init(PULSE);
 	//gpio_set_dir(PULSE, GPIO_OUT);
@@ -74,6 +85,7 @@ int main()
 	for(;;) {
 #ifdef USE_POLL
 		write_to_dac();
+		sleep_us(25);
 #endif		
 	}
 
