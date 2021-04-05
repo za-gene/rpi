@@ -1,5 +1,17 @@
 #pragma once
 
+/**
+ * Released into the Public Domain.
+ *
+ * Adafruit I2C LED Matrix control.
+ *
+ * Assumes the top of the matrix has the pins uppermost.
+ *
+ * Co-ordinate convention:
+ * Rows are set from top to bottom: 0 to 7 inc.
+ * Columns are set left to right: 0 to 7 inc.
+ *
+ */
 #include <bitset>
 
 #include "hardware/i2c.h"
