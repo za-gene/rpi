@@ -12,7 +12,7 @@ I2C::I2C(i2c_inst_t* i2c, uint sda, uint baudrate) : m_i2c(i2c), m_sda(sda)
 
 }
 
-constexpr i2c_inst_t* I2C::get()
+i2c_inst_t* const I2C::get()
 {
 	return m_i2c;
 }

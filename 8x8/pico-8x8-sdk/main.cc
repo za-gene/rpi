@@ -4,65 +4,16 @@
 //#include "hardware/spi.h"
 #include "hardware/gpio.h"
 //#include <type_traits>
-#include <bitset>
 
 
 #include "i2cmc.h"
+#include "ledmat.h"
 
 
 #define BTN 14 // GPIO number, not physical pin
 #define LED 25 // GPIO of built-in LED
 
 
-
-class LedMat {
-	public:
-		LedMat(I2C& i2c);
-		void set(uint8_t row, uint8_t col, bool on);
-		void show();
-	private:
-		i2c_inst_t* m_i2c_inst;
-		void send_cmd(uint8_t cmd);
-		uint8_t m_addr = 0x70; // slave ID of device
-		std::bitset<8> m_grid[8];
-};
-
-void LedMat::send_cmd(uint8_t cmd)
-{
-	i2c_write_blocking(m_i2c_inst, m_addr, &cmd, 1, false);
-
-}
-
-
-LedMat::LedMat(I2C& i2c) : m_i2c_inst(i2c.get())
-{
-	send_cmd(0x20 | 1); // turn on oscillator
-	show(); // clear out any display that is there
-	send_cmd(0x81); // display on
-	send_cmd(0xE0 | 0); // brightness to dimmest (but you should probably set it)
-
-}
-
-
-void LedMat::set(uint8_t row, uint8_t col, bool on)
-{
-	// the LED has a strange co-ordinate system
-	int pos1 = 7 - col; // actually a "row"
-	int pos2 = row -1;
-	if(pos2 == -1) pos2 = 7;
-	m_grid[pos1].set(pos2, on);
-}
-
-void LedMat::show()
-{
-	for(int r = 0; r<8; r++) {
-		uint8_t data[2];
-		data[0] = r*2;
-		data[1] = m_grid[r].to_ulong();
-		i2c_write_blocking(m_i2c_inst, m_addr, data, 2, false);
-	}
-
-}
 
 I2C i2c(i2c1, 26);
 LedMat ledmat(i2c);

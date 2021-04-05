@@ -13,6 +13,7 @@ include_directories(..)
 add_executable(app
         main.cc
 	i2cmc.cc
+	ledmat.cc
         #../bslinkt.cc
         )
 
