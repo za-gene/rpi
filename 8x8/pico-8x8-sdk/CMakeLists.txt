@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 pico_sdk_init()
-include_directories(..)
+include_directories(.. ../../pico)
 
 add_executable(app
         main.cc
-	i2cmc.cc
-	ledmat.cc
+	../../pico/i2cmc.cc
+	../../pico/ledmat.cc
         #../bslinkt.cc
         )
 
