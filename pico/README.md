@@ -38,6 +38,11 @@ int main()
 * [kicad](kicad) - MCU layout for the KiCad electronic circuit design program
 
 
+## Elsewhere in this repo
+
+* [oled](../1306/pico-sdk)
+
+
 ## Projects
 
 * [freq](freq) - fixed frequency generator using repeating_timer_callback
