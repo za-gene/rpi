@@ -12,8 +12,8 @@ typedef uint32_t u32;
 extern unsigned char Electronic_Tom_1_raw[];
 extern unsigned int Electronic_Tom_1_raw_len;
 
-#define BTN 14 // GPIO number, not physical pin
-#define SPK 15
+Debounce btn(17);
+#define SPK 18
 
 uint slice_num;
 
@@ -68,7 +68,6 @@ int main()
 	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr);
 	irq_set_enabled(PWM_IRQ_WRAP, true);
 
-	Debounce btn(17);
 	for(;;) {
 		if(btn.falling()) start = true;
 	}
