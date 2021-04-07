@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "pico/stdlib.h"
 //#include "hardware/spi.h"
@@ -7,7 +8,7 @@
 #include "hardware/structs/rosc.h"
 
 
-#define OUT 16 // Speaker where we output noise
+#define OUT 18 // Speaker where we output noise
 
 int main() 
 {
@@ -16,20 +17,21 @@ int main()
 	gpio_init(OUT);
 	gpio_set_dir(OUT, GPIO_OUT);
 
-	xosc_init(); // I think you need to enable the xosc before using random bit generator
+	//xosc_init(); // I think you need to enable the xosc before using random bit generator
 
 	//io_rw_32 bit = 0;
-	//int bit = 0;
-	bool bit = false;
+	int bit = 0;
+	//bool bit = false;
 	for(;;) {
 		const int pause = 1'000'000/440/2;
-		//io_rw_32 bit = rosc_hw->randombit;
+		//bit = rosc_hw->randombit;
+		bit = random() & 1;
 		//bit = 1 - bit;
-		bit = ~bit;
+		//bit = !bit;
 		gpio_put(OUT, bit);
 		//sleep_us(pause);
 		//sleep_ms(500);
-		sleep_us(pause);
+		//sleep_us(pause);
 	}
 
 	return 0;
