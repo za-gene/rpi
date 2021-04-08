@@ -15,10 +15,30 @@ extern unsigned int Electronic_Tom_1_raw_len;
 Debounce btn(17);
 #define SPK 18
 
+
+#define TRIG_1 19
+#define TRIG_2 20
+
+bool start = false;
+
+void trigger_callback(uint gpio, uint32_t events)
+{
+	start = true;
+}
+
+void trigger_init(uint gpio, gpio_irq_callback_t callback)
+{
+	//uint gpio = TRIG;
+	//static auto callback = [](uint gpio, uint32_t events) { start = true;  };
+	gpio_init(gpio);
+	gpio_set_dir(gpio, GPIO_IN);
+	gpio_set_irq_enabled_with_callback(gpio, GPIO_IRQ_EDGE_RISE, true, callback);
+
+}
+
 uint slice_num;
 
 
-bool start = false;
 
 void my_pwm_wrap_isr()
 {
@@ -67,6 +87,9 @@ int main()
 	//irq_add_shared_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
 	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_pwm_wrap_isr);
 	irq_set_enabled(PWM_IRQ_WRAP, true);
+
+	trigger_init(TRIG_1, trigger_callback);
+	trigger_init(TRIG_2, trigger_callback);
 
 	for(;;) {
 		if(btn.falling()) start = true;

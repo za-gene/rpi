@@ -29,6 +29,7 @@ int main()
 ## Technical notes
 
 * [boot](boot.md) - booting into program mode
+* [gpio](gpio.md)
 * [pwm](pwm.md)
 
 
