@@ -67,7 +67,7 @@ This does not strictly speaking need to be done. A speaker could be connected to
 GP24 and GND, although the output will be quieter.
 
 
-## Example pulse circuit (much simpler)
+## Example drum-bart circuit (much simpler)
 
 It is possible to simplify the above circuit it you just want to create a pulsing
 drum. Remove the CD4017, LEDs and diodes from the circuit. Instead of connecting
