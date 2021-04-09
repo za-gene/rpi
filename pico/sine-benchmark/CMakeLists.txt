@@ -12,6 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
+	sine-table.cc
         #../bslinkt.cc
         )
 
