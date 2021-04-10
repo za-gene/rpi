@@ -56,8 +56,8 @@ class pwm {
 		uint _slice_num;
 };
 
-digiout pin16(16);
-digiout pin17(17);
+//digiout pin16(16);
+//digiout pin17(17);
 
 
 
@@ -72,7 +72,7 @@ pwm::pwm()
 	_slice_num = pwm_gpio_to_slice_num(14); 
 	// assert that they're both on slice 7, as expected
 	bool same_slice = _slice_num == 7 && pwm_gpio_to_slice_num(15) == 7;
-	pin17.put(same_slice);
+	//pin17.put(same_slice);
 
 
 	// run the clock at 44.1kHz
@@ -114,22 +114,12 @@ void my_pwm_wrap_isr()
 	if(i == time_scale * sizeof(track_raw)) i = 0;
 	a_pwm.set_level(v*vol_scale);
 
-	pin16.toggle();
-	//irq_clear(PWM_IRQ_WRAP);
+	//pin16.toggle();
 	pwm_clear_irq(7); // pwm gpio 14 and 15 on slice 7
 }
 
 int main() 
 {
-
-	spi_init(spi0, 4'000'000);
-	spi_set_slave(spi0, true);
-	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST); 
-	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
-	gpio_set_function(PIN_CS,   GPIO_FUNC_SPI);
-	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
-	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-
 	while(1); // actual playing of track is handled by my_pwm_wrap_isr()
 
 	return 0;
