@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+# perform various calculations
+
+
+my $input;
+
+sub get_defaulted {
+	my ($text, $default) = @_;
+	print "$text ($default):";
+	my $input = <STDIN>;
+	chomp($input);
+	if($input eq "") { $input = $default; }
+	return $input;
+}
+
+my $freq = int(get_defaulted("Freq", "16000"));
+my $top = int(get_defaulted("Top", "1023"));
+my $divider = 125000000/($top+1)/$freq;
+my $ok = (1 <= $divider && $divider < 256) ? "OK" : "FAIL";
+print "Divider: $divider ($ok)\n";
