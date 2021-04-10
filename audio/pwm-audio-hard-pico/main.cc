@@ -61,6 +61,8 @@ digiout pin17(17);
 
 
 
+const int top = 1023;
+const int f_pwm = 32000;
 pwm::pwm()
 {
 	// the PWM channel number is documents in the datasheet, s4.5.2 p535
@@ -75,8 +77,6 @@ pwm::pwm()
 
 	// run the clock at 44.1kHz
 	uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
-	const int top = 4095;
-	const int f_pwm = 8000;
 	float scale = (top+1) * f_pwm;
 	float divider = f_sys / scale;  
 	//divider = 1.0;
@@ -106,12 +106,14 @@ pwm a_pwm;
 
 void my_pwm_wrap_isr()
 {
+	const int time_scale = f_pwm / 8000;
+	const int vol_scale = (top+1)/256;
 	static int i = 0;
-	u16 v = track_raw[i++];
-	if(i == sizeof(track_raw)) i = 0;
-	a_pwm.set_level(v << 4);
+	u16 v = track_raw[i/time_scale];
+	i++;
+	if(i == time_scale * sizeof(track_raw)) i = 0;
+	a_pwm.set_level(v*vol_scale);
 
-	//pin16.put(1);
 	pin16.toggle();
 	//irq_clear(PWM_IRQ_WRAP);
 	pwm_clear_irq(7); // pwm gpio 14 and 15 on slice 7
@@ -128,20 +130,7 @@ int main()
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 
-	//pwm0.set_level(4096/2);
 	while(1); // actual playing of track is handled by my_pwm_wrap_isr()
-
-	/*
-	int i =0;
-	for(;;) {
-		//pin16.toggle();
-		uint16_t v = track_raw[i++];
-		if(i == sizeof(track_raw)) i = 0;
-		a_pwm.set_level(v << 4);
-		sleep_us(125);
-	}
-	*/
-
 
 	return 0;
 }
