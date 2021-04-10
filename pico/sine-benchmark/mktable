@@ -10,12 +10,16 @@ print <<'EOI';
 
 #include <stdint.h>
 
-int16_t sin_table[64] = {
+/*
+uses signed fixed point integers with 10 fractional bits
+*/
+
+int32_t sin_table[64] = {
 EOI
 
 for (my $i =0; $i < 64; $i++) {
 	my $sin = sin($i/64 * 2 * pi());
-	$sin = int($sin * 2** 14); # floor
+	$sin = int($sin * 2** 10); # floor
 	print "\t$sin";
 	if($i<63) { print ","; }
 	print "\n";

@@ -5,8 +5,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <math.h>
+#include "tusb.h"
 
-extern int16_t sin_table[64];
+extern int32_t sin_table[64];
 
 
 uint64_t from;
@@ -22,12 +23,13 @@ void elapsed()
 int main() 
 {
 	stdio_init_all();
-	getchar();
+	while(!tud_cdc_connected()) sleep_ms(250);
+	//getchar();
 
 	puts("\nUsing sine table");
 	start();
 	for(int i = 0; i<64; i++) {
-		volatile int64_t x = sin_table[i];
+		volatile int32_t x = sin_table[i];
 	}
 	elapsed(); // 12us, or 0.1875us per calc
 

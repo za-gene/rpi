@@ -31,6 +31,7 @@ int main()
 * [boot](boot.md) - booting into program mode
 * [gpio](gpio.md)
 * [pwm](pwm.md)
+* [serial](serial.md)
 
 
 ## Also in this directory
