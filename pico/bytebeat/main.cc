@@ -6,9 +6,9 @@
 //#include "hardware/spi.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
+#include "tusb.h"
 
 
-#define BTN 14 // GPIO number, not physical pin
 #define LED 25 // GPIO of built-in LED
 
 /*
@@ -26,8 +26,11 @@ uint speaker = 14;
 
 void my_wrap_isr()
 {
-	uint level = 255/2;
+	static uint32_t count = 0;
+	gpio_put(LED, 1);
+	uint level = (count * 32000/440) % 256;
 	pwm_set_gpio_level(speaker, level);
+	count++;
 	pwm_clear_irq(slice_num);
 }
 
@@ -41,20 +44,28 @@ float pace_pwm_divider(int freq, int top)
         return f_sys / scale;
 }
 
-void pace_config_pwm_irq(uint* slice_num, uint gpio, int freq, int top, irq_handler_t pwm_irq_wrap_handler)
+int pace_config_pwm_irq(uint* slice_num, uint gpio, int freq, int top, irq_handler_t pwm_irq_wrap_handler)
 {
+	//int result = 0; // indicates success
 	// no need for gpio_init() or gpio_set_dir(), just use:
 	gpio_set_function(gpio, GPIO_FUNC_PWM); 
 
 	*slice_num = pwm_gpio_to_slice_num(gpio);
-	pwm_set_clkdiv(*slice_num, pace_pwm_divider(freq, top));
+	float divider = pace_pwm_divider(freq, top);
+	if(divider < 1.0 || divider >= 256.0) return 1;
+	//printf("Divider: %f\n", (double) divider);
+	//if( 1.0 <= divider && divider < 256.0) gpio_put(LED,1);
+	pwm_set_clkdiv(*slice_num, divider);
 	pwm_set_wrap(*slice_num, top);
 	pwm_set_enabled(*slice_num, true);
 
 	pwm_clear_irq(*slice_num);
 	pwm_set_enabled(*slice_num, true);
-	irq_set_exclusive_handler(PWM_IRQ_WRAP, pwm_irq_wrap_handler);
+	//irq_set_exclusive_handler(PWM_IRQ_WRAP, pwm_irq_wrap_handler);
+	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_wrap_isr);
 	irq_set_enabled(PWM_IRQ_WRAP, true);
+
+	return 0;
 }
 
 
@@ -62,18 +73,22 @@ void pace_config_pwm_irq(uint* slice_num, uint gpio, int freq, int top, irq_hand
 int main() 
 {
 	stdio_init_all();
+	//while(!tud_cdc_connected()) sleep_ms(250);
 
-	pace_config_pwm_irq(&slice_num, speaker, 24000, 255, my_wrap_isr);
-	for(;;);
-
-
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
+	//for(;;);
 
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
+	int res = pace_config_pwm_irq(&slice_num, speaker, 24000, 255, my_wrap_isr);
+	if(res) {
+		puts("Error in setup of pace_config_pwm_irq()");
+		for(;;); // just hang
+	}
+	gpio_put(LED, 1);
+
+
+
+	for(;;);
 
 	int i = 0;
 	for(;;) {
