@@ -25,7 +25,7 @@ target_link_libraries(app
 	#hardware_clocks
 	hardware_gpio
 	#hardware_i2c
-	#hardware_pwm
+	hardware_pwm
 	#hardware_spi
 	)
 
