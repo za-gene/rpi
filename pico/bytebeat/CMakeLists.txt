@@ -12,7 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
-        #../bslinkt.cc
+        ../pace.c
         )
 
 pico_enable_stdio_usb(app 1)
