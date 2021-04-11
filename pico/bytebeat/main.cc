@@ -12,13 +12,13 @@
 #define LED 25 // GPIO of built-in LED
 
 /*
-typedef struct {
-	uint slice_num;
+   typedef struct {
+   uint slice_num;
 
-} pace_pwm_irq_t;
+   } pace_pwm_irq_t;
 
-pace_pwm_irq_t pace_pwm_irq;
-*/
+   pace_pwm_irq_t pace_pwm_irq;
+   */
 
 
 uint slice_num;
@@ -29,6 +29,8 @@ void my_wrap_isr()
 	static uint32_t count = 0;
 	gpio_put(LED, 1);
 	uint level = (count * 32000/440) % 256;
+	level = 0;
+	if(count%2 == 0) level = 4095;
 	pwm_set_gpio_level(speaker, level);
 	count++;
 	pwm_clear_irq(slice_num);
@@ -39,9 +41,9 @@ void my_wrap_isr()
 
 float pace_pwm_divider(int freq, int top)
 {
-        uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
-        float scale = (top+1) * freq;
-        return f_sys / scale;
+	uint32_t f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
+	float scale = (top+1) * freq;
+	return f_sys / scale;
 }
 
 int pace_config_pwm_irq(uint* slice_num, uint gpio, int freq, int top, irq_handler_t pwm_irq_wrap_handler)
@@ -60,7 +62,7 @@ int pace_config_pwm_irq(uint* slice_num, uint gpio, int freq, int top, irq_handl
 	pwm_set_enabled(*slice_num, true);
 
 	pwm_clear_irq(*slice_num);
-	pwm_set_enabled(*slice_num, true);
+	pwm_set_irq_enabled(*slice_num, true);
 	//irq_set_exclusive_handler(PWM_IRQ_WRAP, pwm_irq_wrap_handler);
 	irq_set_exclusive_handler(PWM_IRQ_WRAP, my_wrap_isr);
 	irq_set_enabled(PWM_IRQ_WRAP, true);
@@ -79,8 +81,10 @@ int main()
 
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
-	int res = pace_config_pwm_irq(&slice_num, speaker, 24000, 255, my_wrap_isr);
-	if(res) {
+	int err;
+	//err = pace_config_pwm_irq(&slice_num, speaker, 24000, 255, my_wrap_isr);
+	err = pace_config_pwm_irq(&slice_num, speaker, 880, 4095, my_wrap_isr);
+	if(err) {
 		puts("Error in setup of pace_config_pwm_irq()");
 		for(;;); // just hang
 	}

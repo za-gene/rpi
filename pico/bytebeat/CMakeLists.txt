@@ -22,9 +22,10 @@ pico_enable_stdio_uart(app 0)
 target_link_libraries(app 
 	pico_stdlib 
 	#harware_adc
-	#hardware_clocks
+	hardware_clocks
 	hardware_gpio
 	#hardware_i2c
+	hardware_irq
 	hardware_pwm
 	#hardware_spi
 	)
