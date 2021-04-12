@@ -22,14 +22,21 @@
 //#include <stdlib.h>
 
 #ifdef PICO_BOARD
-	#include "pico/stdlib.h"
-	bool echo_char = true;
+#include "pico/stdlib.h"
+#include "tusb.h"
+bool echo_char = true;
+
+void init_abba()
+{ 
 	extern void init_abba_pico();
-	void init_extras() { init_abba_pico(); }
+	stdio_init_all();  
+	while(!tud_cdc_connected()) sleep_ms(250);
+	init_abba_pico();
+}
+
 #else
-	void stdio_init_all() {}
-	bool echo_char = false;
-	void init_extras() { }
+void init_abba() {}
+bool echo_char = false;
 #endif
 
 #include <functional>
@@ -192,7 +199,7 @@ int yylex()
 
 bool cmd_is(std::string text)
 {
-   return yyupper == text;
+	return yyupper == text;
 }
 
 int xstoi(string str)
@@ -280,10 +287,8 @@ void repl()
 
 int main ()
 {
-	stdio_init_all();
-	//getchar();
-	init_extras();
-	puts("abba: a basic basic. type run to execute");
+	init_abba();
+	puts("abba: a basic basic. type run to execute. 'hi' prints a welcomeing message");
 
 	prog.reserve(10000);	
 	while(1) {

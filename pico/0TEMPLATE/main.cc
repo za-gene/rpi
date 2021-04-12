@@ -6,15 +6,17 @@
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 //#include "hardware/spi.h"
+// #include "tusb.h" // if you want to use tud_cdc_connected()
 
 
-#define BTN 14 // GPIO number, not physical pin
-#define LED 25 // GPIO of built-in LED
 
 int main() 
 {
 	stdio_init_all();
+	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
+#define BTN  14 // GPIO number, not physical pin
+#define LED  25 // GPIO of built-in LED
 	gpio_init(BTN);
 	gpio_set_dir(BTN, GPIO_IN);
 	gpio_pull_up(BTN);

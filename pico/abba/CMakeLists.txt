@@ -29,8 +29,8 @@ add_executable(app
         )
 
 
-#pico_enable_stdio_usb(app 1)
-pico_enable_stdio_uart(app 1)
+pico_enable_stdio_usb(app 1)
+pico_enable_stdio_uart(app 0)
 
 
 # Pull in our pico_stdlib which aggregates commonly used features
