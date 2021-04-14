@@ -13,6 +13,7 @@ include_directories(..)
 add_executable(app
         main.cc
         ../sine-benchmark/sine-table.cc
+	../pace.c
         )
 
 pico_enable_stdio_usb(app 1)
@@ -25,7 +26,8 @@ target_link_libraries(app
 	#hardware_clocks
 	hardware_gpio
 	#hardware_i2c
-	#hardware_pwm
+	hardware_irq
+	hardware_pwm
 	#hardware_spi
 	)
 
