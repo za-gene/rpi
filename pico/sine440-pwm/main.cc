@@ -8,13 +8,14 @@
 #include "hardware/pwm.h"
 //#include "hardware/spi.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
+#include "math.h"
 
 #include "pace.h"
 
 
 using i32 = int32_t;
 
-extern i32 sin_table[64];
+i32 sin_table[64];
 
 // see db5.287 for calculations
 const auto M = 64;
@@ -29,6 +30,15 @@ unsigned int slice_num;
 
 void pwm_isr()
 {
+	static i32 m = 0;
+	const i32 M_scaled = M * dm_scale;
+
+	i32 index = m / dm_scale;
+	pwm_set_gpio_level(SPK, sin_table[index]);
+
+	m += dm;
+	if(m>=M_scaled) m = m - M_scaled;
+
 	pwm_clear_irq(slice_num); // reset the irq so that it will fire in future
 }
 
@@ -41,6 +51,14 @@ int main()
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
 	gpio_put(LED, 1);
+
+	// rescale the sin_table[];
+	for(int i = 0; i<M; i++) {
+		float f = sin(2.0 * 3.1412 * i / M);
+		f = (f +1.0) * 4096.0 / 2.0;
+		if(f > 4095) f = 4095;
+		sin_table[i] = f;
+	}
 
 	int err = pace_config_pwm_irq(&slice_num, SPK, f_s, 4095, pwm_isr);
 	if(err) gpio_put(LED, 0);

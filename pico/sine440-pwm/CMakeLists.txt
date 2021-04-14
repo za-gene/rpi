@@ -12,7 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
-        ../sine-benchmark/sine-table.cc
+	#../sine-benchmark/sine-table.cc
 	../pace.c
         )
 

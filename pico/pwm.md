@@ -13,6 +13,7 @@ float pwm_divider(int freq, int top)
         return f_sys / scale;
 }
 ```
+The above function is defined in `pace.c`.
 
 Use it in something like this:
 
@@ -30,3 +31,40 @@ Use it in something like this:
         pwm_set_enabled(slice_num, true);
         pwm_set_gpio_level(SPK, top/2);
 ```
+
+## Using an IRQ
+
+File `pace.h` gives a way of configuring a PWM with an IRQ. Example:
+
+```
+#include "pace.h"
+
+#define SPK 19
+
+unsigned int slice_num;
+
+void my_pwm_isr()
+{
+        // do stuff like:
+        pwm_set_gpio_level(SPK, new_level);
+ 
+        pwm_clear_irq(slice_num); // reset the irq so that it will fire in future
+}
+
+int main()
+{
+        stdio_init_all();
+        int err = pace_config_pwm_irq(&slice_num, SPK, sampling_freq, top, my_pwm_isr);
+        if(err) {
+            puts("Can't set PWM");
+            for(;;); // loop forever, effectively halting
+        }
+
+        ...
+}
+```
+
+A fully compileable example is available in [sine440-pwm](sine440-pwm).
+
+
+
