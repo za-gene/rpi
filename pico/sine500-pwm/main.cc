@@ -8,7 +8,16 @@
 //#include "hardware/spi.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
+using i32 = int32_t;
 
+extern i32 sin_table[64];
+
+// see db5.287 for calculations
+const auto M = 64;
+const auto dm_scale = 1 << 5; // provide fractional parts
+const auto f_w = 440; //frequency of the wave we want to produce
+const auto f_s = 24000; // sampling frequency; our carrier wave
+constexpr i32 dm = dm_scale * M  * f_w / f_s; 
 
 int main() 
 {

@@ -12,7 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
-        #../bslinkt.cc
+        ../sine-benchmark/sine-table.cc
         )
 
 pico_enable_stdio_usb(app 1)
