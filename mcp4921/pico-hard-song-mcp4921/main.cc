@@ -64,7 +64,7 @@ int main()
 	stdio_init_all();
 
 	int spi_speed = 1'200'000;
-	spi_speed = 600'000;
+	//spi_speed = 600'000;
 	spi_init(spi0, spi_speed);
 	//spi_set_slave(spi0, true);
 	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -85,7 +85,7 @@ int main()
 	for(;;) {
 #ifdef USE_POLL
 		write_to_dac();
-		sleep_us(25);
+		sleep_us(6);
 #endif		
 	}
 
