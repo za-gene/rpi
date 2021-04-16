@@ -8,7 +8,7 @@
 typedef uint16_t u16;
 typedef uint32_t u32;
 
-#define SPK 15
+#define SPK 19
 
 int main() 
 {
