@@ -16,7 +16,7 @@
 
 
 uint slice_num;
-uint speaker = 14;
+uint speaker = 19;
 
 const int freq_scale = 3; // we actually want a frequency of 8kHz, but scale it up to remove a hum
 
