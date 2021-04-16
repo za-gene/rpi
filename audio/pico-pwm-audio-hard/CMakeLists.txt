@@ -8,9 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init() # Initialize the SDK
 
 include_directories(..)
+include_directories(../../pico)
 
 add_executable(app
         main.cc
+	../../pico/pace.c
         )
 
 #pico_enable_stdio_usb(app 1)
