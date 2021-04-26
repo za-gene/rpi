@@ -195,7 +195,7 @@ begin:
 	if(c == '#') { // eat comments
 		do {
 			c = readchar();
-		} while (c != '\t' && c != '\n');
+		} while (c != '\r' && c != '\n');
 		goto begin;
 	}
 
