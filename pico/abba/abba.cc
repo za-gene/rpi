@@ -62,7 +62,7 @@ using namespace std;
 
 extern vector<prim_t> prims;
 
-vector<opcode_t> prog;
+vector<bcode_t> prog;
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ void p_halt()
 }
 
 
-opcode_t Call(fnptr prim)
+bcode_t Call(fnptr prim)
 {
 	for(int i = 0; i<prims.size(); i++) {
 		if(prims[i].fn == prim) {
@@ -145,7 +145,7 @@ opcode_t Call(fnptr prim)
 	//return 666;
 }
 
-opcode_t Load(u8 reg, i32 value)
+bcode_t Load(u8 reg, i32 value)
 {
 	return {LOAD,  (reg << 16) + value};
 }
@@ -166,7 +166,7 @@ int readchar()
 }
 
 
-void push_bcode(opcode_t bcode) { prog.push_back(bcode); }
+void push_bcode(bcode_t bcode) { prog.push_back(bcode); }
 
 
 
@@ -265,7 +265,7 @@ void repl()
 
 	int ip = 0;
 	while(ip < prog.size()) {
-		opcode_t ins = prog[ip++];
+		bcode_t ins = prog[ip++];
 		u8 opcode = ins.code;
 		u8 reg_num = (ins.operand >> 16) & 0xFF;
 		u32 opvalue = ins.operand & 0xFFFF;

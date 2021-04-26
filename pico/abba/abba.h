@@ -18,11 +18,11 @@ typedef struct {const char* name; fnptr parse; fnptr fn; } prim_t;
 typedef struct {
 	unsigned char code : 8;
 	int operand : 24;
-} opcode_t;
+} bcode_t;
 
-void push_bcode(u32 bcode);
-opcode_t Call(fnptr prim);
-opcode_t Load(u8 reg, i32 value);
+void push_bcode(bcode_t bcode);
+bcode_t Call(fnptr prim);
+bcode_t Load(u8 reg, i32 value);
 int yylex();
 int xstoi(std::string str);
 inline i32 regs[15];
