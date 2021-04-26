@@ -189,7 +189,16 @@ int yylex()
 	int c;
 
 	yytext = "";
+begin:
 	while((c = readchar()) && isspace(c));
+
+	if(c == '#') { // eat comments
+		do {
+			c = readchar();
+		} while (c != '\t' && c != '\n');
+		goto begin;
+	}
+
 	yytext = c;
 	while((c = readchar()) && !isspace(c)) { yytext += c; }
 	//cout << "token:<" << yytext << ">\n";
