@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <assert.h>
+//#include <bitfield>
 #include <ctype.h>
 #include <setjmp.h>
 #include <stdbool.h>
@@ -25,6 +26,8 @@
 #include "pico/stdlib.h"
 #include "tusb.h"
 bool echo_char = true;
+
+
 
 void init_abba()
 { 
@@ -50,8 +53,6 @@ bool echo_char = false;
  * 100 invalid_argument (string to number)
  */
 
-
-
 enum tokens { PRINT = 257, ID };
 
 enum opcodes { CALL = 1, LOAD};
@@ -61,7 +62,7 @@ using namespace std;
 
 extern vector<prim_t> prims;
 
-vector<u32> prog;
+vector<opcode_t> prog;
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -131,21 +132,22 @@ void p_halt()
 }
 
 
-u32 Call(fnptr prim)
+opcode_t Call(fnptr prim)
 {
 	for(int i = 0; i<prims.size(); i++) {
 		if(prims[i].fn == prim) {
-			return (CALL<<24) + i;
+			return {CALL, i};
 		}
 	}
 
-	puts("Err: prim not found");
-	return 666;
+	throw 666;
+	//puts("Err: prim not found");
+	//return 666;
 }
 
-u32 Load(u8 reg, u32 value)
+opcode_t Load(u8 reg, i32 value)
 {
-	return (LOAD<<24) + (reg << 16) + value;
+	return {LOAD,  (reg << 16) + value};
 }
 
 
@@ -164,7 +166,7 @@ int readchar()
 }
 
 
-void push_bcode(u32 bcode) { prog.push_back(bcode); }
+void push_bcode(opcode_t bcode) { prog.push_back(bcode); }
 
 
 
@@ -263,10 +265,10 @@ void repl()
 
 	int ip = 0;
 	while(ip < prog.size()) {
-		int ins = prog[ip++];
-		u8 opcode = ins >> 24;
-		u8 reg_num = (ins >> 16) & 0xFF;
-		u32 opvalue = ins & 0xFFFF;
+		opcode_t ins = prog[ip++];
+		u8 opcode = ins.code;
+		u8 reg_num = (ins.operand >> 16) & 0xFF;
+		u32 opvalue = ins.operand & 0xFFFF;
 		switch(opcode) {
 			case CALL : {
 					    //int fn_idx = prog[opvalue];
@@ -288,7 +290,7 @@ void repl()
 int main ()
 {
 	init_abba();
-	puts("abba: a basic basic. type run to execute. 'hi' prints a welcomeing message");
+	puts("abba: a basic basic. type run to execute. 'hi' prints a welcoming message");
 
 	prog.reserve(10000);	
 	while(1) {

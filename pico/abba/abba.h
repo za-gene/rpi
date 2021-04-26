@@ -14,9 +14,15 @@ typedef int32_t i32;
 typedef void (*fnptr)();
 typedef struct {const char* name; fnptr parse; fnptr fn; } prim_t;
 
+
+typedef struct {
+	unsigned char code : 8;
+	int operand : 24;
+} opcode_t;
+
 void push_bcode(u32 bcode);
-u32 Call(fnptr prim);
-u32 Load(u8 reg, u32 value);
+opcode_t Call(fnptr prim);
+opcode_t Load(u8 reg, i32 value);
 int yylex();
 int xstoi(std::string str);
 inline i32 regs[15];
