@@ -66,60 +66,8 @@ vector<bcode_t> prog;
 
 
 ////////////////////////////////////////////////////////////////////////////
-// dictionary begin
-
-typedef struct {
-	u8 flags;
-	int prev; // point to a position on the heap
-} word_t;
 
 
-i32 latest = 1<<30;
-
-
-// dictionary end
-////////////////////////////////////////////////////////////////////////////
-// heap functions begin
-
-u8 heap[10000];
-u32 htop = 0;
-
-void push_heap_byte(u8 b) { heap[htop++] = b; }
-
-void push_heap_u32(u32 val) 
-{ 
-	for(int i=0; i<4; i++) {
-		heap[htop++] = val & 0xff;
-		val >>= 8;
-	}
-}
-
-
-void push_heap(u8* bytes, int len)
-{
-	while(len--) push_heap_byte(*bytes++);
-}
-
-
-i32 get32(int pos)
-{
-	i32 val = 0;
-	for(int i=0; i<4; i++) {
-		val <<= 8;
-		val += heap[pos+i];
-	}
-	return val;
-}
-
-// heap functions end
-////////////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////////
-
-
-void eval_hi() { puts("hello world"); }
 
 
 
@@ -151,10 +99,6 @@ bcode_t Load(u8 reg, i32 value)
 }
 
 
-void eval_twice()
-{
-	printf("Twice %d is %d\n", regs[0], 2*regs[0]);
-}
 
 
 
@@ -170,11 +114,18 @@ void push_bcode(bcode_t bcode) { prog.push_back(bcode); }
 
 
 
+void eval_hi() { 
+	puts("hello world"); 
+}
 void parse_hi()
 {
 	prog.push_back(Call(eval_hi));
 }
 
+void eval_twice()
+{
+	printf("Twice %d is %d\n", regs[0], 2*regs[0]);
+}
 void parse_twice()
 {
 	yylex();
