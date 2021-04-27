@@ -8,7 +8,7 @@ FallingButton::FallingButton(int pin): _pin(pin) {
 
 bool FallingButton::falling() {
 
-	bool expired = (millis() - started) > 25;
+	bool expired = (millis() - started) > 50;
 
 	switch (zone) {
 		case 0: // high, looking for falling
