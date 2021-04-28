@@ -23,6 +23,7 @@ target_link_libraries(app
 	pico_stdlib 
 	#harware_adc
 	#hardware_clocks
+	#hardware_flash
 	hardware_gpio
 	#hardware_i2c
 	#hardware_irq
