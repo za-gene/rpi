@@ -28,7 +28,7 @@ target_link_libraries(app
 	#hardware_i2c
 	#hardware_irq
 	#hardware_pwm
-	#hardware_spi
+	hardware_sync
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
