@@ -3,7 +3,7 @@
 #include "pico/stdlib.h"
 //#include "hardware/adc.h"
 //#include "hardware/clocks.h"
-//#include "hardware/flsh.h"
+//#include "hardware/flash.h"
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
