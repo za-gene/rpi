@@ -29,8 +29,10 @@ flash only allows bit to be set to zero on writes. You therefore need to
 force them to be all ones so that those you want to be ones when written
 are left as ones.
 
-There matters are discussed (here)[https://www.raspberrypi.org/forums/viewtopic.php?f=145&t=310689&sid=30df829bf12a3edd977fb2aa7692e2ed] and
-(here)[https://www.raspberrypi.org/forums/viewtopic.php?p=1854403#p1854403]. 
+There matters are discussed 
+[here](https://www.raspberrypi.org/forums/viewtopic.php?f=145&t=310689&sid=30df829bf12a3edd977fb2aa7692e2ed) 
+and
+[here](https://www.raspberrypi.org/forums/viewtopic.php?p=1854403#p1854403). 
 
 
 
