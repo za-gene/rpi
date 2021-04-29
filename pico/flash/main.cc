@@ -21,12 +21,12 @@
 #define ADDRESS (XIP_BASE+ FLASH_TARGET_OFFSET)
 #define SIZE    4096
 
-#define MAGIC 0x1337
+//#define MAGIC 0x1337
 
 // the data we wish to store between power cycles
 struct __attribute__((__packed__)) data_t {
-	//char magic[4]{ 'D', 'A', 'T', '1'};
-	int magic = MAGIC;
+	char magic[4]{ 'D', 'A', 'T', 'A'};
+	//int magic = MAGIC;
 	int count = 0;
 	char padding[SIZE - sizeof(int) - sizeof(int)]; // we don't actually do anything with this
 } data;
@@ -42,6 +42,7 @@ void write_flash_data()
 	puts("Doing flash_range_program");
 	uint32_t ints = save_and_disable_interrupts();
 	//flash_range_program(FLASH_TARGET_OFFSET, flash_target_contents, FLASH_PAGE_SIZE);
+	flash_range_erase(FLASH_TARGET_OFFSET, FLASH_PAGE_SIZE);
 	flash_range_program(FLASH_TARGET_OFFSET, (const uint8_t*) &data, FLASH_PAGE_SIZE);
 	restore_interrupts (ints);
 	puts("Should be flashed now");
@@ -52,9 +53,9 @@ int main()
 	stdio_init_all();
 	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
-	//if(strncmp("DATA", (char*) flash_target_contents, 4) == 0) {
+	if(strncmp("DATA", ((data_t*) ADDRESS)->magic , 4) == 0) {
 	//if(strncmp("DAT1", (char*) (ADDRESS), 4) == 0) {
-	if( ((data_t*) (ADDRESS)) ->magic == MAGIC) {		
+	//if( ((data_t*) (ADDRESS)) ->magic == MAGIC) {		
 		puts("Flash has already been set up");
 		memcpy(&data, (void*) (ADDRESS), SIZE);
 		//data.count += 1;
