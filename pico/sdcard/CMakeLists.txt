@@ -13,6 +13,7 @@ include_directories(..)
 add_executable(app
         main.cc
         #../bslinkt.cc
+	../../1306/pico-sdk/font.cc ../../1306/pico-sdk/oled.cc ../../1306/pico-sdk/splash.cc
         )
 
 pico_enable_stdio_usb(app 1)
@@ -25,10 +26,10 @@ target_link_libraries(app
 	#hardware_clocks
 	#hardware_flash
 	hardware_gpio
-	#hardware_i2c
+	hardware_i2c
 	#hardware_irq
 	#hardware_pwm
-	#hardware_spi
+	hardware_spi
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
