@@ -21,7 +21,7 @@
 
 #define CMD_TIMEOUT 200 // number of tries before getting bored
 #define R1_IDLE_STATE (1<<0)
-
+#define R1_ILLEGAL_COMMAND (1<<2)
 
 void cs_low() {	gpio_put(PIN_CS, 0); }
 
@@ -103,6 +103,50 @@ int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 
 
 	cs_high();
+	spi_write_blocking(spi, buf, 1); // just spin our wheels so that the card can complete its operation
+
+	return resp;
+}
+
+int CMD8(int cmd, int arg, int crc)
+{
+	//if(wait) wait_for_ready();
+
+	uint8_t buf[6];
+	buf[0] = 0x40 | cmd;
+	buf[1] = (arg >> 24) & 0xFF;
+	buf[2] = (arg >> 16) & 0xFF;
+	buf[3] = (arg >> 8) & 0xFF;
+	buf[4] = (arg >> 0) & 0xFF;
+	buf[5] = crc;
+
+	cs_low();
+	//simple_write(buf, sizeof(buf));
+	spi_write_blocking(spi, buf, sizeof(buf));
+
+	//if(skip1)  read_byte(0xFF);
+
+	// wait for response[7] == 0
+	uint8_t resp;
+	for(int i = 0; i< CMD_TIMEOUT; i++) {
+		spi_read_blocking(spi, 0xFF, &resp, 1);
+		//simple_read(buf, 1, 0xFF);
+		//if(buf[0] & 0x80) continue;
+
+		if(!(resp & 0x80)) {
+			uint8_t resp_buf[4];
+			printf("Got a response from CMD8");
+			spi_read_blocking(spi, 0xFF, resp_buf, sizeof(resp_buf));
+		}
+
+
+	}
+
+	printf("latest response is %d\n", (int) resp);
+
+
+	cs_high();
+	spi_write_blocking(spi, buf, 1); // just spin our wheels so that the card can complete its operation
 
 	return resp;
 }
@@ -111,7 +155,7 @@ void init_card()
 {
 	// standard spi stuff
 	int spi_speed = 1'200'000;
-	spi_speed = 600'000;
+	spi_speed = 200'000;
 	spi_init(spi, spi_speed);
 	//spi_set_slave(spi0, true);
 	//spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -135,14 +179,31 @@ void init_card()
 	// CMD0 go idle
 	// max 5 attempts to reach idle state
 	int status;
-	for(int i = 0; i < 5; i++) {
-		printf("idle attempt %d\n", i);
+	for(int i = 0; i < 10; i++) {
+		printf("\nidle attempt %d\n", i);
 		status = sd_cmd_r1(0, 0, 0x95);
+		printf("status=%d\n", status);
 		if(status == R1_IDLE_STATE) {
 			ssd1306_print(" IDLE ");
 			break;
 		}
 	}
+	if(status == R1_IDLE_STATE) {
+		printf("CMD0 succeeded\n");
+	} else {
+		printf("CMD0 failed. aborting\n");
+		return;
+	}
+
+	// CMD8: card version
+	status = CMD8(8, 0x01aa, 0x87);
+	printf("\ncard status %d\n", status);
+	if(status == R1_ILLEGAL_COMMAND) {
+		printf("version 1 or not sd card");
+	} else {
+		printf("version 2 or later card");
+	}
+
 
 
 }
