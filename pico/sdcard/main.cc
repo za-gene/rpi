@@ -71,8 +71,27 @@ void wait_for_ready()
 }
 #endif
 
+class Trans {
+	public:
+		Trans();
+		~Trans();
+};
+
+Trans::Trans()
+{
+	cs_low();
+}
+
+Trans::~Trans()
+{
+	cs_high();
+	uint8_t b = 0xFF;
+	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
+}
+
 int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 {
+	Trans t;
 	//if(wait) wait_for_ready();
 
 	uint8_t buf[6];
@@ -83,7 +102,6 @@ int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 	buf[4] = (arg >> 0) & 0xFF;
 	buf[5] = crc;
 
-	cs_low();
 	//simple_write(buf, sizeof(buf));
 	spi_write_blocking(spi, buf, sizeof(buf));
 
@@ -99,17 +117,16 @@ int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 		if(!(resp & 0x80)) break; 
 	}
 
-	printf("latest response is %d\n", (int) resp);
+	//printf("latest response is %d\n", (int) resp);
 
 
-	cs_high();
-	spi_write_blocking(spi, buf, 1); // just spin our wheels so that the card can complete its operation
 
 	return resp;
 }
 
 int CMD8(int cmd, int arg, int crc)
 {
+	Trans t;
 	//if(wait) wait_for_ready();
 
 	uint8_t buf[6];
@@ -120,7 +137,6 @@ int CMD8(int cmd, int arg, int crc)
 	buf[4] = (arg >> 0) & 0xFF;
 	buf[5] = crc;
 
-	cs_low();
 	//simple_write(buf, sizeof(buf));
 	spi_write_blocking(spi, buf, sizeof(buf));
 
@@ -135,18 +151,12 @@ int CMD8(int cmd, int arg, int crc)
 
 		if(!(resp & 0x80)) {
 			uint8_t resp_buf[4];
-			printf("Got a response from CMD8");
+			//printf("Got a response from CMD8");
 			spi_read_blocking(spi, 0xFF, resp_buf, sizeof(resp_buf));
 		}
 
 
 	}
-
-	printf("latest response is %d\n", (int) resp);
-
-
-	cs_high();
-	spi_write_blocking(spi, buf, 1); // just spin our wheels so that the card can complete its operation
 
 	return resp;
 }
@@ -155,7 +165,7 @@ void init_card()
 {
 	// standard spi stuff
 	int spi_speed = 1'200'000;
-	spi_speed = 200'000;
+	spi_speed = 400'000;
 	spi_init(spi, spi_speed);
 	//spi_set_slave(spi0, true);
 	//spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -199,9 +209,9 @@ void init_card()
 	status = CMD8(8, 0x01aa, 0x87);
 	printf("\ncard status %d\n", status);
 	if(status == R1_ILLEGAL_COMMAND) {
-		printf("version 1 or not sd card");
+		printf("version 1 or not sd card\n");
 	} else {
-		printf("version 2 or later card");
+		printf("version 2 or later card\n");
 	}
 
 
