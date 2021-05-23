@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-void init_display(int h);
+void init_display(int h, int sda);
 void setCursorx(int x);
 void setCursory(int y);
 void ssd1306_print(const char* str);

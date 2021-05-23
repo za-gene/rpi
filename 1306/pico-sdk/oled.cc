@@ -26,7 +26,9 @@ extern "C" const uint8_t ssd1306_font6x8[];
 
 //typedef uint8_t uint8_t;
 
-#define I2C_PORT i2c0
+//#define I2C_PORT i2c0
+
+auto i2c_port = &i2c0_inst;
 
 //#define OLED_128x32
 
@@ -60,7 +62,7 @@ void fill_scr(uint8_t v)
 
 void send_data(uint8_t* data, int nbytes)
 {
-	i2c_write_blocking(I2C_PORT, SID, data, nbytes, false);
+	i2c_write_blocking(i2c_port, SID, data, nbytes, false);
 }
 
 void send2(uint8_t v1, uint8_t v2)
@@ -110,19 +112,24 @@ void contrast(uint8_t contrast) { write_cmd(SET_CONTRAST); write_cmd(contrast); 
 void invert(uint8_t invert) { write_cmd(SET_NORM_INV | (invert & 1)); }
 
 
-static void init_i2c()
+static void init_i2c(int sda)
 {
+	if( sda % 4 == 0)
+		i2c_port = i2c0;
+	else
+		i2c_port = i2c1;
+
 	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
-	i2c_init(I2C_PORT, 100 * 1000);
-	gpio_set_function(4, GPIO_FUNC_I2C);
-	gpio_set_function(5, GPIO_FUNC_I2C);
-	gpio_pull_up(4);
-	gpio_pull_up(5);
+	i2c_init(i2c_port, 100 * 1000);
+	gpio_set_function(sda, GPIO_FUNC_I2C);
+	gpio_set_function(sda+1, GPIO_FUNC_I2C);
+	gpio_pull_up(sda);
+	gpio_pull_up(sda+1);
 }
 
-void init_display(int h)
+void init_display(int h, int sda)
 {
-	init_i2c();
+	init_i2c(sda);
 	height = h;
 
 	static uint8_t cmds[] = {
