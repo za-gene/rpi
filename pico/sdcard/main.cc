@@ -23,10 +23,16 @@
 #define R1_IDLE_STATE (1<<0)
 #define R1_ILLEGAL_COMMAND (1<<2)
 
+#define SDTOUT -2 // timeout waiting for card to be ready
+#define SDROUT -3 // timeout waiting for card to respond to command
+#define SDCMD0 -4 // failed CMD0 (card couldn't be set to idle state)
+#define SDCMD8 -5 // failed CMD8 (identify card version (only version 1 is handled))
+
 void cs_low() {	gpio_put(PIN_CS, 0); }
 
 void cs_high() { gpio_put(PIN_CS, 1); }
 
+typedef uint8_t u8;
 
 #if 0
 void simple_write_read(uint8_t* src, uint8_t* dst, int len)
@@ -61,14 +67,15 @@ uint8_t read_byte(uint8_t send)
 
 #endif
 
-void wait_for_ready()
+int wait_for_ready()
 {
-	uint8_t src = 0xFF, dst = 0x00;
+	u8 dst;
 	uint32_t start = time_us_32();
 	while(time_us_32() - start < 300'000) {
-		spi_write_read_blocking(spi, &src, &dst, 1);
-		if(dst == 0xFF) return;
+		spi_read_blocking(spi, 0xFF, &dst, 1);
+		if(dst == 0xFF) return 0;
 	}
+	return SDTOUT;
 
 }
 
@@ -90,9 +97,10 @@ Trans::~Trans()
 	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
 }
 
-int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
+int CMD0(int cmd, int arg, int crc)
 {
 	Trans t;
+	//if(wait_for_ready()) return SDTOUT;
 	wait_for_ready();
 
 	uint8_t buf[6];
@@ -115,20 +123,22 @@ int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 		//simple_read(buf, 1, 0xFF);
 		//if(buf[0] & 0x80) continue;
 
-		if(!(resp & 0x80)) break; 
+		if(!(resp & 0x80)) return resp; 
 	}
 
 	//printf("latest response is %d\n", (int) resp);
 
 
 
-	return resp;
+	return SDROUT;
 }
 
 int CMD8(int cmd, int arg, int crc)
 {
 	Trans t;
-	wait_for_ready();
+	//if(wait_for_ready()) return SDTOUT;
+	int status = wait_for_ready();
+	if(status) return SDTOUT;
 
 	uint8_t buf[6];
 	buf[0] = 0x40 | cmd;
@@ -140,6 +150,7 @@ int CMD8(int cmd, int arg, int crc)
 
 	//simple_write(buf, sizeof(buf));
 	spi_write_blocking(spi, buf, sizeof(buf));
+
 
 	//if(skip1)  read_byte(0xFF);
 
@@ -154,15 +165,16 @@ int CMD8(int cmd, int arg, int crc)
 			uint8_t resp_buf[4];
 			//printf("Got a response from CMD8");
 			spi_read_blocking(spi, 0xFF, resp_buf, sizeof(resp_buf));
+			return resp;
 		}
 
 
 	}
 
-	return resp;
+	return SDCMD8;
 }
 
-void init_card()
+int init_card()
 {
 	// standard spi stuff
 	int spi_speed = 1'200'000;
@@ -192,7 +204,7 @@ void init_card()
 	int status;
 	for(int i = 0; i < 10; i++) {
 		printf("\nidle attempt %d\n", i);
-		status = sd_cmd_r1(0, 0, 0x95);
+		status = CMD0(0, 0, 0x95);
 		printf("status=%d\n", status);
 		if(status == R1_IDLE_STATE) {
 			//ssd1306_print(" IDLE ");
@@ -203,17 +215,25 @@ void init_card()
 		printf("CMD0 succeeded\n");
 	} else {
 		printf("CMD0 failed. aborting\n");
-		return;
+		return SDCMD0;
 	}
 
 	// CMD8: card version
+	// We oncly consider version 1 cards at this point
 	status = CMD8(8, 0x01aa, 0x87);
-	printf("\ncard status %d\n", status);
+	printf("\nCMD8 card status %d\n", status);
+	if(status != R1_IDLE_STATE) 
+		return SDCMD8;
+
+	/*
 	if(status == R1_ILLEGAL_COMMAND) {
 		printf("version 1 or not sd card\n");
 	} else {
 		printf("version 2 or later card\n");
 	}
+	*/
+
+	return 0;
 
 
 
@@ -226,7 +246,12 @@ int main()
 
 	//init_display(64, 6);
 	//init_spi();
-	init_card();
+	int status = init_card();
+	if(status) 
+		printf("Card init failed with status %d\n", status);
+	else
+		printf("Card init successfully\n");
+
 	//ssd1306_print("1");
 	//show_scr();
 
