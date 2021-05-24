@@ -29,7 +29,8 @@
 #define SDCMD8 -5 // failed CMD8 (identify card version (only version 2 is handled))
 #define SDFV2  -6 // failed to initialise card as version 2 type card
 #define SDCMD16 -7 // CMD16 failed to set card block size to 512
-
+#define SDBLOCK -8 // bad read of block
+#define SDCDV   -9 // implementation limitation on cdv. 
 
 void cs_low() {	gpio_put(PIN_CS, 0); }
 
@@ -103,17 +104,58 @@ Trans::~Trans()
 	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
 }
 
-void call_cmd(int cmd, int arg, int crc)
+
+u8 crc_table[256];
+
+void init_crc_table()
 {
-	uint8_t buf[6];
+	const u8 crc_poly = 0x89;
+	for(int i = 0; i< 256; i++) {
+		if(i & 0x80)
+			crc_table[i] = i ^ crc_poly;
+		else
+			crc_table[i] = i;
+
+		for(int j = 1; j<8; j++) {
+			crc_table[i] <<= 1;
+			if(crc_table[i] & 0x80)
+				crc_table[i] ^= crc_poly;
+		}
+	}
+}
+
+u8 calculate_crc(u8* buf)
+{
+	static bool table_initialised = false;
+	if(!table_initialised) {
+		init_crc_table();
+		table_initialised = true;
+	}
+
+	u8 crc = 0;
+	for(int i=0; i<5; i++)
+		crc = crc_table[(crc<<1)^ buf[i]];
+	return (crc<<1) | 1;
+}
+
+u8 encode_cmd(int cmd, int arg, int crc, u8 buf[6])
+{
 	buf[0] = 0x40 | cmd;
 	buf[1] = (arg >> 24) & 0xFF;
 	buf[2] = (arg >> 16) & 0xFF;
 	buf[3] = (arg >> 8) & 0xFF;
 	buf[4] = (arg >> 0) & 0xFF;
-	buf[5] = crc;
 
-	//simple_write(buf, sizeof(buf));
+	if(crc==0) crc = calculate_crc(buf);
+
+	buf[5] = crc;
+	return crc;
+}
+
+void call_cmd(int cmd, int arg, int crc)
+{
+	uint8_t buf[6];
+	encode_cmd(cmd, arg, crc, buf);
 	spi_write_blocking(spi, buf, sizeof(buf));
 }
 
@@ -144,7 +186,7 @@ int CMD_T1(int cmd, int arg, int crc)
 	return SDROUT;
 }
 
-int CMD_T2(int cmd, int arg, int crc, u8 quad[4])
+int CMD_T2(int cmd, int arg, int crc, u8* output, int len)
 {
 	Trans t;
 	//if(wait_for_ready()) return SDTOUT;
@@ -163,7 +205,7 @@ int CMD_T2(int cmd, int arg, int crc, u8 quad[4])
 		if(!(resp & 0x80)) {
 			//uint8_t resp_buf[4];
 			//printf("Got a response from CMD8");
-			spi_read_blocking(spi, 0xFF, quad, 4);
+			spi_read_blocking(spi, 0xFF, output, len);
 			return resp;
 		}
 
@@ -179,12 +221,12 @@ int init_card_v2()
 	for(int i=0; i< CMD_TIMEOUT; i++) {
 		printf("init_card_v2 try %d\n", i);
 		sleep_ms(50);
-		CMD_T2(58, 0, 0xFD, ocr);
+		CMD_T2(58, 0, 0xFD, ocr, sizeof(ocr));
 		CMD_T1(55, 0, 0x65);
 		constexpr int arg = 0x40000000;
 		static_assert((arg>0) && (sizeof(int)>=4));
 		if(CMD_T1(41, arg, 0x77) == 0) {
-			CMD_T2(58, 0, 0xFD, ocr);
+			CMD_T2(58, 0, 0xFD, ocr, sizeof(ocr));
 			if((ocr[0] & 0x40) != 0) cdv = 1;
 			return 0;
 		}
@@ -194,6 +236,8 @@ int init_card_v2()
 
 int init_card()
 {
+	//init_crc_table();
+
 	// standard spi stuff
 	int spi_speed = 1'200'000;
 	spi_speed = 400'000;
@@ -239,7 +283,7 @@ int init_card()
 	// CMD8: card version
 	// We only consider version 2 cards at this point
 	u8 cmd8_response[4];
-	status = CMD_T2(8, 0x01aa, 0x87, cmd8_response);
+	status = CMD_T2(8, 0x01aa, 0x87, cmd8_response, sizeof(cmd8_response));
 	printf("\nCMD8 card status %d\n", status);
 	if(status != R1_IDLE_STATE) 
 		return SDCMD8;
@@ -256,17 +300,58 @@ int init_card()
 	if(CMD_T1(16, 512, 0x15) != 0) return SDCMD16;
 	printf("CMD16 set block size to 512 successfully\n");
 
+	return 0;
+}
+
+int block_cmd(int cmd, int blocknum, u8 block[512])
+{
+	printf("block_cmd: cdv = %d\n", cdv);
+	if(cdv != 1) return SDCDV;
+
+	return CMD_T2(cmd, blocknum, 0, block, 512);
 
 	return 0;
+}
 
+int readablock(int blocknum, u8 block[512])
+{
+	if(block_cmd(17, blocknum, block) != 0)
+		return SDBLOCK;
+	return 0;
+}
 
+void dump_block(u8 block[512])
+{
+	for(int row = 0; row < 512/16; row++) {
+		for(int col = 0; col<16; col++) {
+			printf("%02x ", block[row * 512/16 + col]);
+			if(col == 7) printf(" ");
+		}
+		printf("\n");
+	}
+}
 
+// let's see that se can calculate CRC correctly
+// looks pretty good based on the couple of examples
+void test_crc()
+{
+	printf("\ntest_crc begin\n");
+	u8 crc, buf[6];
+
+	crc = encode_cmd(58, 0, 0, buf);
+	printf("Expected %d, got %d\n", (int) 0xFD, (int) crc);
+
+	crc = encode_cmd(8, 0x01aa, 0, buf);
+	printf("Expected %d, got %d\n", (int) 0x87, (int) crc);
+
+	printf("test_crc end\n");
 }
 
 int main() 
 {
 	stdio_init_all();
 	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+
 
 	//init_display(64, 6);
 	//init_spi();
@@ -276,9 +361,12 @@ int main()
 	else
 		printf("Card init successfully\n");
 
-	//ssd1306_print("1");
-	//show_scr();
+	u8 block[512];
+	status = readablock(0, block);
+	printf("read block status returned: %d\n", status);
+	dump_block(block);
 
+	test_crc();
 
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED
