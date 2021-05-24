@@ -13,7 +13,7 @@ include_directories(..)
 add_executable(app
         main.cc
         #../bslinkt.cc
-	../../1306/pico-sdk/font.cc ../../1306/pico-sdk/oled.cc ../../1306/pico-sdk/splash.cc
+	#../../1306/pico-sdk/font.cc ../../1306/pico-sdk/oled.cc ../../1306/pico-sdk/splash.cc
         )
 
 pico_enable_stdio_usb(app 1)

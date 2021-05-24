@@ -10,7 +10,7 @@
 #include "hardware/spi.h"
 #include "tusb.h" // if you want to use tud_cdc_connected()
 
-#include "../../1306/pico-sdk/oled.h"
+//#include "../../1306/pico-sdk/oled.h"
 
 #define spi		spi1
 #define	PIN_SCK		10
@@ -59,17 +59,18 @@ uint8_t read_byte(uint8_t send)
 	return dst;
 }
 
+#endif
+
 void wait_for_ready()
 {
 	uint8_t src = 0xFF, dst = 0x00;
 	uint32_t start = time_us_32();
 	while(time_us_32() - start < 300'000) {
-		simple_write_read(&src, &dst, 1);
+		spi_write_read_blocking(spi, &src, &dst, 1);
 		if(dst == 0xFF) return;
 	}
 
 }
-#endif
 
 class Trans {
 	public:
@@ -92,7 +93,7 @@ Trans::~Trans()
 int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 {
 	Trans t;
-	//if(wait) wait_for_ready();
+	wait_for_ready();
 
 	uint8_t buf[6];
 	buf[0] = 0x40 | cmd;
@@ -127,7 +128,7 @@ int sd_cmd_r1(int cmd, int arg, int crc, bool wait = true, bool skip1 = false)
 int CMD8(int cmd, int arg, int crc)
 {
 	Trans t;
-	//if(wait) wait_for_ready();
+	wait_for_ready();
 
 	uint8_t buf[6];
 	buf[0] = 0x40 | cmd;
@@ -194,7 +195,7 @@ void init_card()
 		status = sd_cmd_r1(0, 0, 0x95);
 		printf("status=%d\n", status);
 		if(status == R1_IDLE_STATE) {
-			ssd1306_print(" IDLE ");
+			//ssd1306_print(" IDLE ");
 			break;
 		}
 	}
@@ -223,11 +224,11 @@ int main()
 	stdio_init_all();
 	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
-	init_display(64, 6);
+	//init_display(64, 6);
 	//init_spi();
 	init_card();
-	ssd1306_print("1");
-	show_scr();
+	//ssd1306_print("1");
+	//show_scr();
 
 
 #define BTN  14 // GPIO number, not physical pin
