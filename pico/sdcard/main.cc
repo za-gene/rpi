@@ -37,6 +37,7 @@ void cs_low() {	gpio_put(PIN_CS, 0); }
 void cs_high() { gpio_put(PIN_CS, 1); }
 
 typedef uint8_t u8;
+typedef uint16_t u16;
 typedef uint32_t u32;
 
 int cdv = 512; // card is byte addressing, set to 1 if addresses are per block
@@ -285,7 +286,7 @@ int init_card()
 	if(status) return status;
 
 	// skip CMD9 that adafruit uses
-	
+
 
 	// CMD16 set block length to 512 bytes
 	if(CMD_T1(16, 512, 0x15) != 0) return SDCMD16;
@@ -319,6 +320,15 @@ void dump_block(u8 block[512])
 			printf("%02x ", block[row * 16 + col]);
 			if(col == 7) printf(" ");
 		}
+		printf(" ");
+
+		// asci version of row, where possible
+		for(int col = 0; col<16; col++) {
+			char c = block[row * 16 + col];
+			if((c<32) || (c>126)) c = '.';
+			printf("%c", block[row * 16 + col]);
+			//if(col == 7) printf(" ");
+		}
 		printf("\n");
 	}
 }
@@ -338,6 +348,60 @@ void test_crc()
 
 	printf("test_crc end\n");
 }
+
+////////////////////////////////////////////////////////////////////////////
+// partition stuff
+
+// partition table entry
+typedef struct __attribute__((__packed__))  {
+	u8 boot;
+	u8 start_head;
+	u16 start_alt;
+	u8 sid;
+	u8 end_head;
+	u16 end_alt;
+	u32 rel_sect;
+	u32 tot_sect;
+} pte_t;
+
+
+typedef struct { u8 id; const char* desc; } part_names_t;
+
+part_names_t part_names[] = {
+	{0x0b, "W95 FAT32"},
+	{0x0c, "W95 FAT32 (LBA)"},
+	{0x82, "Linux swap"}, 
+	{0x83, "Linux"},
+	{0x93, "Amoeba"},
+	{0x63, "GNU Hurd or SysV"},
+	{0x00, "Empty"} 
+};
+
+//Device     Boot   Start     End Sectors  Size Id Type
+///dev/sdd1          2048 2050047 2048000 1000M  b W95 FAT32
+///dev/sdd2       2050048 2254847  204800  100M 63 GNU HURD or SysV
+
+void dump_partition(u8 block0[512])
+{
+	// a sector is 512b long
+	printf("\nParition table\n");
+	printf("Device     Boot   Start     End Sectors  Size Id Type\n");
+	pte_t pte;
+	for(int part = 0; part<4; part++) {
+		u32 offset = 0x1BE +sizeof(pte_t)*part;
+		memcpy(&pte, block0 + offset, sizeof(pte_t));
+		if(pte.rel_sect == 0) break;
+		printf("%-12d ", part); // device number
+		printf("%c    ", pte.boot ? '*' : ' '); // bootable?
+		printf("%8d ", pte.rel_sect); // start sector
+		printf("%8d ", pte.rel_sect + pte.tot_sect -1); // end sector
+		printf("%8d ", pte.tot_sect); // number of sectors in partition
+		printf("0x%.2x ", pte.sid); // id
+		printf("\n");
+
+	}
+}
+////////////////////////////////////////////////////////////////////////////
 
 int main() 
 {
@@ -361,6 +425,7 @@ int main()
 	dump_block(block);
 
 	test_crc();
+	dump_partition(block);
 
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED
