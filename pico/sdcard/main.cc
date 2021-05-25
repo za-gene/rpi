@@ -178,6 +178,21 @@ int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 
 	return SDCMD8;
 }
+
+/* return the (non-negative) response from an issued command
+ * -1 if timed out
+ */
+
+int wait_for_response()
+{
+	uint8_t resp;
+	for(int i = 0; i< CMD_TIMEOUT; i++) {
+		spi_read_blocking(spi, 0xFF, &resp, 1);
+		if(!(resp & 0x80)) return resp;
+	}
+	return -1; // timed out
+
+}
 int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 {
 	Trans t;
@@ -187,27 +202,22 @@ int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 
 	call_cmd(cmd, arg, crc);
 
-	// wait for response[7] == 0
+	int resp = wait_for_response();
+	if(resp<0) return SDCMD8;
+
 	u8 buf[6];
-	uint8_t resp;
-	for(int i = 0; i< CMD_TIMEOUT; i++) {
-		spi_read_blocking(spi, 0xFF, &resp, 1);		
-		if(!(resp & 0x80)) {
-			// wait for start block byte
-			buf[0] = 0xFF;
-			while(buf[0] != 0xFE)
-				spi_read_blocking(spi, 0xFF, buf, 1);
+	buf[0] = 0xFF;
+	while(buf[0] != 0xFE)
+		spi_read_blocking(spi, 0xFF, buf, 1);
 
-			// read the actual data
-			spi_read_blocking(spi, 0xFF, output, len);
+	// read the actual data
+	spi_read_blocking(spi, 0xFF, output, len);
 
-			// read crc
-			spi_read_blocking(spi, 0xFF, buf, 2); 
-			return resp;
-		}
-	}
+	// read crc
+	spi_read_blocking(spi, 0xFF, buf, 2); 
 
-	return SDCMD8;
+
+	return resp;
 }
 
 int init_card_v2()
