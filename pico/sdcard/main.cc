@@ -326,7 +326,7 @@ void dump_block(u8 block[512])
 		for(int col = 0; col<16; col++) {
 			char c = block[row * 16 + col];
 			if((c<32) || (c>126)) c = '.';
-			printf("%c", block[row * 16 + col]);
+			printf("%c", c);
 			//if(col == 7) printf(" ");
 		}
 		printf("\n");
@@ -368,14 +368,23 @@ typedef struct __attribute__((__packed__))  {
 typedef struct { u8 id; const char* desc; } part_names_t;
 
 part_names_t part_names[] = {
+	{0x00, "Empty"},
 	{0x0b, "W95 FAT32"},
 	{0x0c, "W95 FAT32 (LBA)"},
 	{0x82, "Linux swap"}, 
 	{0x83, "Linux"},
 	{0x93, "Amoeba"},
-	{0x63, "GNU Hurd or SysV"},
-	{0x00, "Empty"} 
+	{0x63, "GNU Hurd or SysV"}
 };
+
+const char* find_part_name(u8 id)
+{
+	static char unk[] = "Unknown";
+	for(int i=0; i< sizeof(part_names)/sizeof(part_names_t); i++) {
+		if(part_names[i].id == id) return part_names[i].desc;
+	}
+	return unk;
+}
 
 //Device     Boot   Start     End Sectors  Size Id Type
 ///dev/sdd1          2048 2050047 2048000 1000M  b W95 FAT32
@@ -397,8 +406,8 @@ void dump_partition(u8 block0[512])
 		printf("%8d ", pte.rel_sect + pte.tot_sect -1); // end sector
 		printf("%8d ", pte.tot_sect); // number of sectors in partition
 		printf("0x%.2x ", pte.sid); // id
+		printf("%s", find_part_name(pte.sid)); // partition name
 		printf("\n");
-
 	}
 }
 ////////////////////////////////////////////////////////////////////////////
