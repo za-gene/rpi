@@ -122,7 +122,7 @@ u8 encode_cmd(int cmd, int arg, int crc, u8 buf[6])
 }
 
 /* return the (non-negative) response from an issued command
- * -1 if timed out
+ * SDROUT (a neg number) if timed out
  */
 
 int wait_for_response()
@@ -132,15 +132,16 @@ int wait_for_response()
 		spi_read_blocking(spi, 0xFF, &resp, 1);
 		if(!(resp & 0x80)) return resp;
 	}
-	return -1; // timed out
+	return SDROUT;
 
 }
 
-void call_cmd(int cmd, int arg, int crc)
+int call_cmd(int cmd, int arg, int crc)
 {
 	uint8_t buf[6];
 	encode_cmd(cmd, arg, crc, buf);
 	spi_write_blocking(spi, buf, sizeof(buf));
+	return wait_for_response();
 }
 
 int CMD_T1(int cmd, int arg, int crc)
@@ -149,9 +150,7 @@ int CMD_T1(int cmd, int arg, int crc)
 	int status;
 	//if(wait_for_ready()) return SDTOUT;
 	wait_for_ready();
-	call_cmd(cmd, arg, crc);
-
-	status  = wait_for_response();
+	status = call_cmd(cmd, arg, crc);
 	if(status <0) return SDROUT;
 
 	return status;
@@ -164,9 +163,7 @@ int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 	int status = wait_for_ready();
 	if(status) return SDTOUT;
 
-	call_cmd(cmd, arg, crc);
-
-	status  = wait_for_response();
+	status = call_cmd(cmd, arg, crc);
 	if(status <0) return SDROUT;
 
 	spi_read_blocking(spi, 0xFF, output, len);
@@ -181,9 +178,7 @@ int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 	int status = wait_for_ready();
 	if(status) return SDTOUT;
 
-	call_cmd(cmd, arg, crc);
-
-	status = wait_for_response();
+	status = call_cmd(cmd, arg, crc);
 	if(status<0) return SDROUT;
 
 	u8 buf[6];
@@ -196,7 +191,6 @@ int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 
 	// read crc
 	spi_read_blocking(spi, 0xFF, buf, 2); 
-
 
 	return status;
 }
@@ -427,7 +421,7 @@ int main()
 	test_crc();
 	dump_partition(block);
 
-	printf("sd card 2\n");
+	printf("sd card 3\n");
 
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED
