@@ -186,7 +186,7 @@ int CMD_T1(int cmd, int arg, int crc)
 	return SDROUT;
 }
 
-int CMD_T2(int cmd, int arg, int crc, u8* output, int len)
+int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 {
 	Trans t;
 	//if(wait_for_ready()) return SDTOUT;
@@ -199,17 +199,43 @@ int CMD_T2(int cmd, int arg, int crc, u8* output, int len)
 	uint8_t resp;
 	for(int i = 0; i< CMD_TIMEOUT; i++) {
 		spi_read_blocking(spi, 0xFF, &resp, 1);
-		//simple_read(buf, 1, 0xFF);
-		//if(buf[0] & 0x80) continue;
-
 		if(!(resp & 0x80)) {
-			//uint8_t resp_buf[4];
-			//printf("Got a response from CMD8");
 			spi_read_blocking(spi, 0xFF, output, len);
 			return resp;
 		}
 
 
+	}
+
+	return SDCMD8;
+}
+int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
+{
+	Trans t;
+	//if(wait_for_ready()) return SDTOUT;
+	int status = wait_for_ready();
+	if(status) return SDTOUT;
+
+	call_cmd(cmd, arg, crc);
+
+	// wait for response[7] == 0
+	u8 buf[6];
+	uint8_t resp;
+	for(int i = 0; i< CMD_TIMEOUT; i++) {
+		spi_read_blocking(spi, 0xFF, &resp, 1);		
+		if(!(resp & 0x80)) {
+			// wait for start block byte
+			buf[0] = 0xFF;
+			while(buf[0] != 0xFE)
+				spi_read_blocking(spi, 0xFF, buf, 1);
+
+			// read the actual data
+			spi_read_blocking(spi, 0xFF, output, len);
+
+			// read crc
+			spi_read_blocking(spi, 0xFF, buf, 2); 
+			return resp;
+		}
 	}
 
 	return SDCMD8;
@@ -241,6 +267,7 @@ int init_card()
 	// standard spi stuff
 	int spi_speed = 1'200'000;
 	spi_speed = 400'000;
+	spi_speed = 200'000;
 	spi_init(spi, spi_speed);
 	//spi_set_slave(spi0, true);
 	//spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -308,7 +335,7 @@ int block_cmd(int cmd, int blocknum, u8 block[512])
 	printf("block_cmd: cdv = %d\n", cdv);
 	if(cdv != 1) return SDCDV;
 
-	return CMD_T2(cmd, blocknum, 0, block, 512);
+	return CMD_T3(cmd, blocknum, 0, block, 512);
 
 	return 0;
 }
@@ -323,8 +350,9 @@ int readablock(int blocknum, u8 block[512])
 void dump_block(u8 block[512])
 {
 	for(int row = 0; row < 512/16; row++) {
+		printf("%04x  ", row*16);
 		for(int col = 0; col<16; col++) {
-			printf("%02x ", block[row * 512/16 + col]);
+			printf("%02x ", block[row * 16 + col]);
 			if(col == 7) printf(" ");
 		}
 		printf("\n");
