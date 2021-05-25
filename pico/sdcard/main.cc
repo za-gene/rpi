@@ -37,42 +37,10 @@ void cs_low() {	gpio_put(PIN_CS, 0); }
 void cs_high() { gpio_put(PIN_CS, 1); }
 
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 int cdv = 512; // card is byte addressing, set to 1 if addresses are per block
 
-//u8 ocr[4]; // 
-#if 0
-void simple_write_read(uint8_t* src, uint8_t* dst, int len)
-{
-	gpio_put(PIN_CS, 0);
-	spi_write_read_blocking(spi, src, dst, len);
-	gpio_put(PIN_CS, 1);
-}
-
-void simple_write(const uint8_t* buf, int len)
-{
-	gpio_put(PIN_CS, 0);
-	spi_write_blocking(spi, buf, len);
-	gpio_put(PIN_CS, 1);
-}
-
-/* read into dst, continually sending val */
-void simple_read(uint8_t* dst, int len, uint8_t val)
-{
-	uint8_t src[len];
-	for(int i = 0; i< len; i++) src[i] = val;
-	simple_write_read(src, dst, len);
-}
-
-
-uint8_t read_byte(uint8_t send)
-{
-	uint8_t src = send, dst;
-	simple_write_read(&src, &dst, 1);
-	return dst;
-}
-
-#endif
 
 int wait_for_ready()
 {
@@ -269,10 +237,6 @@ int init_card()
 	spi_speed = 400'000;
 	spi_speed = 200'000;
 	spi_init(spi, spi_speed);
-	//spi_set_slave(spi0, true);
-	//spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-	//gpio_set_function(PIN_CS,   GPIO_FUNC_SPI);
-	//gpio_put(PIN_CS, 1);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
@@ -390,8 +354,10 @@ int main()
 		printf("Card init successfully\n");
 
 	u8 block[512];
+	u32 start = time_us_32();
 	status = readablock(0, block);
-	printf("read block status returned: %d\n", status);
+	u32 took = time_us_32() - start;
+	printf("read block status returned: %d. Took %d us\n", status, took);
 	dump_block(block);
 
 	test_crc();
