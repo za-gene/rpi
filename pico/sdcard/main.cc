@@ -221,7 +221,7 @@ int init_card()
 	// standard spi stuff
 	int spi_speed = 1'200'000;
 	spi_speed = 400'000;
-	spi_speed = 200'000;
+	//spi_speed = 200'000; // works
 	spi_init(spi, spi_speed);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
