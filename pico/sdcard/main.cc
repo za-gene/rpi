@@ -396,6 +396,21 @@ void dump_partition(u8 block0[512])
 	}
 }
 ////////////////////////////////////////////////////////////////////////////
+// play sd card
+
+u8 block0[512], block1[512];
+
+
+void play_music()
+{
+	int blocknum = 2'050'048;
+	int status = readablock(blocknum, block0);
+	dump_block(block0);
+	printf("\nplay music 1\n");
+
+}
+
+////////////////////////////////////////////////////////////////////////////
 
 int main() 
 {
@@ -416,12 +431,13 @@ int main()
 	status = readablock(0, block);
 	u32 took = time_us_32() - start;
 	printf("read block status returned: %d. Took %d us\n", status, took);
-	dump_block(block);
+	//dump_block(block);
 
 	test_crc();
-	dump_partition(block);
+	play_music();
 
-	printf("sd card 3\n");
+	
+	printf("sd card 5\n");
 
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED
