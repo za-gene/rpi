@@ -6,10 +6,11 @@
 //#include "hardware/flash.h"
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
-//#include "hardware/pwm.h"
+#include "hardware/pwm.h"
 #include "hardware/spi.h"
 #include "tusb.h" // if you want to use tud_cdc_connected()
 
+#include "pace.h"
 //#include "../../1306/pico-sdk/oled.h"
 
 #define spi		spi1
@@ -290,7 +291,7 @@ int block_cmd(int cmd, int blocknum, u8 block[512])
 	return 0;
 }
 
-int readablock(int blocknum, u8 block[512])
+int readablock (int blocknum, u8 block[512])
 {
 	if(block_cmd(17, blocknum, block) != 0)
 		return SDBLOCK;
@@ -398,16 +399,51 @@ void dump_partition(u8 block0[512])
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
 
-u8 block0[512], block1[512];
+//u8 dbuf[2][512];
+u8 dbuf[512*2];
+int playing = 0, bidx = 0;
+int refill = -1; // the block that needs to be refilled
 
+unsigned int slice_num; // determined in play_music()
+#define SPK 19
+
+void onTimer() {
+	static int pwm_counter = 0;
+	//pwm_set_gpio_level(SPK, dbuf[playing][bidx++]);
+	pwm_set_gpio_level(SPK, *(dbuf + 512*playing + bidx++));
+	if(bidx>=512) {
+		bidx = 0;
+		refill = playing;
+		playing = 1-playing;
+	}
+
+	if(pwm_counter++ % 16000 == 0) printf("-");
+	pwm_clear_irq(slice_num);
+}
 
 void play_music()
 {
 	int blocknum = 2'050'048;
-	int status = readablock(blocknum, block0);
-	dump_block(block0);
-	printf("\nplay music 1\n");
+	int status;
+       	//= readablock(blocknum, block0);
+	//dump_block(block0);
+	printf("\nplay music 2\n");
 
+	status = pace_config_pwm_irq(&slice_num, SPK, 8000, 255, onTimer);
+	if(status) printf("pwm config error\n");
+	//int playchan = playing;
+	int count = 0;
+	while(1) {
+		if(refill<0) continue;
+
+		//status = readablock(blocknum, dbuf[refill]);
+		status = readablock(blocknum, dbuf + 512*refill);
+		if(status) printf("Error reading block\n");
+		blocknum++;
+		refill = -1;
+		printf("R");
+		if((count++ % (10 * 8000 / 512)) == 0) printf(".");
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////

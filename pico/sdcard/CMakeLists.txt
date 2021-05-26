@@ -12,6 +12,7 @@ include_directories(..)
 
 add_executable(app
         main.cc
+	../pace.c
         #../bslinkt.cc
 	#../../1306/pico-sdk/font.cc ../../1306/pico-sdk/oled.cc ../../1306/pico-sdk/splash.cc
         )
@@ -28,7 +29,7 @@ target_link_libraries(app
 	hardware_gpio
 	hardware_i2c
 	#hardware_irq
-	#hardware_pwm
+	hardware_pwm
 	hardware_spi
 	)
 
