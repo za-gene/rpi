@@ -221,7 +221,7 @@ int init_card()
 
 	// standard spi stuff
 	int spi_speed = 1'200'000;
-	spi_speed = 600'000; 
+	spi_speed = 600'000; // works
 	//spi_speed = 400'000; // works
 	//spi_speed = 200'000; // works
 	spi_init(spi, spi_speed);
@@ -400,10 +400,17 @@ void dump_partition(u8 block0[512])
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
 
+// you'll need to fill in these values
+constexpr int filesize = 2212397; // in bytes
+constexpr int start_block = 2'050'048; // in blocks (512b per block)
+
+constexpr int endblock = start_block + 1 + filesize/512;
+
 //u8 dbuf[2][512];
 u8 dbuf[512*2];
 volatile int playing = 0, bidx = 0;
 volatile signed char refill = 0; // the block that needs to be refilled
+
 
 unsigned int slice_num; // determined in play_music()
 #define SPK 19
@@ -416,7 +423,7 @@ void onTimer() {
 		bidx = 0;
 		refill = playing;
 		playing = 1-playing;
-		//printf("refill = %d\n", refill);
+		//printf("refill = %d\n", refill
 	}
 
 	//if(pwm_counter++ % 16000 == 0) printf("-");
@@ -425,13 +432,13 @@ void onTimer() {
 
 void play_music()
 {
-	int blocknum = 2'050'048;
+	int blocknum = start_block;
 	int status;
        	//= readablock(blocknum, block0);
 	//dump_block(block0);
 	printf("\nplay music 2\n");
 
-	status = pace_config_pwm_irq(&slice_num, SPK, 8000, 255, onTimer);
+	status = pace_config_pwm_irq(&slice_num, SPK, 16000, 255, onTimer);
 	if(status) printf("pwm config error\n");
 	//int playchan = playing;
 	int count = 0;
@@ -448,6 +455,7 @@ void play_music()
 		status = readablock(blocknum, dbuf + 512*_refill);
 		if(status) printf("Error reading block\n");
 		blocknum++;
+		if(blocknum == endblock) blocknum = start_block;
 		refilled = _refill;
 		//if((count++ % 10 ) == 0) printf(".");
 	}

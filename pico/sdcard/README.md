@@ -38,6 +38,8 @@ When working with interrupts, I found that the use of volatile variables was nec
 
 ## Status
 
+2021-05-26 Added sound 16k, 8-byte
+
 2021-05-25 Functional
 
 2021-05-23 started. Not working
