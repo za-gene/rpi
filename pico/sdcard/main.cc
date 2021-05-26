@@ -283,7 +283,7 @@ int init_card()
 
 int block_cmd(int cmd, int blocknum, u8 block[512])
 {
-	printf("block_cmd: cdv = %d\n", cdv);
+	//printf("block_cmd: cdv = %d\n", cdv);
 	if(cdv != 1) return SDCDV;
 
 	return CMD_T3(cmd, blocknum, 0, block, 512);
@@ -401,23 +401,24 @@ void dump_partition(u8 block0[512])
 
 //u8 dbuf[2][512];
 u8 dbuf[512*2];
-int playing = 0, bidx = 0;
-int refill = -1; // the block that needs to be refilled
+volatile int playing = 0, bidx = 0;
+volatile signed char refill = 0; // the block that needs to be refilled
 
 unsigned int slice_num; // determined in play_music()
 #define SPK 19
 
 void onTimer() {
-	static int pwm_counter = 0;
+	volatile static int pwm_counter = 0;
 	//pwm_set_gpio_level(SPK, dbuf[playing][bidx++]);
 	pwm_set_gpio_level(SPK, *(dbuf + 512*playing + bidx++));
 	if(bidx>=512) {
 		bidx = 0;
 		refill = playing;
 		playing = 1-playing;
+		//printf("refill = %d\n", refill);
 	}
 
-	if(pwm_counter++ % 16000 == 0) printf("-");
+	//if(pwm_counter++ % 16000 == 0) printf("-");
 	pwm_clear_irq(slice_num);
 }
 
@@ -433,16 +434,21 @@ void play_music()
 	if(status) printf("pwm config error\n");
 	//int playchan = playing;
 	int count = 0;
+	printf("Entering while loop\n");
+	volatile unsigned char refilled = 0;
 	while(1) {
-		if(refill<0) continue;
+		volatile unsigned char _refill = refill;
+		if(refilled == _refill) continue;
+		//printf("W");
+		//if(refill<0) continue;
+		//printf("R");
 
 		//status = readablock(blocknum, dbuf[refill]);
-		status = readablock(blocknum, dbuf + 512*refill);
+		status = readablock(blocknum, dbuf + 512*_refill);
 		if(status) printf("Error reading block\n");
 		blocknum++;
-		refill = -1;
-		printf("R");
-		if((count++ % (10 * 8000 / 512)) == 0) printf(".");
+		refilled = _refill;
+		//if((count++ % 10 ) == 0) printf(".");
 	}
 }
 

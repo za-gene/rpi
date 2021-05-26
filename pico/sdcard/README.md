@@ -30,6 +30,11 @@ At 400kHz too 17ms, implying 8k transfer takes 265ms. So, a 2X speedup in rate
 takes 68% of the time. i.e. less than 2X speedup in actual transfer rate.
 
 
+## Sundry notes
+
+When working with interrupts, I found that the use of volatile variables was necessary.
+
+
 ## Status
 
 2021-05-25 Functional
