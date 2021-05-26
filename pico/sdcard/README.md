@@ -26,9 +26,10 @@ on a spi speed of 200kHz. A transfer of 8kb would therefore take
 So mono 8-bit sound would seem doable at that rate.
 
 
-At 400kHz too 17ms, implying 8k transfer takes 265ms. So, a 2X speedup in rate
+At 400kHz took 17ms, implying 8k transfer takes 265ms. So, a 2X speedup in rate
 takes 68% of the time. i.e. less than 2X speedup in actual transfer rate.
 
+At 600kHz, 512b took 13ms.
 
 ## Sundry notes
 
