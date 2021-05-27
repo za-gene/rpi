@@ -217,6 +217,8 @@ int init_card_v2()
 
 int init_card()
 {
+	sleep_ms(1); // give card time to power up
+
 	//init_crc_table();
 
 	// standard spi stuff
@@ -231,12 +233,19 @@ int init_card()
 	gpio_set_dir(PIN_CS, GPIO_OUT);
 
 
-	// clock card at least 80 cycles with cs high
+	// set card into spi mode: clock card at least 80 cycles with cs high
+	printf("Set card to SPI mode ... ");
 	cs_high();
-	for(int i = 0; i < 16; i++) {
+	for(int i = 0; i < 10; i++) {
 		uint8_t b = 0xFF;
 		spi_write_blocking(spi, &b, 1);		
 	}
+	if(gpio_get(PIN_CS))
+		printf("CS high. Bad juju.\n");
+	else
+		printf("CS low. Good.\n");
+
+
 
 	//{
 	//	uint8_t b = 0xFF;
