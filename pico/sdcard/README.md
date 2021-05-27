@@ -31,6 +31,9 @@ takes 68% of the time. i.e. less than 2X speedup in actual transfer rate.
 
 At 600kHz, 512b took 13ms.
 
+At 1MHz, 512b took 9.6ms. (initialisation was at 100kHz, though). Better!
+
+ 
 ## Sundry notes
 
 When working with interrupts, I found that the use of volatile variables was necessary.

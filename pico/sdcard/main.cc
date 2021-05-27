@@ -222,40 +222,43 @@ int init_card()
 	// standard spi stuff
 	int spi_speed = 1'200'000;
 	spi_speed = 600'000; // works
-	//spi_speed = 400'000; // works
-	//spi_speed = 200'000; // works
+	//spi_speed = 250'000;
+	spi_speed = 100'000; // slow to get initialisation
 	spi_init(spi, spi_speed);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 	gpio_set_dir(PIN_CS, GPIO_OUT);
 
-	uint8_t b;
 
 	// clock card at least 80 cycles with cs high
 	cs_high();
-	for(int i = 0; i < 16; i++) spi_write_blocking(spi, &b, 1);
+	for(int i = 0; i < 16; i++) {
+		uint8_t b = 0xFF;
+		spi_write_blocking(spi, &b, 1);		
+	}
+
 	//{
 	//	uint8_t b = 0xFF;
 	//	simple_write(&b, 1);
 	//}
 
 	// CMD0 go idle
-	// max 5 attempts to reach idle state
 	int status;
-	for(int i = 0; i < 10; i++) {
-		printf("\nidle attempt %d\n", i);
+	for(int i = 0; i < 10; i++) { // repeated attempts
+		printf("go idle attempt %d ... ", i);
 		status = CMD_T1(0, 0, 0x95);
-		printf("status=%d\n", status);
+		printf("status=%d (-3=response timeout)\n", status);
 		if(status == R1_IDLE_STATE) {
 			//ssd1306_print(" IDLE ");
 			break;
 		}
+		sleep_ms(200); // didn't help
 	}
 	if(status == R1_IDLE_STATE) {
 		printf("CMD0 succeeded\n");
 	} else {
-		printf("CMD0 failed. aborting\n");
+		printf("CMD0 failed. Aborting initialisation\n");
 		return SDCMD0;
 	}
 
@@ -278,6 +281,9 @@ int init_card()
 	// CMD16 set block length to 512 bytes
 	if(CMD_T1(16, 512, 0x15) != 0) return SDCMD16;
 	printf("CMD16 set block size to 512 successfully\n");
+
+	spi_speed = 1'000'000; // go for it!
+	spi_set_baudrate(spi, spi_speed);
 
 	return 0;
 }
@@ -444,6 +450,7 @@ void play_music()
 	int count = 0;
 	printf("Entering while loop\n");
 	volatile unsigned char refilled = 0;
+	int num_fails = 0;
 	while(1) {
 		volatile unsigned char _refill = refill;
 		if(refilled == _refill) continue;
@@ -453,7 +460,14 @@ void play_music()
 
 		//status = readablock(blocknum, dbuf[refill]);
 		status = readablock(blocknum, dbuf + 512*_refill);
-		if(status) printf("Error reading block\n");
+		if(status) {
+			printf("Error reading block, failure number %d\n", ++num_fails);
+			if(num_fails == 10) {
+				printf("Too many block fails. Returning\n");
+				return;
+			}
+		}
+
 		blocknum++;
 		if(blocknum == endblock) blocknum = start_block;
 		refilled = _refill;
