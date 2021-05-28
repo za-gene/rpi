@@ -8,7 +8,9 @@ int main()
 
 	int h = 32;
 	if(1) h = 64;
-	init_display(h, 6);
+	int sda = 6;
+	sda = 4;
+	init_display(h, 4);
 
 	ssd1306_print("HELLO PICO...\n"); // demonstrate some text
 	show_scr();
