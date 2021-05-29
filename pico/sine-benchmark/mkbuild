@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-mkdir -p build
-cd build
-rm -rf *
-#DBG=-DCMAKE_BUILD_TYPE=Debug
-cmake $DBG ..
-make -j4
