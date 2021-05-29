@@ -1,22 +1,19 @@
 cmake_minimum_required(VERSION 3.12)
-include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
 
-project(app C CXX ASM)
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-
+#set(CMAKE_BUILD_TYPE Debug)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
+include("../picomc.cmake")
+project(app C CXX ASM)
 pico_sdk_init()
-include_directories(..)
 
 add_executable(app
         main.cc
         #../bslinkt.cc
         )
 
-pico_enable_stdio_usb(app 1)
-pico_enable_stdio_uart(app 0)
+#pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
+#pico_enable_stdio_uart(app 1) # set to 1 if you stdio over GP0 and GP1
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(app 
@@ -32,9 +29,3 @@ target_link_libraries(app
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.
-
-add_custom_target(flash
-    COMMAND cp app.uf2 /media/pi/RPI-RP2
-    DEPENDS app
-)
-

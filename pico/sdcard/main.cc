@@ -8,7 +8,7 @@
 //#include "hardware/irq.h"
 #include "hardware/pwm.h"
 #include "hardware/spi.h"
-#include "tusb.h" // if you want to use tud_cdc_connected()
+//#include "tusb.h" // if you want to use tud_cdc_connected()
 
 #include "pace.h"
 //#include "../../1306/pico-sdk/oled.h"
@@ -489,7 +489,7 @@ void play_music()
 int main() 
 {
 	stdio_init_all();
-	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+	//while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
 
 	//init_display(64, 6);
