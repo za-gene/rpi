@@ -1,31 +1,5 @@
 # Pico
 
-## serial over USB
-
-In `CMakeLists.txt`, after the line
-```
-add_executable(app main.cc)
-```
-add the line:
-```
-pico_enable_stdio_usb(app 1)
-```
-
-In `main.cc`:
-```
-#include "pico/stdlib.h"
-
-int main()
-{
-    stdio_init_all();
-
-    ... then e.g. ...
-    for(;;) {
-        int c = getchar();
-        putchar(c);
-    }
-```
-
 ## Technical notes
 
 * [boot](boot.md) - booting into program mode
