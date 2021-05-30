@@ -4,10 +4,9 @@ See if we can generate random bits
 
 ## Status
 
-2021-04-07 Works. Used random() instead of xosc, but the real problem is that my GP16 is busted, 
-so I moved output to a different pin.
+2021-05-30 Sampling freq 40kHz
 
-2021-03-17 started. doesn't work
+2021-03-17 started.
 
 ## Links
 

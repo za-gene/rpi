@@ -10,6 +10,14 @@
 
 #define SPK 19 // Speaker where we output noise
 
+
+
+bool callback(struct repeating_timer *t)
+{
+	gpio_put(SPK, random() & 1);
+	return true;
+}
+
 int main() 
 {
 	//stdio_init_all();
@@ -17,6 +25,10 @@ int main()
 	gpio_init(SPK);
 	gpio_set_dir(SPK, GPIO_OUT);
 
+	auto const sample_freq = 40'000;
+	struct repeating_timer timer;
+	add_repeating_timer_us(1'000'000/sample_freq, callback, 0, &timer);
+	for(;;);
 	//xosc_init(); // I think you need to enable the xosc before using random bit generator
 
 	//io_rw_32 bit = 0;
