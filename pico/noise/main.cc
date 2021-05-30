@@ -8,14 +8,14 @@
 #include "hardware/structs/rosc.h"
 
 
-#define OUT 18 // Speaker where we output noise
+#define SPK 19 // Speaker where we output noise
 
 int main() 
 {
 	//stdio_init_all();
 
-	gpio_init(OUT);
-	gpio_set_dir(OUT, GPIO_OUT);
+	gpio_init(SPK);
+	gpio_set_dir(SPK, GPIO_OUT);
 
 	//xosc_init(); // I think you need to enable the xosc before using random bit generator
 
@@ -28,7 +28,7 @@ int main()
 		bit = random() & 1;
 		//bit = 1 - bit;
 		//bit = !bit;
-		gpio_put(OUT, bit);
+		gpio_put(SPK, bit);
 		//sleep_us(pause);
 		//sleep_ms(500);
 		//sleep_us(pause);
