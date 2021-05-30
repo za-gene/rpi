@@ -9,7 +9,7 @@ pico_sdk_init()
 
 add_executable(app
         main.cc
-        #../blinkt.cc
+        ../debounce.cc
         )
 
 #pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
