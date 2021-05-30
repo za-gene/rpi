@@ -1,6 +1,6 @@
 message("picomc.cmake says hi")
 
-
+set(PICO_PLATFORM rp2040)
 #project(app C CXX ASM) # needs to be in the projects file, I think
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
