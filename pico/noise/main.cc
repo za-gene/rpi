@@ -14,10 +14,25 @@
 
 
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 Debounce btn(20);
 
 volatile u8 use_random = 1;
+
+u32 start_time;
+void start(const char* str)
+{
+	printf("%s ... ", str);
+	start_time = time_us_32();
+}
+
+void stop()
+{
+	u32 now = time_us_32();
+	printf("took %d us\n", now - start_time);
+}
+
 
 bool callback(struct repeating_timer *t)
 {
@@ -36,7 +51,7 @@ bool callback(struct repeating_timer *t)
 
 int main() 
 {
-	//stdio_init_all();
+	stdio_init_all();
 
 	gpio_init(SPK);
 	gpio_set_dir(SPK, GPIO_OUT);
@@ -46,6 +61,24 @@ int main()
 	// appears to be unnecessary
 	//xosc_init(); // I think you need to enable the xosc before using random bit generator
 	
+	start("Generating 10,000 hardware bytes");
+	for(int i = 0; i < 10'000; ++i) {
+		volatile u8 b=0;
+		for(int j = 0; j < 8; ++j) {
+			b <<= 1;
+			b |= (rosc_hw->randombit & 1);
+		}
+	}
+	stop();
+
+	start("Generating 10,000 random()s");
+	for(int i = 0; i < 10'000; ++i) {
+		volatile u8 b = random();
+	}
+	stop();
+
+
+
 
 	auto const sample_freq = 40'000;
 	struct repeating_timer timer;

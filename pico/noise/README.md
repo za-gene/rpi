@@ -1,6 +1,14 @@
 # Random
 
-See if we can generate random bits
+See if we can generate random noise. Output is on GP19. Using GP20, it's possible to toggle
+between using `random()` and the hardware to generate white noise.
+
+To my surprise, using `random()` is faster than
+generating a byte using `rosc_hw->randombit`:
+```
+Generating 10,000 hardware bytes ... took 11862 us
+Generating 10,000 random()s ... took 5773 us
+```
 
 ## Status
 
