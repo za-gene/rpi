@@ -19,7 +19,7 @@ int main()
 {
 	stdio_init_all();
 
-	Debounce button(17);
+	Debounce button(20);
 
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
