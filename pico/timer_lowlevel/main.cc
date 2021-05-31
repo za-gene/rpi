@@ -29,8 +29,24 @@ static uint64_t get_time(void) {
 // Alarm interrupt handler
 static volatile bool alarm_fired;
 
+static void alarm_irq(void);
+
+static void init_alarm()
+{
+	// Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
+	hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
+	// Set irq handler for alarm irq
+	irq_set_exclusive_handler(ALARM_IRQ, alarm_irq);
+	// Enable the alarm irq
+	irq_set_enabled(ALARM_IRQ, true);
+	// Enable interrupt in block and at processor
+}
+
 static void rearm() 
 {
+	// Clear the alarm irq
+	hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
+
 	uint32_t delay_us = 2 * 1'000'000; // 2 secs
 	// Alarm is only 32 bits so if trying to delay more
 	// than that need to be careful and keep track of the upper
@@ -42,9 +58,8 @@ static void rearm()
 	timer_hw->alarm[ALARM_NUM] = (uint32_t) target;
 }
 
-static void alarm_irq(void) {
-	// Clear the alarm irq
-	hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
+static void alarm_irq(void) 
+{
 	rearm();
 
 	// Assume alarm 0 has fired
@@ -57,24 +72,10 @@ int main() {
 	stdio_init_all();
 	printf("Timer lowlevel!\n");
 
-	// Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
-	hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
-	// Set irq handler for alarm irq
-	irq_set_exclusive_handler(ALARM_IRQ, alarm_irq);
-	// Enable the alarm irq
-	irq_set_enabled(ALARM_IRQ, true);
-	// Enable interrupt in block and at processor
-
+	init_alarm();
 	rearm();
 	while(1);
 
-	// Set alarm every 2 seconds
-	while (1) {
-		alarm_fired = false;
-		//alarm_in_us(1000000 * 2);
-		// Wait for alarm to fire
-		while (!alarm_fired);
-	}
 }
 
 /// \end::alarm_standalone[]
