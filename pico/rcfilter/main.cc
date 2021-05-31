@@ -36,15 +36,19 @@ void stop()
 
 float vc =0;
 float fc = 400; // Hz
-auto const sample_freq = 40'000;
-float dt = (float)1'000'000 / sample_freq;
+auto const sample_freq = 22'000;
+u32 repeat_us = 1'000'000 / sample_freq;
+float dt = 1.0 / sample_freq;
 float K = 2.0 * 3.1412 * fc * dt;
 
-bool filter()
+u8 filter()
 {
-	float va = (float)(random() & 1);
+	volatile float va = (float)(random() & 1);
+	//printf("va = %f\n", (double)va);
 	vc = vc + K * (va - vc);
-	return vc >= 0.5;
+	u8 on = vc >= 0.5;
+	//printf("vc = %f, va = %f, on = %d\n", (double) vc, (double)va, on);
+	return on;
 }
 
 bool callback(struct repeating_timer *t)
@@ -68,27 +72,33 @@ bool callback(struct repeating_timer *t)
 int main() 
 {
 	stdio_init_all();
+	printf("\n--- START ---\n");
 
 	gpio_init(SPK);
 	gpio_set_dir(SPK, GPIO_OUT);
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
-
-	// appears to be unnecessary
-	//xosc_init(); // I think you need to enable the xosc before using random bit generator
-	
+#if 1
 	start("Generating 10,000 filtered samples");
 	for(int i = 0; i < 10'000; ++i) {
 		filter();
 	}
 	stop();
-	printf("cf 10,000  * dt = %f\n", (double) dt * 10'000);
+	printf("cf 10,000  * repeat_us = %d\n", 10000* repeat_us); //(double) dt * 10'000);
+#endif
+
+	for(int i = 0; i < 100; ++i) {
+		filter();
+		//printf("%d", filter());
+	}
+	printf("\n");
 
 
+	//while(1);
 
 
 	struct repeating_timer timer;
-	add_repeating_timer_us(dt, callback, 0, &timer);
+	add_repeating_timer_us(repeat_us, callback, 0, &timer);
 
 	while(1) {
 		if(btn.falling())
