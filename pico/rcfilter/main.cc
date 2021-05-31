@@ -34,26 +34,33 @@ void stop()
 }
 
 
-float vc =0;
-float fc = 400; // Hz
-auto const sample_freq = 22'000;
-u32 repeat_us = 1'000'000 / sample_freq;
-float dt = 1.0 / sample_freq;
-float K = 2.0 * 3.1412 * fc * dt;
+volatile float vc =0.0;
+volatile float fc = 400; // Hz
+volatile auto const sample_freq = 13'000;
+volatile u32 repeat_us = 1'000'000 / sample_freq;
+volatile float dt = 1.0 / sample_freq;
+volatile float K = 2.0 * 3.1412 * fc * dt;
 
-u8 filter()
+float filter()
 {
-	volatile float va = (float)(random() & 1);
+	volatile float va = random() & 1 ? 1.0 : 0.0;
 	//printf("va = %f\n", (double)va);
 	vc = vc + K * (va - vc);
-	u8 on = vc >= 0.5;
+	//volatile u8 on = vc >= 0.5;
 	//printf("vc = %f, va = %f, on = %d\n", (double) vc, (double)va, on);
-	return on;
+	return vc;
 }
 
-bool callback(struct repeating_timer *t)
+volatile u32 took = 0;
+
+// 2021-05-31 appears not to be called. What the hell is going on?
+// Ans: seems to be taking longer than allowed
+bool my_callback(struct repeating_timer *t)
 {
-	volatile u8 on;
+	static volatile int count =0;
+	//start("my callback");
+	took =  time_us_32();
+	//volatile u8 on;
 	/*
 	if(use_random) {
 		gpio_put(LED, 1);
@@ -63,9 +70,20 @@ bool callback(struct repeating_timer *t)
 		on = rosc_hw->randombit;
 	}
 	*/
-	on = filter();
+	volatile float val = filter();
 
-	gpio_put(SPK, on);
+	gpio_put(SPK, val>=0.5);
+
+	if((++count % 20000) == 0) {
+		//printf(".");
+		count = 0;
+	}
+
+	//stop();
+	took = time_us_32() - took;
+
+
+	return false;
 	return true;
 }
 
@@ -81,24 +99,32 @@ int main()
 #if 1
 	start("Generating 10,000 filtered samples");
 	for(int i = 0; i < 10'000; ++i) {
-		filter();
+		volatile auto v = filter();
 	}
 	stop();
 	printf("cf 10,000  * repeat_us = %d\n", 10000* repeat_us); //(double) dt * 10'000);
 #endif
 
-	for(int i = 0; i < 100; ++i) {
-		filter();
-		//printf("%d", filter());
+	for(int i = 0; i < 10; ++i) {
+		//filter();
+		printf("voltage %f\n", (double)filter());
 	}
 	printf("\n");
 
 
 	//while(1);
 
+	printf("repeat_us=%d\n", repeat_us);
 
 	struct repeating_timer timer;
-	add_repeating_timer_us(repeat_us, callback, 0, &timer);
+	add_repeating_timer_us(repeat_us, my_callback, 0, &timer);
+
+	while(1) {
+		if(took) {
+			printf("It took %d\n", took);
+			took = 0;
+		}
+	}
 
 	while(1) {
 		if(btn.falling())
