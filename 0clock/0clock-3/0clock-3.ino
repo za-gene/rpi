@@ -1,22 +1,18 @@
+#include "RTClib.h"
+#include <zeroseg.h> // one of my fantabulous libraries
+#include <Timezone.h> // https://github.com/JChristensen/Timezone
+
 #include <debounce.h> // a project here that does falling buttons
-
-/*  blue button sw0 turns timer on or off
-    left button on zeroseg toggles between timer and clock display
-*/
-
-//#include <ezButton.h>
 
 typedef unsigned long ulong;
 //typedef unsigned long micros_t;
 typedef ulong ms_t;
 
 
+
 ///////////////////////////////////////////////////////////
 // DS3231
 
-#include "RTClib.h"
-#include <zeroseg.h> // one of my fantabulous libraries
-#include <Timezone.h> // https://github.com/JChristensen/Timezone
 
 TimeChangeRule myBST = {"BST", Last, Sun, Mar, 1, 60};
 TimeChangeRule mySTD = {"GMT", Last, Sun, Oct, 2, 0};
@@ -50,16 +46,61 @@ DateTime get_time() {
 // COMMON COMPONENTS
 
 
+typedef void (*sm_func_t)(int); // state machine pointer
+
+//void sm_nada(int e) {}
+
+void sm_default(int ev);
+sm_func_t sm_func = &sm_default;
 
 
 // COMMON COMPONENTS end
+///////////////////////////////////////////////////////////
+// BUZZER
+
+#define BZR 8
+
+u32 buzzer_started = 0;
+bool buzzer_enabled = false;
+
+void buzzer_poll() {
+  if (!buzzer_enabled) return;
+  u32 elapsed = millis() - buzzer_started;
+  ulong segment = elapsed % 5000;
+  bool on = segment < 250 || ( 500 < segment && segment < 750);
+  //Serial.print("sound ");
+  if (on) {
+    tone(BZR, 2525);// quindar
+    //Serial.println("on");
+  } else {
+    noTone(BZR);
+    digitalWrite(BZR, LOW);
+    //Serial.println("off");
+  }
+}
+
+
+void buzzer_start() {
+  if(buzzer_enabled) return; // don't restart an already-running buzzer
+  pinMode(BZR, OUTPUT);
+  buzzer_started = millis();
+  buzzer_enabled = true;
+  buzzer_poll();
+}
+
+void buzzer_stop() {
+  buzzer_enabled = false;
+}
+
 ///////////////////////////////////////////////////////////
 
 enum state_t {st_normal, st_adjusting, st_timing};
 
 state_t state = st_normal;
 
-Debounce sw0(3); // 0seg left button is A0, right button is A2
+enum {ev_poll, ev_blue_falling};
+
+Debounce blue(3); // 0seg left button is A0, right button is A2
 Debounce sw_left(A0);
 Debounce sw_right(A2);
 //FallingButton sw_adj(2); // adjust time up or down
@@ -68,13 +109,14 @@ Debounce sw_right(A2);
 
 #define SW_ADJ 2
 
-#define BZR 8
+
+
 void setup() {
   init_7219();
   rtc.begin();
   Serial.begin(115200);
-  update_regular_display();
-  pinMode(BZR, OUTPUT);
+  //update_regular_display();
+  //sm_func(666); // test out the function
 
   // see if I can get rid of the buzzing sound
   // doesn't seem to help though
@@ -112,17 +154,6 @@ void update_counter_display(ulong elapsed) {
   }
 }
 
-/*
-  void update_display(ulong elapsed_secs) {
-  if (show_clock) {
-    update_regular_display();
-  } else {
-    update_counter_display(elapsed_secs);
-  }
-  }
-*/
-
-
 bool sw_adj_low = false;
 
 void do_adjusting() {
@@ -148,7 +179,8 @@ void do_adjusting() {
 
 static ulong start_time;
 
-void do_normal() {
+/*
+  void do_normal() {
   if (sw_adj_low) {
     state = st_adjusting;
     return;
@@ -162,13 +194,47 @@ void do_normal() {
   }
 
   update_regular_display();
+  }
+*/
+
+
+ulong om_start_time;
+
+void sm_om_timing(int ev) {
+  ulong elapsed_secs = (millis() - om_start_time) / 1000;
+  switch (ev) {
+    case ev_blue_falling:
+      buzzer_stop();
+      sm_func = sm_default;
+      break;
+    case ev_poll:
+      update_counter_display(elapsed_secs);
+      if (elapsed_secs > 60UL) {
+        buzzer_start();
+      }
+  }
 }
 
+void sm_om_starting(int ev) {
+  if (ev != ev_poll) return;
+  om_start_time = millis();
+  sm_func = sm_om_timing;
+}
 
-void do_timing() {
+void sm_default(int ev) {
+  switch (ev) {
+    case ev_blue_falling:
+      sm_func = sm_om_starting;
+      break;
+    case ev_poll:
+    default:
+      update_regular_display();
+  }
+}
+/*
+  void do_timing() {
   if (sw0.falling()) {
     show_clock = true;
-    sound(false);
     state = st_normal;
 
   }
@@ -177,49 +243,36 @@ void do_timing() {
   elapsed = millis() - start_time;
   long over_time = elapsed - 30UL * 1000UL * 60UL;
   if (over_time > 0) {
-    ulong segment = over_time % 5000;
-    sound(segment < 250 || ( 500 < segment && segment < 750)); // double-beeping
+    buzzer_start();
   }
-
   update_counter_display(elapsed / 1000);
-
-
-}
-
-void loop() {
-
-  sw_adj_low = 1 - digitalRead(SW_ADJ);
-  //do_state_machine();
-
-  switch (state) {
-    case st_normal:
-      do_normal();
-      break;
-    case st_adjusting:
-      do_adjusting();
-      break;
-    case st_timing:
-      do_timing();
-      break;
   }
+*/
+void loop() {
+  buzzer_poll();
 
+  if (blue.falling()) {
+    sm_func(ev_blue_falling);
+  } else {
+    sm_func(ev_poll);
+  }
+  delay(1);
+  //return;
 
   /*
-    if (sw_left.falling()) {
-      show_clock = !show_clock;
+    sw_adj_low = 1 - digitalRead(SW_ADJ);
+    //do_state_machine();
+
+    switch (state) {
+      case st_normal:
+        do_normal();
+        break;
+      case st_adjusting:
+        do_adjusting();
+        break;
+      case st_timing:
+        do_timing();
+        break;
     }
   */
-
-}
-
-void sound(bool on) {
-  Serial.print("sound ");
-  if (on) {
-    tone(BZR, 2525);// quindar
-    Serial.println("on");
-  } else {
-    noTone(BZR);
-    digitalWrite(BZR, LOW);
-    Serial.println("off");
-  }
 }
