@@ -59,9 +59,9 @@ enum state_t {st_normal, st_adjusting, st_timing};
 
 state_t state = st_normal;
 
-FallingButton sw0(3); // 0seg left button is A0, right button is A2
-FallingButton sw_left(A0);
-FallingButton sw_right(A2);
+Debounce sw0(3); // 0seg left button is A0, right button is A2
+Debounce sw_left(A0);
+Debounce sw_right(A2);
 //FallingButton sw_adj(2); // adjust time up or down
 
 //ezButton sw0(3);
