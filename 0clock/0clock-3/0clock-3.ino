@@ -177,27 +177,6 @@ void do_adjusting() {
   }
 }
 
-static ulong start_time;
-
-/*
-  void do_normal() {
-  if (sw_adj_low) {
-    state = st_adjusting;
-    return;
-  }
-
-  if (sw0.falling()) {
-    start_time = millis();
-    show_clock = false;
-    state = st_timing;
-    return;
-  }
-
-  update_regular_display();
-  }
-*/
-
-
 ulong om_start_time;
 
 void sm_om_timing(int ev) {
@@ -209,7 +188,7 @@ void sm_om_timing(int ev) {
       break;
     case ev_poll:
       update_counter_display(elapsed_secs);
-      if (elapsed_secs > 60UL) {
+      if (elapsed_secs > 60UL * 30UL) {
         buzzer_start();
       }
   }
@@ -231,23 +210,7 @@ void sm_default(int ev) {
       update_regular_display();
   }
 }
-/*
-  void do_timing() {
-  if (sw0.falling()) {
-    show_clock = true;
-    state = st_normal;
 
-  }
-
-  ulong elapsed = 0;
-  elapsed = millis() - start_time;
-  long over_time = elapsed - 30UL * 1000UL * 60UL;
-  if (over_time > 0) {
-    buzzer_start();
-  }
-  update_counter_display(elapsed / 1000);
-  }
-*/
 void loop() {
   buzzer_poll();
 
@@ -257,22 +220,4 @@ void loop() {
     sm_func(ev_poll);
   }
   delay(1);
-  //return;
-
-  /*
-    sw_adj_low = 1 - digitalRead(SW_ADJ);
-    //do_state_machine();
-
-    switch (state) {
-      case st_normal:
-        do_normal();
-        break;
-      case st_adjusting:
-        do_adjusting();
-        break;
-      case st_timing:
-        do_timing();
-        break;
-    }
-  */
 }
