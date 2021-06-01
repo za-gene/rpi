@@ -14,7 +14,7 @@ Debounce::Debounce(uint gpio, uint delay)
 
 void Debounce::update()
 {
-	static absolute_time_t later = make_timeout_time_ms(0);
+	static absolute_time_t later = make_timeout_time_ms(0); // TODO: likely wrong to be static. will conflict with other instances of Debounce classes
 	if(absolute_time_diff_us(get_absolute_time(), later)>0) return;
 	later = make_timeout_time_ms(_delay);
 	uint8_t prev = _integrator;

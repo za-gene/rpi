@@ -14,6 +14,7 @@ class Debounce {
 		bool _falling = false;
 		bool _rising = false;
 		int _delay;
+        unsigned long _later;
 };
 
 #else

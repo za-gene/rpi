@@ -7,16 +7,18 @@ Debounce::Debounce(int gpio, int delay)
     pinMode(gpio, INPUT_PULLUP);
 	_gpio = gpio;
 	_delay = delay;
+    _later = 0;
 }
 
 void Debounce::update()
 {
 	//static absolute_time_t later = make_timeout_time_ms(0);
-    static auto later = millis();
+    //static auto later = millis();
 	//if(absolute_time_diff_us(get_absolute_time(), later)>0) return;
-    if(millis() - later > _delay) return;
+    if (_later == 0) _later = millis();
+    if(millis() - _later < 0) return;
 	//later = make_timeout_time_ms(_delay);
-    later = millis() + _delay;
+    _later = millis() + _delay;
 	uint8_t prev = _integrator;
 	uint8_t up = digitalRead(_gpio) ? 0 : 1;
 	_integrator <<= 1;

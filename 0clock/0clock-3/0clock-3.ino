@@ -81,7 +81,7 @@ void buzzer_poll() {
 
 
 void buzzer_start() {
-  if(buzzer_enabled) return; // don't restart an already-running buzzer
+  if (buzzer_enabled) return; // don't restart an already-running buzzer
   pinMode(BZR, OUTPUT);
   buzzer_started = millis();
   buzzer_enabled = true;
@@ -94,20 +94,22 @@ void buzzer_stop() {
 
 ///////////////////////////////////////////////////////////
 
-enum state_t {st_normal, st_adjusting, st_timing};
+//enum state_t {st_normal, st_adjusting, st_timing};
 
-state_t state = st_normal;
+//state_t state = st_normal;
 
-enum {ev_poll, ev_blue_falling};
+enum {ev_poll, ev_blue_falling, ev_white_falling, ev_white_rising,
+      ev_sw_left_falling, ev_sw_right_falling
+     };
 
 Debounce blue(3); // 0seg left button is A0, right button is A2
+Debounce white(2); // adjust time up or down
 Debounce sw_left(A0);
 Debounce sw_right(A2);
-//FallingButton sw_adj(2); // adjust time up or down
 
 //ezButton sw0(3);
 
-#define SW_ADJ 2
+//#define SW_ADJ 2
 
 
 
@@ -125,7 +127,7 @@ void setup() {
   rtc.disableAlarm(1);
   rtc.disableAlarm(2);
 
-  pinMode(SW_ADJ, INPUT_PULLUP);
+  //pinMode(2, INPUT_PULLUP);
 }
 
 void show_dec(int pos, int val, bool dp = false) {
@@ -154,9 +156,10 @@ void update_counter_display(ulong elapsed) {
   }
 }
 
-bool sw_adj_low = false;
+/*
+  bool sw_adj_low = false;
 
-void do_adjusting() {
+  void do_adjusting() {
   if (!sw_adj_low) {
     state = st_normal;
     return;
@@ -175,8 +178,8 @@ void do_adjusting() {
     update_regular_display();
 
   }
-}
-
+  }
+*/
 ulong om_start_time;
 
 void sm_om_timing(int ev) {
@@ -200,11 +203,49 @@ void sm_om_starting(int ev) {
   sm_func = sm_om_timing;
 }
 
+void sm_adjusting(int ev) {
+  //Serial.println("sm_adjusting() called");
+  int delta = 0;
+  switch (ev) {
+    case ev_white_rising:
+      sm_func = sm_default;
+      break;
+    case ev_sw_left_falling:
+    Serial.println("sm_adjusting found ev_sw_left_falling");
+      delta = -1;
+      break;
+    case ev_sw_right_falling:
+      delta = 1;
+      break;
+
+  }
+
+  
+  if (delta != 0) {
+    DateTime dt = rtc.now(); // NB this is in UTC, not local time
+    dt = dt + TimeSpan(delta);
+    rtc.adjust(dt);
+  }
+
+  // adjusting display
+  DateTime dt = get_time();
+  show_dec(1, dt.second());
+  show_dec(3, dt.minute(), true);
+  show_dec(5, dt.hour(), true);
+  transfer_7219(7, 0b1111); // blank
+  transfer_7219(8, 0b1111); // blank
+
+}
+
 void sm_default(int ev) {
   switch (ev) {
     case ev_blue_falling:
       sm_func = sm_om_starting;
       break;
+    case ev_white_falling:
+      sm_func = sm_adjusting;
+      break;
+
     case ev_poll:
     default:
       update_regular_display();
@@ -213,11 +254,32 @@ void sm_default(int ev) {
 
 void loop() {
   buzzer_poll();
+  //if(sw_left.falling()) Serial.println("1");
 
-  if (blue.falling()) {
-    sm_func(ev_blue_falling);
+  if (blue.falling()) 
+  {
+    Serial.println("loop: blue falling");
+    sm_func(ev_blue_falling);  
+      
+  } else if (white.falling()) {  
+    Serial.println("loop: white falling");
+    sm_func(ev_white_falling);
+    
+  } else if (white.rising()) {
+    Serial.println("loop: white rising");
+    sm_func(ev_white_rising);
+    
+  } else if (sw_left.falling()) {
+    Serial.println("loop: sw_left falling");
+    sm_func(ev_sw_left_falling);
+    
+  } else if (sw_right.falling()) {
+    Serial.println("loop: sw_right falling");
+    sm_func(ev_sw_right_falling);
+    
   } else {
     sm_func(ev_poll);
   }
   delay(1);
+
 }
