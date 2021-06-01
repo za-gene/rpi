@@ -7,7 +7,7 @@ class Debounce {
 		bool rising();
 	private:
 		void update();
-		uint _gpio;
+		int _gpio;
 		uint8_t _integrator = 0xFF;
 		bool _falling = false;
 		bool _rising = false;
