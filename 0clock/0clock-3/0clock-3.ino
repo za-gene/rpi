@@ -7,7 +7,7 @@
 typedef unsigned long ulong;
 //typedef unsigned long micros_t;
 typedef ulong ms_t;
-
+typedef uint32_t u32;
 
 
 ///////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ void sm_om_timing(int ev) {
       break;
     case ev_poll:
       update_counter_display(elapsed_secs);
-      if (elapsed_secs > 60UL * 30UL) {
+      if (elapsed_secs >= 60UL * 30UL) {
         buzzer_start();
       }
   }
