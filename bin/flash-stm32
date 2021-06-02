@@ -2,9 +2,15 @@
 
 function do_help {
 cat <<EOF
--h this help
--x erase flash
+-f FILE		flash a specific file
+-h 		this help
+-x 		erase flash
 EOF
+}
+
+function do_flash_file {
+	echo "Flashing $1"
+	st-flash write $1 0x8000000
 }
 
 function do_flash {
@@ -13,8 +19,9 @@ function do_flash {
 	st-flash write $BIN 0x8000000
 }
 
-while getopts "hx" arg; do
+while getopts "f:hx" arg; do
 	case $arg in
+		f) do_flash_file $OPTARG; exit;;
 		h) do_help; exit;;
 		x) st-flash erase; exit;;
 	esac

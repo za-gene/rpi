@@ -13,3 +13,9 @@ case $1 in
 esac
 
 sudo apt install gdb-multiarch
+
+sudo apt install doxygen doxygen-doc graphviz pulseview 
+
+echo "You prolly also want to install stlink and friends"
+
+

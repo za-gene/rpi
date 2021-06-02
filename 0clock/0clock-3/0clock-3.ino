@@ -21,19 +21,7 @@ TimeChangeRule *tcr;        //pointer to the time change rule, use to get TZ abb
 
 RTC_DS3231 rtc;
 DateTime get_time() {
-  // only call the RTC occasionally to prevent peculiar noise coming from module
   DateTime dt = rtc.now();
-  /*
-    static auto snap = millis();
-    if (millis() - snap > 1000UL * 60UL) {
-    Serial.println("Refreshing RTC");
-    dt = rtc.now();
-    snap = millis();
-    }
-    auto tim = dt.unixtime() + (millis() - snap) / 1000;
-
-  */
-
   auto tim = dt.unixtime();
   tim = myTZ.toLocal(tim, &tcr);
   DateTime dt_local{tim};
@@ -48,7 +36,6 @@ DateTime get_time() {
 
 typedef void (*sm_func_t)(int); // state machine pointer
 
-//void sm_nada(int e) {}
 
 void sm_default(int ev);
 sm_func_t sm_func = &sm_default;
@@ -94,10 +81,6 @@ void buzzer_stop() {
 
 ///////////////////////////////////////////////////////////
 
-//enum state_t {st_normal, st_adjusting, st_timing};
-
-//state_t state = st_normal;
-
 enum {ev_poll, ev_blue_falling, ev_white_falling, ev_white_rising,
       ev_sw_left_falling, ev_sw_right_falling
      };
@@ -141,11 +124,11 @@ bool show_clock = true;
 
 void update_regular_display() {
   DateTime dt = get_time();
-  show_dec(1, dt.minute());
-  show_dec(3, dt.hour(), true);
-  transfer_7219(5, 0b1111); // blank
-  transfer_7219(6, 0b1111); // blank
-  show_dec(7, dt.day());
+  show_dec(5, dt.minute());
+  show_dec(7, dt.hour(), true);
+  transfer_7219(3, 0b1111); // blank
+  transfer_7219(4, 0b1111); // blank
+  show_dec(1, dt.day());
 }
 
 void update_counter_display(ulong elapsed) {
@@ -156,30 +139,7 @@ void update_counter_display(ulong elapsed) {
   }
 }
 
-/*
-  bool sw_adj_low = false;
 
-  void do_adjusting() {
-  if (!sw_adj_low) {
-    state = st_normal;
-    return;
-  }
-
-  int delta = 0;
-  if (sw_left.falling())
-    delta = -1;
-  if (sw_right.falling())
-    delta = 1;
-
-  if (delta != 0) {
-    auto dt = rtc.now();
-    dt = dt + TimeSpan(delta * 60);
-    rtc.adjust(dt);
-    update_regular_display();
-
-  }
-  }
-*/
 ulong om_start_time;
 
 void sm_om_timing(int ev) {
@@ -229,11 +189,11 @@ void sm_adjusting(int ev) {
 
   // adjusting display
   DateTime dt = get_time();
-  show_dec(1, dt.second());
-  show_dec(3, dt.minute(), true);
-  show_dec(5, dt.hour(), true);
-  transfer_7219(7, 0b1111); // blank
-  transfer_7219(8, 0b1111); // blank
+  show_dec(3, dt.second());
+  show_dec(5, dt.minute(), true);
+  show_dec(7, dt.hour(), true);
+  transfer_7219(1, 0b1111); // blank
+  transfer_7219(2, 0b1111); // blank
 
 }
 
