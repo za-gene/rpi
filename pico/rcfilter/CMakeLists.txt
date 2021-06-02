@@ -23,7 +23,7 @@ target_link_libraries(app
 	#hardware_flash
 	hardware_gpio
 	#hardware_i2c
-	#hardware_irq
+	hardware_irq
 	#hardware_pwm
 	#hardware_spi
 	)
