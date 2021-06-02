@@ -10,6 +10,7 @@
 
 #include "debounce.h"
 
+#define SW  20
 #define SPK 19 // Speaker where we output noise
 #define LED  25 // GPIO of built-in LED
 
@@ -39,7 +40,7 @@ void stop()
 
 
 volatile float vc =0.0;
-volatile float fc = 400; // Hz
+volatile float fc = 400; // cut-off frequency (Hz)
 volatile auto const sample_freq = 40'000;
 volatile u32 repeat_us = 1'000'000 / sample_freq;
 volatile float dt = 1.0 / sample_freq;
@@ -117,9 +118,19 @@ static void alarm_irq(void)
 		on = rosc_hw->randombit;
 	}
 	*/
-	volatile float val = filter();
+	//volatile float val = filter();
 
-	gpio_put(SPK, val>=0.5);
+	volatile float va = random() & 1 ? 1.0 : 0.0;
+	//printf("va = %f\n", (double)va);
+	vc = vc + K * (va - vc);
+
+	if(gpio_get(SW)) {
+		gpio_put(SPK, vc>=0.5);
+		gpio_put(LED, 1);
+	} else {
+		gpio_put(SPK, va == 1.0);
+		gpio_put(LED, 0);
+	}
 
 	if((++count % 20000) == 0) {
 		//printf(".");
@@ -138,6 +149,10 @@ int main()
 {
 	stdio_init_all();
 	printf("\n--- START ---\n");
+
+	gpio_init(SW);
+	gpio_set_dir(SW, GPIO_IN);
+	gpio_pull_up(SW);
 
 	gpio_init(SPK);
 	gpio_set_dir(SPK, GPIO_OUT);
