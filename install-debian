@@ -12,10 +12,9 @@ case $1 in
     h) print_help ; exit ;;
 esac
 
-sudo apt install gdb-multiarch
-
 sudo apt install doxygen doxygen-doc graphviz pulseview \
-	cmake gcc-arm-none-eabi libnewlib-arm-none-eabi \
+	cmake gcc-arm-none-eabi gdb-multiarch \
+    libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib \
     texinfo libtool libhidapi-dev libusb-1.0-0-dev
 
 echo "You prolly also want to install stlink and friends"
