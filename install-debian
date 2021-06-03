@@ -14,7 +14,8 @@ esac
 
 sudo apt install gdb-multiarch
 
-sudo apt install doxygen doxygen-doc graphviz pulseview 
+sudo apt install doxygen doxygen-doc graphviz pulseview \
+	cmake gcc-arm-none-eabi libnewlib-arm-none-eabi
 
 echo "You prolly also want to install stlink and friends"
 
