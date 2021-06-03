@@ -77,6 +77,7 @@ void buzzer_start() {
 
 void buzzer_stop() {
   buzzer_enabled = false;
+  noTone(BZR);
 }
 
 ///////////////////////////////////////////////////////////
