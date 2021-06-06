@@ -4,6 +4,7 @@ function do_help {
 cat <<EOF
 -f FILE		flash a specific file
 -h 		this help
+-i		info about board
 -x 		erase flash
 EOF
 }
@@ -19,10 +20,11 @@ function do_flash {
 	st-flash write $BIN 0x8000000
 }
 
-while getopts "f:hx" arg; do
+while getopts "f:hix" arg; do
 	case $arg in
 		f) do_flash_file $OPTARG; exit;;
 		h) do_help; exit;;
+		i) st-info --probe; exit;;
 		x) st-flash erase; exit;;
 	esac
 done
