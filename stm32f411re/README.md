@@ -1,6 +1,6 @@
 # stm32f411re black pill
 
-![](pinout/pinout.jpg)
+![](pinout.jpg)
 
 ## Also on this site
 
