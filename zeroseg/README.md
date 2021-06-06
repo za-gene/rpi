@@ -17,6 +17,10 @@ to `sketch_feb04b`.
 * db5.105
 * db5.110 - switches (although they don't seem to work)
 
+## Also on this folder
+
+* [zeroseg-stm32f411-libopencm3.c](zeroseg-stm32f411-libopencm3.c) implementation
+
 ## Also on this site
 
 * [pi bare metal](../crunky/examples/14-zeroseg)
