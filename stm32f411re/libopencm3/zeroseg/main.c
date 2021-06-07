@@ -22,7 +22,7 @@ void delay(int n)
 {
 	for (int j = 0; j < n; j++)
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 1000; i++)
 		{
 			__asm__("nop");
 		}
@@ -86,10 +86,9 @@ int main(void)
 			c |= sep;
 
 			transfer_7219(i + 1, c);
-			//transfer_7219(i + 1, 2);
-			delay(10000);
+			delay(1);
 		}
 		count++;
-		delay(50);
+		delay(4000);
 	}
 }
