@@ -22,7 +22,7 @@ void tim2_isr(void) // the standard ISR name for TIM2
 	gpio_toggle(GPIOC, GPIOn);
 #endif
 	//TIM_CNT(TIM2) = 1;
-	timer_clear_flag(TIM2, TIM_SR_UIF); // clear the interrupt flag so that it can retrigger
+	timer_clear_flag(TIM2, TIM_SR_UIF); // clear the interrupt flag so that it can retrigger // seems important
 }
 
 int main(void)
@@ -41,24 +41,26 @@ int main(void)
 	volatile double period = 1000000.0/freq -1.0;
 	timer_set_period(TIM2, period); // twice a second
 #else
-	timer_set_prescaler(TIM2, 800000);
-	timer_set_period(TIM2, 40000);
+	timer_set_prescaler(TIM2, 8000);
+	timer_set_period(TIM2, 400);
 #endif
 	/* Set timer start value. */
-	TIM_CNT(TIM2) = 1;
+	//TIM_CNT(TIM2) = 1; // fishy
 	//timer_disable_preload(TIM2); //fishy
 	//timer_continuous_mode(TIM2); //fishy
 	timer_generate_event(TIM2, TIM_EGR_UG);
 	timer_generate_event(TIM2, TIM_EGR_TG | TIM_EGR_UG);
-	timer_enable_counter(TIM2); // seems unimportant
-	timer_enable_irq(TIM2, TIM_DIER_UIE); // update interrupt enable
-	nvic_enable_irq(NVIC_TIM2_IRQ);
+	timer_enable_counter(TIM2); // seems important
+	timer_enable_irq(TIM2, TIM_DIER_UIE); // update interrupt enable // seems unimportant
+	//timer_enable_irq(TIM2, TIM_DIER_TIE); // has peculiar behaviour
+	nvic_enable_irq(NVIC_TIM2_IRQ); // seems unimportant
+	//nvic_setup();
 
 	/* Update interrupt enable. */
-	TIM_DIER(TIM2) |= TIM_DIER_UIE;
+	//TIM_DIER(TIM2) |= TIM_DIER_UIE;
 
 	/* Start timer. */
-	TIM_CR1(TIM2) |= TIM_CR1_CEN;
+	//TIM_CR1(TIM2) |= TIM_CR1_CEN;
 	//timer_enable_counter(TIM2);
 	//rcc_periph_reset_pulse(RST_TIM2);
 
