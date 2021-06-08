@@ -50,6 +50,7 @@ int main(void)
 	//timer_continuous_mode(TIM2); //fishy
 	timer_generate_event(TIM2, TIM_EGR_UG);
 	timer_generate_event(TIM2, TIM_EGR_TG | TIM_EGR_UG);
+	timer_enable_preload(TIM2); // introduced. doesn't seem to help
 	timer_enable_counter(TIM2); // seems important
 	timer_enable_irq(TIM2, TIM_DIER_UIE); // update interrupt enable // seems unimportant
 	//timer_enable_irq(TIM2, TIM_DIER_TIE); // has peculiar behaviour
