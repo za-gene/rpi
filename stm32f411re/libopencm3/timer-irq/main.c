@@ -13,18 +13,8 @@ typedef uint32_t u32;
 volatile int on =0;
 void tim2_isr(void) // the standard ISR name for TIM2
 {
-#if 0
-	if(on) 
-		gpio_set(GPIOC, GPIOn);
-	else
-		gpio_clear(GPIOC, GPIOn);
-
-	on = 1-on;
-#else
+	timer_clear_flag(TIM2, TIM_SR_UIF); // hmmm, seems to matter that it's at the top
 	gpio_toggle(GPIOC, GPIOn);
-#endif
-	//TIM_CNT(TIM2) = 1;
-	timer_clear_flag(TIM2, TIM_SR_UIF); // clear the interrupt flag so that it can retrigger // seems important
 }
 
 int main(void)
@@ -42,7 +32,7 @@ int main(void)
 	volatile u32 clk_freq = rcc_get_timer_clk_freq(TIM2);
 #if 1
 	timer_set_prescaler(TIM2, clk_freq/1000000-1); // set the CK_CNT (clock counter) freq to 1MHz
-	double freq = 100.0; //hz
+	double freq = 2.0; //hz 
 	volatile double period = 1000000.0/freq -1.0;
 	timer_set_period(TIM2, period); // twice a second
 #else
