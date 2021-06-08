@@ -9,6 +9,8 @@ CFILES = main.c
 # TODO - you will need to edit these two lines!
 #DEVICE=stm32f407vgt6
 DEVICE=stm32f411re
+#DEVICE=stm32f103c8t6
+OOCD_FILE = board/$(DEVICE).cfg
 OOCD_FILE = board/stm32f411re.cfg
 
 # You shouldn't have to edit anything below here.
