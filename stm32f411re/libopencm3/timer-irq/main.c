@@ -26,10 +26,12 @@ int main(void)
 	timer_set_prescaler(TIM2, clk_freq/1000000-1); // set the CK_CNT (clock counter) freq to 1MHz
 	double freq = 2.0; //hz 
 	double period = 1000000.0/freq -1.0;
-	timer_set_period(TIM2, period); // twice a second
-	timer_enable_update_event(TIM2);
-	timer_enable_irq(TIM2, TIM_DIER_UIE);
-	timer_enable_counter(TIM2);
+	timer_set_period(TIM2, period); // twice a second. Equivalent to TIM_ARR(TIM2) = period
+	timer_generate_event(TIM2, TIM_EGR_UG); // send an update to reset timer and apply settings
+	//timer_generate_event(TIM2, TIM_EGR_UG | TIM_EGR_TG); // equiv: TIM_EGR(TIM2) |= (TIM_EGR_UG | TIM_EGR_UG)
+	//timer_enable_update_event(TIM2); // equiv: TIM_CR1(TIM2) &= ~TIM_CR1_UDIS
+	timer_enable_counter(TIM2); // equiv: TIM_CR1(TIM2) |= TIM_CR1_CEN
+	timer_enable_irq(TIM2, TIM_DIER_UIE); // equiv: TIM_DIER(TIM2) |= TIM_DIER_UIE
 	nvic_enable_irq(NVIC_TIM2_IRQ);
 
 	while(1);
