@@ -4,6 +4,7 @@
 
 # Also in this directory
 
+* [mbed](mbed.md)
 * [openocd](openocd.md)
 
 ## Also on this site
