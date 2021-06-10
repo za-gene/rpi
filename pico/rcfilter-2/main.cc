@@ -71,7 +71,7 @@ static void pwm_isr(void)
 	static volatile int count =0;
 	//start("my callback");
 	took =  time_us_32();
-	volatile float va = random() % 256;
+	float va = random() % 256;
 	vc = vc + K * (va - vc);
 
 	if(gpio_get(SW)) {
