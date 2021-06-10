@@ -8,13 +8,12 @@ Optionally, attach a pushbutton switch to GP20. Normally, filtered noise
 is output, but when you push down the button, the unfiltered white noise
 is output.
 
-
+It's a variant on rcfilter-1, which uses pwm instead of just random bits.
 
 ## Status
 
-2021-06-02 Works. Switched from a repeating timer to a low-level timer.
+2021-06-10 started. seems to work
 
-2021-05-31 started. Problems
 
 ## Links
 

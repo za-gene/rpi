@@ -3,25 +3,27 @@
 #include <string.h>
 #include "pico/stdlib.h"
 #include "hardware/irq.h"
-//#include "hardware/spi.h"
+#include "hardware/pwm.h"
 #include "hardware/gpio.h"
-#include "hardware/xosc.h"
-#include "hardware/structs/rosc.h"
+//#include "hardware/xosc.h"
+//#include "hardware/structs/rosc.h"
 
-#include "debounce.h"
+//#include "debounce.h"
+#include "pace.h"
+
 
 #define SW  20
 #define SPK 19 // Speaker where we output noise
 #define LED  25 // GPIO of built-in LED
 
 
-#define ALARM_NUM 0
-#define ALARM_IRQ TIMER_IRQ_0
+//#define ALARM_NUM 0
+//#define ALARM_IRQ TIMER_IRQ_0
 
 typedef uint8_t u8;
 typedef uint32_t u32;
 
-Debounce btn(20);
+//Debounce btn(20);
 
 volatile u8 use_random = 1;
 
@@ -39,6 +41,7 @@ void stop()
 }
 
 
+unsigned int slice_num;
 volatile float vc =0.0;
 volatile float fc = 400; // cut-off frequency (Hz)
 volatile auto const sample_freq = 40'000;
@@ -50,7 +53,7 @@ static void alarm_irq(void);
 
 float filter()
 {
-	volatile float va = random() & 1 ? 1.0 : 0.0;
+	volatile float va = random() % 256;
 	//printf("va = %f\n", (double)va);
 	vc = vc + K * (va - vc);
 	//volatile u8 on = vc >= 0.5;
@@ -60,80 +63,26 @@ float filter()
 
 volatile u32 took = 0;
 
-static void rearm() 
-{
-	// Clear the alarm irq
-	hw_clear_bits(&timer_hw->intr, 1u << ALARM_NUM);
-
-	//uint32_t delay_us = 2 * 1'000'000; // 2 secs
-	// Alarm is only 32 bits so if trying to delay more
-	// than that need to be careful and keep track of the upper
-	// bits
-	uint64_t target = timer_hw->timerawl + repeat_us;
-
-	// Write the lower 32 bits of the target time to the alarm which
-	// will arm it
-	timer_hw->alarm[ALARM_NUM] = (uint32_t) target;
-}
-
-static void init_alarm()
-{
-	// Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
-	hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
-	// Set irq handler for alarm irq
-	irq_set_exclusive_handler(ALARM_IRQ, alarm_irq);
-	// Enable the alarm irq
-	irq_set_enabled(ALARM_IRQ, true);
-	// Enable interrupt in block and at processor
-	rearm();
-}
 
 
-/*
-static void alarm_irq(void) 
-{
-	rearm();
 
-	// Assume alarm 0 has fired
-	printf("Alarm IRQ fired\n");
-	alarm_fired = true;
-}
-*/
-
-// 2021-05-31 appears not to be called. What the hell is going on?
-// Ans: seems to be taking longer than allowed
-//bool my_callback(struct repeating_timer *t)
-static void alarm_irq(void) 
+static void pwm_isr(void) 
 {
 	static volatile int count =0;
 	//start("my callback");
 	took =  time_us_32();
-	//volatile u8 on;
-	/*
-	if(use_random) {
-		gpio_put(LED, 1);
-		on = random() &1;
-	} else {
-		gpio_put(LED, 0);
-		on = rosc_hw->randombit;
-	}
-	*/
-	//volatile float val = filter();
-
-	volatile float va = random() & 1 ? 1.0 : 0.0;
-	//printf("va = %f\n", (double)va);
+	volatile float va = random() % 256;
 	vc = vc + K * (va - vc);
 
 	if(gpio_get(SW)) {
-		gpio_put(SPK, vc>=0.5);
+		pwm_set_gpio_level(SPK, vc);
 		gpio_put(LED, 1);
 	} else {
-		gpio_put(SPK, va == 1.0);
+		pwm_set_gpio_level(SPK, va);
 		gpio_put(LED, 0);
 	}
 
 	if((++count % 20000) == 0) {
-		//printf(".");
 		count = 0;
 	}
 
@@ -141,8 +90,7 @@ static void alarm_irq(void)
 	took = time_us_32() - took;
 
 
-	//return false;
-	//return true;
+	pwm_clear_irq(slice_num);
 }
 
 int main() 
@@ -158,6 +106,12 @@ int main()
 	gpio_set_dir(SPK, GPIO_OUT);
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
+
+
+	const int top = 255;
+	//constexpr float divisor = pace_pwm_divider(sample_freq, top);
+	//static_assert(1.0 <= divisor && divisor < 256.0);
+	int err = pace_config_pwm_irq(&slice_num, SPK, sample_freq, top, pwm_isr);
 #if 1
 	start("Generating 10,000 filtered samples");
 	for(int i = 0; i < 10'000; ++i) {
@@ -178,11 +132,6 @@ int main()
 
 	printf("repeat_us=%d\n", repeat_us);
 
-	init_alarm();
-	//struct repeating_timer timer;
-	//
-	//add_repeating_timer_us(repeat_us, my_callback, 0, &timer);
-	//
 	while(1);
 
 	while(1) {
@@ -191,15 +140,6 @@ int main()
 			took = 0;
 		}
 	}
-
-	while(1) {
-		if(btn.falling())
-			use_random = 1- use_random;
-	}
-
-
-
-
 
 	return 0;
 }

@@ -9,7 +9,8 @@ pico_sdk_init()
 
 add_executable(app
         main.cc
-        ../debounce.cc
+	#../debounce.cc
+	../pace.c
         )
 
 #pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
@@ -24,7 +25,7 @@ target_link_libraries(app
 	hardware_gpio
 	#hardware_i2c
 	hardware_irq
-	#hardware_pwm
+	hardware_pwm
 	#hardware_spi
 	)
 
