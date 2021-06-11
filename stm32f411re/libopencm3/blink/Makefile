@@ -9,7 +9,7 @@ CFILES = main.c
 # TODO - you will need to edit these two lines!
 #DEVICE=stm32f407vgt6
 DEVICE=stm32f411re
-OOCD_FILE = board/stm32f411re.cfg
+OOCD_FILE = board/$(DEVICE).cfg
 
 # You shouldn't have to edit anything below here.
 #VPATH += $(SHARED_DIR)
