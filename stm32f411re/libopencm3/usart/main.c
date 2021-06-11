@@ -25,6 +25,10 @@ int main(void)
 	usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
 	usart_enable(USART1);
 
+	char msg[] = "I will echo everything you type...\r\n";
+	char *str = msg;
+	while(*str) usart_send_blocking(USART1, *str++);
+
 #define LITTLE_BIT 1000000
 	while (1)
 	{
