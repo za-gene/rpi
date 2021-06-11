@@ -111,7 +111,7 @@ LDLIBS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
 %: SCCS/s.%
 
 all: $(PROJECT).elf $(PROJECT).bin
-flash: $(PROJECT).flash
+#flash: $(PROJECT).flash
 
 # error if not using linker script generator
 ifeq (,$(DEVICE))
@@ -170,8 +170,14 @@ else
 endif
 
 clean:
-	rm -rf $(BUILD_DIR) $(GENERATED_BINS)
+	rm -rf $(BUILD_DIR) $(GENERATED_BINS) .flash
 
 .PHONY: all clean flash
 -include $(OBJS:.o=.d)
 
+.flash : app.bin
+	touch .flash
+
+PHONY: flash
+flash : .flash
+	flash-stm32

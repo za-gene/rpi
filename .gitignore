@@ -1,3 +1,4 @@
+.flash
 *.swp
 *.bin
 build/
