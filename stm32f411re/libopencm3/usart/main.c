@@ -19,7 +19,7 @@ int main(void)
 	gpio_set_af(GPIOA, GPIO_AF7, GPIO9);
 	usart_set_baudrate(USART1, 115200);
 	usart_set_databits(USART1, 8);
-	usart_set_stopbits(USART2, USART_STOPBITS_1);
+	usart_set_stopbits(USART1, USART_STOPBITS_1);
 	usart_set_parity(USART1, USART_PARITY_NONE);
 	usart_set_mode(USART1, USART_MODE_TX);
 	usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
