@@ -22,7 +22,7 @@ using u16 = uint16_t;
 
 #define LED 19
 
-#define USE_POLL // using looping instead of timer callback to write to DAC
+//#define USE_POLL // using looping instead of timer callback to write to DAC
 
 uint64_t period;
 
@@ -35,7 +35,7 @@ void write_to_dac()
 	static int idx = 0;
 	u8 datum = data_bin[idx];
 	u16 src = datum;
-	src <<= 2;
+	src <<= 4;
 	if(src>4095) src = 4095;
 	src |= 0b0011'0000'0000'0000;
 #if 0
@@ -74,6 +74,8 @@ static void alarm_0_irq()
 		gpio_put(LED, 0);
 	else
 		gpio_put(LED, 1);
+
+	write_to_dac();
 }
 
 int main() 
@@ -95,7 +97,7 @@ int main()
 	struct repeating_timer timer;
 	double freq = 44'100;
 	//freq = 8'000;
-	freq = 22'000;
+	//freq = 22'000;
 	period = 1'000'000/freq;
 	pi_alarm_init(0, alarm_0_irq, period);
 	//add_repeating_timer_us(-1.0e6/freq, repeating_timer_callback, NULL, &timer);
@@ -105,8 +107,8 @@ int main()
 
 	for(;;) {
 #ifdef USE_POLL
-		write_to_dac();
-		sleep_us(6);
+		//write_to_dac();
+		//sleep_us(6);
 #endif		
 	}
 
