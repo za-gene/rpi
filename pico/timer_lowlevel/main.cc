@@ -1,14 +1,8 @@
-/**
- * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/gpio.h"
-#include "hardware/timer.h"
-#include "hardware/irq.h"
+//#include "hardware/gpio.h"
+
+#include "pi.h"
 
 #define DELAY (2*1'000'000)
 
@@ -24,95 +18,14 @@ static uint64_t get_time(void) {
 }
 /// \end::get_time[]
 
-/// \tag::alarm_standalone[]
-// Use alarm 0
-#define ALARM_NUM 0
-#define ALARM_IRQ TIMER_IRQ_0
 
-// Alarm interrupt handler
-static volatile bool alarm_fired;
 
-static void alarm_irq(void);
 
-/*
-typedef struct {
-	int alarm_num;
-	uint64_t target;
-} pi_alarm_t;
-*/
-
-void pi_alarm_rearm(int alarm_num, uint64_t delay_us)
+static void alarm_0_irq() 
 {
-	// Clear the alarm irq
-	hw_clear_bits(&timer_hw->intr, 1u << alarm_num);
-
-	//uint32_t delay_us = 2 * 1'000'000; // 2 secs
-	// Alarm is only 32 bits so if trying to delay more
-	// than that need to be careful and keep track of the upper
-	// bits
-	uint64_t target = timer_hw->timerawl + delay_us;
-
-	// Write the lower 32 bits of the target time to the alarm which
-	// will arm it
-	timer_hw->alarm[alarm_num] = (uint32_t) target;
-
-}
-
-void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us)
-{
-	hw_set_bits(&timer_hw->inte, 1u << alarm_num); // enable interrupt for alarm
-	int irq_num = 0;
-	switch(alarm_num) {
-		case 0: irq_num = TIMER_IRQ_0 ; break;
-		case 1: irq_num = TIMER_IRQ_1 ; break;
-		case 2: irq_num = TIMER_IRQ_2 ; break;
-		case 3: irq_num = TIMER_IRQ_3 ; break;
-		default: assert(false);
-	}
-	irq_set_exclusive_handler(irq_num, callback);
-        irq_set_enabled(irq_num, true);
-	pi_alarm_rearm(alarm_num, delay_us);
-
-	//ptr_alarm->alarm_num = alarm_num;
-	//ptr_alarm->delay_
-}
-
-
-
-static void init_alarm_xxx()
-{
-	// Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
-	hw_set_bits(&timer_hw->inte, 1u << ALARM_NUM);
-	// Set irq handler for alarm irq
-	irq_set_exclusive_handler(ALARM_IRQ, alarm_irq);
-	// Enable the alarm irq
-	irq_set_enabled(ALARM_IRQ, true);
-	// Enable interrupt in block and at processor
-}
-
-static void rearm_xxx(uint alarm_num) 
-{
-	// Clear the alarm irq
-	hw_clear_bits(&timer_hw->intr, 1u << alarm_num);
-
-	uint32_t delay_us = 2 * 1'000'000; // 2 secs
-	// Alarm is only 32 bits so if trying to delay more
-	// than that need to be careful and keep track of the upper
-	// bits
-	uint64_t target = timer_hw->timerawl + delay_us;
-
-	// Write the lower 32 bits of the target time to the alarm which
-	// will arm it
-	timer_hw->alarm[ALARM_NUM] = (uint32_t) target;
-}
-
-static void alarm_irq_0() 
-{
-	pi_alarm_rearm(0, DELAY);
-
 	// Assume alarm 0 has fired
-	printf("Alarm IRQ 2 fired 1\n");
-	//alarm_fired = true;
+	pi_alarm_rearm(0, DELAY);
+	printf("Alarm IRQ fired\n");
 }
 
 
@@ -120,11 +33,8 @@ int main() {
 	stdio_init_all();
 	printf("Timer lowlevel!\n");
 
-	//init_alarm();
-	//rearm();
-	pi_alarm_init(0, alarm_irq_0, DELAY);
+	pi_alarm_init(0, alarm_0_irq, DELAY);
 	while(1);
 
 }
 
-/// \end::alarm_standalone[]
