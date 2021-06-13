@@ -8,10 +8,13 @@ set(CMAKE_CXX_STANDARD 17)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 pico_sdk_init()
-include_directories(..)
+
+set(MYDIR ../../../pico)
+include_directories(../../pico)
 
 add_executable(app
         main.cc
+	${MYDIR}/pi.cc
         )
 
 pico_enable_stdio_usb(app 1)
@@ -21,8 +24,9 @@ target_link_libraries(app
 	pico_stdlib 
 	#hardware_clocks
 	hardware_gpio
-	#hardware_pwm
+	hardware_irq
 	hardware_spi
+	hardware_timer
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.

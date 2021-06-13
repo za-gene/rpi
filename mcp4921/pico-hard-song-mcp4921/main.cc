@@ -5,6 +5,9 @@
 #include "hardware/gpio.h"
 #include <math.h>
 
+#include "pi.h"
+
+
 #include "data.h"
 
 using u8 = uint8_t;
@@ -17,7 +20,11 @@ using u16 = uint16_t;
 
 #define PULSE 18
 
+#define LED 19
+
 #define USE_POLL // using looping instead of timer callback to write to DAC
+
+uint64_t period;
 
 static bool do_write = false;
 
@@ -58,10 +65,22 @@ bool repeating_timer_callback(struct repeating_timer *t)
 #endif
 	return true;
 }
+static void alarm_0_irq() 
+{
+	// Assume alarm 0 has fired
+	pi_alarm_rearm(0, period);
+	//printf("Alarm IRQ fired\n");
+	if(gpio_get(LED))
+		gpio_put(LED, 0);
+	else
+		gpio_put(LED, 1);
+}
 
 int main() 
 {
 	stdio_init_all();
+	gpio_init(LED);
+	gpio_set_dir(LED, GPIO_OUT);
 
 	int spi_speed = 1'200'000;
 	//spi_speed = 600'000;
@@ -77,6 +96,8 @@ int main()
 	double freq = 44'100;
 	//freq = 8'000;
 	freq = 22'000;
+	period = 1'000'000/freq;
+	pi_alarm_init(0, alarm_0_irq, period);
 	//add_repeating_timer_us(-1.0e6/freq, repeating_timer_callback, NULL, &timer);
 
 	//gpio_init(PULSE);
