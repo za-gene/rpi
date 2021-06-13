@@ -56,7 +56,6 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [hertz](hertz): frequency measurement
 * [minitone85](minitone85): working version of tone() for ATtiny85
 * [mins30-85](mins30-85): 30 minute timer for ATTiny85, programmable from the Pi (`DEV01`). 
-* [pills](pills): remember to take your pills
 * [synth](synth): sound synthesizer/tone-maker
 * [sleep85](sleep85): conserving power by putting the ATTiny85 to sleep
 
