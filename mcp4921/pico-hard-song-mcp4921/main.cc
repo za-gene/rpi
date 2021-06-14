@@ -18,63 +18,28 @@ using u16 = uint16_t;
 #define PIN_MISO 	4
 #define	PIN_CS 		5
 
-#define PULSE 18
-
 #define LED 19
-
-//#define USE_POLL // using looping instead of timer callback to write to DAC
 
 uint64_t period;
 
-static bool do_write = false;
 
 void write_to_dac()
 {
-	//if(do_write == false) return;
-	do_write = false;
 	static int idx = 0;
 	u8 datum = data_bin[idx];
 	u16 src = datum;
 	src <<= 4;
 	if(src>4095) src = 4095;
 	src |= 0b0011'0000'0000'0000;
-#if 0
-	u8 bytes[2];
-	bytes[1] = src & 0xFF;
-	src >>= 8;
-	bytes[0] = (u8) src;
-	spi_write_blocking(spi0, bytes, 2);
-#else
 	spi_write16_blocking(spi0, &src, 1);
-#endif
 	idx++;
 	if(idx == data_bin_len) idx = 0;
 }
 
-bool repeating_timer_callback(struct repeating_timer *t) 
-{
-	do_write = true;
-#ifndef USE_POLL
-	write_to_dac();
-#endif
-
-#if 0
-	static bool pulse_on = false;
-	pulse_on = ! pulse_on;
-	gpio_put(PULSE, pulse_on);
-#endif
-	return true;
-}
 static void alarm_0_irq() 
 {
-	// Assume alarm 0 has fired
 	pi_alarm_rearm(0, period);
-	//printf("Alarm IRQ fired\n");
-	if(gpio_get(LED))
-		gpio_put(LED, 0);
-	else
-		gpio_put(LED, 1);
-
+	gpio_put(LED, !gpio_get(LED));
 	write_to_dac();
 }
 
@@ -100,18 +65,8 @@ int main()
 	//freq = 22'000;
 	period = 1'000'000/freq;
 	pi_alarm_init(0, alarm_0_irq, period);
-	//add_repeating_timer_us(-1.0e6/freq, repeating_timer_callback, NULL, &timer);
 
-	//gpio_init(PULSE);
-	//gpio_set_dir(PULSE, GPIO_OUT);
-
-	for(;;) {
-#ifdef USE_POLL
-		//write_to_dac();
-		//sleep_us(6);
-#endif		
-	}
-
+	while(1);
 	return 0;
 }
 
