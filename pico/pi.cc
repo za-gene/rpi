@@ -1,3 +1,4 @@
+#include "hardware/gpio.h"
 #include "hardware/timer.h"
 
 #include "pi.h"
@@ -35,3 +36,25 @@ void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us)
 	pi_alarm_rearm(alarm_num, delay_us);
 }
 
+void pi_gpio_init(uint gpio, pi_gpio_mode_e mode)
+{
+	gpio_init(gpio);
+	switch(mode) {
+		case INPUT_PULLUP:
+			gpio_pull_up(gpio);
+			[[fallthrough]];
+		case INPUT:
+			gpio_set_dir(gpio, GPIO_IN);
+			break;
+		case OUTPUT:
+			gpio_set_dir(gpio, GPIO_OUT);
+			break;
+		default:
+			assert(false);
+	}
+}
+
+void pi_gpio_toggle(uint gpio)
+{
+	gpio_put(gpio, !gpio_get(gpio));
+}
