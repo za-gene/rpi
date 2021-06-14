@@ -10,22 +10,48 @@
 //#include "hardware/spi.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
+#define BTN  14 // GPIO number, not physical pin
+#define LED  25 // GPIO of built-in LED
 
+enum pi_gpio_mode_e {INPUT, OUTPUT, INPUT_PULLUP};
+void pi_gpio_init(uint gpio, pi_gpio_mode_e mode)
+{
+	gpio_init(gpio);
+	switch(mode) {
+		case INPUT_PULLUP:
+			gpio_pull_up(gpio);
+			[[fallthrough]];
+		case INPUT:
+			gpio_set_dir(gpio, GPIO_IN);
+			break;
+		case OUTPUT:
+			gpio_set_dir(gpio, GPIO_OUT);
+			break;
+		default:
+			assert(false);
+	}
+}
+
+void pi_gpio_toggle(uint gpio)
+{
+	gpio_put(gpio, !gpio_get(gpio));
+}
+
+void gpio_callback(uint gpio, uint32_t events)
+{
+	pi_gpio_toggle(LED);
+}
 
 int main() 
 {
 	stdio_init_all();
 	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
-#define BTN  14 // GPIO number, not physical pin
-#define LED  25 // GPIO of built-in LED
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
+	pi_gpio_init(LED, OUTPUT);
+	pi_gpio_init(BTN, INPUT); // have it as floating
+	gpio_set_irq_enabled_with_callback(BTN, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
+	while(1);
 
 	int i = 0;
 	for(;;) {
