@@ -3,6 +3,7 @@
 Connections:
 PB12 CS (we manage it ourselves)
 PB13 SCLK
+PB14 MISO - NOT REQUIRED
 PB15 MOSI
 MISO not required
 */
