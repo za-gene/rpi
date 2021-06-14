@@ -16,7 +16,7 @@ typedef uint32_t u32;
 
 // shut the compiler up about missing protypes
 void delay(int n);
-void transfer_7219(uint8_t address, uint8_t value);
+void mal_max7219_tfr(uint8_t address, uint8_t value);
 
 void delay(int n)
 {
@@ -30,7 +30,7 @@ void delay(int n)
 }
 
 
-void transfer_7219(uint8_t address, uint8_t value) 
+void mal_max7219_tfr(uint8_t address, uint8_t value) 
 {
 	gpio_clear(GPIOB, GPIO12);
 	spi_xfer(SPI2, address); // seems to be roughly equiv of spi_send(SPI2, address); spi_read(SPI2);
@@ -38,9 +38,9 @@ void transfer_7219(uint8_t address, uint8_t value)
 	gpio_set(GPIOB, GPIO12);
 }
 
-int main(void)
+void mal_spi_init_std(void);
+void mal_spi_init_std(void)
 {
-
 	rcc_periph_clock_enable(RCC_SPI2);
 	//rcc_periph_clock_enable(RCC_USART1);
 	//rcc_periph_clock_enable(RCC_GPIOA);
@@ -52,43 +52,59 @@ int main(void)
 	//spi_enable_ss_output(SPI2); /* Required, see NSS, 25.3.1 section. */
 	gpio_mode_setup(GPIOB,  GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12); // chip select
 	spi_enable(SPI2);
+}
 
+void mal_max7219_init(void);
+void mal_max7219_init(void)
+{
+	mal_spi_init_std();
 
-	transfer_7219(0x0F, 0x00);
-	transfer_7219(0x09, 0xFF); // Enable mode B
-	transfer_7219(0x0A, 0x0F); // set intensity (page 9)
-	transfer_7219(0x0B, 0x07); // use all pins
-	transfer_7219(0x0C, 0x01); // Turn on chip
+	mal_max7219_tfr(0x0F, 0x00);
+	mal_max7219_tfr(0x09, 0xFF); // Enable mode B
+	mal_max7219_tfr(0x0A, 0x0F); // set intensity (page 9)
+	mal_max7219_tfr(0x0B, 0x07); // use all pins
+	mal_max7219_tfr(0x0C, 0x01); // Turn on chip
+}
+
+void mal_max7219_show_count(int count);
+void mal_max7219_show_count(int count)
+{
+	u32 num = count;
+	for (uint8_t i = 0; i < 8; ++i)
+	{
+		u8 c = num % 10;
+		num /= 10;
+		u8 sep = 0; // thousands separator
+
+		// add in thousands separators
+		if ((i > 0) && (i % 3 == 0))
+		{
+			sep = 1 << 7;
+		}
+
+		// blank if end of number
+		if ((c == 0) && (num == 0) && (i > 0))
+		{
+			sep = 0;
+			c = 0b1111;
+		}
+
+		c |= sep;
+
+		mal_max7219_tfr(i + 1, c);
+		//delay(1);
+	}
+
+}
+int main(void)
+{
+
+	mal_max7219_init();
 
 	u32 count = 0;
 	while (1)
 	{
-		u32 num = count;
-		for (uint8_t i = 0; i < 8; ++i)
-		{
-			u8 c = num % 10;
-			num /= 10;
-			u8 sep = 0; // thousands separator
-
-			// add in thousands separators
-			if ((i > 0) && (i % 3 == 0))
-			{
-				sep = 1 << 7;
-			}
-
-			// blank if end of number
-			if ((c == 0) && (num == 0) && (i > 0))
-			{
-				sep = 0;
-				c = 0b1111;
-			}
-
-			c |= sep;
-
-			transfer_7219(i + 1, c);
-			delay(1);
-		}
-		count++;
+		mal_max7219_show_count(count++);
 		delay(4000);
 	}
 }
