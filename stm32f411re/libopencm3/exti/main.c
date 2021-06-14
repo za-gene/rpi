@@ -10,6 +10,7 @@ typedef uint32_t u32;
 
 
 void exti3_isr(void) // standard name
+//void EXTI3_IRQHandler(void) // standard name
 {
 	gpio_toggle(GPIOC, GPIO13);
 	//exti_set_trigger(3, EXTI_TRIGGER_FALLING); // corresponding to EXTI3
