@@ -1,7 +1,9 @@
 PROJECT = app
 BUILD_DIR = build
 
-CFILES = main.c
+#INCLUDES += ../mal.h
+VPATH += ..
+CFILES = main.c mal.c
 
 #DEVICE=stm32f407vgt6
 DEVICE=stm32f411re
@@ -11,6 +13,7 @@ OOCD_FILE = board/$(DEVICE).cfg
 #VPATH += $(SHARED_DIR)
 #INCLUDES += $(patsubst %,-I%, . $(SHARED_DIR))
 #OPENCM3_DIR=../libopencm3
+
 
 include $(OPENCM3_DIR)/mk/genlink-config.mk
 include ../rules.mk
