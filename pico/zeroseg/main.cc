@@ -5,7 +5,7 @@
 //#include "hardware/clocks.h"
 //#include "hardware/flash.h"
 #include "hardware/gpio.h"
-#include "hardware/time.h"
+#include "hardware/timer.h"
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
 //#include "hardware/spi.h"

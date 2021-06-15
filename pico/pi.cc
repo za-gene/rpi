@@ -1,4 +1,5 @@
 #include "hardware/gpio.h"
+#include "hardware/spi.h"
 #include "hardware/timer.h"
 
 #include "pi.h"
@@ -32,7 +33,7 @@ void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us)
 		default: assert(false);
 	}
 	irq_set_exclusive_handler(irq_num, callback);
-        irq_set_enabled(irq_num, true);
+	irq_set_enabled(irq_num, true);
 	pi_alarm_rearm(alarm_num, delay_us);
 }
 
@@ -59,11 +60,13 @@ void pi_gpio_toggle(uint gpio)
 	gpio_put(gpio, !gpio_get(gpio));
 }
 
-
+auto max7219_cs = 14;
 
 void pi_max7219_init(void)
 {
 	pi_spi_init_std();
+	pi_gpio_init(max7219_cs, OUTPUT);
+	gpio_put(max7219_cs, 1);
 
 	pi_max7219_tfr(0x0F, 0x00);
 	pi_max7219_tfr(0x09, 0xFF); // Enable mode B
@@ -96,31 +99,32 @@ void pi_max7219_show_count(int count)
 
 		c |= sep;
 
-		mal_max7219_tfr(i + 1, c);
+		pi_max7219_tfr(i + 1, c);
 		//delay(1);
 	}
 
 }
 
 void pi_max7219_tfr(uint8_t address, uint8_t value)
-{
-	gpio_clear(GPIOB, GPIO12);
-	spi_xfer(SPI2, address); // seems to be roughly equiv of spi_send(SPI2, address); spi_read(SPI2);
-	spi_xfer(SPI2, value); // seems to be roughly equiv of spi_send(SPI2, value); spi_read(SPI2);
-	gpio_set(GPIOB, GPIO12);
+{	
+	gpio_put(max7219_cs, 0);
+	uint8_t data[] = {address, value};
+	spi_write_blocking(spi1, data, 2);
+	gpio_put(max7219_cs, 1);
 }
 
 void pi_spi_init_std(void)
 {
-	rcc_periph_clock_enable(RCC_SPI2);
-	//rcc_periph_clock_enable(RCC_USART1);
-	//rcc_periph_clock_enable(RCC_GPIOA);
-	rcc_periph_clock_enable(RCC_GPIOB);
-	//rcc_periph_clock_enable(RCC_GPIOC);
-	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
-	gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
-	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_256, SPI_CR1_CPOL, SPI_CR1_CPHA, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
-	//spi_enable_ss_output(SPI2); /* Required, see NSS, 25.3.1 section. */
-	gpio_mode_setup(GPIOB,  GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12); // chip select
-	spi_enable(SPI2);
+#define spi             spi1
+#define PIN_SCK         10
+#define PIN_MOSI        11
+#define PIN_MISO        12
+//#define PIN_CS          15
+
+
+	auto spi_speed = 100'000; // slow to get initialisation
+	spi_init(spi, spi_speed);
+	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
+	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 }
