@@ -21,11 +21,32 @@ typedef uint32_t u32;
 #define MOSI 	PB1
 #define SCK 	PB3
 
+#define E 0b1011 // letter E for display
+#define H 0b1100 // letter H for display
+#define L 0b1101 // letter L for display
+#define P 0b1110 // letter P for display
+
+void spi_write(uint8_t value)
+{
+	//while(digitalRead(SCK) == HIGH);
+	//digitalWrite(MOSI, value >> 7);
+	//value <<=1;
+	uint8_t recd = 0;
+	for(uint8_t i = 0; i<8; i++) {
+		digitalWrite(MOSI, value >> 7);
+		value <<= 1;
+		digitalWrite(SCK, HIGH);
+		__asm__("nop");
+		digitalWrite(SCK, LOW);
+	}
+}
 
 void transfer_7219(uint8_t address, uint8_t value) {
 	digitalWrite(CS, LOW); 
-	shiftOut(MOSI, SCK, MSBFIRST, address);
-	shiftOut(MOSI, SCK, MSBFIRST, value);
+	//shiftOut(MOSI, SCK, MSBFIRST, address);
+	//shiftOut(MOSI, SCK, MSBFIRST, value);
+	spi_write(address);
+	spi_write(value);
 	digitalWrite(CS, HIGH);
 }
 
@@ -48,7 +69,7 @@ void nops(u32 n)
 }
 
 
-void display_count(u32 cnt) {
+void display_count(u8 mode, u32 cnt) {
 	//static u32 cnt = 0; // "int" is too limiting
 	static u8 heart_beat = 0;
 	u32 num = cnt;
@@ -75,6 +96,8 @@ void display_count(u32 cnt) {
 		transfer_7219(i+1, c);
 		nops(1000);
 	}
+
+	transfer_7219(8, mode);
 	//cnt++;
 	//delay(10);
 
@@ -93,17 +116,19 @@ void init_falling()
 }
 
 volatile u32 g_num_falls = 0;
+volatile u32 g_total_num_falls = 0; /// never reset
 
 ISR(INT0_vect)
 {
 	g_num_falls++;
+	g_total_num_falls++;
 }
 
 /////////////////////////////////////////////////////////////////////////
 // TIMER1
 
 
-#define LED  PB4
+//#define LED  PB4
 
 
 void init_timer1(unsigned long freq)
@@ -144,6 +169,22 @@ ISR(TIMER1_COMPA_vect)
 
 
 /////////////////////////////////////////////////////////////////////////
+// DEBOUNCE
+
+#define BTN PB4
+
+uint8_t intergrator = 0xFF;
+
+void button_init()
+{
+	pinMode(BTN, INPUT_PULLUP);
+}
+
+void button_poll()
+{
+}
+
+/////////////////////////////////////////////////////////////////////////
 // ENSEMBLE
 
 void setup() {
@@ -159,15 +200,18 @@ void setup() {
 	init_falling();
 	init_timer1(timer1_freq); // use 1000Hz because there is a minumum
 	sei();
-	pinMode(LED, OUTPUT);
+	//pinMode(LED, OUTPUT);
+	button_init();
+
 }
 
 void loop() {
 	if(timer1_triggered) {
 		timer1_triggered = 0;
-		//static volatile u32 displayx = 0;
-		display_count(timer1_hz_count);
-		digitalWrite(LED, 1 - digitalRead(LED));
+		display_count(H, timer1_hz_count);
 	}
+
+	//display_count(L, g_total_num_falls);
+	//display_count(E, millis());
 }
 
