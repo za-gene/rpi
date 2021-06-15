@@ -216,17 +216,44 @@ void setup() {
 
 }
 
+enum state_e { freq_st = 0, count_st };
+
 void loop() {
+	static uint8_t state = freq_st;
+
+	bool refresh_display = false;
 	if(timer1_triggered) {
 		timer1_triggered = 0;
+		refresh_display = true;
 		//display_count(H, timer1_hz_count);
 	}
 
 	button_poll();
-	static int temp = 0;
+	//static int temp = 0;
 	if(button_fell) {
 		button_fell = false;
-		display_count(L, ++temp);
+		refresh_display = true;
+		state++;
+		if(state>count_st) state = freq_st;
+		//display_count(L, ++temp);
+	}
+
+	static uint32_t prev_num_falls = 0;
+	if((prev_num_falls != g_total_num_falls) && state == count_st) {
+		refresh_display = true;
+		prev_num_falls = g_total_num_falls;
+	}
+
+	if(!refresh_display) return;
+	switch(state) {
+		case freq_st: 	
+			display_count(H, timer1_hz_count); 
+			break;
+		case count_st:
+			display_count(L, g_total_num_falls); 
+			break;
+		default:
+			display_count(E, 666);
 	}
 	//display_count(L, g_total_num_falls);
 	//display_count(E, millis());
