@@ -173,15 +173,26 @@ ISR(TIMER1_COMPA_vect)
 
 #define BTN PB4
 
-uint8_t intergrator = 0xFF;
+//uint8_t intergrator = 0xFF;
 
 void button_init()
 {
 	pinMode(BTN, INPUT_PULLUP);
 }
 
+bool button_fell = false;
+
 void button_poll()
 {
+#define MAX_COUNT 1000UL	
+	static u32 count = 0;
+	if(digitalRead(BTN) == HIGH) {
+		count = 0;
+	} else {
+		count ++;
+		if(count == MAX_COUNT) button_fell = true;
+		if(count > MAX_COUNT) count = MAX_COUNT+1;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -208,9 +219,15 @@ void setup() {
 void loop() {
 	if(timer1_triggered) {
 		timer1_triggered = 0;
-		display_count(H, timer1_hz_count);
+		//display_count(H, timer1_hz_count);
 	}
 
+	button_poll();
+	static int temp = 0;
+	if(button_fell) {
+		button_fell = false;
+		display_count(L, ++temp);
+	}
 	//display_count(L, g_total_num_falls);
 	//display_count(E, millis());
 }
