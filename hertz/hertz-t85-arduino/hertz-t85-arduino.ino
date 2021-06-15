@@ -36,7 +36,7 @@ void spi_write(uint8_t value)
 		digitalWrite(MOSI, value >> 7);
 		value <<= 1;
 		digitalWrite(SCK, HIGH);
-		__asm__("nop");
+		nops(1);
 		digitalWrite(SCK, LOW);
 	}
 }
