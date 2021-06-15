@@ -1,25 +1,16 @@
-FQBN = attiny:avr:ATtiny85
-
-FQBN1 =$(subst :,.,$(FQBN))	
-FQBN1:=$(strip $(FQBN1))
-BDIR =build/$(FQBN)
-#HERE = $(shell basename $(CURDIR))
-HERE =$(notdir $(CURDIR))
-INO  =$(HERE).ino
-HEX  =build/$(FQBN1)/$(INO).hex
-BIN  =build/$(FQBN1)/$(INO).bin
-PORT = $(shell ls /dev/ttyUSB*)
-
-
-#hex : $(HEX)
-
-$(BIN) : $(INO)
-	echo bin is $(BIN)
-	arduino-cli compile --fqbn "attiny:avr:ATtinyX5" -e 
-
-flash : 
-	install-hex build/*/*.hex
-	#arduino-cli upload -b "attiny:avr:ATtinyX5" -i $(HEX)
+app.hex : app.out
 
 clean :
-	rm -rf build
+	rm -rf build app.out app.hex
+
+# https://stackoverflow.com/questions/31381007/compiling-an-assembly-program-using-avr-gcc
+
+app.out : main.c
+	avr-gcc main.c -mmcu=attiny85 -Os -g -o app.out
+	avr-objcopy -O ihex app.out app.hex
+
+
+flash : app.hex
+	install-hex app.hex
+	#sudo avrdude -p t85 -P /dev/spidev0.0 -c linuxspi -b 10000 -U flash:w:app.hex
+

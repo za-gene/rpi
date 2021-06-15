@@ -1,14 +1,65 @@
 // vim: ft=cpp
 
+#include <stdbool.h>
+
 #define F_CPU 8000000
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
 
+
 typedef uint8_t u8; 
-//typedef uint16_t u16; 
+typedef uint16_t u16; 
 typedef uint32_t u32; 
+
+
+void nops(u32 n);
+
+/////////////////////////////////////////////////////////////////////////
+// ARDUINO CONVERSION
+
+
+#define LOW	0
+#define HIGH	1
+
+#define OUTPUT 		0
+#define INPUT 		1
+#define INPUT_PULLUP	2
+
+void digitalWrite(u8 pin, int value)
+{
+	if(value == 0)
+		PORTB &= ~(1<<pin);
+	else
+		PORTB |= (1<<pin);
+}
+
+void pinMode(u8 pin, u8 mode)
+{
+	switch(mode) {
+		case OUTPUT:
+			DDRB |= (1 << pin);
+			break;
+		case INPUT_PULLUP:
+			PORTB |= (1<<pin);
+			DDRB &= ~(1 << pin);
+			break;
+		case INPUT:
+			DDRB &= ~(1 << pin);
+			break;
+	}
+			
+}
+
+int digitalRead(u8 pin)
+{
+	if(PINB & (1<<pin))
+		return 1;
+	else
+		return 0;
+
+}
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -150,7 +201,7 @@ void init_timer1(unsigned long freq)
 }
 
 const u16 timer1_freq = 1000;
-const u32 fudged_freq = (u32)timer1_freq *10170/10000; // improve the accuracy
+u32 fudged_freq; // set in setup
 
 volatile u8 timer1_triggered =1;
 volatile u32 timer1_hz_count = 0;
@@ -204,6 +255,7 @@ void setup() {
 	CLKPR = 0; // to 8MHz
 #endif
 
+	fudged_freq = (u32)timer1_freq *10170/10000; // improve the accuracy
 	// scrap any timers that might have been set up
 	TIMSK = 0; // Timer/Counter Interrupt Mask Register
 
@@ -225,17 +277,14 @@ void loop() {
 	if(timer1_triggered) {
 		timer1_triggered = 0;
 		refresh_display = true;
-		//display_count(H, timer1_hz_count);
 	}
 
 	button_poll();
-	//static int temp = 0;
 	if(button_fell) {
 		button_fell = false;
 		refresh_display = true;
 		state++;
 		if(state>count_st) state = freq_st;
-		//display_count(L, ++temp);
 	}
 
 	static uint32_t prev_num_falls = 0;
@@ -255,7 +304,11 @@ void loop() {
 		default:
 			display_count(E, 666);
 	}
-	//display_count(L, g_total_num_falls);
-	//display_count(E, millis());
 }
 
+
+int main()
+{
+	setup();
+	while(1) loop();
+}
