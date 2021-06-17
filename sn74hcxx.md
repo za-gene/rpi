@@ -24,7 +24,7 @@ SN74HC163  4-bit binary counter
 SN74HC164  SIPO 8-bit serial-in paraller-out
 SN74HC165  PISO
 SN74HC174  D flip-flop
-SN74HC303  divide-by-2 clock driver
+SN74HC333  4-bit binary counters x2
 SN74HC595  SIPO 8-bit shift registers
 
 SN74HC244  octal buffer
