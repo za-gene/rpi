@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "gpio.h"
 
 
 typedef uint8_t u8; 
@@ -16,50 +17,7 @@ typedef uint32_t u32;
 
 void nops(u32 n);
 
-/////////////////////////////////////////////////////////////////////////
-// ARDUINO CONVERSION
 
-
-#define LOW	0
-#define HIGH	1
-
-#define OUTPUT 		0
-#define INPUT 		1
-#define INPUT_PULLUP	2
-
-void digitalWrite(u8 pin, int value)
-{
-	if(value == 0)
-		PORTB &= ~(1<<pin);
-	else
-		PORTB |= (1<<pin);
-}
-
-void pinMode(u8 pin, u8 mode)
-{
-	switch(mode) {
-		case OUTPUT:
-			DDRB |= (1 << pin);
-			break;
-		case INPUT_PULLUP:
-			PORTB |= (1<<pin);
-			DDRB &= ~(1 << pin);
-			break;
-		case INPUT:
-			DDRB &= ~(1 << pin);
-			break;
-	}
-			
-}
-
-int digitalRead(u8 pin)
-{
-	if(PINB & (1<<pin))
-		return 1;
-	else
-		return 0;
-
-}
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -145,7 +103,7 @@ void display_count(u8 mode, u32 cnt) {
 		c |= sep;
 
 		transfer_7219(i+1, c);
-		nops(1000);
+		//nops(1000);
 	}
 
 	transfer_7219(8, mode);

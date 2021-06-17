@@ -1,3 +1,7 @@
+VPATH = ..
+
+CFLAGS = -I.. -mmcu=attiny85 -Os -g
+
 app.hex : app.out
 
 clean :
@@ -5,8 +9,8 @@ clean :
 
 # https://stackoverflow.com/questions/31381007/compiling-an-assembly-program-using-avr-gcc
 
-app.out : main.c
-	avr-gcc main.c -mmcu=attiny85 -Os -g -o app.out
+app.out : main.c gpio.c
+	avr-gcc $(CFLAGS) $^ -o app.out
 	avr-objcopy -O ihex app.out app.hex
 
 
