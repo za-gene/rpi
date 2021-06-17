@@ -1,4 +1,5 @@
 #include <avr/io.h>
+//#include <avr/iotnx5.h> // io specific to t85
 
 #include "gpio.h"
 
@@ -36,3 +37,8 @@ int digitalRead(uint8_t pin)
 
 }
 
+
+void gpio_toggle(uint8_t pin)
+{
+	PORTB ^= (1<<pin);
+}

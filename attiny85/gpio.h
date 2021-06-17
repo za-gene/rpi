@@ -12,3 +12,4 @@
 void digitalWrite(uint8_t pin, int value);
 void pinMode(uint8_t pin, uint8_t mode);
 int digitalRead(uint8_t pin);
+void gpio_toggle(uint8_t pin);

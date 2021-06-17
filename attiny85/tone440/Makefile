@@ -1,24 +1,18 @@
-CXX = avr-g++
-CXXFLAGS = -g -Os -Wall -mcall-prologues -mmcu=attiny85
-BASE=minitone
+VPATH = ..
+CFLAGS = -I.. -g -Os -Wall -mcall-prologues -mmcu=attiny85
 
-.PHONY: install clean
-
-$(BASE).hex : $(BASE).elf
-	avr-objcopy -R .eeprom -O ihex $^ $@
-
-$(BASE).elf : main.o minitone85.o
-	$(CXX) -g -mmcu=attiny85 $^ -o $@ 
-
-.o :.cc
-	$(CXX) -c $^ 
+app.hex : app.out
 
 
-flash : install
-
-install:$(BASE).hex
-	install-hex $<
+.PHONY: flash clean
 
 clean :
-	rm -f *.hex *.obj *.o *.elf
+	rm -f *.hex *.obj *.o *.elf *.out
+
+app.out : main.c timer1.c gpio.c
+	avr-gcc $(CFLAGS) $^ -o app.out
+	avr-objcopy -O ihex app.out app.hex
+
+flash : app.hex
+	install-hex app.hex
 
