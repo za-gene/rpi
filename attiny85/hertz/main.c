@@ -16,6 +16,7 @@ typedef uint32_t u32;
 
 
 void nops(u32 n);
+void button_poll();
 
 
 
@@ -167,6 +168,7 @@ ISR(TIMER1_COMPA_vect)
 {
 	// remember: interrupts aren't nested
 	static volatile u16 cnt = 0;
+	button_poll();
 	if(++cnt != fudged_freq) return;
 	cnt = 0;
 
@@ -191,10 +193,12 @@ void button_init()
 
 bool button_fell = false;
 
+/* button is polled by timer, so we don't need a high poll count
+ */
 void button_poll()
 {
-#define MAX_COUNT 1000UL	
-	static u32 count = 0;
+#define MAX_COUNT 20
+	static u8 count = 0;
 	if(digitalRead(BTN) == HIGH) {
 		count = 0;
 	} else {
@@ -237,7 +241,7 @@ void loop() {
 		refresh_display = true;
 	}
 
-	button_poll();
+	//button_poll();
 	if(button_fell) {
 		button_fell = false;
 		refresh_display = true;
