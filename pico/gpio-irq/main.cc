@@ -17,13 +17,12 @@
 
 volatile uint32_t count = 0;
 
-// NB as of 2021-06-21 the GPIO parameter is ignored, and is enabled on any pin
+// NB as of 2021-06-21 the GPIO parameter is ignored, and is enabled on any pin. According to SDK
  
 void gpio_callback(uint gpio, uint32_t events)
 {
-	if(gpio==BTN && events == GPIO_IRQ_EDGE_FALL) pi_max7219_show_count(count++);
-	//pi_gpio_toggle(LED);
-	//gpio_acknowledge_irq(gpio, events);
+	count++;
+	pi_gpio_toggle(LED);
 }
 
 int main() 
@@ -35,15 +34,12 @@ int main()
 	pi_max7219_show_count(count);
 
 	pi_gpio_init(LED, OUTPUT);
-	//gpio_init(LED);
-	//gpio_set_dir(LED, GPIO_OUT);
-	//gpio_put(LED, 1);
-	pi_gpio_init(BTN, INPUT); // have it as floating
+	pi_gpio_init(BTN, INPUT_PULLUP);
 	gpio_set_irq_enabled_with_callback(BTN, GPIO_IRQ_EDGE_FALL, true, &gpio_callback);
 
 	while(1) {
-		gpio_put(LED, gpio_get(BTN));
-		//if(gpio_get(BTN)) pi_max7219_show_count(count++);
+		pi_max7219_show_count(count);
+		busy_wait_us_32(100*1000);
 	}
 
 	return 0;

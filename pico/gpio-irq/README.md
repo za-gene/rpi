@@ -1,9 +1,8 @@
-# ?
+# GPIO IRQ falling edge detector
 
-This is a semi-clone of rpi/hertz/hertz-pico, but this one doesn seem to work
 
 
 ## Status
 
-2021-06-15 Doesn't seem to detect edges
+2021-06-17	Works
 
