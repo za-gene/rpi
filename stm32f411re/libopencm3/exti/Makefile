@@ -5,6 +5,7 @@ CFILES = main.c
 
 #DEVICE=stm32f407vgt6
 DEVICE=stm32f411re
+#DEVICE=stm32f103c8t6
 OOCD_FILE = board/$(DEVICE).cfg
 
 # You shouldn't have to edit anything below here.
