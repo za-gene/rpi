@@ -6,7 +6,7 @@ void kernel_main(void)
 {
 	const int bcm_pin = 26;
 	gpio_sel(bcm_pin, OUTPUT); // set its pin mode to OUTPUT
-	u32 delay = 5;
+	u32 delay = 500;
 	while(1) {
 		gpio_set(bcm_pin); // set the pin high
 		delay_ms(delay);  
