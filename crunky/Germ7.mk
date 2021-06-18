@@ -52,7 +52,7 @@ NEWLIB += -lc_nano
 NEWLIB += -lg_nano
 GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
-LD_CRUNKY = -L$(CRUNKY) -lcrunky
+LD_CRUNKY = -L$(CRUNKY) -lcrunky -m
 
 #LIBS = $(NEWLIB) $(LD_CRUNKY) $(GCCLIB) -lm
 #LIBS = $(LD_CRUNKY) $(NEWLIB) $(GCCLIB) -lm
@@ -71,4 +71,5 @@ $(HEX) : $(ELF)
 flash : install
 
 install:
-	cp $(IMG) /media/pi/50BD-6FEC
+	#cp $(IMG) /media/pi/50BD-6FEC
+	cp $(IMG) /media/pi/boot
