@@ -1,27 +1,23 @@
-FQBN = arduino:avr:nano
+VPATH = ..
 
-FQBN1 =$(subst :,.,$(FQBN))	
-FQBN1:=$(strip $(FQBN1))
-BDIR =build/$(FQBN)
-#HERE = $(shell basename $(CURDIR))
-HERE =$(notdir $(CURDIR))
-INO  =$(HERE).ino
-HEX  =build/$(FQBN1)/$(INO).hex
-BIN  =build/$(FQBN1)/$(INO).bin
-PORT = $(shell ls /dev/ttyUSB*)
-#PORT = /dev/ttyACM0
+MCU=atmega32
+CFLAGS = -I.. -mmcu=$(MCU) -Os -g
 
-
-#hex : $(HEX)
-
-$(BIN) : $(INO)
-	echo bin is $(BIN)
-	arduino-cli compile --fqbn $(FQBN) -e 
-
-flash : 
-	# nah - wont' load to new board
-	#install-hex build/*/*.hex
-	arduino-cli upload -b $(FQBN) -i $(HEX) -p $(PORT)
+app.hex : app.out
 
 clean :
-	rm -rf build
+	rm -rf build app.out app.hex
+
+# https://stackoverflow.com/questions/31381007/compiling-an-assembly-program-using-avr-gcc
+
+app.out : main.c
+	avr-gcc $(CFLAGS) $^ -o app.out
+	avr-objcopy -O ihex app.out app.hex
+
+
+flash : app.hex
+	install-hex app.hex
+	#sudo avrdude -p t85 -P /dev/spidev0.0 -c linuxspi -b 10000 -U flash:w:app.hex
+
+
+
