@@ -52,3 +52,9 @@ A good song that I used for `sketch_jun9a` is available for download [here](http
 * [dev09](../dev09) - sine wave and consant voltage generator
 * [tone440](../attiny85/tone440) - squarewave on attiny85
 
+## Links to other sites
+
+
+* [Getting started with audio programming](https://news.ycombinator.com/item?id=27273706) - includes link
+to [PDF]https://drive.google.com/file/d/0B6imMSCt5Wq0eEFxNnd6OGVSdDQ/view)
+
