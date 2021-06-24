@@ -31,6 +31,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 
 ## Libraries
 
+* [riot](riot.md) - an rtos
 * [sml](https://boost-ext.github.io/sml/examples.html) - state machines. C++
 
 

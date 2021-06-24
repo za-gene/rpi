@@ -32,4 +32,7 @@ fi
 echo "Connecting to $DEV ..."
 
 # --omap arg below converts \r to \r\n for better outputting on console
-picocom -b $BAUD $DEV --omap crcrlf
+# imap governs how output from mcu are displayed on terminal
+# NB: \r 13 cr. \n 10 lf
+## --imap lfcrlf worked with RIOT diplsay of ps
+picocom -b $BAUD $DEV --imap lfcrlf --omap lfcrlf
