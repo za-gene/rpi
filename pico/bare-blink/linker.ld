@@ -15,8 +15,12 @@ SECTIONS {
 
 	.boot_loader ORIGIN(BOOT_LOADER) :
 	{
+		__boot2_start__ = .;
 		KEEP(*(.boot_loader*));
+		__boot2_end__ = .;
 	} > BOOT_LOADER
+	ASSERT(__boot2_end__ - __boot2_start__ == 256, 
+		"ERROR: Pico second stage bootloader must be 256 bytes in size")
 
 	.text ORIGIN(FLASH):
 	{
@@ -24,6 +28,16 @@ SECTIONS {
 		*(.text*)
 		. = ALIGN(4);
 	} > FLASH
+
+	.userstack :
+	{
+		. = ALIGN(4);
+		. = . + 0x0400; /* minimum stack size */
+		. = ALIGN(4);
+		__StackTop = .;
+	} > RAM
+
+
 
 }
 

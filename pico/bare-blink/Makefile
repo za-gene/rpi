@@ -1,11 +1,11 @@
 AS = arm-none-eabi-as
 CC = arm-none-eabi-gcc
-CFLAGS = -mthumb -mcpu=cortex-m0plus -nostdlib
+CFLAGS = -mthumb -mcpu=cortex-m0plus -nostdlib -ggdb
 LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 LDFLAGS = -L.. -T linker.ld
 
-OBJS = main.o crt0.o
+OBJS = crt0.o main.o
 
 app.bin : app.elf
 	arm-none-eabi-objcopy -O binary app.elf app.bin
