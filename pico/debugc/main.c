@@ -56,10 +56,12 @@ int main()
 	gpio_init(BTN);
 	gpio_set_dir(BTN, GPIO_IN);
 	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
 
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
+	//gpio_init(LED);
+	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // works
+
+	//gpio_set_dir(LED, GPIO_OUT);
+	SIO_GPIO_OE_SET = 1ul << LED; // works
 
 	int i = 0;
 	for(;;) {
