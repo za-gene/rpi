@@ -45,7 +45,7 @@ int main()
 
 	// set pin high
 	SIO_GPIO_OUT = 1ul << LED;
-	IO_BANK0_GPIO25_CTRL |= (0x3 << 8) | (0x3 << 12); // guess that didn't work
+	//IO_BANK0_GPIO25_CTRL |= (0x3 << 8) | (0x3 << 12); // guess that didn't work
 
 
 	volatile int i = 0;
