@@ -7,8 +7,6 @@ LDFLAGS = -T linker.ld
 
 OBJS = crt0.o main.o
 
-#app.uf2 : app.elf app.bin
-#	$(PICO_SDK_PATH)/build/elf2uf2/elf2uf2 app.elf app.uf2
 
 app.bin : app.elf 
 	arm-none-eabi-objcopy -O binary app.elf app.bin
@@ -29,3 +27,6 @@ clean :
 
 flash : app.uf2
 	cp app.uf2 /media/$(USER)/RPI-RP2
+
+app.uf2 : app.elf app.bin
+	$(PICO_SDK_PATH)/build/elf2uf2/elf2uf2 app.elf app.uf2
