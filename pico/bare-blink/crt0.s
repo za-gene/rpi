@@ -48,6 +48,8 @@ __vectors:
 
 
 .section .text
+.type _reset_handler,%function /* vital for getting the correct offset */
+.thumb_func
 _reset_handler:
 	mov r0, r0 @ just for testing purposes
 	bl main
