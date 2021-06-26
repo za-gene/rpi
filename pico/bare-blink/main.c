@@ -31,7 +31,7 @@
 void delay(int n) // no particular timing
 {
 	for(int i =0 ; i< n; i++) {
-		for(int j = 0; j< 1000; j++) {
+		for(int j = 0; j< 10000; j++) {
 			asm volatile ("nop");
 		}
 	}
@@ -39,51 +39,16 @@ void delay(int n) // no particular timing
 
 
 
-void on()
-{
-	SIO_GPIO_OUT_SET = 1ul << LED; 
-}
-
-void off()
-{
-	SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
-}
-
-
 int main()
 {
-	// gpio_init(25) equiv
-	SIO_GPIO_OE_CLR = 1ul << LED;	// enable output clearing
-	SIO_GPIO_OUT_CLR = 1ul << LED;	// now clear it
-	// peform the equiv of gpio_set_function()
-	// In PADS_BANK0 we'd usually set IE to 1, and OD to 0, but this is the default anyway, so don't bother.
-	PADS_BANK0_GPIO25 = 0b1010110;
-	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // set the pin to act as a regular GPIO pin
+	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // init pin
+	SIO_GPIO_OE_SET = 1ul << LED; // allow setting of output
 
-	// set direction to output
-	SIO_GPIO_OE = 1ul << LED; // not sure if this will be effective. Nope. It wasn't
-	SIO_GPIO_OE_SET = 1ul << LED; // enable output setting
-	SIO_GPIO_OUT_SET = 1ul << LED; 
-
-	// set pin high
-	SIO_GPIO_OUT = 1ul << LED;
-	IO_BANK0_GPIO25_CTRL |= (0x3 << 8) | (0x3 << 12); // guess that didn't work
-
-	SIO_GPIO_OUT_SET = 1ul << LED; 
-
-	//while(1);
-	SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
-
-	volatile int i = 0;
 	while(1) {
 		SIO_GPIO_OUT_SET = 1ul << LED; 
-	//SIO_GPIO_OUT = 1ul << LED;
 		delay(100);
 		SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
-	//SIO_GPIO_OUT = 0;
-
 		delay(900);
-		i++;
 	}
 
 	return 0;
