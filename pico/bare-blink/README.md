@@ -1,5 +1,11 @@
 # bare metal blinky
 
+
+## Links to other sites
+
+* [blog](https://mcturra2000.wordpress.com/2021/06/26/a-working-esque-non-sdk-blinky-sketch-for-the-raspberrypico/) article about this project
+
+
 ## Status
 
 2021-06-26 Mostly working. The elf works in debug mode through SWD, but the generated uf2 file doesn't.
