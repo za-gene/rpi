@@ -28,6 +28,16 @@
 
 #define LED 25
 
+void delay(int n) // no particular timing
+{
+	for(int i =0 ; i< n; i++) {
+		for(int j = 0; j< 10000; j++) {
+			asm volatile ("nop");
+		}
+	}
+}
+
+
 int main()
 {
 	// gpio_init(25) equiv
@@ -47,9 +57,14 @@ int main()
 	SIO_GPIO_OUT = 1ul << LED;
 	//IO_BANK0_GPIO25_CTRL |= (0x3 << 8) | (0x3 << 12); // guess that didn't work
 
+	SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
 
 	volatile int i = 0;
 	while(1) {
+		SIO_GPIO_OUT_SET = 1ul << LED; 
+		delay(100);
+		SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
+		delay(900);
 		i++;
 	}
 
