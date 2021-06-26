@@ -2,32 +2,37 @@
  * https://github.com/rp-rs/pico-blink-rs/blob/develop/memory.x
  */
 
+/*
+ENTRY(reset_handler)
+*/
+
 MEMORY
 {
 	/* NOTE 1 K = 1 KiBi = 1024 bytes */
 	/* To suit Raspberry Pi RP2040 SoC */
-	BOOT_LOADER : ORIGIN = 0x10000000, LENGTH = 0x100
-	FLASH : ORIGIN = 0x10000100, LENGTH = 2048K - 0x100
+	BOOT2 : ORIGIN = 0x10000000, LENGTH = 0x100 
+	FLASH : ORIGIN = 0x10000100, LENGTH = 2048K  - 0x100
 	RAM : ORIGIN = 0x20000000, LENGTH = 264K
 }
 
 SECTIONS {
 
-	.boot_loader ORIGIN(BOOT_LOADER) :
+	.boot2 :
 	{
 		__boot2_start__ = .;
-		KEEP(*(.boot_loader*));
+		*(.boot2*);
 		__boot2_end__ = .;
-	} > BOOT_LOADER
+	} >BOOT2
 	ASSERT(__boot2_end__ - __boot2_start__ == 256, 
 		"ERROR: Pico second stage bootloader must be 256 bytes in size")
 
-	.text ORIGIN(FLASH):
+	.text :
 	{
-		. = ALIGN(4);
+		*(.vectors*)
+		/* . = ALIGN(4); */
 		*(.text*)
 		. = ALIGN(4);
-	} > FLASH
+	} >FLASH
 
 	.userstack :
 	{
