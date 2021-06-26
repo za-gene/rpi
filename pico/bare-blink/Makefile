@@ -23,7 +23,7 @@ app.elf : $(OBJS) linker.ld
 	$(AS) -g -o $@ $<
 
 clean :
-	rm -f *.o app.elf app.list app.bin
+	rm -f *.o app.elf app.list app.bin app.uf2
 
 flash : app.uf2
 	cp app.uf2 /media/$(USER)/RPI-RP2
