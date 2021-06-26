@@ -38,8 +38,8 @@ https://smist08.wordpress.com/2021/04/16/assembly-language-on-the-raspberry-pi-p
 
 .global __vectors
 __vectors:
-/* .word __StackTop */
-.word 0x20042000
+/* 	.word __StackTop  */
+	.word 0x20042000 
 .word _reset_handler
 
 
@@ -51,7 +51,7 @@ __vectors:
 .type _reset_handler,%function /* vital for getting the correct offset */
 .thumb_func
 _reset_handler:
-	mov r0, r0 @ just for testing purposes
+	@ mov r0, r0 @ just for testing purposes
 	bl main
 
 
