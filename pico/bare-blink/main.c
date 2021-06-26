@@ -35,6 +35,7 @@ int main()
 	SIO_GPIO_OUT_CLR = 1ul << LED;	// now clear it
 	// peform the equiv of gpio_set_function()
 	// In PADS_BANK0 we'd usually set IE to 1, and OD to 0, but this is the default anyway, so don't bother.
+	PADS_BANK0_GPIO25 = 0b1010110;
 	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // set the pin to act as a regular GPIO pin
 
 	// set direction to output
