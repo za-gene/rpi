@@ -2,7 +2,8 @@
 
 if [ ! -f /tmp/openocd ]; then
 	# dtach -n /tmp/openocd -z openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg
-    dtach -n /tmp/openocd -z  sudo openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -s tcl
+    #dtach -n /tmp/openocd -z  sudo openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -s tcl
+    sudo openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -s tcl
 
 fi
 

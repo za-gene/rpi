@@ -1,74 +1,319 @@
-/* Inspired from
-https://smist08.wordpress.com/2021/04/16/assembly-language-on-the-raspberry-pi-pico/
-*/
+# 1 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 1 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S"
+
+
+
+
+
+
+# 1 "pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h" 1
+# 8 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S" 2
+# 1 "pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h" 1
+# 12 "pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h"
+# 1 "pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h" 1
+# 13 "pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h" 2
+# 9 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S" 2
+
+# 1 "pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h" 1
+# 11 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S" 2
+# 1 "pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h" 1
+# 12 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S" 2
+
+
+
+
+
+
 
 .syntax unified
 .cpu cortex-m0plus
 .thumb
-/*
-@ .syntax unified
- .fpu softvfp 
-@ .thumb
-*/
-
-
-.section .boot2, "ax"
-.word 0x4b32b500, 0x60582021, 0x21026898, 0x60984388
-.word 0x611860d8, 0x4b2e6158, 0x60992100, 0x61592102
-.word 0x22f02101, 0x492b5099, 0x21016019, 0x20356099
-.word 0xf844f000, 0x42902202, 0x2106d014, 0xf0006619
-.word 0x6e19f834, 0x66192101, 0x66182000, 0xf000661a
-.word 0x6e19f82c, 0x6e196e19, 0xf0002005, 0x2101f82f
-.word 0xd1f94208, 0x60992100, 0x6019491b, 0x60592100
-.word 0x481b491a, 0x21016001, 0x21eb6099, 0x21a06619
-.word 0xf0006619, 0x2100f812, 0x49166099, 0x60014814
-.word 0x60992101, 0x2800bc01, 0x4700d000, 0x49134812
-.word 0xc8036008, 0x8808f380, 0xb5034708, 0x20046a99
-.word 0xd0fb4201, 0x42012001, 0xbd03d1f8, 0x6618b502
-.word 0xf7ff6618, 0x6e18fff2, 0xbd026e18, 0x40020000
-.word 0x18000000, 0x00070000, 0x005f0300, 0x00002221
-.word 0x180000f4, 0xa0002022, 0x10000100, 0xe000ed08
-.word 0x00000000, 0x00000000, 0x00000000, 0x7a4eb274
-
-
-
 
 .section .vectors, "ax"
-.align 2 
+.align 2
 
 .global __vectors
 __vectors:
-.word __StackTop  
-/*
-	.word 0x20042000 
-*/
+.word __StackTop
 .word _reset_handler
+.word isr_nmi
+.word isr_hardfault
+.word isr_invalid
+.word isr_invalid
+.word isr_invalid
+.word isr_invalid
+.word isr_invalid
+.word isr_invalid
+.word isr_invalid
+.word isr_svcall
+.word isr_invalid
+.word isr_invalid
+.word isr_pendsv
+.word isr_systick
+.word isr_irq0
+.word isr_irq1
+.word isr_irq2
+.word isr_irq3
+.word isr_irq4
+.word isr_irq5
+.word isr_irq6
+.word isr_irq7
+.word isr_irq8
+.word isr_irq9
+.word isr_irq10
+.word isr_irq11
+.word isr_irq12
+.word isr_irq13
+.word isr_irq14
+.word isr_irq15
+.word isr_irq16
+.word isr_irq17
+.word isr_irq18
+.word isr_irq19
+.word isr_irq20
+.word isr_irq21
+.word isr_irq22
+.word isr_irq23
+.word isr_irq24
+.word isr_irq25
+.word isr_irq26
+.word isr_irq27
+.word isr_irq28
+.word isr_irq29
+.word isr_irq30
+.word isr_irq31
+
+
+
+
+
+.macro decl_isr_bkpt name
+.weak \name
+.type \name,%function
+.thumb_func
+\name:
+    bkpt #0
+.endm
+
+
+decl_isr_bkpt isr_invalid
+decl_isr_bkpt isr_nmi
+decl_isr_bkpt isr_hardfault
+decl_isr_bkpt isr_svcall
+decl_isr_bkpt isr_pendsv
+decl_isr_bkpt isr_systick
+
+.macro decl_isr name
+.weak \name
+.type \name,%function
+.thumb_func
+\name:
+.endm
+
+decl_isr isr_irq0
+decl_isr isr_irq1
+decl_isr isr_irq2
+decl_isr isr_irq3
+decl_isr isr_irq4
+decl_isr isr_irq5
+decl_isr isr_irq6
+decl_isr isr_irq7
+decl_isr isr_irq8
+decl_isr isr_irq9
+decl_isr isr_irq10
+decl_isr isr_irq11
+decl_isr isr_irq12
+decl_isr isr_irq13
+decl_isr isr_irq14
+decl_isr isr_irq15
+decl_isr isr_irq16
+decl_isr isr_irq17
+decl_isr isr_irq18
+decl_isr isr_irq19
+decl_isr isr_irq20
+decl_isr isr_irq21
+decl_isr isr_irq22
+decl_isr isr_irq23
+decl_isr isr_irq24
+decl_isr isr_irq25
+decl_isr isr_irq26
+decl_isr isr_irq27
+decl_isr isr_irq28
+decl_isr isr_irq29
+decl_isr isr_irq30
+decl_isr isr_irq31
+
+
+.global __unhandled_user_irq
+.thumb_func
+__unhandled_user_irq:
+    bl __get_current_exception
+    subs r0, #16
+.global unhandled_user_irq_num_in_r0
+unhandled_user_irq_num_in_r0:
+    bkpt #0
+
+
+
+.section .binary_info_header, "a"
 
 
 
 
 
 
-.section .text
-.type _reset_handler,%function /* vital for getting the correct offset */
+
+binary_info_header:
+.word 0x7188ebf2
+.word __binary_info_start
+.word __binary_info_end
+.word data_cpy_table
+.word 0xe71aa390
+
+
+
+
+.section .reset, "ax"
+# 182 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S"
+.type _entry_point,%function
+.thumb_func
+.global _entry_point
+_entry_point:
+# 194 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S"
+    movs r0, #0
+
+    ldr r1, =(0xe0000000 + 0x0000ed08)
+    str r0, [r1]
+    ldmia r0!, {r1, r2}
+    msr msp, r1
+    bx r2
+# 209 "pico-sdk/src/rp2_common/pico_standard_link/crt0.S"
+.type _reset_handler,%function
 .thumb_func
 _reset_handler:
-/* changed the way main is called. from 'BL main'.  New method now uses
-32-bit jumps, in case the symbols are moved out of range, which can
-happen if main is in SRAM and crt0 is in flash. That possibly explains
-why my code worked under debugging, but not in uf2
-*/
-	ldr r1, =main
-	blx r1
 
 
-/*
+    ldr r0, =(0xd0000000 + 0x00000000)
+    ldr r0, [r0]
+    cmp r0, #0
+    bne hold_non_core0_in_bootrom
+
+    adr r4, data_cpy_table
+
+
+1:
+    ldmia r4!, {r1-r3}
+    cmp r1, #0
+    beq 2f
+    bl data_cpy
+    b 1b
+2:
+
+
+    ldr r1, =__bss_start__
+    ldr r2, =__bss_end__
+    movs r0, #0
+    b bss_fill_test
+bss_fill_loop:
+    stm r1!, {r0}
+bss_fill_test:
+    cmp r1, r2
+    bne bss_fill_loop
+
+platform_entry:
+
+
+    ldr r1, =runtime_init
+    blx r1
+    ldr r1, =main
+    blx r1
+    ldr r1, =exit
+    blx r1
+
+
+.weak _exit
+.type _exit,%function
 .thumb_func
-.global main_asm
-.align 4
-main_asm:
-BL main  
-*/
+_exit:
+1:
+    bkpt #0
+    b 1b
 
-.data
-.align 4
+data_cpy_loop:
+    ldm r1!, {r0}
+    stm r2!, {r0}
+data_cpy:
+    cmp r2, r3
+    blo data_cpy_loop
+    bx lr
+
+.align 2
+data_cpy_table:
+
+
+
+
+
+.word __etext
+.word __data_start__
+.word __data_end__
+
+.word __scratch_x_source__
+.word __scratch_x_start__
+.word __scratch_x_end__
+
+.word __scratch_y_source__
+.word __scratch_y_start__
+.word __scratch_y_end__
+
+.word 0
+
+
+
+
+
+.weak runtime_init
+.type runtime_init,%function
+.thumb_func
+runtime_init:
+    bx lr
+
+
+# rom_func_lookup is defined in RP.ROM. This weak symbol causes rom_func_lookup
+# to hang in case RP.ROM is not linked.
+.weak rom_func_lookup
+.type rom_func_lookup,%function
+.thumb_func
+rom_func_lookup:
+1:
+    wfe
+    b 1b
+
+hold_non_core0_in_bootrom:
+    ldr r0, = 'W' | ('V' << 8)
+    bl rom_func_lookup
+    bx r0
+
+
+.global __get_current_exception
+.thumb_func
+__get_current_exception:
+    mrs r0, ipsr
+    uxtb r0, r0
+    bx lr
+
+
+
+
+.section .stack
+
+.align 5
+    .equ StackSize, 0x800u
+.space StackSize
+
+.section .heap
+.align 2
+    .equ HeapSize, 0x800
+.space HeapSize

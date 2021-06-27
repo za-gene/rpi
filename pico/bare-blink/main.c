@@ -38,6 +38,11 @@ void delay(int n) // no particular timing
 }
 
 
+// stub for exit
+void exit(int status)
+{
+	while(1);
+}
 
 int main()
 {
