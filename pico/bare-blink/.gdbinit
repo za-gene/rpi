@@ -5,8 +5,9 @@ end
 
 file app.elf
 target remote localhost:3333
-load
 monitor reset init
+#monitor arm semihosting enable
+load
 #b main.c:64
 echo Type c to continue...\n
 
