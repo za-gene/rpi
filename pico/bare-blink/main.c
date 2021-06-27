@@ -41,6 +41,8 @@ void delay(int n) // no particular timing
 
 int main()
 {
+	delay(100); // crude method of reset waiting. doesn't seem to help
+
 	// added 2021-06-27
 	//volatile uint32_t tmp = PADS_BANK0_GPIO25;
 	//PADS_BANK0_GPIO25 = 0b1010110;
