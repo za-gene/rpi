@@ -53,8 +53,13 @@ __vectors:
 .type _reset_handler,%function /* vital for getting the correct offset */
 .thumb_func
 _reset_handler:
-	@ mov r0, r0 @ just for testing purposes
-	bl main
+/* changed the way main is called. from 'BL main'.  New method now uses
+32-bit jumps, in case the symbols are moved out of range, which can
+happen if main is in SRAM and crt0 is in flash. That possibly explains
+why my code worked under debugging, but not in uf2
+*/
+	ldr r1, =main
+	blx r1
 
 
 /*
