@@ -53,7 +53,7 @@ SECTIONS {
 		. = ALIGN(4);
 		. = . + 0x0400; /* minimum stack size */
 		. = ALIGN(4);
-		__StackTop = .;
+		__StackTop = ORIGIN(RAM) + LENGTH(RAM);
 	} > RAM
 
 

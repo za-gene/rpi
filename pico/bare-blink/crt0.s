@@ -38,8 +38,10 @@ https://smist08.wordpress.com/2021/04/16/assembly-language-on-the-raspberry-pi-p
 
 .global __vectors
 __vectors:
-/* 	.word __StackTop  */
+.word __StackTop  
+/*
 	.word 0x20042000 
+*/
 .word _reset_handler
 
 

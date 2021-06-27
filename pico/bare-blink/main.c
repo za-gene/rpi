@@ -41,6 +41,10 @@ void delay(int n) // no particular timing
 
 int main()
 {
+	// added 2021-06-27
+	volatile uint32_t tmp = PADS_BANK0_GPIO25;
+	PADS_BANK0_GPIO25 = 0b1010110;
+
 	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // init pin
 	SIO_GPIO_OE_SET = 1ul << LED; // allow setting of output
 
