@@ -42,10 +42,14 @@ void delay(int n) // no particular timing
 int main()
 {
 	// added 2021-06-27
-	volatile uint32_t tmp = PADS_BANK0_GPIO25;
-	PADS_BANK0_GPIO25 = 0b1010110;
-
-	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // init pin
+	//volatile uint32_t tmp = PADS_BANK0_GPIO25;
+	//PADS_BANK0_GPIO25 = 0b1010110;
+	// stuff taken from rust blink example
+	SIO_GPIO_OE_CLR = 1ul<<25; // set gpio25 to be an input (output enable is cleared)
+	SIO_GPIO_OUT_CLR = 1ul<<25; // set gpio25 to be an output low (output is cleared)
+	PADS_BANK0_GPIO25 = 0b1010110 ; //output disable off, input enable on
+	
+	IO_BANK0_GPIO25_CTRL = GPIO_FUNC_SIO; // init pin - select function SIO
 	SIO_GPIO_OE_SET = 1ul << LED; // allow setting of output
 
 	while(1) {
