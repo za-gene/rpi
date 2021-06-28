@@ -229,7 +229,7 @@ platform_entry:
     blx r1
     ldr r1, =main
     blx r1
-    ldr r1, =exit
+    ldr r1, =_exit /* mcarter 2021-06-28: chnaged from 'exit' to '_exit' */
     blx r1
 
 

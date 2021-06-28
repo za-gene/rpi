@@ -5,7 +5,7 @@ LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 LDFLAGS = -T linker.ld
 
-OBJS = crt0.o main.o boot2.o
+OBJS =  main.o boot2.o crt0.o
 
 BUILT = app.elf app.uf2 app.bin
 
