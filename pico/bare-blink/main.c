@@ -51,6 +51,14 @@ void exit(int status)
 int main()
 {
 	// inspired by Ada. Appears to be necessary, too.
+	// See s2.14.1
+#if 1
+	uint32_t reset_mask = (1ul << 5) // IO_BANK0
+		| (1ul << 8) // PAD_BANK0
+		;
+	RESETS_RESET &= ~reset_mask; // deassert the peripherals we want to use
+	while((RESETS_RESET_DONE & reset_mask) != reset_mask); // wait until they are up again
+#else
 	RESETS_RESET &= ~(1ul << 5); // clear IO_BANK0
 	RESETS_RESET &= ~(1ul << 8); // clear PAD_BANK0
 	while(1) {
@@ -58,6 +66,7 @@ int main()
 		int pad_bank0_done = (RESETS_RESET_DONE & (1ul<<8)) >0;
 		if(io_bank0_done && pad_bank0_done) break;
 	}
+#endif
 	PADS_BANK0_GPIO25 &= ~(1<<7); // clear output disable 
 	PADS_BANK0_GPIO25 &= ~(1<<6); // clear input enable
 
@@ -78,7 +87,7 @@ int main()
 		SIO_GPIO_OUT_SET = 1ul << LED; 
 		delay(100);
 		SIO_GPIO_OUT_CLR = 1ul << LED; // turn off the LED
-		delay(900);
+		delay(100);
 	}
 
 	return 0;
