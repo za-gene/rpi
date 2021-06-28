@@ -1,4 +1,9 @@
-#include <stdint.h>
+/* 
+ * You can skip stdint.h and see how GCC defines things by running
+ * arm-none-eabi-gcc -dM -E - < /dev/null
+ */
+//#include <stdint.h>
+typedef __UINT32_TYPE__ uint32_t;
 
 /* The gpio functions are described in the file:
  * src/rp2_common/hardware_gpio/gpio.c
