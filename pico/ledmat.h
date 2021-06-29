@@ -12,9 +12,14 @@
  * Columns are set left to right: 0 to 7 inc.
  *
  */
-#include <bitset>
 
+
+
+
+#include <pico/stdlib.h>
 #include "hardware/i2c.h"
+
+#include <bitset>
 
 //#include "i2cmc.h"
 

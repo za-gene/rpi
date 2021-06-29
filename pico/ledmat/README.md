@@ -2,7 +2,9 @@
 
 Demo of how to use the LED matrix https://www.adafruit.com/product/1623 . 
 
-Project assumes GP26 is used for SDA, and GP27 for SCL.
+Project assumes GP4 (pin 6)  is used for SDA, and GP5 (pin 7) for SCL.
+
+Power using 3V3,
 
 
 ## Status

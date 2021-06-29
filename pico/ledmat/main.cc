@@ -46,7 +46,7 @@ int main()
 
 	//initalise display
 	for(int r=0; r<8; r++) {
-		uint8_t row = pattern2[r];
+		uint8_t row = pattern1[r];
 		for(int c=0; c<8; c++) {
 			ledmat.set(r,c, row >> 7);
 			row <<=1;
