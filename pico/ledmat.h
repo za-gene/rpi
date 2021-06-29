@@ -16,12 +16,12 @@
 
 #include "hardware/i2c.h"
 
-#include "i2cmc.h"
+//#include "i2cmc.h"
 
 
 class LedMat {
 	public:
-		LedMat(I2C& i2c);
+		LedMat();
 		void set(uint8_t row, uint8_t col, bool on);
 		void show();
 	private:

@@ -7,6 +7,7 @@ add_library(pi INTERFACE)
 
 target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/blinkt.cc
+	${CMAKE_CURRENT_LIST_DIR}/ledmat.cc
 	${CMAKE_CURRENT_LIST_DIR}/pi.cc
 )
 
@@ -14,6 +15,7 @@ target_include_directories(pi INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 
 target_link_libraries(pi INTERFACE 
 	hardware_gpio
+	hardware_i2c
 	#hardware_irq
 	hardware_spi
 	pico_stdlib

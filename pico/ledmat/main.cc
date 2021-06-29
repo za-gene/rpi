@@ -6,7 +6,6 @@
 //#include <type_traits>
 
 
-#include "i2cmc.h"
 #include "ledmat.h"
 
 
@@ -15,8 +14,7 @@
 
 
 
-I2C i2c(i2c1, 26);
-LedMat ledmat(i2c);
+LedMat ledmat;
 
 static uint8_t  pattern1[] = { 
 	0b1000'0001,

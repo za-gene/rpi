@@ -1,3 +1,5 @@
+#include "hardware/gpio.h"
+
 #include "ledmat.h"
 
 
@@ -8,8 +10,19 @@ void LedMat::send_cmd(uint8_t cmd)
 }
 
 
-LedMat::LedMat(I2C& i2c) : m_i2c_inst(i2c.get())
+LedMat::LedMat()
 {
+	// init i2c
+	m_i2c_inst = i2c0;
+	const auto baudrate = 100'000;
+    const auto sda = 4;
+	i2c_init(m_i2c_inst, baudrate);
+	gpio_set_function(sda, GPIO_FUNC_I2C);
+	gpio_pull_up(sda);
+	// sda is next pin
+	gpio_set_function(sda+1, GPIO_FUNC_I2C);
+	gpio_pull_up(sda+1);
+	
 	send_cmd(0x20 | 1); // turn on oscillator
 	show(); // clear out any display that is there
 	send_cmd(0x81); // display on
