@@ -1,8 +1,8 @@
 //#include <stdio.h>
 //#include <string.h>
-//#include "pico/stdlib.h"
+#include "pico/stdlib.h"
 //#include "hardware/spi.h"
-#include "hardware/gpio.h"
+//#include "hardware/gpio.h"
 
 #include "blinkt.h"
 
@@ -50,14 +50,6 @@ static uint8_t pixels[numLEDs * 3];
 
 
 
-/*
-static void delay(int ms)
-{
-	sleep_ms(ms);
-}
-*/
-
-
 static void spi_out(uint8_t n) {
 	for (uint8_t i = 8; i--; n <<= 1) {
 		if (n & 0x80) digitalWrite(_dataPin, HIGH);
@@ -97,33 +89,3 @@ void blinkt_set_pixel_colour(uint8_t pos , uint8_t r, uint8_t g, uint8_t b)
 	pixels[pos++] = g;
 	pixels[pos] = r;
 }
-
-
-/*
-   void loop() {
-   static uint8_t red = 0;
-   red = 10 - red; // switch between on and off
-   for (int i = 0; i < 8; ++i) {
-   show();
-   delay(100);
-   setPixelColour(i, red, 0, 0);
-   }
-
-   }
-
-
-
-   int main() 
-   {
-   stdio_init_all();
-
-   pinMode(dataPin , OUTPUT);
-   pinMode(clockPin, OUTPUT);
-   digitalWrite(dataPin , LOW);
-   digitalWrite(clockPin, LOW);
-   show();
-
-   for(;;) loop();
-   return 0;
-   }
-   */
