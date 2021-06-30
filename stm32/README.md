@@ -46,7 +46,6 @@ If all else fails:
 * [adc-simple](adc-simple) - just uses the analogRead() function
 * [bare-metal](bare) - low-level stuff
 * [benchmarks](benchmarks) - how fast does everything work?
-* [debugging](debugging.txt)
 * [divider](divider) - frequency (aka clock) divider
 * [sketch_oct18a](sketch_oct18a) = Arduino, HardwareTimer, pmwWrite
 * [song-player](song-player) - 3V3 SD card, MCP4921 and LED confirmation. Plays raw song.
