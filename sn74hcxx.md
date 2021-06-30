@@ -13,7 +13,7 @@ SN74HC14   hex inverter gate (SCHMITT trigger)
 SN74HC21   AND dual 4-input, open-collector
 SN74HC30   NAND single 8-input
 SN74HC32   OR quad 2-input
-SN74HC74   D flip flop
+SN74HC74   flip flop: dual d-type positive-edge-triggered
 SN74HC125  quad bus buffer
 SN74HC126  quad bus buffer
 SN74HC132  NAND quad 2-input Schmitt trigger
@@ -23,7 +23,7 @@ SN74HC157  selector/multiplexer
 SN74HC163  4-bit binary counter
 SN74HC164  SIPO 8-bit serial-in paraller-out
 SN74HC165  PISO
-SN74HC174  D flip-flop
+SN74HC174  flip-flop: 6x d-type with clear
 SN74HC333  4-bit binary counters x2
 SN74HC595  SIPO 8-bit shift registers
 
@@ -32,8 +32,8 @@ SN74HC245  octal bus transceiver
 SN74HC273  8-bit register
 SN74HC373  octal transparent latch
 SN74HC374  octal register
-SN74HC573  D-type transparent latch
-SN74HC574  D flip-flop
+SN74HC573  D-type transparent latch. 8x. 3-state
+SN74HC574  flip-flop: 8x edge-triggered d-type with 3-state outputs
 ```
 
 ## Links to other sites
