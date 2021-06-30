@@ -6,7 +6,7 @@
 
 typedef uint32_t u32;
 
-#define GPIOn GPIO13
+//#define GPIOn GPIO13
 
 typedef struct {
 	uint32_t port;
@@ -20,7 +20,10 @@ typedef struct {
 pin_t pc13 = { GPIOC, GPIO13, RCC_GPIOC };
 #define PC13 &pc13
 
+void pin_toggle(pin_t* pin);
 void pin_out(pin_t* pin);
+
+
 
 void pin_out(pin_t* pin)
 {
@@ -29,10 +32,21 @@ void pin_out(pin_t* pin)
 	//gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, pin->num);
 }
 
+void pin_toggle(pin_t* pin)
+{
+	gpio_toggle(pin->port, pin->num);
+}
+
+
+
+
+
+
+
 void tim2_isr(void) // the standard ISR name for TIM2
 {
 	timer_clear_flag(TIM2, TIM_SR_UIF); // hmmm, seems to matter that it's at the top
-	gpio_toggle(GPIOC, GPIOn);
+	pin_toggle(PC13);
 }
 
 int main(void)
