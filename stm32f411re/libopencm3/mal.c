@@ -58,10 +58,7 @@ void mal_max7219_tfr(uint8_t address, uint8_t value)
 void mal_spi_init_std(void)
 {
 	rcc_periph_clock_enable(RCC_SPI2);
-	//rcc_periph_clock_enable(RCC_USART1);
-	//rcc_periph_clock_enable(RCC_GPIOA);
 	rcc_periph_clock_enable(RCC_GPIOB);
-	//rcc_periph_clock_enable(RCC_GPIOC);
 	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
 	gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
 	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_256, SPI_CR1_CPOL, SPI_CR1_CPHA, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
