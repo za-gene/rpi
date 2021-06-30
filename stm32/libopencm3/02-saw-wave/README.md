@@ -14,4 +14,4 @@ at the beginning of `void tim2_isr(void)`, rather than at the end.
 
 ## NEWS
 
-2021-06-08 Started. Eventually got working
+2021-06-30 Started. Some aspects working (zeroseg).
