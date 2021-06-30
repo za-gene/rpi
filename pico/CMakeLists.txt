@@ -9,6 +9,7 @@ target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/blinkt.cc
 	${CMAKE_CURRENT_LIST_DIR}/ledmat.cc
 	${CMAKE_CURRENT_LIST_DIR}/pi.cc
+	${CMAKE_CURRENT_LIST_DIR}/ssd1306.cc
 )
 
 target_include_directories(pi INTERFACE ${CMAKE_CURRENT_LIST_DIR})

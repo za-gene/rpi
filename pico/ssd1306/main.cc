@@ -1,5 +1,5 @@
 #include "pico/stdlib.h"
-#include "oled.h"
+#include "ssd1306.h"
 
 extern "C" const uint8_t splash1_data[];
 int main()
