@@ -32,7 +32,7 @@ void pin_out(pin_t* pin);
 void pin_out(pin_t* pin)
 {
 	rcc_periph_clock_enable(pin->rcc);
-	gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, pin->num);
+	gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, pin->num);
 	//gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, pin->num);
 }
 
@@ -119,8 +119,11 @@ void mal_spi_init_std(void)
 	//gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
 	//gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
 	//gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_OPENDRAIN, GPIO13 | GPIO15);
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
-	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_256, SPI_CR1_CPOL, SPI_CR1_CPHA, 
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
+	uint32_t baud = SPI_CR1_BAUDRATE_FPCLK_DIV_256;
+	baud = SPI_CR1_BAUDRATE_FPCLK_DIV_32;
+	baud = SPI_CR1_BAUDRATE_FPCLK_DIV_2;
+	spi_init_master(SPI2, baud, SPI_CR1_CPOL, SPI_CR1_CPHA, 
 			SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
 	//spi_enable_ss_output(SPI2); /* Required, see NSS, 25.3.1 section. */
 	pin_out(PB12); // chip select
@@ -159,7 +162,7 @@ void delay(int n)
 }
 
 
-double frame_rate = 44100.0; //hz 
+double frame_rate = 16000.0; //hz 
 volatile float y =0, dy;
 
 void do_periodic(void);
@@ -167,6 +170,7 @@ void do_periodic(void);
 void do_periodic()
 {
 	y = y + dy;
+	//y = 4095;
 	mcp4921_write(y);
 	if(y>=4095) y = 0;
 	pin_toggle(PC14);
@@ -211,12 +215,12 @@ int main(void)
 	//gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
 	//gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIOn);
 
-	//timer_setup();
+	timer_setup();
 
 	//mal_max7219_init();
 	//u32 count = 0;
 	while(1) {
-		do_periodic();
+		//do_periodic();
 		//mal_max7219_show_count(count++);
 		delay(0);
 	}

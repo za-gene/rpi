@@ -1,17 +1,30 @@
-# irq-interrupt
+# saw wave
 
-Blink a light using timer (TIM2) interrupts. Took me long enough to get it working!
+Uses mcp4921 and timer interrupts. Wave is 440Hz. Output is perfect on a loudspeaker
+but rubbish on a small speaker. The problem is likely to be lack of power: as noted
+below output was at about 13mA. So power is approx 36mW (2.77V * 13mA). 
+So an amplification of 100X would be great.
 
-It blinks on every second. Note that the interrupt toggles the pin, so the frequency
-of the irq is set to 2Hz, rather than 1Hz.
 
-One of my problems was that I had to
-```
-timer_clear_flag(TIM2, TIM_SR_UIF);
-```
-at the beginning of `void tim2_isr(void)`, rather than at the end.
+## Technical Notes
+
+Rigging the DAC to constant max output voltage from STM32 was 2.77V, and 13mA current. 
+
+
+Running `do_periodic()` outside a timr and insider a tight loop showed that the frequency
+of the pin toggling was about 24kHz. This is way short of a desirable 44kHz frame rate. 
+The chief culprit seems to be SPI, although floats didn't help. An onboard DAC and 
+fixed precision floats would certainly have helped.
+However, I decided to use an IRQ at 16kHz. It works
+
+
+## References
+
+* db05.308
 
 
 ## NEWS
 
-2021-06-30 Started. Some aspects working (zeroseg).
+2021-07-01	Works.
+
+2021-06-30 	Started. Some aspects working (zeroseg).
