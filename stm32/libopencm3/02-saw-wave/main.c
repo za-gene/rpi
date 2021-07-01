@@ -19,8 +19,10 @@ typedef struct {
 
 pin_t pb12 = { GPIOB, GPIO12, RCC_GPIOB };
 pin_t pc13 = { GPIOC, GPIO13, RCC_GPIOC };
+pin_t pc14 = { GPIOC, GPIO14, RCC_GPIOC };
 #define PB12 &pb12
 #define PC13 &pc13
+#define PC14 &pc14
 
 void pin_toggle(pin_t* pin);
 void pin_out(pin_t* pin);
@@ -38,6 +40,18 @@ void pin_toggle(pin_t* pin)
 {
 	gpio_toggle(pin->port, pin->num);
 }
+
+void pin_high(pin_t* pin);
+void pin_high(pin_t* pin)
+{
+	gpio_set(pin->port, pin->num);
+}
+void pin_low(pin_t* pin);
+void pin_low(pin_t* pin)
+{
+	gpio_clear(pin->port, pin->num);
+}
+
 
 
 
@@ -104,14 +118,31 @@ void mal_spi_init_std(void)
 	rcc_periph_clock_enable(RCC_GPIOB);
 	//gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
 	//gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
-	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_OPENDRAIN, GPIO13 | GPIO15);
+	//gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_OPENDRAIN, GPIO13 | GPIO15);
+	gpio_set_mode(GPIOB, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO13 | GPIO15);
 	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_256, SPI_CR1_CPOL, SPI_CR1_CPHA, 
 			SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
 	//spi_enable_ss_output(SPI2); /* Required, see NSS, 25.3.1 section. */
 	pin_out(PB12); // chip select
+	pin_high(PB12);
 	//gpio_mode_setup(GPIOB,  GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12); // chip select
 	spi_enable(SPI2);
 }
+
+void mcp4921_write(uint16_t value);
+
+void mcp4921_write(uint16_t value)
+{
+	if(value>4095) value=4095;
+	value |= 0b0011000000000000;
+	pin_low(PB12);
+	spi_xfer(SPI2, value>>8);
+	spi_xfer(SPI2, value & 0xFF);
+	pin_high(PB12);
+}
+
+
+
 
 // shut the compiler up about missing protypes
 void delay(int n);
@@ -128,41 +159,65 @@ void delay(int n)
 }
 
 
+double frame_rate = 44100.0; //hz 
+volatile float y =0, dy;
+
+void do_periodic(void);
+
+void do_periodic()
+{
+	y = y + dy;
+	mcp4921_write(y);
+	if(y>=4095) y = 0;
+	pin_toggle(PC14);
+}
 
 void tim2_isr(void) // the standard ISR name for TIM2
 {
 	timer_clear_flag(TIM2, TIM_SR_UIF); // hmmm, seems to matter that it's at the top
-	pin_toggle(PC13);
+	do_periodic();
 }
 
-int main(void)
+void timer_setup(void);
+void timer_setup(void)
 {
-	pin_out(PC13);
-
-	// Set up the builtin LED on PC13
-	//rcc_periph_clock_enable(RCC_GPIOC);
-	//gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
-	//gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIOn);
-
-	// trigger the isr twice a second
+	// trigger the isr at a given frame rate frequency
 	rcc_periph_clock_enable(RCC_TIM2);
 	u32 clk_freq = rcc_get_timer_clk_freq(TIM2);
 	timer_set_prescaler(TIM2, clk_freq/1000000-1); // set the CK_CNT (clock counter) freq to 1MHz
-	double freq = 44100.0; //hz 
-	double period = 1000000.0/freq -1.0;
-	timer_set_period(TIM2, period); // twice a second. Equivalent to TIM_ARR(TIM2) = period
+	double frame_period = 1000000.0/frame_rate -1.0;
+	timer_set_period(TIM2, frame_period); // Equivalent to TIM_ARR(TIM2) = period
 	timer_generate_event(TIM2, TIM_EGR_UG); // send an update to reset timer and apply settings
 	//timer_generate_event(TIM2, TIM_EGR_UG | TIM_EGR_TG); // equiv: TIM_EGR(TIM2) |= (TIM_EGR_UG | TIM_EGR_UG)
 	//timer_enable_update_event(TIM2); // equiv: TIM_CR1(TIM2) &= ~TIM_CR1_UDIS
 	timer_enable_counter(TIM2); // equiv: TIM_CR1(TIM2) |= TIM_CR1_CEN
 	timer_enable_irq(TIM2, TIM_DIER_UIE); // equiv: TIM_DIER(TIM2) |= TIM_DIER_UIE
 	nvic_enable_irq(NVIC_TIM2_IRQ);
+}
 
-	//mal_spi_init_std();
-	mal_max7219_init();
-	u32 count = 0;
+int main(void)
+{
+	pin_out(PC13);
+	pin_out(PC14);
+
+
+	double wave_freq = 440.0; // hz
+	double wave_max = 4095.0;
+	dy = wave_max * wave_freq / frame_rate;
+	mal_spi_init_std();
+
+	// Set up the builtin LED on PC13
+	//rcc_periph_clock_enable(RCC_GPIOC);
+	//gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
+	//gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIOn);
+
+	//timer_setup();
+
+	//mal_max7219_init();
+	//u32 count = 0;
 	while(1) {
-		mal_max7219_show_count(count++);
-		delay(4000);
+		do_periodic();
+		//mal_max7219_show_count(count++);
+		delay(0);
 	}
 }
