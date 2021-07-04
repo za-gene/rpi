@@ -27,7 +27,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pico/stdlib.h"
+//#include "pico/stdlib.h"
+
+#include "picol.h"
 
 enum {PICOL_OK, PICOL_ERR, PICOL_RETURN, PICOL_BREAK, PICOL_CONTINUE};
 enum {PT_ESC,PT_STR,PT_CMD,PT_VAR,PT_SEP,PT_EOL,PT_EOF};
@@ -47,8 +49,6 @@ struct picolVar {
 	struct picolVar *next;
 };
 
-struct picolInterp; /* forward declaration */
-typedef int (*picolCmdFunc)(struct picolInterp *i, int argc, char **argv, void *privdata);
 
 struct picolCmd {
 	char *name;
@@ -62,12 +62,6 @@ struct picolCallFrame {
 	struct picolCallFrame *parent; /* parent is NULL at top level */
 };
 
-struct picolInterp {
-	int level; /* Level of nesting */
-	struct picolCallFrame *callframe;
-	struct picolCmd *commands;
-	char *result;
-};
 
 void picolInitParser(struct picolParser *p, char *text) {
 	p->text = p->p = text;
@@ -554,34 +548,19 @@ void picolRegisterCoreCommands(struct picolInterp *i) {
 	picolRegisterCommand(i,"return",picolCommandReturn,NULL);
 }
 
-char* echoed_fgets(char* s, int size, FILE *stream)
+char* picolEchoedFgets(char* s, int size, FILE *stream)
 {
 	int i=0;
 	while(i <size) {
 		int c = fgetc(stream);
-		if(c == '\r') continue;
+		//if(c == '\r') continue;
 		putchar(c);
 		s[i++] = (char) c;
-		if(c == '\n') break;
+		if((c == '\n') || (c == '\r')) break;
 	}
 	s[i] = 0;
+	printf("\r\n");
 	return s;
 }
 
 
-int main() {
-	stdio_init_all();
-	struct picolInterp interp;
-	picolInitInterp(&interp);
-	picolRegisterCoreCommands(&interp);
-	while(1) {
-		char clibuf[1024];
-		int retcode;
-		printf("picol> "); fflush(stdout);
-		if (echoed_fgets(clibuf,1024,stdin) == NULL) return 0;
-		retcode = picolEval(&interp,clibuf);
-		if (interp.result[0] != '\0')
-			printf("[%d] %s\n", retcode, interp.result);
-	}
-	return 0;
-}
