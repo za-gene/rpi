@@ -1,41 +1,75 @@
 #include <stdio.h>
-#include <string.h>
 #include "pico/stdlib.h"
-//#include "hardware/adc.h"
+//#include "hardware/gpio.h"
 //#include "hardware/clocks.h"
-//#include "hardware/flash.h"
-#include "hardware/gpio.h"
-//#include "hardware/irq.h"
-//#include "hardware/pwm.h"
-//#include "hardware/spi.h"
-// #include "tusb.h" // if you want to use tud_cdc_connected()
+#include "hardware/pwm.h"
+
+#include "pi.h"
 
 
+#define ALARM 0
+#define SPK 19
 
-int main() 
+#define SAW // create saw wave
+
+#ifndef SAW
+#include "../mcp4921/pico-hard-song-mcp4921/data.h"
+#endif
+
+typedef uint16_t u16;
+typedef uint32_t u32;
+
+auto top = 255.0;
+auto wave_freq = 440.0;
+auto framerate = 44100.0;
+auto delay = 1'000'000.0/framerate;
+uint slice_num;
+float y = 0;
+//float dy = top * wave_freq / framerate;
+float dy = wave_freq / framerate;
+
+void alarm0_isr()
 {
-	stdio_init_all();
-	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+	pi_alarm_rearm(ALARM, delay);
+#ifdef SAW
+	y += dy;
+#else
+	static int idx = 0;
+	y = data_bin[idx++]/top;
+	if(idx == data_bin_len) idx = 0;
+#endif
+	//if(y>top) y = 0;
+	if(y>1) y=0;
 
-#define BTN  14 // GPIO number, not physical pin
-#define LED  25 // GPIO of built-in LED
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
+	// scale the level for the transistor
+	const float low = 0 ? 0.9/3.3*top : 0;
+	//const float low = 0;
+	auto level = low + y* (top-low);
+	pwm_set_gpio_level(SPK, level);
+}
 
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
+int main()
+{
+	gpio_set_function(SPK, GPIO_FUNC_PWM);
+	slice_num = pwm_gpio_to_slice_num(SPK);
+	pwm_set_wrap(slice_num, top);
+	pwm_set_enabled(slice_num, true); // let's go!
+	pi_alarm_init(ALARM, alarm0_isr, delay);
 
-	int i = 0;
-	for(;;) {
-		printf("Hello number %d\n", i++);
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);		
-	}
 
+	// set frequency
+	// determine top given Hz - assumes free-running counter rather than phase-correct
+	//u32 f_sys = clock_get_hz(clk_sys); // typically 125'000'000 Hz
+	//float divider = f_sys / 1'000'000UL;  // let's arbitrarily choose to run pwm clock at 1MHz
+	//pwm_set_clkdiv(slice_num, divider); // pwm clock should now be running at 1MHz
+	//u32 top =  1'000'000UL/f_pwm -1; // TOP is u16 has a max of 65535, being 65536 cycles
+	//pwm_set_wrap(slice_num, top);
+
+	// set duty cycle
+	//u16 level = (top+1) * duty / 100 -1; // calculate channel level from given duty cycle in %
+	//pwm_set_gpio_level(SPK, level);
+
+	for(;;);
 	return 0;
 }
 
