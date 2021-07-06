@@ -12,7 +12,7 @@ add_executable(app
         #../blinkt.cc
         )
 
-#pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
+pico_enable_stdio_usb(app 1) # set to 1 if you want stdio over usb
 #pico_enable_stdio_uart(app 1) # set to 1 if you stdio over GP0 and GP1
 
 # Pull in our pico_stdlib which pulls in commonly used features

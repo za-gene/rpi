@@ -8,7 +8,13 @@
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
 //#include "hardware/spi.h"
-// #include "tusb.h" // if you want to use tud_cdc_connected()
+
+#define WAIT_SERIAL
+
+#ifdef WAIT_SERIAL
+#include "tusb.h" // if you want to use tud_cdc_connected()
+#endif
+
 
 #define REG(addr) *(volatile uint32_t*)(addr)
 
@@ -38,7 +44,9 @@
 int main() 
 {
 	stdio_init_all();
-	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+#ifdef WAIT_SERIAL
+	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+#endif
 
 	// dump out the second-stage bootloader
 	const int wpl = 4; // words per line
