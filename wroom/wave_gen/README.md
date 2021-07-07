@@ -9,6 +9,15 @@ This example demonstrates how to implement a software controlled signal generato
 
 Users can connect DAC output channel to their devices and use it as an simple analog signal output source.
 
+Making it:
+```
+get_idf # initialise the enviroment
+idf.py build
+make flash # or maybe idf.py flash
+```
+
+See also: [getting started](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/)
+
 ## How to use this example
 
 ### Hardware Required
