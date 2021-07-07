@@ -17,9 +17,12 @@ using u16 = uint16_t;
 #define	PIN_CS 		5
 
 #define PULSE 18
+#define ALARM 0
 
 #define SAMPLES 100
 u16 sines[SAMPLES];
+volatile uint64_t delay;
+
 
 #define USE_POLL // using looping instead of timer callback to write to DAC
 
@@ -47,14 +50,14 @@ void mcp4921_init()
 
 void mcp4921_write(uint16_t vol)
 {
-	spi_set_baudrate(spi1, 1'200'000);
-	pin_low(cs_mcp4921);
-	//static int idx = 0;
-	//u16 src = sines[idx];
 	if(vol>4095) vol = 4095;
 	vol |= 0b0011'0000'0000'0000;
 	uint16_t hi = vol >>8, lo = vol & 0xFF;
 	uint8_t data[] = { (uint8_t)hi, (uint8_t)lo};
+	//spi_set_baudrate(spi1, 1'500'000);
+	pin_low(cs_mcp4921);
+	//static int idx = 0;
+	//u16 src = sines[idx];
 	spi_write_blocking(spi1, data, 2);
 	//spi_write_blocking(spi, data, 2);
 
@@ -74,7 +77,7 @@ void write_to_dac()
 	if(idx == SAMPLES) idx = 0;
 }
 
-bool repeating_timer_callback(struct repeating_timer *t) 
+bool repeating_timer_callbackXXX(struct repeating_timer *t) 
 {
 #ifndef USE_POLL
 	write_to_dac();
@@ -89,10 +92,24 @@ bool repeating_timer_callback(struct repeating_timer *t)
 	return true;
 }
 
+static void alarm_0_irq() 
+{
+	pi_alarm_rearm(ALARM, delay);
+	write_to_dac();
+	pi_gpio_toggle(PULSE);
+
+	//printf("Alarm IRQ fired %d\n", i++);
+}
+
+
 int main() 
 {
 	stdio_init_all();
 	mcp4921_init();
+	spi_set_baudrate(spi1, 4'000'000);
+
+	gpio_init(PULSE);
+	gpio_set_dir(PULSE, GPIO_OUT);
 
 
 	/*
@@ -115,13 +132,15 @@ int main()
 		//ser.println(sines[i]);
 	}
 
-	struct repeating_timer timer;
 	const int freq = 440;
-	add_repeating_timer_us(-1.0e6/SAMPLES/freq, repeating_timer_callback, NULL, &timer);
-	//add_repeating_timer_us(-23, repeating_timer_callback, NULL, &timer);
+	delay = 1'000'000/SAMPLES/freq;
+	//delay = 5;
+	pi_alarm_init(ALARM, alarm_0_irq, delay);
+	for(;;);
 
-	gpio_init(PULSE);
-	gpio_set_dir(PULSE, GPIO_OUT);
+	struct repeating_timer timer;
+	add_repeating_timer_us(-1.0e6/SAMPLES/freq, repeating_timer_callbackXXX, NULL, &timer);
+	//add_repeating_timer_us(-23, repeating_timer_callback, NULL, &timer);
 
 	//int idx = 0;
 	for(;;) {
