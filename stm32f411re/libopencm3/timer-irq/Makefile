@@ -1,7 +1,9 @@
 PROJECT = app
 BUILD_DIR = build
 
-CFILES = main.c
+VPATH = ..
+
+CFILES = main.c mal.c
 
 #DEVICE=stm32f407vgt6
 DEVICE=stm32f411ce

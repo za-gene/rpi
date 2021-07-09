@@ -66,3 +66,34 @@ void mal_spi_init_std(void)
 	gpio_mode_setup(GPIOB,  GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12); // chip select
 	spi_enable(SPI2);
 }
+
+pin_t pb12 = { GPIOB, GPIO12, RCC_GPIOB };
+pin_t pc13 = { GPIOC, GPIO13, RCC_GPIOC };
+pin_t pc14 = { GPIOC, GPIO14, RCC_GPIOC };
+
+void pin_out(pin_t* pin)
+{
+	rcc_periph_clock_enable(pin->rcc);
+	//gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_10_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, pin->num);
+	//gpio_set_mode(pin->port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, pin->num);
+	gpio_mode_setup(pin->port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, pin->num);
+}
+
+void pin_toggle(pin_t* pin)
+{
+	gpio_toggle(pin->port, pin->num);
+}
+
+void pin_high(pin_t* pin)
+{
+	gpio_set(pin->port, pin->num);
+}
+void pin_low(pin_t* pin)
+{
+	gpio_clear(pin->port, pin->num);
+}
+
+
+
+
+
