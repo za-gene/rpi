@@ -61,9 +61,11 @@ void mal_spi_init_std(void)
 	rcc_periph_clock_enable(RCC_GPIOB);
 	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO13 | GPIO14 | GPIO15);
 	gpio_set_af(GPIOB, GPIO_AF5, GPIO13 | GPIO14 | GPIO15);
-	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_256, SPI_CR1_CPOL, SPI_CR1_CPHA, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
+	spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_16, 
+		SPI_CR1_CPOL, SPI_CR1_CPHA, SPI_CR1_DFF_8BIT, SPI_CR1_MSBFIRST);
 	//spi_enable_ss_output(SPI2); /* Required, see NSS, 25.3.1 section. */
 	gpio_mode_setup(GPIOB,  GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12); // chip select
+	gpio_set(GPIOB, GPIO12);
 	spi_enable(SPI2);
 }
 
