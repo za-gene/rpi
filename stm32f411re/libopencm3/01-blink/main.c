@@ -6,6 +6,23 @@
 typedef uint32_t u32;
 
 
+
+/** @brief Delay for approx time measured in ms
+Calibrated for an STMF411
+*/
+
+void delayish(uint32_t ms);
+
+void __attribute__((optimize("O0"))) delayish(uint32_t ms)
+{
+#define APPROX_1MS 717
+	for(uint32_t j=0; j<ms; ++j) {
+		for (int i = 0; i < APPROX_1MS; i++) {
+			__asm__("nop");
+		}
+	}
+}
+
 int main(void)
 {
 	rcc_periph_clock_enable(RCC_GPIOC);
@@ -13,14 +30,9 @@ int main(void)
 	gpio_set(GPIOC, GPIO13);
 
 
-#define LITTLE_BIT 1000000
 	while (1)
 	{
-		/* wait a little bit */
-		for (int i = 0; i < LITTLE_BIT; i++)
-		{
-			__asm__("nop");
-		}
+		delayish(100);
 		gpio_toggle(GPIOC, GPIO13);
 	}
 }
