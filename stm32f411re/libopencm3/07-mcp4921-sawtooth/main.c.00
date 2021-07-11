@@ -1,0 +1,235 @@
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
+#include <libopencm3/stm32/dma.h>
+#include "mal.h"
+
+
+/**
+
+  Channel selection is in 
+  RM0383
+  Reference manual
+  STM32F411xC/E advanced ARM ® -based 32-bit MCUs
+  s9.3.3
+  SPI2_TX is in Channel 0, Stream 4
+
+  See also:
+https://www.rhye.org/post/stm32-with-opencm3-2-spi-and-dma/
+
+*/
+typedef uint32_t u32;
+
+#define LED PC13
+
+double framerate = 44100, saw_freq = 500;
+
+pin_t* cs_mcp4921 = PB12;
+
+void mal_mcp4921_init(void);
+void mal_mcp4921_set(uint16_t vol);
+
+/** @brief Initialise an MCP4921 DAC
+
+  Uses SPI2. It might not play well with other devices using SPI2
+  because it uses 16-bit transfer and high baudrate.
+
+  Pin connections: 
+ * PB12 CS
+ * PB13 SCK
+ * PB15 MOSI
+
+ PB14 MISO is set up, but not used.
+ */
+
+void mal_mcp4921_init(void)
+{
+	rcc_periph_clock_enable(RCC_SPI2);
+	rcc_periph_clock_enable(RCC_GPIOB);
+	uint16_t mask = GPIO13 | GPIO15;
+	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, mask);
+	gpio_set_af(GPIOB, GPIO_AF5, mask);
+	gpio_set_af(GPIOB, GPIO_AF0, mask); // ??
+	//spi_init_master(SPI2, SPI_CR1_BAUDRATE_FPCLK_DIV_2, SPI_CR1_CPOL, SPI_CR1_CPHA, SPI_CR1_DFF_16BIT, SPI_CR1_MSBFIRST);
+
+	// chip select
+	gpio_set(GPIOB, GPIO12);
+	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12);
+	pin_out(cs_mcp4921);
+	pin_high(cs_mcp4921);
+	//spi_enable_tx_buffer_empty_interrupt(SPI2);
+
+	//spi_enable(SPI2);
+}
+
+void dma_start(void);
+
+void mal_mcp4921_set(uint16_t vol)
+{
+	if(vol>4095) vol = 4095;
+	vol |= (0b11 <<12);
+	pin_low(cs_mcp4921);	
+	dma_start();
+	//nvic_clear_pending_irq(NVIC_SPI2_IRQ);
+	//spi_send(SPI2, vol);	
+	//spi_xfer(SPI2, vol); // will wait for data to be fully transmitted
+	//pin_high(cs_mcp4921);
+}
+
+volatile float y = 0, dy;
+
+#if 0
+void spi2_isr(void)
+{
+	SPI_DR(SPI2);
+	pin_high(cs_mcp4921);
+	//spi_send(SPI2, 0xFFFF);
+}
+#endif
+
+void tim2_isr(void) // the standard ISR name for TIM2
+{
+	timer_clear_flag(TIM2, TIM_SR_UIF); // hmmm, seems to matter that it's at the top
+	//mal_mcp4921_set(y);
+	spi_enable_tx_dma(SPI2);
+	y += dy;
+	if(y>4095) y=0;
+	pin_toggle(LED);
+}
+
+volatile uint16_t vol = 666;
+
+void dma_init(void);
+void dma_init(void) 
+{
+#if 0
+	/* DAC channel 1 uses DMA controller 1 Stream 5 Channel 7. */
+	/* Enable DMA1 clock and IRQ */
+	rcc_periph_clock_enable(RCC_DMA1);
+	nvic_enable_irq(NVIC_DMA1_STREAM4_IRQ);
+	dma_stream_reset(DMA1, DMA_STREAM4);
+	dma_set_priority(DMA1, DMA_STREAM4, DMA_SxCR_PL_LOW);
+	dma_set_memory_size(DMA1, DMA_STREAM4, DMA_SxCR_MSIZE_16BIT);
+	dma_set_peripheral_size(DMA1, DMA_STREAM4, DMA_SxCR_PSIZE_16BIT);
+	//dma_enable_memory_increment_mode(DMA1, DMA_STREAM4);
+	dma_disable_memory_increment_mode(DMA1, DMA_STREAM4);
+	dma_disable_peripheral_increment_mode(DMA1, DMA_STREAM4);
+	//dma_enable_circular_mode(DMA1, DMA_STREAM4);
+	dma_set_transfer_mode(DMA1, DMA_STREAM4, DMA_SxCR_DIR_MEM_TO_PERIPHERAL);
+	/* The register to target is the DAC1 8-bit right justified data
+	   register */
+	//dma_set_peripheral_address(DMA1, DMA_STREAM4, (uint32_t) &DAC_DHR8R1(DAC1));
+	dma_set_peripheral_address(DMA1, DMA_STREAM4, (uint32_t)&SPI2_DR);
+	//(uint32_t) &DAC_DHR8R1(DAC1));
+	/* The array v[] is filled with the waveform data to be output */
+	//dma_set_memory_address(DMA1, DMA_STREAM4, (uint32_t) waveform);
+	dma_set_memory_address(DMA1, DMA_STREAM4, (uint32_t) &vol);
+	//dma_set_number_of_data(DMA1, DMA_STREAM4, 256);
+	dma_set_number_of_data(DMA1, DMA_STREAM4, 1);
+	dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM4);
+	//dma_channel_select(DMA1, DMA_STREAM4, DMA_SxCR_CHSEL_7);
+	dma_channel_select(DMA1, DMA_STREAM4, DMA_SxCR_CHSEL_0);
+	dma_enable_stream(DMA1, DMA_STREAM4);
+	//nvic_enable_irq(NVIC_SPI2_IRQ);
+	nvic_enable_irq(NVIC_DMA1_STREAM4_IRQ);
+#else
+	// Enable DMA clock
+	rcc_periph_clock_enable(RCC_DMA1);
+	// In order to use SPI2_TX, we need DMA 1 Channel 5
+	//dma_channel_reset(DMA1, DMA_CHANNEL5);
+	//dma_stream_reset(DMA1, DMA_STREAM3);
+	dma_stream_reset(DMA1, DMA_STREAM4);
+	// SPI2 data register as output
+	//dma_set_peripheral_address(DMA1, DMA_CHANNEL5, (uint32_t)&SPI2_DR);
+	dma_set_peripheral_address(DMA1, DMA_STREAM4, (uint32_t)&SPI2_DR);
+	// We will be using system memory as the source data
+	//dma_set_read_from_memory(DMA1, DMA_STREAM4);
+	// Memory increment mode needs to be turned on, so that if we're sending
+	// multiple bytes the DMA controller actually sends a series of bytes,
+	// instead of the same byte multiple times.
+	dma_enable_memory_increment_mode(DMA1, DMA_STREAM4);
+	// Contrarily, the peripheral does not need to be incremented - the SPI
+	// data register doesn't move around as we write to it.
+	dma_disable_peripheral_increment_mode(DMA1, DMA_STREAM4);
+	// We want to use 8 bit transfers
+	dma_set_peripheral_size(DMA1, DMA_STREAM4, DMA_SxCR_PSIZE_16BIT);
+	dma_set_memory_size(DMA1, DMA_STREAM4, DMA_SxCR_MSIZE_16BIT);
+	// We don't have any other DMA transfers going, but if we did we can use
+	// priorities to try to ensure time-critical transfers are not interrupted
+	// by others. In this case, it is alone.
+	//dma_set_priority(DMA1, DMA_CHANNEL5, DMA_CCR_PL_LOW);
+	// Since we need to pull the register clock high after the transfer is
+	// complete, enable transfer complete interrupts.
+	dma_enable_transfer_complete_interrupt(DMA1, DMA_STREAM4);
+	// We also need to enable the relevant interrupt in the interrupt
+	// controller, and assign it a priority.
+	//nvic_set_priority(NVIC_DMA1_CHANNEL4_5_IRQ, 0);
+	nvic_enable_irq(NVIC_DMA1_STREAM4_IRQ);
+#endif
+}
+
+#if 1
+
+void dma_start(void)
+{
+	// Note - manipulating the memory address/size of the DMA controller cannot
+	// be done while the channel is enabled. Ensure any previous transfer has
+	// completed and the channel is disabled before you start another transfer.
+	// Tell the DMA controller to start reading memory data from this address
+	dma_set_memory_address(DMA1, DMA_STREAM4, (uint32_t)&vol);
+	// Configure the number of bytes to transfer
+	dma_set_number_of_data(DMA1, DMA_STREAM4, 1);
+	// Enable the DMA channel.
+	dma_enable_stream(DMA1, DMA_STREAM4);
+
+	// Since we're manually controlling our register clock, move it low now
+	gpio_clear(GPIOB, GPIO12);
+
+	// Finally, enable SPI DMA transmit. This call is what actually starts the
+	// DMA transfer.
+	spi_enable_tx_dma(SPI2);
+}
+#endif
+
+#if 0
+void dma1_channel4_5_isr() {
+	// Check that we got triggered because the transfer is complete, by
+	// checking the Transfer Complete Interrupt Flag
+	if (dma_get_interrupt_flag(DMA1, DMA_CHANNEL4, DMA_TCIF)) {
+		// If that is why we're here, clear the flag for next time
+		dma_clear_interrupt_flags(DMA1, DMA_CHANNEL4, DMA_TCIF);
+
+		// Like the non-dma version, we don't want to latch the register clock
+		// until the transfer is actually complete, so wait til the busy flag
+		// is clear
+		while (SPI_SR(SPI2) & SPI_SR_BSY);
+
+		// Turn our DMA channel back off, in preparation of the next transfer
+		spi_disable_tx_dma(SPI2);
+		dma_disable_channel(DMA1, DMA_CHANNEL4);
+
+		// Bring the register clock high to latch the transferred data
+		gpio_set(GPIOB, GPIO12);
+	}
+}
+#endif
+
+void dma1_stream4_isr(void)
+{
+	if (dma_get_interrupt_flag(DMA1, DMA_STREAM4, DMA_TCIF)) {
+		dma_clear_interrupt_flags(DMA1, DMA_STREAM4, DMA_TCIF);
+		/* Toggle PC13 just to keep aware of activity and frequency. */
+		gpio_toggle(GPIOC, GPIO13);
+	}
+}
+
+
+int main(void)
+{
+	dy = 4095 * saw_freq / framerate;	
+	pin_out(PC13);
+	mal_mcp4921_init();
+	dma_init();
+	mal_timer_init(TIMER2, framerate);
+	while(1);
+}
