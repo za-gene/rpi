@@ -9,6 +9,8 @@
 
 /** @brief Delay for approx time measured in ms
 Calibrated for an STMF411
+
+Might be out by a factor of 2??
 */
 
 

@@ -34,13 +34,15 @@ static void myputs(const char *str)
 
 
 volatile bool transfer_complete = false;
+volatile bool loud_dma_isr = true;
 
 void dma2_stream0_isr()
 {
 	if(dma_get_interrupt_flag(dma, strm, DMA_TCIF)) {
 		dma_clear_interrupt_flags(dma, strm, DMA_TCIF); // clear transfer complete flag
 		transfer_complete = true;
-		myputs("dma2_stream0_isr called: transfer complete");
+		if(loud_dma_isr) 
+			myputs("dma2_stream0_isr called: transfer complete");
 	} 
 	else if(dma_get_interrupt_flag(dma, strm, DMA_DMEIF)) {
 		dma_clear_interrupt_flags(dma, strm, DMA_DMEIF);
@@ -59,7 +61,7 @@ void dma2_stream0_isr()
 		myputs("dma2_stream0_isr called: Half Transfer Interrupt Flag");
 	} 
 	else {
-                myputs("dma2_stream0_isr called: Unhandled (should never be called)");
+		myputs("dma2_stream0_isr called: Unhandled (should never be called)");
 	}
 
 }
@@ -152,17 +154,35 @@ int main(void)
 	myputs(dst1);
 	myputs("Tfr 2 completed");
 
-	while(1);
+	// now do timings
+#define TPIN PC14
+	pin_out(TPIN);
+	char dst3[512], src3[512];
+	int i;
+	dma_set_peripheral_address(dma, strm, (uint32_t) src3);
+	dma_set_number_of_data(dma, strm, 512);
+	dma_set_memory_address(dma, strm, (uint32_t) dst3);
+	loud_dma_isr = false;
+	while(1) {
+		// use dma
+		pin_high(TPIN);
+		for(i = 0; i< 100; ++i) {
+			transfer_complete = false;
+			dma_enable_stream(dma, strm);
+			while(!transfer_complete);
+		}
+		pin_low(TPIN);
 
-	while (1)
-	{
-		uint16_t c = usart_recv_blocking(USART1);
-		usart_send_blocking(USART1, c);
+		mal_delayish(1);
+
+		// use memcpy
+		pin_high(TPIN);
+		for(i = 0; i< 100; ++i) {
+			memcpy(dst3, src3, 512);
+		}
+		pin_low(TPIN);
+
+		mal_delayish(10);
 	}
 
-	while (1)
-	{
-		pin_toggle(LED);
-		mal_delayish(100);
-	}
 }
