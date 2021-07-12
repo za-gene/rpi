@@ -91,36 +91,51 @@ int main(void)
 	myputs("Stream disabled. OK to configure");
 
 	//DMA_SPAR(dma, strm) = (uint32_t) str1; // step 2: set peripheral port address
-	dma_set_peripheral_address(dma, strm, (uint32_t) src1); // step 2: set source address
+	myputs("Step 2");
+	//dma_set_peripheral_address(dma, strm, (uint32_t) src1); // step 2: set source address
 	//DMA_SM0AR(dma, strm) = *(uint32_t*) str2; // step 3: set the memory address
+	myputs("Step 3");
 	dma_set_memory_address(dma, strm, (uint32_t) dst1); // step 3 : destination address
+	myputs("Step 4");
 	dma_set_number_of_data(dma, strm, len); // step 4: total number of data items
 	// dma_channel_select(dma, strm, 0); // step 5: I just made up a channel number in this case
+	myputs("Step 5");
 	dma_channel_select(dma, strm, DMA_SxCR_CHSEL_4); // step 5: I just made up a channel number in this case
 	// step 6: something about flow controller. Omitted
 	// step 7: configure stream priority. Omitted
 	// step 8: configure FIFO usage. Omitted setup of FIFO
 
 	// step 9: variety of things
+	myputs("Step 9a");
 	dma_set_transfer_mode(dma, strm, DMA_SxCR_DIR_MEM_TO_MEM); // step 9: data direction
+	myputs("Step 9b");
 	dma_enable_peripheral_increment_mode(dma, strm); // step 9: we want to increment "periph" address
+	myputs("Step 9c");
 	dma_enable_memory_increment_mode(dma, strm); // step 9: ditto for memory
 	//dma_enable_directt_mode(dma, strm); // step 9: 
 	// step 9 : can use single or burst, but not circ, direct or double-buffer
+	myputs("Step 9d");
 	dma_set_memory_size(dma, strm, DMA_SxCR_MSIZE_8BIT);
-	dma_set_peripheral_size(dma, strm, len);
-	dma_clear_interrupt_flags(dma, strm, DMA_TCIF); // clear transfer complete flag
+	myputs("Step 9e");
+	//dma_set_peripheral_size(dma, strm, len);
+	dma_set_peripheral_size(dma, strm, DMA_SxCR_PSIZE_8BIT);
+	myputs("Fiddling with interrupts");
+	//dma_clear_interrupt_flags(dma, strm, DMA_TCIF); // clear transfer complete flag
 	//dma_clear_interrupt_flags(dma, strm, DMA_HTIF); // clear half-transfer complete flag
+	//dma_disable_half_transfer_interrupt(dma, strm);
 	dma_enable_transfer_complete_interrupt(dma, strm);
-	dma_disable_half_transfer_interrupt(dma, strm);
 	nvic_enable_irq(NVIC_DMA2_STREAM0_IRQ);
+	myputs("Finished setting up interrupts");
 
-	myputs("Enabling stream");
+
+	myputs("Start tfr 1");
 	transfer_complete = false;
 	dma_set_peripheral_address(dma, strm, (uint32_t) src1); // step 2: set source address
 	dma_enable_stream(dma, strm); // step 10
 #endif
+	myputs(dst1); // this will likely only partially complete
 	while(!transfer_complete);
+	myputs("Tfr 1 completed");
 	myputs(dst1);
 	myputs(src1);
 
@@ -136,6 +151,7 @@ int main(void)
 	while(!transfer_complete);
 	myputs(dst1);
 	myputs("Tfr 2 completed");
+
 	while(1);
 
 	while (1)
