@@ -19,6 +19,8 @@ mal.h to sort out by mc
 #include <libopencm3/stm32/usart.h>
 
 
+void mal_delayish(uint32_t ms);
+
 void mal_max7219_init(void);
 void mal_max7219_show_count(int count);
 void mal_max7219_tfr(uint8_t address, uint8_t value);

@@ -6,6 +6,22 @@
 #include "mal.h"
 
 
+
+/** @brief Delay for approx time measured in ms
+Calibrated for an STMF411
+*/
+
+
+void __attribute__((optimize("O0"))) mal_delayish(uint32_t ms)
+{
+#define APPROX_1MS 717
+	for(uint32_t j=0; j<ms; ++j) {
+		for (int i = 0; i < APPROX_1MS; i++) {
+			__asm__("nop");
+		}
+	}
+}
+
 void mal_max7219_init(void)
 {
 	mal_spi_init_std();
