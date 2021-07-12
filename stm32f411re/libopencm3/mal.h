@@ -16,6 +16,7 @@ mal.h to sort out by mc
 
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/usart.h>
 
 
 void mal_max7219_init(void);
@@ -53,4 +54,7 @@ extern timer_t timer2;
 #define TIMER2 &timer2
 void mal_timer_init(timer_t* timer, double freq);
 
+
+void mal_usart_init(void);
+void mal_usart_print(const char* str);
 
