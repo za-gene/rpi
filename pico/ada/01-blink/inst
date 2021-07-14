@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+Description here
+etc
+EOF
+}
+ 
+
+case $1 in
+    h) print_help ; exit ;;
+esac
+
+cd obj
+cp main app.elf
+arm-none-eabi-objcopy -O binary app.elf app.bin
+arm-none-eabi-objdump -d app.elf >app.dis
+$PICO_SDK_PATH/build/elf2uf2/elf2uf2 app.elf app.uf2
+cp app.uf2 /media/$USER/RPI-RP2
