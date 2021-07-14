@@ -10,13 +10,13 @@ with Pico;
 
 procedure Main is
 begin
-   RP.Clock.Initialize (Pico.XOSC_Frequency);
-   Pico.LED.Configure (RP.GPIO.Output);
-   RP.Device.Timer.Enable;
-   loop
-      Pico.LED.Set;
-      RP.Device.Timer.Delay_Milliseconds (100);
-      Pico.LED.Clear;
-      RP.Device.Timer.Delay_Milliseconds (900);
-   end loop;
+	RP.Clock.Initialize (Pico.XOSC_Frequency);
+	Pico.LED.Configure (RP.GPIO.Output);
+	RP.Device.Timer.Enable;
+	loop
+		Pico.LED.Set;
+		RP.Device.Timer.Delay_Milliseconds (100);
+		Pico.LED.Clear;
+		RP.Device.Timer.Delay_Milliseconds (900);
+	end loop;
 end Main;
