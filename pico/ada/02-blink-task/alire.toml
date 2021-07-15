@@ -1,0 +1,18 @@
+name = "pico_examples"
+description = "Examples for Ada on the Raspberry Pi Pico"
+version = "0.4.0"
+
+authors = ["Jeremy Grosser"]
+maintainers = ["Jeremy Grosser <jeremy@synack.me>"]
+maintainers-logins = ["JeremyGrosser"]
+licenses = "BSD-3-Clause"
+tags = ["embedded", "nostd", "pico", "rp2040"]
+website = "https://github.com/JeremyGrosser/pico_examples"
+auto-gpr-with=false
+project-files = [
+	"app.gpr"
+]
+
+[[depends-on]]
+pico_bsp = "~0.4"
+
