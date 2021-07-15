@@ -1,10 +1,12 @@
 # blink
 
-Basic blinky sketch
+Basic blinky sketch using tasks. Except that I don't think it supports tasking in this version of Ada.
+
 
 ## Status
 
-2021-07-14	Started. Working
+2021-07-15	Started. 
+
 
 ## See also
 
