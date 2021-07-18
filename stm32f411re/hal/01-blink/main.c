@@ -2,9 +2,19 @@
 #include <stm32f4xx_hal.h>
 //#include <stm32f4xx_hal_gpio.h>
 
+int main();
+
+void Reset_Handler()
+{
+	main();
+	while(1);
+}
+
 int main()
 {
 	//HAL_Init();
+
+	__HAL_RCC_GPIOC_CLK_ENABLE();
 
 	while(1) {
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
