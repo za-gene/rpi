@@ -4,6 +4,7 @@
 
 * [boot](boot.md) - booting into program mode
 * [gpio](gpio.md)
+* [interrupts](interrupts.txt)
 * [pwm](pwm.md)
 * [serial](serial.md)
 

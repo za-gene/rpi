@@ -1,0 +1,15 @@
+In
+/home/pi/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h
+
+#define TIMER_IRQ_0 0
+
+#define isr_timer_0 isr_irq0
+
+grep -r isr_irq0 * | grep -v build
+src/rp2_common/pico_standard_link/crt0.S:.word isr_irq0
+src/rp2_common/pico_standard_link/crt0.S:decl_isr isr_irq0
+src/rp2040/hardware_regs/include/hardware/regs/intctrl.h:#define isr_timer_0 isr_irq0
+
+
+irq_set_exclusive_handler is defined in
+rp2_common/hardware_irq/irq.c
