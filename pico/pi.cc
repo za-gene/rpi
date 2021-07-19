@@ -60,6 +60,27 @@ void pi_gpio_toggle(uint gpio)
 	gpio_put(gpio, !gpio_get(gpio));
 }
 
+//////////////////////////////////////////////////////////////////////////
+// IC2
+
+void pi_i2c_init(int sda)
+{
+	if( sda % 4 == 0)
+		pi_i2c_default_port = i2c0;
+	else
+		pi_i2c_default_port = i2c1;
+
+	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
+	i2c_init(pi_i2c_default_port, 100 * 1000);
+	gpio_set_function(sda, GPIO_FUNC_I2C);
+	gpio_set_function(sda+1, GPIO_FUNC_I2C);
+	gpio_pull_up(sda);
+	gpio_pull_up(sda+1);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// MAX7219
+
 auto max7219_cs = 14;
 
 void pi_max7219_init(void)
