@@ -38,6 +38,33 @@ int gpio_is_high(uint gpio)
 	return 1;
 }
 
+#include "pico/time.h"
+
+class Pulse {
+	public:
+		Pulse(uint delay = 1);
+		bool expired();
+	private:
+		uint m_delay;
+		absolute_time_t m_later;
+};
+
+Pulse::Pulse(uint delay)
+{
+	m_delay = delay;
+	m_later = make_timeout_time_ms(0);
+}
+
+bool Pulse::expired()
+{
+	if(absolute_time_diff_us(get_absolute_time(), m_later) > 0) 
+		return false;
+	m_later = make_timeout_time_ms(m_delay);
+	return true;
+}
+
+
+
 static void millis_irq()
 {
 	pi_alarm_rearm(ALARM, DELAY);
@@ -66,11 +93,12 @@ static void millis_irq()
 		}
 	}
 
+#if 0
 	if(millis % 500 == 0) {
 		//puts("hi");
 		pi_gpio_toggle(LED);
 	}
-
+#endif
 	millis++;
 
 }
@@ -85,11 +113,14 @@ int main()
 	pi_gpio_init(LED, OUTPUT);
 	pi_alarm_init(ALARM, millis_irq, DELAY);
 
+	Pulse pulse(500);
 	Debounce sw(SW);
 	while(1) {
 		if(sw.falling()) {
 			puts("Rotary button pushed");
 		}
+		if(pulse.expired())
+			pi_gpio_toggle(LED);
 	}
 
 	return 0;
