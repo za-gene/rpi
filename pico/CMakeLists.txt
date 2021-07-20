@@ -12,6 +12,7 @@ target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/pace.c
 	${CMAKE_CURRENT_LIST_DIR}/pi.cc
 	${CMAKE_CURRENT_LIST_DIR}/picol.c
+	${CMAKE_CURRENT_LIST_DIR}/pulse.cc
 	${CMAKE_CURRENT_LIST_DIR}/ssd1306.cc
 )
 

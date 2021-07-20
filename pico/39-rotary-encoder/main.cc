@@ -13,6 +13,7 @@
 
 #include "pi.h"
 #include "debounce.h"
+#include "pulse.h"
 
 #define ALARM 0
 #define DELAY 1'000
@@ -37,33 +38,6 @@ int gpio_is_high(uint gpio)
 	if(gpio_get(gpio) == 0) return 0;
 	return 1;
 }
-
-#include "pico/time.h"
-
-class Pulse {
-	public:
-		Pulse(uint delay = 1);
-		bool expired();
-	private:
-		uint m_delay;
-		absolute_time_t m_later;
-};
-
-Pulse::Pulse(uint delay)
-{
-	m_delay = delay;
-	m_later = make_timeout_time_ms(0);
-}
-
-bool Pulse::expired()
-{
-	if(absolute_time_diff_us(get_absolute_time(), m_later) > 0) 
-		return false;
-	m_later = make_timeout_time_ms(m_delay);
-	return true;
-}
-
-
 
 static void millis_irq()
 {
