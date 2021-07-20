@@ -15,6 +15,7 @@ void pi_alarm_rearm(int alarm_num, uint64_t delay_us);
 
 enum pi_gpio_mode_e {INPUT, OUTPUT, INPUT_PULLUP};
 void pi_gpio_init(uint gpio, pi_gpio_mode_e mode);
+int pi_gpio_is_high(uint gpio);
 void pi_gpio_toggle(uint gpio);
 
 inline auto pi_i2c_default_port = &i2c0_inst;
