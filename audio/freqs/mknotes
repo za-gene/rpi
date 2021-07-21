@@ -21,6 +21,8 @@ while(<DATA>) {
 	($note) = split /\//, $note; # remove stuff after /
 	print C "\t{\"$note\",\t$freq}";
 	if($note ne "B8") { print C ","; }
+	print C "\t// $count";
+	if($note eq "C4") { print C "  middle C";}
 	print C "\n";
 	$count++;
 }

@@ -1,7 +1,7 @@
-notes : notes.c compile-test.c
-	gcc $^ -o $@
+notes : notes.c compile-test.c mknotes
+	gcc notes.c compile-test.c -o $@
 
-notes.c : notes.txt
+notes.c : notes.txt mknotes
 	./mknotes
 
 clean :
