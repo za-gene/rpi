@@ -27,7 +27,7 @@ while(<DATA>) {
 
 # use4 interpolation
 my $ftr = << "EOI";
-}
+};
 
 int num_notes = $count;
 EOI

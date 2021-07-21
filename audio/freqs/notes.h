@@ -5,5 +5,5 @@ struct notes_t {
 	int freq;
 };
 
-extern struct notes_t notes;
+extern struct notes_t notes[];
 extern int num_notes;

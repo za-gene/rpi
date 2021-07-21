@@ -112,6 +112,6 @@ struct notes_t notes [] = {
 	{"A8",	7040},
 	{"A#8",	7459},
 	{"B8",	7902}
-}
+};
 
 int num_notes = 108;
