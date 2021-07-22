@@ -1,5 +1,5 @@
 /* generates sawtooth wave
- */
+*/
 
 #include <algorithm>
 #include <stdio.h>
@@ -16,6 +16,7 @@
 
 #include "notes.h"
 #include "pi.h"
+#include "ssd1306.h"
 #include "rotary.h"
 
 #define ALARM 	0
@@ -53,6 +54,15 @@ void set_freq()
 {
 	wave_freq = notes[notes_idx].freq;
 	dy = wave_freq / framerate;
+	
+	// update oled
+	char line[128];
+	snprintf(line, sizeof(line), "%3.3s %d      ", 
+			notes[notes_idx].name, notes[notes_idx].freq);
+	setCursorx(0);
+	ssd1306_print(line);
+	show_scr();
+
 }
 
 void alarm0_isr()
@@ -91,8 +101,10 @@ int main()
 	pi_alarm_init(ALARM, alarm0_isr, delay);
 
 	Rotary rot(21, 20, 19);
+	init_display(64, 4); // ssd1036
 
 	set_freq();
+
 
 	for(;;) {
 		if(int chg = rot.change()) {
@@ -100,6 +112,7 @@ int main()
 			if(new_idx != notes_idx) {
 				notes_idx = new_idx;
 				set_freq();
+
 			}
 
 		}
