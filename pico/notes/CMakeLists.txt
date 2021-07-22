@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 include("../picomc.cmake")
@@ -19,7 +19,7 @@ add_subdirectory(.. build)
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(app 
-    pi
+	pi
 	#pico_stdlib 
 	#harware_adc
 	#hardware_clocks
@@ -27,7 +27,7 @@ target_link_libraries(app
 	#hardware_gpio
 	#hardware_i2c
 	#hardware_irq
-	#hardware_pwm
+	hardware_pwm
 	#hardware_spi
 	#hardware_timer
 	)

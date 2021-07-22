@@ -9,6 +9,7 @@ target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/blinkt.cc
 	${CMAKE_CURRENT_LIST_DIR}/debounce.cc
 	${CMAKE_CURRENT_LIST_DIR}/ledmat.cc
+	${CMAKE_CURRENT_LIST_DIR}/notes.c
 	${CMAKE_CURRENT_LIST_DIR}/pace.c
 	${CMAKE_CURRENT_LIST_DIR}/pi.cc
 	${CMAKE_CURRENT_LIST_DIR}/picol.c
