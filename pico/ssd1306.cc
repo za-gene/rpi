@@ -1,3 +1,8 @@
+/** @addtogroup ssd1306
+
+Use an OLED display
+*/
+
 //#include <cstdint>
 #include <string.h>
 #include "pico/stdlib.h"
@@ -74,7 +79,11 @@ void send2(uint8_t v1, uint8_t v2)
 	send_data(buf, 2);
 }
 
+/** @brief send screen to the display itself
 
+Seems to take about 100ms, which is disappointing.
+
+*/
 void show_scr()
 {
 
@@ -258,6 +267,10 @@ void draw_letter_at(uint8_t x, uint8_t y, char c)
 // void draw_letter(char c) { draw_letter_at(0, 0, c); }
 
 static int cursorx = 0, cursory = 0;
+
+/** @brief Print at current cursor position
+*/
+
 void ssd1306_print(const char* str)
 {
 	char c;
@@ -273,6 +286,18 @@ void ssd1306_print(const char* str)
 	}
 }
 
+/** @brief Print at a stated cursor position
+
+Position should be given in terms of character positions, not pixel
+
+*/
+
+void ssd1306_print_at(int x, int y, const char* str)
+{
+        setCursorx(x);
+        setCursory(y);
+        ssd1306_print(str);
+}
 
 void setCursorx(int x)
 {

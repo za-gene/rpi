@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <string.h>
+#include <tuple>
 #include "pico/stdlib.h"
 //#include "hardware/adc.h"
 //#include "hardware/clocks.h"
@@ -49,6 +50,9 @@ int notes_find(const char* note_name)
 auto notes_idx = notes_find("C4");
 
 
+const int num_slots = 16;
+int slots[num_slots];
+int cur_slot_num = 0;
 
 void set_freq()
 {
@@ -78,6 +82,32 @@ void alarm0_isr()
 	pwm_set_gpio_level(SPK, level);
 }
 
+std::tuple<int, int> cursor_slot(int i) // returns x pos, then y
+{
+	int x = i<8 ? 0 : 8;
+	int y = i<8? i : i -8;
+	return std::make_tuple(x, y);
+}
+
+#define METRO_ALARM 1
+uint64_t metro_delay_us = 1'000'000 * 60 / 120; // 120bpm
+#define SCR_GPIO 17 // test of ssd1306 time
+
+void metro_isr()
+{
+        pi_alarm_rearm(METRO_ALARM, metro_delay_us);
+	auto [x, y] = cursor_slot(cur_slot_num);
+	ssd1306_print_at(x, y, " ");
+	cur_slot_num ++;
+	if(cur_slot_num == 16) cur_slot_num = 0;
+	std::tie(x, y) = cursor_slot(cur_slot_num);
+	ssd1306_print_at(x, y, ">");
+
+	gpio_put(SCR_GPIO, true);
+	show_scr();
+	gpio_put(SCR_GPIO, false);
+
+}
 
 int main() 
 {
@@ -91,6 +121,8 @@ int main()
 	gpio_pull_up(BTN);
 	// gpio_get() gets state of pin
 
+	pi_gpio_init(SCR_GPIO, OUTPUT);
+
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
 
@@ -99,9 +131,21 @@ int main()
 	pwm_set_wrap(slice_num, top);
 	pwm_set_enabled(slice_num, true); // let's go!
 	pi_alarm_init(ALARM, alarm0_isr, delay);
+	pi_alarm_init(METRO_ALARM, metro_isr, metro_delay_us);
+
+	init_display(64, 4); // ssd1036
+
+	//init slots:
+	for(int i =0; i< num_slots; i++) {
+	       	slots[i] = notes_idx; // to middle C
+		auto [x, y] = cursor_slot(i);
+		ssd1306_print_at(x+1, y, notes[notes_idx].name);
+	}
+	show_scr();
+	//while(1);
+
 
 	Rotary rot(21, 20, 19);
-	init_display(64, 4); // ssd1036
 
 	set_freq();
 
