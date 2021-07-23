@@ -50,8 +50,6 @@ static uint8_t height = 32;
 //const uint8_t SID = (height == 64) ? 0x3C : 0x3D; // different height displays have different addr
 const uint8_t SID = 0x3C ; // different height displays have different addr
 const uint8_t width = 128;
-//const int pages = height / 8;
-//const bool external_vcc = false;
 
 int pages() { return height/8; }
 
@@ -81,7 +79,8 @@ void send2(uint8_t v1, uint8_t v2)
 
 /** @brief send screen to the display itself
 
-Seems to take about 100ms, which is disappointing.
+Seems to take about 100ms at 100kps tfr rate, which is disappointing.
+
 
 */
 void show_scr()
@@ -130,7 +129,7 @@ static void init_i2c(int sda)
 		i2c_port = i2c1;
 
 	// This example will use I2C0 on GPIO4 (SDA) and GPIO5 (SCL)
-	i2c_init(i2c_port, 100 * 1000);
+	i2c_init(i2c_port, 1000 * 1000);
 	gpio_set_function(sda, GPIO_FUNC_I2C);
 	gpio_set_function(sda+1, GPIO_FUNC_I2C);
 	gpio_pull_up(sda);
@@ -205,7 +204,6 @@ void draw_pixel(int16_t x, int16_t y, int color)
 	if(x<0 || x >= width || y<0 || y>= height) return;
 
 	int page = y/8;
-	//page = y/pages;
 	int bit = 1<<(y % 8);
 	int xincr = 8;
 	xincr =	height/8;

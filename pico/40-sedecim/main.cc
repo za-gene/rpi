@@ -109,6 +109,20 @@ void metro_isr()
 
 }
 
+void rotary_poll(void)
+{
+	static Rotary rot(21, 20, 19);
+	if(int chg = rot.change()) {
+		auto new_idx = std::clamp(notes_idx + chg, 0, num_notes-1);
+		if(new_idx != notes_idx) {
+			notes_idx = new_idx;
+			set_freq();
+
+		}
+
+	}
+}
+
 int main() 
 {
 	stdio_init_all();
@@ -145,21 +159,13 @@ int main()
 	//while(1);
 
 
-	Rotary rot(21, 20, 19);
 
-	set_freq();
+	//set_freq();
 
+	//int rotary_mode = 
 
 	for(;;) {
-		if(int chg = rot.change()) {
-			auto new_idx = std::clamp(notes_idx + chg, 0, num_notes-1);
-			if(new_idx != notes_idx) {
-				notes_idx = new_idx;
-				set_freq();
-
-			}
-
-		}
+		rotary_poll();
 #if 0
 		printf("Hello number %d\n", i++);
 		gpio_put(LED, 1);
