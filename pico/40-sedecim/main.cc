@@ -58,14 +58,14 @@ void set_freq()
 {
 	wave_freq = notes[notes_idx].freq;
 	dy = wave_freq / framerate;
-	
+
 	// update oled
 	char line[128];
 	snprintf(line, sizeof(line), "%3.3s %d      ", 
 			notes[notes_idx].name, notes[notes_idx].freq);
 	setCursorx(0);
 	ssd1306_print(line);
-	show_scr();
+	//show_scr();
 
 }
 
@@ -95,7 +95,7 @@ uint64_t metro_delay_us = 1'000'000 * 60 / 120; // 120bpm
 
 void metro_isr()
 {
-        pi_alarm_rearm(METRO_ALARM, metro_delay_us);
+	pi_alarm_rearm(METRO_ALARM, metro_delay_us);
 	auto [x, y] = cursor_slot(cur_slot_num);
 	ssd1306_print_at(x, y, " ");
 	cur_slot_num ++;
@@ -103,9 +103,6 @@ void metro_isr()
 	std::tie(x, y) = cursor_slot(cur_slot_num);
 	ssd1306_print_at(x, y, ">");
 
-	gpio_put(SCR_GPIO, true);
-	show_scr();
-	gpio_put(SCR_GPIO, false);
 
 }
 
@@ -121,6 +118,33 @@ void rotary_poll(void)
 		}
 
 	}
+}
+
+void screen_poll()
+{
+	static bool initialised = false;
+	if(!initialised) {
+		initialised = true;
+		show_scr();
+	}
+	extern uint8_t scr[1025]; 
+	static int page = 0;
+	ssd1306_write_cmd(SET_COL_ADDR); // 0x21
+	ssd1306_write_cmd(0);
+	ssd1306_write_cmd(127);
+
+	ssd1306_write_cmd(SET_PAGE_ADDR); // 0x22
+	ssd1306_write_cmd(page);
+	ssd1306_write_cmd(page);
+
+	uint8_t mem[1+128];
+	mem[0] = 40; // the data instruction
+	memcpy(mem+1, scr + 8*page +1, 128);
+	gpio_put(SCR_GPIO, true);
+	ssd1306_send_data(mem, sizeof(mem));
+	page++;
+	if(page==8) page=0;
+	gpio_put(SCR_GPIO, false);
 }
 
 int main() 
@@ -151,11 +175,11 @@ int main()
 
 	//init slots:
 	for(int i =0; i< num_slots; i++) {
-	       	slots[i] = notes_idx; // to middle C
+		slots[i] = notes_idx; // to middle C
 		auto [x, y] = cursor_slot(i);
 		ssd1306_print_at(x+1, y, notes[notes_idx].name);
 	}
-	show_scr();
+	//show_scr();
 	//while(1);
 
 
@@ -166,6 +190,7 @@ int main()
 
 	for(;;) {
 		rotary_poll();
+		screen_poll();
 #if 0
 		printf("Hello number %d\n", i++);
 		gpio_put(LED, 1);
