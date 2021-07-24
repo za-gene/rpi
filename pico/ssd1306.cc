@@ -1,6 +1,25 @@
 /** @addtogroup ssd1306
 
-Use an OLED display
+Use an OLED display.
+
+The repo from which this code is derived used "vetical addressing mode", which I found to be inconvenient.
+I have therefore used horizontal addressing mode. This is the default, but you can set it manually
+as follows:
+@code
+	write_cmd(SET_MEM_ADDR); // 0x20
+	//write_cmd(0b01); // vertical addressing mode
+	write_cmd(0b00); // horizontal addressing mode
+
+	write_cmd(SET_COL_ADDR); // 0x21
+	write_cmd(0);
+	write_cmd(127);
+
+	write_cmd(SET_PAGE_ADDR); // 0x22
+	write_cmd(0);
+	write_cmd(pages()-1);
+@endcode
+see also: function reset_addressing().
+
 */
 
 //#include <cstdint>
@@ -40,10 +59,12 @@ int pages() { return height/8; }
 //uint8_t scr[pages*width+1]; // extra byte holds data send instruction
 uint8_t scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
 
+/*
 struct {
 	uint8_t cmd = 0x40; // the data instruction
 	uint8_t display[8][128];
 } screen;
+*/
 
 void write_cmd(uint8_t cmd);
 
@@ -52,6 +73,10 @@ void fill_scr(uint8_t v)
 	memset(scr, v, sizeof(scr));
 }
 
+void clear_scr(void)
+{
+	fill_scr(0);
+}
 
 void ssd1306_send_data(uint8_t* data, int nbytes)
 {
@@ -66,15 +91,44 @@ void send2(uint8_t v1, uint8_t v2)
 	ssd1306_send_data(buf, 2);
 }
 
+/** @brief send current cell to OLED
+
+A "cell" is an 8x8 block.
+
+The function keeps an internal position of the cell it wants to
+write. This is independent of the screen cursor.
+
+You would typically use this function in your main loop, where
+it is important that functions don't block too long.
+
+*/ 
+void ssd1306_display_cell (void)
+{
+	//show_scr(); return;
+
+	static int offset = 0;
+	//if(offset == -1) return;
+	uint8_t block[1+8]; // the data command, plus 8 column bytes
+	block[0] = 0x40;
+	memcpy(block+1, scr + offset + 1, 8);
+	ssd1306_send_data(block, 9);
+	offset += 8;
+	if(offset >= width * pages())  {
+		offset = 0;
+		//offset = -1;
+	}
+}
+
+
 /** @brief send screen to the display itself
 
 Seems to take about 100ms at 100kps tfr rate, which is disappointing.
 
 
 */
-void show_scr()
+void show_scr (void)
 {
-
+#if 0
 	write_cmd(SET_MEM_ADDR); // 0x20
 	//write_cmd(0b01); // vertical addressing mode
 	write_cmd(0b00); // horizontal addressing mode
@@ -86,7 +140,7 @@ void show_scr()
 	write_cmd(SET_PAGE_ADDR); // 0x22
 	write_cmd(0);
 	write_cmd(pages()-1);
-
+#endif
 
 	scr[0] = 0x40; // the data instruction	
 	int size = pages()*width +1;
@@ -125,6 +179,22 @@ static void init_i2c(int sda)
 	gpio_set_function(sda+1, GPIO_FUNC_I2C);
 	gpio_pull_up(sda);
 	gpio_pull_up(sda+1);
+}
+
+void reset_addressing(void)
+{
+	write_cmd(SET_MEM_ADDR); // 0x20
+	//write_cmd(0b01); // vertical addressing mode
+	write_cmd(0b00); // horizontal addressing mode
+
+	write_cmd(SET_COL_ADDR); // 0x21
+	write_cmd(0);
+	write_cmd(127);
+
+	write_cmd(SET_PAGE_ADDR); // 0x22
+	write_cmd(0);
+	write_cmd(pages()-1);
+
 }
 
 void init_display(int h, int sda)
@@ -185,7 +255,8 @@ void init_display(int h, int sda)
 	// write all the commands
 	for(int i=0; i<sizeof(cmds); i++)
 		write_cmd(cmds[i]);
-	fill_scr(0);
+	clear_scr();
+	reset_addressing();
 	show_scr();
 }
 

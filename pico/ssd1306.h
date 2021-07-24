@@ -28,7 +28,9 @@ void ssd1306_print_at(int x, int y, const char* str);
 void draw_letter_at(uint8_t x, uint8_t y, char c);
 void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
 		int16_t h, uint16_t color);
-void show_scr();
+void show_scr(void);
 void fill_scr(uint8_t v);
+void clear_scr(void);
 void ssd1306_send_data(uint8_t* data, int nbytes);
 void ssd1306_write_cmd(uint8_t cmd);
+void ssd1306_display_cell(void);

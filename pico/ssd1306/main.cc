@@ -17,8 +17,6 @@ int main()
 	sleep_ms(2000);
 	fill_scr(0); // empty the screen
 
-	drawBitmap(0, 0, splash1_data, 64, 64, 1);
-	show_scr();
 
 	sleep_ms(2000);
 	fill_scr(0);
@@ -30,7 +28,16 @@ int main()
 	setCursorx(0);
 	ssd1306_print("Overwritten   ");
 	show_scr();
+	sleep_ms(2000);
 
-	for(;;);
+	// test for both drawing bitmap and cell display handling of output
+	clear_scr();
+	drawBitmap(0, 0, splash1_data, 64, 64, 1);
+	//show_scr();
+	
+	for(;;) {
+		ssd1306_display_cell();
+	}
+
 	return 0;
 }
