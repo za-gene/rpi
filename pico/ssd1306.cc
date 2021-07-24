@@ -40,6 +40,11 @@ int pages() { return height/8; }
 //uint8_t scr[pages*width+1]; // extra byte holds data send instruction
 uint8_t scr[1025]; // being: 8 pages (max) * 128 width + 1 I2C command byte
 
+struct {
+	uint8_t cmd = 0x40; // the data instruction
+	uint8_t display[8][128];
+} screen;
+
 void write_cmd(uint8_t cmd);
 
 void fill_scr(uint8_t v)
@@ -71,7 +76,8 @@ void show_scr()
 {
 
 	write_cmd(SET_MEM_ADDR); // 0x20
-	write_cmd(0b01); // vertical addressing mode
+	//write_cmd(0b01); // vertical addressing mode
+	write_cmd(0b00); // horizontal addressing mode
 
 	write_cmd(SET_COL_ADDR); // 0x21
 	write_cmd(0);
@@ -190,9 +196,12 @@ void draw_pixel(int16_t x, int16_t y, int color)
 
 	int page = y/8;
 	int bit = 1<<(y % 8);
-	int xincr = 8;
-	xincr =	height/8;
-	uint8_t* ptr = scr + x*xincr + page  + 1; 
+	//int xincr = 8;
+	//xincr =	height/8;
+	//uint8_t* ptr = scr + x*xincr + page  + 1; 
+	//uint8_t* ptr = screen.display[page] + x; 
+	//uint8_t* ptr = (uint8_t*) &screen + page*8 + x +1; 
+	uint8_t* ptr = scr + page*128 + x + 1;
 
 	switch (color) {
 		case 1: // white
@@ -226,7 +235,7 @@ void drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[], int16_t w,
 	}
 }
 
-void draw_letter_at(uint8_t x, uint8_t y, char c)
+void draw_letter_at (uint8_t x, uint8_t y, char c)
 {
 	if(c< ' ' || c>  0x7F) c = '?'; // 0x7F is the DEL key
 
