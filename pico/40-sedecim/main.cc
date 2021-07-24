@@ -54,6 +54,7 @@ const int num_slots = 16;
 int slots[num_slots];
 int cur_slot_num = 0;
 
+#if 0
 void set_freq ()
 {
 	wave_freq = notes[notes_idx].freq;
@@ -68,6 +69,7 @@ void set_freq ()
 	//show_scr();
 
 }
+#endif
 
 void alarm0_isr()
 {
@@ -121,6 +123,7 @@ initialising:
 	where = &&navigating;
 	//printf("rotary initialising\n");
 	return;
+
 navigating: // figuring out which slot to change
 	//		printf("-");
 	if(int chg = rot.change()) {
@@ -138,7 +141,25 @@ navigating: // figuring out which slot to change
 		}
 
 	}
+	if(rot.sw_falling()) {
+		ssd1306_print_at(x+1, y, "?");
+		where = &&choosing_freq;
+	}
 	return;
+
+choosing_freq:
+	 if(int chg = rot.change()) {
+		 slots[slot_position] = std::clamp(slots[slot_position] + chg, 0, num_notes -1);
+		 auto [x, y] = cursor_slot(slot_position);
+		 ssd1306_print_at(x+2, y, "    ");
+		 ssd1306_print_at(x+2, y, notes[slots[slot_position]].name);
+	 }
+	 if(rot.sw_falling()) {
+		 auto [x , y] = cursor_slot(slot_position);
+                 ssd1306_print_at(x+1, y, "+");
+		 where = &&navigating;
+	 }
+	 return;
 }
 
 #if 0
