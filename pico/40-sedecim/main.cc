@@ -54,7 +54,7 @@ const int num_slots = 16;
 int slots[num_slots];
 int cur_slot_num = 0;
 
-void set_freq()
+void set_freq ()
 {
 	wave_freq = notes[notes_idx].freq;
 	dy = wave_freq / framerate;
@@ -109,17 +109,39 @@ void metro_isr()
 void rotary_poll(void)
 {
 	static Rotary rot(21, 20, 19);
+	static void* where = &&initialising;
+	static int slot_position = 0;
+	auto [x, y] = cursor_slot(slot_position);
+			//printf("X");
+	goto *where;
+
+
+initialising:
+	ssd1306_print_at(x+1, y, "+");
+	where = &&navigating;
+	//printf("rotary initialising\n");
+	return;
+navigating: // figuring out which slot to change
+	//		printf("-");
 	if(int chg = rot.change()) {
-		auto new_idx = std::clamp(notes_idx + chg, 0, num_notes-1);
-		if(new_idx != notes_idx) {
-			notes_idx = new_idx;
-			set_freq();
+		auto new_slot_position = slot_position + chg;
+		if(new_slot_position >= num_slots) new_slot_position = 0;
+		if(new_slot_position < 0) new_slot_position = num_slots -1;
+		if(new_slot_position != slot_position) {
+			slot_position = new_slot_position;
+			ssd1306_print_at(x+1, y, " ");
+			auto [x , y] = cursor_slot(slot_position);
+			ssd1306_print_at(x+1, y, "+");
+			printf(".");
+			//set_freq();
 
 		}
 
 	}
+	return;
 }
 
+#if 0
 void screen_poll()
 {
 	static bool initialised = false;
@@ -146,6 +168,7 @@ void screen_poll()
 	if(page==8) page=0;
 	gpio_put(SCR_GPIO, false);
 }
+#endif
 
 int main() 
 {
@@ -177,27 +200,12 @@ int main()
 	for(int i =0; i< num_slots; i++) {
 		slots[i] = notes_idx; // to middle C
 		auto [x, y] = cursor_slot(i);
-		ssd1306_print_at(x+1, y, notes[notes_idx].name);
+		ssd1306_print_at(x+2, y, notes[notes_idx].name);
 	}
-	//show_scr();
-	//while(1);
-
-
-
-	//set_freq();
-
-	//int rotary_mode = 
 
 	for(;;) {
 		rotary_poll();
-		screen_poll();
-#if 0
-		printf("Hello number %d\n", i++);
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);		
-#endif
+		ssd1306_display_cell();
 	}
 
 	return 0;
