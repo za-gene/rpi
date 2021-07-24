@@ -31,7 +31,6 @@ auto framerate = 44100.0;
 auto delay = 1'000'000.0/framerate;
 uint slice_num;
 float y = 0;
-//float dy = top * wave_freq / framerate;
 float dy = wave_freq / framerate;
 
 
@@ -104,8 +103,9 @@ void metro_isr()
 	if(cur_slot_num == 16) cur_slot_num = 0;
 	std::tie(x, y) = cursor_slot(cur_slot_num);
 	ssd1306_print_at(x, y, ">");
-
-
+	wave_freq = notes[slots[cur_slot_num]].freq;
+	//y=0;
+        dy = wave_freq / framerate;
 }
 
 void rotary_poll(void)
@@ -162,34 +162,6 @@ choosing_freq:
 	 return;
 }
 
-#if 0
-void screen_poll()
-{
-	static bool initialised = false;
-	if(!initialised) {
-		initialised = true;
-		show_scr();
-	}
-	extern uint8_t scr[1025]; 
-	static int page = 0;
-	ssd1306_write_cmd(SET_COL_ADDR); // 0x21
-	ssd1306_write_cmd(0);
-	ssd1306_write_cmd(127);
-
-	ssd1306_write_cmd(SET_PAGE_ADDR); // 0x22
-	ssd1306_write_cmd(page);
-	ssd1306_write_cmd(page);
-
-	uint8_t mem[1+128];
-	mem[0] = 40; // the data instruction
-	memcpy(mem+1, scr + 8*page +1, 128);
-	gpio_put(SCR_GPIO, true);
-	ssd1306_send_data(mem, sizeof(mem));
-	page++;
-	if(page==8) page=0;
-	gpio_put(SCR_GPIO, false);
-}
-#endif
 
 int main() 
 {
