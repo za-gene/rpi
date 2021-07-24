@@ -2,6 +2,10 @@
 
 Use an OLED display.
 
+`ssd1306_display_cell()` takes about 117us to transfer a cell at a transfer rate of 1Mbps. 
+It is intended to be used in the main program loop where you don't want the transfer
+blocking for too long. See project `ssd1306` for an example of its use.
+
 The repo from which this code is derived used "vetical addressing mode", which I found to be inconvenient.
 I have therefore used horizontal addressing mode. This is the default, but you can set it manually
 as follows:

@@ -23,10 +23,15 @@ The default config should mean that the Maker Pico will work
 consistently with the
 default CircuitPython setup.
 
+## Speed
+
+`ssd1306_display_cell()` takes about 117us to transfer a cell at a transfer rate of 1Mbps.
 
 
 
 ## News
+
+2021-07-24	Added `ssd1306_display_cell()` to reduce bottlenecks
 
 2021-05-23 Added flexibility as to which I2C pins to use
 

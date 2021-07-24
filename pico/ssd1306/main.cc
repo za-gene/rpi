@@ -1,5 +1,7 @@
 #include "pico/stdlib.h"
 #include "ssd1306.h"
+#include "pi.h"
+
 
 extern "C" const uint8_t splash1_data[];
 int main()
@@ -17,6 +19,8 @@ int main()
 	sleep_ms(2000);
 	fill_scr(0); // empty the screen
 
+
+	GpioOut pin(17); // used to test speed of writing
 
 	sleep_ms(2000);
 	fill_scr(0);
@@ -36,7 +40,10 @@ int main()
 	//show_scr();
 	
 	for(;;) {
+		pin.on();
 		ssd1306_display_cell();
+		pin.off();
+		sleep_ms(1);
 	}
 
 	return 0;

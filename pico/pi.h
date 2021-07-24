@@ -29,4 +29,15 @@ void pi_spi_init_std(void);
 
 #ifdef __cplusplus
 }
-#endif
+
+
+class GpioOut {
+	public:
+		GpioOut(uint gpio);
+		void on(void);
+		void off(void);
+	private:
+		uint m_gpio;
+};
+
+#endif // __cplusplus

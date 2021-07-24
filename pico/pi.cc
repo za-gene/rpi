@@ -155,3 +155,20 @@ void pi_spi_init_std(void)
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 }
+
+GpioOut::GpioOut(uint gpio)
+{
+	gpio_init(gpio);
+	gpio_set_dir(gpio, GPIO_OUT);
+	m_gpio = gpio;
+}
+
+void GpioOut::on(void)
+{
+	gpio_put(m_gpio, true);
+}
+void GpioOut::off(void)
+{
+	gpio_put(m_gpio, false);
+}
+
