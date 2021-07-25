@@ -132,12 +132,18 @@ void navigation_slot_change(int chg)
 	}
 }
 
+void print_freq(int slot_position)
+{
+	auto [x, y] = cursor_slot(slot_position);
+	ssd1306_print_at(x+3, y, "    ");
+	ssd1306_print_at(x+3, y, notes[slots[slot_position]].name);
+}
+
 void rotary_poll (void)
 {
 	static Rotary rot(21, 20, 19);
 	static void* where = &&initialising;
 	auto [x, y] = cursor_slot(slot_position);
-			//printf("X");
 	goto *where;
 
 
@@ -160,9 +166,7 @@ navigating: // figuring out which slot to change
 choosing_freq:
 	 if(int chg = rot.change()) {
 		 slots[slot_position] = std::clamp(slots[slot_position] + chg, 0, num_notes -1);
-		 auto [x, y] = cursor_slot(slot_position);
-		 ssd1306_print_at(x+3, y, "    ");
-		 ssd1306_print_at(x+3, y, notes[slots[slot_position]].name);
+		 print_freq(slot_position);
 	 }
 	 if(rot.sw_falling()) {
 		 auto [x , y] = cursor_slot(slot_position);
@@ -177,6 +181,16 @@ void uart_poll(void)
 {
 	if(uart_is_readable(uart0)) {
 		char c = uart_getc(uart0);
+		if( 'a' <= c && c <= 'g') {
+			int idx = slots[slot_position];
+			int octave = idx/12;
+			char note_seq[] = "ccddeffggaab";
+			int offset = 0;
+			while(note_seq[offset] != c) offset++;
+			slots[slot_position] = octave*12 + offset;
+			print_freq(slot_position);
+			return;
+		}
 		switch(c) {
 			case 'x': active_toggle(); break;
 			case 'j' : navigation_slot_change(1); break;
