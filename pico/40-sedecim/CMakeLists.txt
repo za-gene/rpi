@@ -30,6 +30,7 @@ target_link_libraries(app
 	hardware_pwm
 	#hardware_spi
 	#hardware_timer
+	hardware_uart
 	)
 
 pico_add_extra_outputs(app) # create map/bin/hex file etc.

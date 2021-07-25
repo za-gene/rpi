@@ -12,7 +12,7 @@
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 #include "hardware/pwm.h"
-//#include "hardware/spi.h"
+#include "hardware/uart.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
 #include "notes.h"
@@ -102,9 +102,9 @@ void metro_isr()
         dy = wave_freq / framerate;
 }
 
-void active_poll(void)
+void active_toggle(void)
 {
-	if(!active_button.falling()) return;
+	//if(!active_button.falling()) return;
 	auto [x, y] = cursor_slot(slot_position);
 	if(active[slot_position]) {
 		ssd1306_print_at(x+2, y, "x");
@@ -115,7 +115,24 @@ void active_poll(void)
 	}
 }
 
-void rotary_poll(void)
+void navigation_slot_change(int chg)
+{
+	auto [x, y] = cursor_slot(slot_position);
+	auto new_slot_position = slot_position + chg;
+	if(new_slot_position >= num_slots) new_slot_position = 0;
+	if(new_slot_position < 0) new_slot_position = num_slots -1;
+	if(new_slot_position != slot_position) {
+		slot_position = new_slot_position;
+		ssd1306_print_at(x+1, y, " ");
+		auto [x , y] = cursor_slot(slot_position);
+		ssd1306_print_at(x+1, y, "+");
+		//printf(".");
+		//set_freq();
+
+	}
+}
+
+void rotary_poll (void)
 {
 	static Rotary rot(21, 20, 19);
 	static void* where = &&initialising;
@@ -132,21 +149,8 @@ initialising:
 
 navigating: // figuring out which slot to change
 	//		printf("-");
-	if(int chg = rot.change()) {
-		auto new_slot_position = slot_position + chg;
-		if(new_slot_position >= num_slots) new_slot_position = 0;
-		if(new_slot_position < 0) new_slot_position = num_slots -1;
-		if(new_slot_position != slot_position) {
-			slot_position = new_slot_position;
-			ssd1306_print_at(x+1, y, " ");
-			auto [x , y] = cursor_slot(slot_position);
-			ssd1306_print_at(x+1, y, "+");
-			printf(".");
-			//set_freq();
-
-		}
-
-	}
+	if(int chg = rot.change()) 
+		navigation_slot_change(chg);
 	if(rot.sw_falling()) {
 		ssd1306_print_at(x+1, y, "?");
 		where = &&choosing_freq;
@@ -166,6 +170,21 @@ choosing_freq:
 		 where = &&navigating;
 	 }
 	 return;
+}
+
+
+void uart_poll(void)
+{
+	if(uart_is_readable(uart0)) {
+		char c = uart_getc(uart0);
+		switch(c) {
+			case 'x': active_toggle(); break;
+			case 'j' : navigation_slot_change(1); break;
+			case 'k' : navigation_slot_change(-1); break;
+			default: printf("Unknown input: %c %d\n", c, c);
+		}
+
+	}
 }
 
 
@@ -205,8 +224,9 @@ int main()
 	}
 
 	for(;;) {
-		active_poll();
+		if(active_button.falling()) active_toggle();
 		rotary_poll();
+		uart_poll();
 		ssd1306_display_cell();
 	}
 
