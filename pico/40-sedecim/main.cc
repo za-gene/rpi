@@ -177,6 +177,23 @@ choosing_freq:
 }
 
 
+void toggle_running(void)
+{
+	static bool running = true;
+	if(running) {
+		running = false;
+		hardware_alarm_cancel(METRO_ALARM);
+		hardware_alarm_cancel(ALARM);
+	} else {
+		running = true;
+		//pi_alarm_init(ALARM, alarm0_isr, delay);
+		//pi_alarm_init(METRO_ALARM, metro_isr, metro_delay_us);
+		pi_alarm_rearm(ALARM, delay);
+		pi_alarm_rearm(METRO_ALARM, metro_delay_us);
+	}
+
+}
+
 void uart_poll(void)
 {
 	if(uart_is_readable(uart0)) {
@@ -195,6 +212,7 @@ void uart_poll(void)
 			case 'x': active_toggle(); break;
 			case 'j' : navigation_slot_change(1); break;
 			case 'k' : navigation_slot_change(-1); break;
+			case 's': toggle_running(); break;
 			default: printf("Unknown input: %c %d\n", c, c);
 		}
 
