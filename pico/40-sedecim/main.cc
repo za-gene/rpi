@@ -45,30 +45,19 @@ int notes_find(const char* note_name)
 
 
 
+Debounce active_button(6);
+
+
 
 auto notes_idx = notes_find("C4");
 
 
 const int num_slots = 16;
 int slots[num_slots];
-int cur_slot_num = 0;
+bool active[num_slots]; // whether a slot is playing or not
+int cur_slot_num = 0; // playing position
 
-#if 0
-void set_freq ()
-{
-	wave_freq = notes[notes_idx].freq;
-	dy = wave_freq / framerate;
-
-	// update oled
-	char line[128];
-	snprintf(line, sizeof(line), "%3.3s %d      ", 
-			notes[notes_idx].name, notes[notes_idx].freq);
-	setCursorx(0);
-	ssd1306_print(line);
-	//show_scr();
-
-}
-#endif
+static int slot_position = 0; // edit position
 
 void alarm0_isr()
 {
@@ -103,16 +92,33 @@ void metro_isr()
 	if(cur_slot_num == 16) cur_slot_num = 0;
 	std::tie(x, y) = cursor_slot(cur_slot_num);
 	ssd1306_print_at(x, y, ">");
+	if(!active[cur_slot_num]) {
+		y = 0;
+		dy = 0;
+		return;
+	}
 	wave_freq = notes[slots[cur_slot_num]].freq;
 	//y=0;
         dy = wave_freq / framerate;
+}
+
+void active_poll(void)
+{
+	if(!active_button.falling()) return;
+	auto [x, y] = cursor_slot(slot_position);
+	if(active[slot_position]) {
+		ssd1306_print_at(x+2, y, "x");
+		active[slot_position] = false;
+	} else {
+		ssd1306_print_at(x+2, y, " ");
+		active[slot_position] = true;
+	}
 }
 
 void rotary_poll(void)
 {
 	static Rotary rot(21, 20, 19);
 	static void* where = &&initialising;
-	static int slot_position = 0;
 	auto [x, y] = cursor_slot(slot_position);
 			//printf("X");
 	goto *where;
@@ -151,8 +157,8 @@ choosing_freq:
 	 if(int chg = rot.change()) {
 		 slots[slot_position] = std::clamp(slots[slot_position] + chg, 0, num_notes -1);
 		 auto [x, y] = cursor_slot(slot_position);
-		 ssd1306_print_at(x+2, y, "    ");
-		 ssd1306_print_at(x+2, y, notes[slots[slot_position]].name);
+		 ssd1306_print_at(x+3, y, "    ");
+		 ssd1306_print_at(x+3, y, notes[slots[slot_position]].name);
 	 }
 	 if(rot.sw_falling()) {
 		 auto [x , y] = cursor_slot(slot_position);
@@ -193,10 +199,13 @@ int main()
 	for(int i =0; i< num_slots; i++) {
 		slots[i] = notes_idx; // to middle C
 		auto [x, y] = cursor_slot(i);
-		ssd1306_print_at(x+2, y, notes[notes_idx].name);
+		active[i] = false;
+		ssd1306_print_at(x+2, y, "x");
+		ssd1306_print_at(x+3, y, notes[notes_idx].name);
 	}
 
 	for(;;) {
+		active_poll();
 		rotary_poll();
 		ssd1306_display_cell();
 	}
