@@ -46,10 +46,8 @@ struct fmt_info {
 } fmt_info;
 
 
-bool is_even(int n)
-{
-	return (n % 2 == 0);
-}
+bool is_even(int n) { return (n % 2 == 0); }
+bool is_odd(int n) { return ! is_even(n); }
 
 size_t file_pos = 0;
 
@@ -84,6 +82,11 @@ void process_list(void)
 		}
 		cout << "\n";
 		remaining = remaining - hdr.size - 8;
+		if(is_odd(remaining)) {
+			 char c;
+                        fread(&c, 1, 1, fp);
+			remaining--;
+		}
 	}
 	return;
 	/*
@@ -99,7 +102,13 @@ void process_list(void)
 
 int main()
 {
-	fp = fopen("/home/pi/Music/sheep.wav", "r");
+#if 0 
+	char filename[] = "/home/pi/Music/sheep.wav";
+#else
+	char filename[] = "/home/pi/tmp/joined.wav";
+#endif
+
+	fp = fopen(filename, "r");
 	assert(fp);
 
 	read_hdr();
@@ -130,7 +139,7 @@ int main()
 				fseek(fp, hdr.size, SEEK_CUR);
 				break;
 			default:
-				cout << "unknown chunk id: " << hdr.id << "\n";
+				cout << "unknown chunk id: " << unchid(hdr.id) << "\n";
 				fseek(fp, hdr.size, SEEK_CUR);
 		}
 	}
