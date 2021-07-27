@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 #include <iostream>
 
 using namespace std;
@@ -21,6 +22,15 @@ constexpr auto fmt_ = chid('f', 'm', 't', ' ');
 constexpr auto data = chid('d', 'a', 't', 'a');
 constexpr auto list = chid('L', 'I', 'S', 'T');
 
+string unchid(uint32_t id)
+{
+	string res = "";
+	for(int i = 0; i<4; i++) {
+		res += (char) (id & 0xFF);
+		id >>= 8;
+	}
+	return res;
+}
 struct hdr {
 	uint32_t id;
 	uint32_t size;
@@ -36,6 +46,11 @@ struct fmt_info {
 } fmt_info;
 
 
+bool is_even(int n)
+{
+	return (n % 2 == 0);
+}
+
 size_t file_pos = 0;
 
 size_t file_size;
@@ -44,6 +59,42 @@ void read_hdr()
 {
 	fread(&hdr, 8, 1, fp);
 	file_pos += 8;
+}
+
+void process_list(void)
+{
+	cout << "Processing list\n" ;
+	char list_id[4];
+	fread(list_id, 4, 1, fp);
+	if(strncmp(list_id, "INFO", 4)) {
+		cout << "Not an INFO, So skipping\n";
+		fseek(fp, hdr.size -4, SEEK_CUR);
+		return;
+	}
+	assert(is_even(hdr.size));
+	size_t remaining = hdr.size-4;
+	while(remaining > 0) {
+		cout << "Remaining: " << remaining << "\n";
+		read_hdr();
+		cout <<  unchid(hdr.id) << ": " ;
+		for(int i =0; i<hdr.size; i++) {
+			char c;
+			fread(&c, 1, 1, fp);
+			if(c !=0) putchar(c);
+		}
+		cout << "\n";
+		remaining = remaining - hdr.size - 8;
+	}
+	return;
+	/*
+	puts("TODO");
+	exit(1); 
+
+
+	cout << "skipping " << hdr.size << "\n" ;
+	fseek(fp, hdr.size, SEEK_CUR);
+	file_pos += hdr.size; // skip it
+	*/
 }
 
 int main()
@@ -72,10 +123,7 @@ int main()
 		read_hdr();
 		switch(hdr.id) {
 			case list:
-				cout << "found a list\n" ;
-				cout << "skipping " << hdr.size << "\n" ;
-				fseek(fp, hdr.size, SEEK_CUR);
-				file_pos += hdr.size; // skip it
+				process_list();
 				break;
 			case data:
 				cout << "found data\n" ;
