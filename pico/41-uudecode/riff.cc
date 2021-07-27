@@ -83,21 +83,13 @@ void process_list(void)
 		cout << "\n";
 		remaining = remaining - hdr.size - 8;
 		if(is_odd(remaining)) {
-			 char c;
+			cout << "Decrementing due to odd boundary\n";
+			char c;
                         fread(&c, 1, 1, fp);
 			remaining--;
 		}
 	}
 	return;
-	/*
-	puts("TODO");
-	exit(1); 
-
-
-	cout << "skipping " << hdr.size << "\n" ;
-	fseek(fp, hdr.size, SEEK_CUR);
-	file_pos += hdr.size; // skip it
-	*/
 }
 
 int main()
