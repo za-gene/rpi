@@ -92,13 +92,22 @@ void process_list(void)
 	return;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+	char *filename;
+	/*
 #if 0 
 	char filename[] = "/home/pi/Music/sheep.wav";
 #else
 	char filename[] = "/home/pi/tmp/joined.wav";
 #endif
+*/
+	if(argc < 2) {
+		puts("Filename unspecified. Aborting");
+		exit(1);
+	}
+
+	filename = argv[1];
 
 	fp = fopen(filename, "r");
 	assert(fp);
@@ -127,7 +136,7 @@ int main()
 				process_list();
 				break;
 			case data:
-				cout << "found data\n" ;
+				cout << "Found data. size: " << hdr.size << "\n" ;
 				fseek(fp, hdr.size, SEEK_CUR);
 				break;
 			default:
