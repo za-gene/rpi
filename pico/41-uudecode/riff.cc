@@ -145,7 +145,7 @@ void dump_wave (hdr_t* hdr, FILE* fp)
 				//ahead(fp, hdr1.size);
 				break;
 			case data:
-				cout << "found data\n";
+				cout << "DATA chunk size " << hdr1.size << "\n";
 				ahead(fp, hdr1.size);
 				return;
 			default:
