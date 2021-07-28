@@ -20,7 +20,6 @@ constexpr uint32_t chid(char c1, char c2, char c3, char c4) { return (c4 <<24) |
 constexpr auto riff = chid('R', 'I', 'F', 'F');
 constexpr auto wave = chid('W', 'A', 'V', 'E');
 constexpr auto fmt_ = chid('f', 'm', 't', ' ');
-//constexpr uint32_t data = chid("DATA");
 constexpr auto data = chid('d', 'a', 't', 'a');
 constexpr auto list = chid('L', 'I', 'S', 'T');
 
@@ -202,28 +201,23 @@ h	print this help
 
 void append_file (const char* filename, const char* append_filename)
 {
-#if 0
 	fp = fopen(filename, "r+"); // for reading and writing
 	assert(fp);
-	read_hdr();
+	hdr_t hdr;
+	read_hdr(&hdr);
 	assert(hdr.id == riff);
-	uint32_t chunk_size = hdr.size;
-	//size_t fsize = file
+	uint32_t riff_data_size = hdr.size;
 	
-	//ifstream fin(fielanme);
 	FILE* fapp = fopen(append_filename, "r");
 	assert(fapp);
 	fread(&hdr, 8, 1, fapp);
-	//read_hdr();
 	assert(hdr.id == riff);
 
 	// check that we have a WAVE chunk
         fread(&hdr, 8, 1, fapp);
 	assert(hdr.id == wave);
 
-	//cout << "fapp seek = " << ftell(fapp);
 	fseek(fapp, -8, SEEK_CUR); // now wind back to start of WAVE chunk
-	//cout << ", and now " << ftell(fapp) << "\n";
 
 	//append WAVE in fapp to fp
 	fseek(fp, 0, SEEK_END);
@@ -232,19 +226,16 @@ void append_file (const char* filename, const char* append_filename)
 	while(1) {
 		n = fread(block, 1, sizeof(block), fapp);
 		if(n<=0) break;
-		//cout << "appending " << n << "\n";
 		fwrite(block, 1, n,  fp);
 		cum += n;
 	}
 
 	// update the length of RIFF
-	file_size += cum;
+	riff_data_size += cum;
 	fseek(fp, 4, SEEK_SET); // size of file is at offset 
-	fwrite(&file_size, 4, 1, fp);	
-
+	fwrite(&riff_data_size, 4, 1, fp);	
 
 	fclose(fapp);
-#endif
 }
 
 int main (int argc, char** argv)
