@@ -33,44 +33,57 @@ string unchid(uint32_t id)
 	}
 	return res;
 }
-struct hdr {
-	uint32_t id;
+typedef struct __attribute__((__packed__)) {
+	uint32_t id; // RIFF, WAVE, etc.
 	uint32_t size;
-} hdr;
+	uint32_t begin; // file position where the chunk data begins
+	uint32_t end; // file position where the chunk data ends
+} hdr_t;
 
-struct fmt_info {
-	uint32_t len_fmt; // lendth of the format data (s/b 16)
+typedef struct {
+	uint32_t len_fmt; // length of the format data (s/b 16)
 	uint16_t type;
 	uint16_t num_channels;
 	uint32_t sample_rate; // samples per second
 	uint32_t byte_rate; // SampleRate * BitsPerSample * Channels / 8
 	uint16_t block_align; // BitsPerSample * Channels / 8 ; 1= 8bit mono, 2 = 8bit stereo or 16bit mono; 4 = 16bit stereo
-} fmt_info;
+	uint16_t bits_per_sample;
+} wave_fmt_t;
 
 
 bool is_even(int n) { return (n % 2 == 0); }
 bool is_odd(int n) { return ! is_even(n); }
 
 /* align file to an even offset */
-void align(FILE* fp)
+void align (FILE* fp)
 {
 	if(is_even(ftell(fp))) return;
 	cout << "aligning fileptr\n";
 	fseek(fp, 1, SEEK_CUR);
 }
 
+void ahead (FILE* fp, int offset)
+{ 
+	fseek(fp, offset, SEEK_CUR); 
+	align(fp);
+}
+
 size_t file_pos = 0;
 
-uint32_t file_size;
+//uint32_t file_size;
 
-void read_hdr()
+void read_hdr (hdr_t* hdr)
 {
-	fread(&hdr, 8, 1, fp);
-	file_pos += 8;
+	uint32_t n = fread(hdr, 1, 8, fp);
+	assert(n==8);
+	hdr->begin = ftell(fp);
+	hdr->end = hdr->begin + hdr->size;
+	//file_pos += 8;
 }
 
 void process_list(void)
 {
+#if 0
 	cout << "Processing list\n" ;
 	char list_id[4];
 	fread(list_id, 4, 1, fp);
@@ -100,30 +113,52 @@ void process_list(void)
 		}
 	}
 	return;
+#endif
 }
 
 
-void dump_file(const char* filename)
+void dump_wave (hdr_t* hdr, FILE* fp)
 {
-	fp = fopen(filename, "r");
-	assert(fp);
-	read_hdr();
-	assert(hdr.id == riff);
-	file_size = hdr.size;
+	cout << "WAVE processing\n";
 
-	read_hdr();
-	assert(hdr.id == wave);
-	assert(hdr.size == fmt_);
-	size_t n = fread(&fmt_info, sizeof(struct fmt_info), 1, fp);
-	file_pos += sizeof(struct fmt_info);
-	assert(n==1);	
+	// wind back the file a little, because "size" is actually a chunk name
+	fseek(fp, -4, SEEK_CUR);
+
+	while(1) {
+		hdr_t hdr1;
+		read_hdr(&hdr1);
+		switch(hdr1.id) {
+			case list:
+				cout << "found list\n";
+				ahead(fp, hdr1.size);
+				break;
+			case fmt_:
+				cout << "Found fmt\n";
+				ahead(fp, hdr1.size);
+				break;
+			case data:
+				cout << "found data\n";
+				ahead(fp, hdr1.size);
+				goto finis;
+			default:
+				cout << "Unknown wave type;" << unchid(hdr1.id) << ". Aborting.\n";
+				exit(1);
+		}
+	}
+finis:
+	return;
+	//puts("TODO");
+	//exit(1);
+
+#if 0
+	uint32_t chunk_size += sizeof(struct fmt_info);
 	cout << "len = " << fmt_info.len_fmt << "\n";
 	assert(fmt_info.len_fmt == 16);
 	cout << "type: " << fmt_info.type << "\n";
 	cout << "#channs: " << fmt_info.num_channels << "\n";
 	cout << "sample rate: " << fmt_info.sample_rate << "\n";
 
-	while(ftell(fp) < file_size) {
+	while(ftell(fp) < chunk_size) {
 		read_hdr();
 		switch(hdr.id) {
 			case list:
@@ -139,7 +174,38 @@ void dump_file(const char* filename)
 				fseek(fp, hdr.size, SEEK_CUR);
 		}
 	}
+#endif
+}
 
+void dump_file(const char* filename)
+{
+	cout << "RIFF process\n";
+	fp = fopen(filename, "r");
+	assert(fp);
+	cout << "intial ftell = " << ftell(fp) << "\n";
+	hdr_t hdr;
+	read_hdr(&hdr);
+	assert(hdr.id == riff);
+	cout << "header ends " << hdr.end << "\n";
+	//uint32_t end = hdr.size+8;
+
+	while(ftell(fp) < hdr.end) {
+		hdr_t hdr1;
+		read_hdr(&hdr1);
+		//cout << "chunk size = " << hdr1.size << "\n";
+		//cout << "chunk ends = " << hdr1.end << "\n";
+		//uint32_t end = hdr.size;
+		switch(hdr1.id) {
+			case wave: 
+				dump_wave(&hdr1, fp); 				
+				//ahead(fp, hdr1.size);
+				cout << "ftell now at " << ftell(fp) << "\n";
+				break;
+			default:
+				cout << "RIFF doesn't understand " << unchid(hdr1.id) << ", skipping\n";
+				ahead(fp, hdr1.size);
+		}
+	}
 
 	cout << "Bye\n";
 }
@@ -157,11 +223,12 @@ h	print this help
 
 void append_file (const char* filename, const char* append_filename)
 {
+#if 0
 	fp = fopen(filename, "r+"); // for reading and writing
 	assert(fp);
 	read_hdr();
 	assert(hdr.id == riff);
-	file_size = hdr.size;
+	uint32_t chunk_size = hdr.size;
 	//size_t fsize = file
 	
 	//ifstream fin(fielanme);
@@ -175,9 +242,9 @@ void append_file (const char* filename, const char* append_filename)
         fread(&hdr, 8, 1, fapp);
 	assert(hdr.id == wave);
 
-	cout << "fapp seek = " << ftell(fapp);
+	//cout << "fapp seek = " << ftell(fapp);
 	fseek(fapp, -8, SEEK_CUR); // now wind back to start of WAVE chunk
-	cout << ", and now " << ftell(fapp) << "\n";
+	//cout << ", and now " << ftell(fapp) << "\n";
 
 	//append WAVE in fapp to fp
 	fseek(fp, 0, SEEK_END);
@@ -198,6 +265,7 @@ void append_file (const char* filename, const char* append_filename)
 
 
 	fclose(fapp);
+#endif
 }
 
 int main (int argc, char** argv)
