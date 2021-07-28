@@ -82,7 +82,7 @@ void read_hdr (hdr_t* hdr)
 	//file_pos += 8;
 }
 
-void process_list (hdr_t* hdr)
+void dump_list (hdr_t* hdr)
 {
 	cout << "LIST chunk...\n" ;
 	char list_id[4];
@@ -111,6 +111,21 @@ void process_list (hdr_t* hdr)
 }
 
 
+void dump_wave_fmt (FILE* fp)
+{
+
+	cout << "FMT chunk...\n";
+	wave_fmt_t fmt;
+	fseek(fp, -4, SEEK_CUR);
+	fread(&fmt, 1, sizeof(wave_fmt_t), fp);
+	//uint32_t chunk_size += sizeof(struct fmt_info);
+	cout << "len = " << fmt.len_fmt << "\n";
+	assert(fmt.len_fmt == 16);
+	cout << "type: " << fmt.type << "\n";
+	cout << "#channs: " << fmt.num_channels << "\n";
+	cout << "sample rate: " << fmt.sample_rate << "\n";
+}
+
 void dump_wave (hdr_t* hdr, FILE* fp)
 {
 	cout << "\nWAVE chunk...\n";
@@ -123,53 +138,22 @@ void dump_wave (hdr_t* hdr, FILE* fp)
 		read_hdr(&hdr1);
 		switch(hdr1.id) {
 			case list:
-				process_list(&hdr1);
-				//cout << "found list\n";
-				//ahead(fp, hdr1.size);
+				dump_list(&hdr1);
 				break;
 			case fmt_:
-				cout << "Found fmt\n";
-				ahead(fp, hdr1.size);
+				dump_wave_fmt(fp);
+				//ahead(fp, hdr1.size);
 				break;
 			case data:
 				cout << "found data\n";
 				ahead(fp, hdr1.size);
-				goto finis;
+				return;
 			default:
 				cout << "Unknown wave type;" << unchid(hdr1.id) << ". Aborting.\n";
 				exit(1);
 		}
 	}
-finis:
-	return;
-	//puts("TODO");
-	//exit(1);
-
-#if 0
-	uint32_t chunk_size += sizeof(struct fmt_info);
-	cout << "len = " << fmt_info.len_fmt << "\n";
-	assert(fmt_info.len_fmt == 16);
-	cout << "type: " << fmt_info.type << "\n";
-	cout << "#channs: " << fmt_info.num_channels << "\n";
-	cout << "sample rate: " << fmt_info.sample_rate << "\n";
-
-	while(ftell(fp) < chunk_size) {
-		read_hdr();
-		switch(hdr.id) {
-			case list:
-				process_list();
-				break;
-			case data:
-				cout << "Found data. size: " << hdr.size << "\n" ;
-				fseek(fp, hdr.size, SEEK_CUR);
-				align(fp);
-				break;
-			default:
-				cout << "unknown chunk id: " << unchid(hdr.id) << "\n";
-				fseek(fp, hdr.size, SEEK_CUR);
-		}
-	}
-#endif
+				
 }
 
 void dump_file(const char* filename)
