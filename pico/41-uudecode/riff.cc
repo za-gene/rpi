@@ -55,11 +55,12 @@ bool is_even(int n) { return (n % 2 == 0); }
 bool is_odd(int n) { return ! is_even(n); }
 
 /* align file to an even offset */
-void align (FILE* fp)
+bool align (FILE* fp)
 {
-	if(is_even(ftell(fp))) return;
+	if(is_even(ftell(fp))) return false;
 	cout << "aligning fileptr\n";
 	fseek(fp, 1, SEEK_CUR);
+	return true;
 }
 
 void ahead (FILE* fp, int offset)
@@ -81,45 +82,38 @@ void read_hdr (hdr_t* hdr)
 	//file_pos += 8;
 }
 
-void process_list(void)
+void process_list (hdr_t* hdr)
 {
-#if 0
-	cout << "Processing list\n" ;
+	cout << "LIST chunk...\n" ;
 	char list_id[4];
 	fread(list_id, 4, 1, fp);
 	if(strncmp(list_id, "INFO", 4)) {
 		cout << "Not an INFO, So skipping\n";
-		fseek(fp, hdr.size -4, SEEK_CUR);
+		fseek(fp, hdr->size -4, SEEK_CUR);
 		return;
 	}
-	assert(is_even(hdr.size));
-	size_t remaining = hdr.size-4;
+	assert(is_even(hdr->size));
+	size_t remaining = hdr->size-4;
 	while(remaining > 0) {
 		cout << "Remaining: " << remaining << "\n";
-		read_hdr();
-		cout <<  unchid(hdr.id) << ": " ;
-		for(int i =0; i<hdr.size; i++) {
+		read_hdr(hdr);
+		cout <<  unchid(hdr->id) << ": " ;
+		for(int i =0; i<hdr->size; i++) {
 			char c;
 			fread(&c, 1, 1, fp);
 			if(c !=0) putchar(c);
 		}
 		cout << "\n";
-		remaining = remaining - hdr.size - 8;
-		if(is_odd(remaining)) {
-			cout << "Decrementing due to odd boundary\n";
-			char c;
-			fread(&c, 1, 1, fp);
-			remaining--;
-		}
+		remaining = remaining - hdr->size - 8;
+		if(align(fp)) remaining--;
 	}
 	return;
-#endif
 }
 
 
 void dump_wave (hdr_t* hdr, FILE* fp)
 {
-	cout << "WAVE processing\n";
+	cout << "\nWAVE chunk...\n";
 
 	// wind back the file a little, because "size" is actually a chunk name
 	fseek(fp, -4, SEEK_CUR);
@@ -129,8 +123,9 @@ void dump_wave (hdr_t* hdr, FILE* fp)
 		read_hdr(&hdr1);
 		switch(hdr1.id) {
 			case list:
-				cout << "found list\n";
-				ahead(fp, hdr1.size);
+				process_list(&hdr1);
+				//cout << "found list\n";
+				//ahead(fp, hdr1.size);
 				break;
 			case fmt_:
 				cout << "Found fmt\n";
