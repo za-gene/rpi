@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
+//#include <fstream>
 #include <unistd.h>
 
 using namespace std;
@@ -60,7 +61,7 @@ void align(FILE* fp)
 
 size_t file_pos = 0;
 
-size_t file_size;
+uint32_t file_size;
 
 void read_hdr()
 {
@@ -154,8 +155,49 @@ h	print this help
 	exit(0);
 }
 
-void append_file (const char* filename)
+void append_file (const char* filename, const char* append_filename)
 {
+	fp = fopen(filename, "r+"); // for reading and writing
+	assert(fp);
+	read_hdr();
+	assert(hdr.id == riff);
+	file_size = hdr.size;
+	//size_t fsize = file
+	
+	//ifstream fin(fielanme);
+	FILE* fapp = fopen(append_filename, "r");
+	assert(fapp);
+	fread(&hdr, 8, 1, fapp);
+	//read_hdr();
+	assert(hdr.id == riff);
+
+	// check that we have a WAVE chunk
+        fread(&hdr, 8, 1, fapp);
+	assert(hdr.id == wave);
+
+	cout << "fapp seek = " << ftell(fapp);
+	fseek(fapp, -8, SEEK_CUR); // now wind back to start of WAVE chunk
+	cout << ", and now " << ftell(fapp) << "\n";
+
+	//append WAVE in fapp to fp
+	fseek(fp, 0, SEEK_END);
+	char block[512];
+	size_t n, cum = 0;
+	while(1) {
+		n = fread(block, 1, sizeof(block), fapp);
+		if(n<=0) break;
+		//cout << "appending " << n << "\n";
+		fwrite(block, 1, n,  fp);
+		cum += n;
+	}
+
+	// update the length of RIFF
+	file_size += cum;
+	fseek(fp, 4, SEEK_SET); // size of file is at offset 
+	fwrite(&file_size, 4, 1, fp);	
+
+
+	fclose(fapp);
 }
 
 int main (int argc, char** argv)
@@ -185,7 +227,7 @@ int main (int argc, char** argv)
 	char *filename = argv[optind];
 
 	if(append_filename) {
-		append_file(filename);
+		append_file(filename, append_filename);
 	} else {
 		dump_file(filename);
 	}
