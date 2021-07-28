@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -49,6 +50,14 @@ struct fmt_info {
 bool is_even(int n) { return (n % 2 == 0); }
 bool is_odd(int n) { return ! is_even(n); }
 
+/* align file to an even offset */
+void align(FILE* fp)
+{
+	if(is_even(ftell(fp))) return;
+	cout << "aligning fileptr\n";
+	fseek(fp, 1, SEEK_CUR);
+}
+
 size_t file_pos = 0;
 
 size_t file_size;
@@ -85,33 +94,18 @@ void process_list(void)
 		if(is_odd(remaining)) {
 			cout << "Decrementing due to odd boundary\n";
 			char c;
-                        fread(&c, 1, 1, fp);
+			fread(&c, 1, 1, fp);
 			remaining--;
 		}
 	}
 	return;
 }
 
-int main(int argc, char** argv)
+
+void dump_file(const char* filename)
 {
-	char *filename;
-	/*
-#if 0 
-	char filename[] = "/home/pi/Music/sheep.wav";
-#else
-	char filename[] = "/home/pi/tmp/joined.wav";
-#endif
-*/
-	if(argc < 2) {
-		puts("Filename unspecified. Aborting");
-		exit(1);
-	}
-
-	filename = argv[1];
-
 	fp = fopen(filename, "r");
 	assert(fp);
-
 	read_hdr();
 	assert(hdr.id == riff);
 	file_size = hdr.size;
@@ -129,7 +123,6 @@ int main(int argc, char** argv)
 	cout << "sample rate: " << fmt_info.sample_rate << "\n";
 
 	while(ftell(fp) < file_size) {
-	//for(int i = 0; i < 2; i++) {
 		read_hdr();
 		switch(hdr.id) {
 			case list:
@@ -138,6 +131,7 @@ int main(int argc, char** argv)
 			case data:
 				cout << "Found data. size: " << hdr.size << "\n" ;
 				fseek(fp, hdr.size, SEEK_CUR);
+				align(fp);
 				break;
 			default:
 				cout << "unknown chunk id: " << unchid(hdr.id) << "\n";
@@ -146,10 +140,60 @@ int main(int argc, char** argv)
 	}
 
 
-
 	cout << "Bye\n";
+}
+
+void print_help(void)
+{
+	const char* text = R"EOI(
+riff - edit RIFF files
+a [FILE] append file to end 
+h	print this help
+)EOI";
+	puts(text);
+	exit(0);
+}
+
+void append_file (const char* filename)
+{
+}
+
+int main (int argc, char** argv)
+{
+	int option;
+	char *append_filename = nullptr;
+	while((option = getopt(argc, argv, "a:h")) != -1) {
+		switch(option) {
+			case 'a': append_filename = optarg; break;
+			case 'h': print_help();
+			case '?': printf("unknown option: %c\n", optopt); exit(1);
+		}
+	}
+
+	/*
+	   for(; optind < argc; optind++){ //when some extra arguments are passed
+	   printf("Given extra arguments: %s\n", argv[optind]);
+	   }
+	   */
+
+	cout << "optind=" << optind << ", argc = " << argc << "\n";
+	if(argc <= optind) {
+		puts("Filename unspecified. Aborting");
+		exit(1);
+	}
+
+	char *filename = argv[optind];
+
+	if(append_filename) {
+		append_file(filename);
+	} else {
+		dump_file(filename);
+	}
+
 	fclose(fp);
 
 
 	return 0;
 }
+
+
