@@ -1,10 +1,14 @@
+CXXFLAGS = -g
 
-BINS = uutest riff
+BINS = uutest riff wav10
 
 
+
+wav10 : wav10.cc
+	g++ $(CXXFLAGS) $< -o $@
 
 riff : riff.cc
-	g++ $< -o $@
+	g++ $(CXXFLAGS) $< -o $@
 
 uutest : uutest.cc lorem.uue
 	g++ uutest.cc -o uutest
