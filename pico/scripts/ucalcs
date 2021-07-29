@@ -1,6 +1,36 @@
 #!/usr/bin/env perl
-
 # perform various calculations
+
+
+#use Getopt::Long; # https://perldoc.perl.org/Getopt::Long
+use Getopt::Std; # https://perldoc.perl.org/Getopt::Std
+#use feature "switch";
+
+getopts('ht', \%opts);
+#print %opts;
+
+if($opts{'h'}) {
+my $txt = << 'EOI';
+ucalcs - calculator for pico
+ -h	print this help
+ -t	print a table of max audio rates
+EOI
+	print "$txt";
+	exit(0);
+} elsif($opts{'t'}) {
+	$top44100 = 125000000/44100;
+my $txt = << "EOI";
+44100 $top44100 (closest to standard bits is 2**10-1=1023)
+EOI
+	print"$txt";
+	exit(0);
+}
+
+
+
+#given(expr) {
+#	when(expr1) { stmt; }
+#}
 
 
 my $input;

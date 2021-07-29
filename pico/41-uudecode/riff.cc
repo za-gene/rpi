@@ -22,6 +22,7 @@ constexpr auto wave = chid('W', 'A', 'V', 'E');
 constexpr auto fmt_ = chid('f', 'm', 't', ' ');
 constexpr auto data = chid('d', 'a', 't', 'a');
 constexpr auto list = chid('L', 'I', 'S', 'T');
+constexpr auto id3_ = chid('i', 'd', '3', ' ');
 
 string unchid(uint32_t id)
 {
@@ -94,7 +95,7 @@ void dump_list (hdr_t* hdr)
 	assert(is_even(hdr->size));
 	size_t remaining = hdr->size-4;
 	while(remaining > 0) {
-		cout << "Remaining: " << remaining << "\n";
+		//cout << "Remaining: " << remaining << "\n";
 		read_hdr(hdr);
 		cout <<  unchid(hdr->id) << ": " ;
 		for(int i =0; i<hdr->size; i++) {
@@ -106,6 +107,7 @@ void dump_list (hdr_t* hdr)
 		remaining = remaining - hdr->size - 8;
 		if(align(fp)) remaining--;
 	}
+	cout << "\n";
 	return;
 }
 
@@ -122,12 +124,14 @@ void dump_wave_fmt (FILE* fp)
 	assert(fmt.len_fmt == 16);
 	cout << "type: " << fmt.type << "\n";
 	cout << "#channs: " << fmt.num_channels << "\n";
-	cout << "sample rate: " << fmt.sample_rate << "\n";
+	cout << "sample rate: " << fmt.sample_rate << "\n\n";
 }
 
-void dump_wave (hdr_t* hdr, FILE* fp)
+void dump_wave (hdr_t* hdr, FILE* fp, bool* has_id3)
 {
 	cout << "\nWAVE chunk...\n";
+
+	*has_id3 = true;
 
 	// wind back the file a little, because "size" is actually a chunk name
 	fseek(fp, -4, SEEK_CUR);
@@ -146,6 +150,10 @@ void dump_wave (hdr_t* hdr, FILE* fp)
 			case data:
 				cout << "DATA chunk size " << hdr1.size << "\n";
 				ahead(fp, hdr1.size);
+				break;
+			case id3_:
+				cout << "id3 chunk found. Assume end of file\n";
+				*has_id3 = true;
 				return;
 			default:
 				cout << "Unknown wave type;" << unchid(hdr1.id) << ". Aborting.\n";
@@ -167,6 +175,7 @@ void dump_file(const char* filename)
 	cout << "header ends " << hdr.end << "\n";
 	//uint32_t end = hdr.size+8;
 
+	bool has_id3 = false;
 	while(ftell(fp) < hdr.end) {
 		hdr_t hdr1;
 		read_hdr(&hdr1);
@@ -175,16 +184,20 @@ void dump_file(const char* filename)
 		//uint32_t end = hdr.size;
 		switch(hdr1.id) {
 			case wave: 
-				dump_wave(&hdr1, fp); 				
+				dump_wave(&hdr1, fp, &has_id3);
+				if(has_id3) { 
+					cout << "id3 encountered. Assumed end of file\n";
+					goto finis;
+				}
 				//ahead(fp, hdr1.size);
-				cout << "ftell now at " << ftell(fp) << "\n";
+				//cout << "ftell now at " << ftell(fp) << "\n";
 				break;
 			default:
 				cout << "RIFF doesn't understand " << unchid(hdr1.id) << ", skipping\n";
 				ahead(fp, hdr1.size);
 		}
 	}
-
+finis:
 	cout << "Bye\n";
 }
 
