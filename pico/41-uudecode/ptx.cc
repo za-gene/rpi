@@ -1,3 +1,6 @@
+/*
+ * unreliable. better to use ptx.py
+ */
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
