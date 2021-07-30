@@ -1,9 +1,26 @@
 #include "pico/stdlib.h"
 #include "ssd1306.h"
+#include <stdio.h>
 #include "pi.h"
 
 
 extern "C" const uint8_t splash1_data[];
+
+#define ALARM 0
+#define DELAY (2*1'000'000)
+
+static void alarm_0_irq() 
+{
+	pi_alarm_rearm(ALARM, DELAY);
+	char msg[80];
+	static volatile int i = 0;
+	sprintf(msg, "Count %d\n", i++);
+	ssd1306_print(msg);
+	//show_scr();
+}
+
+
+
 int main()
 {
 	//init_i2c();
@@ -37,8 +54,11 @@ int main()
 	// test for both drawing bitmap and cell display handling of output
 	clear_scr();
 	drawBitmap(0, 0, splash1_data, 64, 64, 1);
-	//show_scr();
+	show_scr();
+	sleep_ms(2000);
 	
+	pi_alarm_init(ALARM, alarm_0_irq, DELAY);
+
 	for(;;) {
 		pin.on();
 		ssd1306_display_cell();
