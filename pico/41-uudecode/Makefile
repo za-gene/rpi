@@ -1,8 +1,10 @@
 CXXFLAGS = -g
 
-BINS = uutest riff wav10
+BINS = uutest riff wav10 ptx
 
 
+ptx : ptx.cc
+	g++ $(CXXFLAGS) $< -o $@
 
 wav10 : wav10.cc
 	g++ $(CXXFLAGS) $< -o $@
