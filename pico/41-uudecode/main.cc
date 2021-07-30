@@ -7,8 +7,12 @@
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
+#include "pi.h"
 #include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
+
+#define ALARM 0
+#define DELAY (200'000)
 
 char buf[4096];
 uint32_t size = 0;
@@ -18,7 +22,7 @@ void incoming(void)
 	char c;
 	size = 0;
 	ssd1306_print("RX...\n");
-	show_scr();
+	//show_scr();
 	for(int i = 0;  i<4; i++) {
 		c = getchar();
 		size += (c << (i*8));
@@ -28,38 +32,54 @@ void incoming(void)
 	char msg[80];
 	sprintf(msg, "size %d\n", size);
 	ssd1306_print(msg);
-	show_scr();
+	//show_scr();
 	
+	//char c;
 	for(int i = 0; i< size; i++) {
-		char c = getchar();
+		uart_read_blocking(uart0, (uint8_t*) &c, 1);
+		buf[i] = c;
+		//char c = getchar();
 		ssd1306_putchar(c);
-		show_scr();
+		//show_scr();
 	}
 
 	ssd1306_print("OK\n");
-	show_scr();
+	//show_scr();
 }
 
 void outgoing(void)
 {
 	//printf("%"
 	ssd1306_print("Sending contents\n");
-	show_scr();
+	//show_scr();
+#if 1
+	uart_write_blocking(uart0, (const uint8_t*) &size, 4);
+#else
 	uint32_t x = size;
 	for(int i = 0; i< 4; i++) {
-		uint32_t y = x >> 24;
-		putchar(y);
-		x <<= 8;
+		//nt32_t y = x >> 24;
+		//uart_tx_wait_blocking(uart0);
+		putchar(x);
+		x >>= 8;
 	}
+#endif
 
+	//return;
 	for(int i = 0 ; i < size; i++) {
-		putchar(buf[i]);
+		uart_write_blocking(uart0, (const uint8_t*)(buf+i), 1);
+		//putchar(buf[i]);
 	}
 	ssd1306_print("Done\n");
-	show_scr();
+	//show_scr();
 	//write(fd1, &cmd, 1);
 }
 
+static void alarm_0_irq() 
+{
+	pi_alarm_rearm(ALARM, DELAY);
+	show_scr();
+	//printf("Alarm IRQ fired %d\n", i++);
+}
 
 int main() 
 {
@@ -77,8 +97,10 @@ int main()
 	gpio_set_dir(LED, GPIO_OUT);
 	init_display(64, 4);
 
+	pi_alarm_init(ALARM, alarm_0_irq, DELAY);
+
 	ssd1306_print("transfer prog\n");
-	show_scr();
+	//show_scr();
 	int i = 0;
 	for(;;) {
 		char c = getchar();

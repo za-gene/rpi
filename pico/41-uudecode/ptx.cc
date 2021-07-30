@@ -14,6 +14,12 @@
 using std::cout;
 using std::string;
 
+void pause(int fd)
+{
+		tcdrain(fd); // wait until transmission complete. needed-?
+		usleep(1 * 1000); // delay n ms
+}
+
 int main()
 {
 
@@ -49,8 +55,7 @@ int main()
 		char c = sstr.str()[i];
 		//putchar(c);
 		write(fd1, &c, 1);
-		tcdrain(fd1); // wait until transmission complete. needed-?
-		usleep(4 * 1000); // delay n ms
+		pause(fd1);
 	}
 
 
@@ -58,11 +63,13 @@ int main()
 	puts("Checking what we've received");
 	cmd = 'R';
 	write(fd1, &cmd, 1);
+	pause(fd1);
 	uint32_t rxsize;
 	read(fd1, &rxsize, 4);
 	cout << "rxsize = " << rxsize << "\n";
 	for(int i = 0; i<rxsize; i++) {
 		char c;
+		//pause(fd1);
 		int rd = read(fd1, &c, 1);
 		putchar(c);
 	}
