@@ -3,10 +3,10 @@
 #include "pico/stdlib.h"
 //#include "hardware/adc.h"
 //#include "hardware/clocks.h"
-//#include "hardware/flash.h"
+#include "hardware/flash.h"
 #include "hardware/gpio.h"
-//#include "hardware/irq.h"
-//#include "hardware/pwm.h"
+#include "hardware/irq.h"
+#include "hardware/sync.h"
 #include "pi.h"
 #include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
@@ -14,11 +14,27 @@
 #define ALARM 0
 #define DELAY (200'000)
 
-char buf[4096];
+//#define ADDRESS (XIP_BASE+ FLASH_TARGET_OFFSET)
+#define FLASH_TARGET_OFFSET (256 * 1024)
+#define ADDRESS (XIP_BASE+ FLASH_TARGET_OFFSET)
+static_assert(FLASH_PAGE_SIZE == 256);
+void write_flash_data(uint32_t page, const uint8_t* data) // data must be of size 4096 or more
+{
+	//puts("Doing flash_range_program");
+	uint32_t ints = save_and_disable_interrupts();
+	//flash_range_erase(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, FLASH_PAGE_SIZE);
+	flash_range_program(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, data, FLASH_PAGE_SIZE);
+	restore_interrupts(ints);
+	//puts("Should be flashed now");
+}
+
+
+
 uint32_t size = 0;
 
 void incoming(void)
 {
+	uint8_t data[FLASH_PAGE_SIZE];
 	char c;
 	size = 0;
 	ssd1306_print("RX...\n");
@@ -35,13 +51,20 @@ void incoming(void)
 	//show_scr();
 	
 	//char c;
+	uint32_t page = 0;
 	for(int i = 0; i< size; i++) {
 		uart_read_blocking(uart0, (uint8_t*) &c, 1);
-		buf[i] = c;
+		data[i%FLASH_PAGE_SIZE] = c; // write cyclically
+		if((i%FLASH_PAGE_SIZE == FLASH_PAGE_SIZE-1) || (i+1 == size)) {
+			write_flash_data(page, data);
+			page++;
+		}
 		//char c = getchar();
-		ssd1306_putchar(c);
+		//ssd1306_putchar(c);
+		ssd1306_putchar(data[i%FLASH_PAGE_SIZE]);
 		//show_scr();
 	}
+
 
 	ssd1306_print("OK\n");
 	//show_scr();
@@ -65,8 +88,11 @@ void outgoing(void)
 #endif
 
 	//return;
+	//uint32_t page = 0;
+	//uint8_t data[4096];
 	for(int i = 0 ; i < size; i++) {
-		uart_write_blocking(uart0, (const uint8_t*)(buf+i), 1);
+		uart_write_blocking(uart0, (const uint8_t*)(ADDRESS+i), 1);
+		//uart_write_blocking(uart0, ADDRESS+i, 1);
 		//putchar(buf[i]);
 	}
 	ssd1306_print("Done\n");
@@ -103,7 +129,9 @@ int main()
 	//show_scr();
 	int i = 0;
 	for(;;) {
-		char c = getchar();
+		char c;
+		uart_read_blocking(uart0, (uint8_t*) &c, 1); 
+		//char c = getchar();
 		switch(c) {
 			case 'T' : incoming(); break;
 			case 'R' : outgoing(); break;
