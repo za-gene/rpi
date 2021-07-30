@@ -9,6 +9,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <time.h>
 
 using std::cout;
 using std::string;
@@ -43,9 +44,31 @@ int main()
 	//string& str = sstr.str();
 	uint32_t size = sstr.str().size();
 	write(fd1, &size, 4);
+	tcdrain(fd1); // wait until transmission complete. needed-?
 	for(int i = 0; i<size; i++) {
 		char c = sstr.str()[i];
+		//putchar(c);
+		write(fd1, &c, 1);
+		tcdrain(fd1); // wait until transmission complete. needed-?
+		usleep(4 * 1000); // delay n ms
 	}
+
+
+	// write it back out again
+	puts("Checking what we've received");
+	cmd = 'R';
+	write(fd1, &cmd, 1);
+	uint32_t rxsize;
+	read(fd1, &rxsize, 4);
+	cout << "rxsize = " << rxsize << "\n";
+	for(int i = 0; i<rxsize; i++) {
+		char c;
+		int rd = read(fd1, &c, 1);
+		putchar(c);
+	}
+
+
+
 	/*
 	std::cout << sstr.str() << std::endl;
 	char block[512];

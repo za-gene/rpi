@@ -10,6 +10,55 @@
 #include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
+char buf[4096];
+uint32_t size = 0;
+
+void incoming(void)
+{
+	char c;
+	size = 0;
+	ssd1306_print("RX...\n");
+	show_scr();
+	for(int i = 0;  i<4; i++) {
+		c = getchar();
+		size += (c << (i*8));
+	}
+
+	
+	char msg[80];
+	sprintf(msg, "size %d\n", size);
+	ssd1306_print(msg);
+	show_scr();
+	
+	for(int i = 0; i< size; i++) {
+		char c = getchar();
+		ssd1306_putchar(c);
+		show_scr();
+	}
+
+	ssd1306_print("OK\n");
+	show_scr();
+}
+
+void outgoing(void)
+{
+	//printf("%"
+	ssd1306_print("Sending contents\n");
+	show_scr();
+	uint32_t x = size;
+	for(int i = 0; i< 4; i++) {
+		uint32_t y = x >> 24;
+		putchar(y);
+		x <<= 8;
+	}
+
+	for(int i = 0 ; i < size; i++) {
+		putchar(buf[i]);
+	}
+	ssd1306_print("Done\n");
+	show_scr();
+	//write(fd1, &cmd, 1);
+}
 
 
 int main() 
@@ -33,23 +82,16 @@ int main()
 	int i = 0;
 	for(;;) {
 		char c = getchar();
-		if(c != 'T') continue;
-		uint32_t size = 0;
-		for(int i = 0;  i<4; i++) {
-			c = getchar();
-			size += (c << (i*8));
+		switch(c) {
+			case 'T' : incoming(); break;
+			case 'R' : outgoing(); break;
 		}
-
-		char msg[80];
-		sprintf(msg, "size %d\n", size);
-		ssd1306_print(msg);
-		show_scr();
 		/*
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);	
-		*/
+		   gpio_put(LED, 1);
+		   sleep_ms(100);
+		   gpio_put(LED, 0);
+		   sleep_ms(1000);	
+		   */
 	}
 
 	return 0;

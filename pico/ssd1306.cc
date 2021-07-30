@@ -335,6 +335,28 @@ void draw_letter_at (uint8_t x, uint8_t y, char c)
 
 static int cursorx = 0, cursory = 0;
 
+
+void ssd1306_putchar(char c)
+{
+	if(c == '\n') {
+		cursorx = 0;
+		cursory += 8;
+		return;
+	}
+	if(cursorx >= 128) {
+		cursorx = 0;
+		cursory += 8;
+	}
+	if(cursory >= height) { // scroll up
+		memmove(scr, scr + 128, (pages()-1)*128);
+		memset(scr + (pages()-1)*128 , 0, 128);
+		cursorx = 0;
+		cursory = (pages()-1)*8;
+	}
+	draw_letter_at(cursorx, cursory, c);
+	cursorx += 8;
+}
+
 /** @brief Print at current cursor position
 */
 
@@ -342,14 +364,8 @@ void ssd1306_print(const char* str)
 {
 	char c;
 	while(c = *str) {
+		ssd1306_putchar(c);
 		str++;
-		if(c == '\n') {
-			cursorx = 0;
-			cursory += 8;
-			continue;
-		}
-		draw_letter_at(cursorx, cursory, c);
-		cursorx += 8;
 	}
 }
 
