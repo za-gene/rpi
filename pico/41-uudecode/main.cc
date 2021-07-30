@@ -7,7 +7,7 @@
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
-//#include "hardware/spi.h"
+#include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
 
@@ -26,14 +26,30 @@ int main()
 
 	gpio_init(LED);
 	gpio_set_dir(LED, GPIO_OUT);
+	init_display(64, 4);
 
+	ssd1306_print("transfer prog\n");
+	show_scr();
 	int i = 0;
 	for(;;) {
-		printf("Hello number %d\n", i++);
+		char c = getchar();
+		if(c != 'T') continue;
+		uint32_t size = 0;
+		for(int i = 0;  i<4; i++) {
+			c = getchar();
+			size += (c << (i*8));
+		}
+
+		char msg[80];
+		sprintf(msg, "size %d\n", size);
+		ssd1306_print(msg);
+		show_scr();
+		/*
 		gpio_put(LED, 1);
 		sleep_ms(100);
 		gpio_put(LED, 0);
-		sleep_ms(1000);		
+		sleep_ms(1000);	
+		*/
 	}
 
 	return 0;
