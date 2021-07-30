@@ -22,7 +22,7 @@ void write_flash_data(uint32_t page, const uint8_t* data) // data must be of siz
 {
 	//puts("Doing flash_range_program");
 	uint32_t ints = save_and_disable_interrupts();
-	//flash_range_erase(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, FLASH_PAGE_SIZE);
+	//flash_range_erase(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, FLASH_PAGE_SIZE); // takes too long
 	flash_range_program(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, data, FLASH_PAGE_SIZE);
 	restore_interrupts(ints);
 	//puts("Should be flashed now");
@@ -40,7 +40,8 @@ void incoming(void)
 	ssd1306_print("RX...\n");
 	//show_scr();
 	for(int i = 0;  i<4; i++) {
-		c = getchar();
+		uart_read_blocking(uart0, (uint8_t*) &c, 1);
+		//c = getchar();
 		size += (c << (i*8));
 	}
 
