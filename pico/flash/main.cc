@@ -37,11 +37,8 @@ static_assert(sizeof(data) == SIZE);
 
 void write_flash_data()
 {
-	//puts("Performing memcpy");
-	//memcpy((void*) flash_target_contents, &data, sizeof(data));
 	puts("Doing flash_range_program");
 	uint32_t ints = save_and_disable_interrupts();
-	//flash_range_program(FLASH_TARGET_OFFSET, flash_target_contents, FLASH_PAGE_SIZE);
 	flash_range_erase(FLASH_TARGET_OFFSET, FLASH_PAGE_SIZE);
 	flash_range_program(FLASH_TARGET_OFFSET, (const uint8_t*) &data, FLASH_PAGE_SIZE);
 	restore_interrupts (ints);
@@ -54,18 +51,12 @@ int main()
 	while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 
 	if(strncmp("DATA", ((data_t*) ADDRESS)->magic , 4) == 0) {
-	//if(strncmp("DAT1", (char*) (ADDRESS), 4) == 0) {
-	//if( ((data_t*) (ADDRESS)) ->magic == MAGIC) {		
 		puts("Flash has already been set up");
 		memcpy(&data, (void*) (ADDRESS), SIZE);
-		//data.count += 1;
 	} else {
 		puts("Flash is uninitialised");
-		//write_flash_data();
 	}
 
-	//struct data_t 
-	//memcpy(&data, (void*) flash_target_contents, sizeof(data));
 	data.count += 1;
 	write_flash_data();
 	printf("Data count is %d. Bye\n", data.count);
