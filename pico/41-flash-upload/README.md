@@ -10,6 +10,11 @@ It confuses my `riff` program for sure.
 Your best bet is to convert files created with Audacity to
 a proper WAV file using `ffmpeg -i in.wav out.wav`.
 
+This poxy thing seems remarkably resistant to working.
+Maybe it has something to do with interrupts, but
+it's a pain in the arse, whatever the problem is.
+
+
 ## Status
 
 2021-07-26	Started.

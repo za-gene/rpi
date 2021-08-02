@@ -4,6 +4,7 @@ import zlib
 import os.path
 import getopt
 import sys
+import math
 
 import serial # python3 pip install --user pyserial
 
@@ -33,15 +34,32 @@ crc_out = zlib.crc32(txt)
 
 
 len1 = len(txt)
-print("tx len: ", len1)
 #len2 = struct.pack()
 len2 = ctypes.c_uint32(len1)
+len3 = int(math.ceil(len1/256)*256)
+print(len3)
+txt = txt + b'0' *(len3-len1) # pad to multiple of 256
+print("txt len: ", len(txt))
+#exit(0)
 
 
-with serial.Serial('/dev/ttyACM0', 115200, timeout=1) as ser:
+with serial.Serial('/dev/ttyACM0', 115200, timeout=5) as ser:
+    def rack() :
+        c = ser.read(1)
+        print(c)
+        if(c != b'A'): print("Bad acknowledgement")
+
     ser.write(b'T')
     ser.write(len2)
-    ser.write(txt)
+    rack()
+    #pos = 0
+    numblocks = int(len3/256)
+    assert(numblocks*256 == len3)
+    for blocknum in range(numblocks):
+        block = txt[blocknum*256:(blocknum+1)*256]
+        assert(len(block) == 256)
+        ser.write(block)
+        rack()
     print("Finished transmitting")
     ser.write(b'R')
     rx = ser.read(4)

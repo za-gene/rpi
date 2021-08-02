@@ -7,6 +7,7 @@
 #include "hardware/gpio.h"
 #include "hardware/irq.h"
 #include "hardware/sync.h"
+#include <math.h>
 #include "pi.h"
 #include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
@@ -18,6 +19,7 @@
 #define FLASH_TARGET_OFFSET (256 * 1024)
 #define ADDRESS (XIP_BASE+ FLASH_TARGET_OFFSET)
 static_assert(FLASH_PAGE_SIZE == 256);
+/*
 void write_flash_data(uint32_t page, const uint8_t* data) // data must be of size 4096 or more
 {
 	//puts("Doing flash_range_program");
@@ -27,8 +29,15 @@ void write_flash_data(uint32_t page, const uint8_t* data) // data must be of siz
 	restore_interrupts(ints);
 	//puts("Should be flashed now");
 }
+*/
 
 
+/* acknowledge that transmitter can proceed
+ */
+void ack(void)
+{
+	putchar('A');
+}
 
 uint32_t size = 0;
 
@@ -51,21 +60,28 @@ void incoming(void)
 	ssd1306_print(msg);
 	//show_scr();
 	
-	//char c;
-	uint32_t page = 0;
-	for(int i = 0; i< size; i++) {
-		uart_read_blocking(uart0, (uint8_t*) &c, 1);
-		data[i%FLASH_PAGE_SIZE] = c; // write cyclically
-		if((i%FLASH_PAGE_SIZE == FLASH_PAGE_SIZE-1) || (i+1 == size)) {
-			write_flash_data(page, data);
-			page++;
-		}
-		//char c = getchar();
-		//ssd1306_putchar(c);
-		ssd1306_putchar(data[i%FLASH_PAGE_SIZE]);
-		//show_scr();
-	}
+	// erase SECTORS
+	static_assert(FLASH_SECTOR_SIZE == 4096);
+	int erasure_size = ceil(size/FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
+        uint32_t ints = save_and_disable_interrupts();
+        flash_range_erase(FLASH_TARGET_OFFSET, erasure_size); // takes too long
+        restore_interrupts(ints);
+	ack();
 
+	// read chunks of data
+	static_assert(FLASH_PAGE_SIZE==256);
+	uint8_t block[256];
+	int unread = size;
+	uint32_t offset = FLASH_TARGET_OFFSET;
+	while(unread >0) {
+		uart_read_blocking(uart0, block, 256);
+		uint32_t ints = save_and_disable_interrupts();
+		flash_range_program(offset, block, 256);
+		restore_interrupts(ints);
+		unread -= 256;
+		offset == 256;
+		ack();
+	}
 
 	ssd1306_print("OK\n");
 	//show_scr();
