@@ -2,11 +2,21 @@ import ctypes
 #import struct
 import zlib
 import os.path
+import getopt
+import sys
 
 import serial # python3 pip install --user pyserial
 
+opts, args = getopt.getopt(sys.argv[1:],'h', ['help'])
+#print(opts)
+#print(args)
+#exit(0)
 
-fname = os.path.expanduser("~/Downloads/pg2243.txt")
+fname = "~/Downloads/"
+fname = args[0]
+#fname += "pg2243.txt"
+#fname += "cowbell-1.wav"
+#fname = os.path.expanduser(fname)
 print("fname = ", fname)
 #exit(0)
 
