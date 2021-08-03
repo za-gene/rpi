@@ -45,7 +45,7 @@ void pi_spi_init(spi_t* spi, uint sck, uint cs, spi_type_e SPI_MASTER_TX)
 */
 
 #define SLAVE_SCK 	2
-#define SLAVE_MOSI	4
+#define SLAVE_MOSI	3
 #define SLAVE_CS	5
 
 #define LED		25
@@ -58,19 +58,25 @@ int main()
 	pi_max7219_show_count(0);
 
 	// set up slave
-	uint baud = 2'000'000;
+	uint baud = 100'000;
 	spi_init(spi0, baud);
-	spi_set_slave(spi0, true);
+	//spi_set_slave(spi0, true);
 	gpio_set_function(SLAVE_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(SLAVE_MOSI, GPIO_FUNC_SPI);
+	//pi_gpio_init(SLAVE_CS, OUTPUT);
+	//gpio_put(SLAVE_CS, 1);
 	gpio_set_function(SLAVE_CS, GPIO_FUNC_SPI);
 
-	uint8_t recd[4];
+	uint32_t count = 0;
 	while(1) {
-		spi_read_blocking(spi0, 0x00, recd, 4);
+		//uint32_t big_end = count 
+		//gpio_put(SLAVE_CS, 0);
+		uint32_t big_endian = __builtin_bswap32(count);
+		spi_write_blocking(spi0, (uint8_t*) &big_endian, 4);
+		//gpio_put(SLAVE_CS, 1);
+		count++;
 		pi_gpio_toggle(LED);
-		uint32_t count = *(uint32_t*) recd;
-		pi_max7219_show_count(count++);
+		sleep_ms(100);
 	}
 
 }
