@@ -63,20 +63,19 @@ int main()
 	//spi_set_slave(spi0, true);
 	gpio_set_function(SLAVE_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(SLAVE_MOSI, GPIO_FUNC_SPI);
-	//pi_gpio_init(SLAVE_CS, OUTPUT);
-	//gpio_put(SLAVE_CS, 1);
-	gpio_set_function(SLAVE_CS, GPIO_FUNC_SPI);
+	pi_gpio_init(SLAVE_CS, OUTPUT);
+	gpio_put(SLAVE_CS, 1);
+	//gpio_set_function(SLAVE_CS, GPIO_FUNC_SPI);
 
 	uint32_t count = 0;
 	while(1) {
-		//uint32_t big_end = count 
-		//gpio_put(SLAVE_CS, 0);
+		gpio_put(SLAVE_CS, 0);
 		uint32_t big_endian = __builtin_bswap32(count);
 		spi_write_blocking(spi0, (uint8_t*) &big_endian, 4);
-		//gpio_put(SLAVE_CS, 1);
+		gpio_put(SLAVE_CS, 1);
 		count++;
 		pi_gpio_toggle(LED);
-		sleep_ms(100);
+		sleep_ms(1000);
 	}
 
 }
