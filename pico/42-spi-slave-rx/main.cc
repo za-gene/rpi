@@ -7,7 +7,7 @@
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
 //#include "hardware/pwm.h"
-//#include "hardware/spi.h"
+#include "hardware/spi.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
 #include "pi.h"
@@ -44,42 +44,34 @@ void pi_spi_init(spi_t* spi, uint sck, uint cs, spi_type_e SPI_MASTER_TX)
 }
 */
 
+#define SLAVE_SCK 	2
+#define SLAVE_MOSI	4
+#define SLAVE_CS	5
+
+#define LED		25
+
 int main() 
 {
 	stdio_init_all();
-	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
-
-	//spi_t max7219;
-	//pi_spi_init(&max7219, spi0, 2, 5);
-	
+	pi_gpio_init(LED, OUTPUT);
 	pi_max7219_init();
+	pi_max7219_show_count(0);
 
-	uint32_t count = 0;
+	// set up slave
+	uint baud = 2'000'000;
+	spi_init(spi0, baud);
+	spi_set_slave(spi0, true);
+	gpio_set_function(SLAVE_SCK,  GPIO_FUNC_SPI);
+	gpio_set_function(SLAVE_MOSI, GPIO_FUNC_SPI);
+	gpio_set_function(SLAVE_CS, GPIO_FUNC_SPI);
+
+	uint8_t recd[4];
 	while(1) {
+		spi_read_blocking(spi0, 0x00, recd, 4);
+		pi_gpio_toggle(LED);
+		uint32_t count = *(uint32_t*) recd;
 		pi_max7219_show_count(count++);
-		sleep_ms(1000);
 	}
 
-
-#define BTN  14 // GPIO number, not physical pin
-#define LED  25 // GPIO of built-in LED
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
-
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
-
-	int i = 0;
-	for(;;) {
-		printf("Hello number %d\n", i++);
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);		
-	}
-
-	return 0;
 }
 
