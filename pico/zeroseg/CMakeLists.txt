@@ -19,12 +19,12 @@ add_subdirectory(.. build)
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(app 
-    pi
-	pico_stdlib 
+	pi
+	#pico_stdlib 
 	#harware_adc
 	#hardware_clocks
 	#hardware_flash
-	hardware_gpio
+	#hardware_gpio
 	#hardware_i2c
 	#hardware_irq
 	#hardware_pwm
