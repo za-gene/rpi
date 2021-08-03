@@ -10,6 +10,7 @@
 //#include "hardware/spi.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
+#include "pi.h"
 
 
 int main() 
