@@ -16,12 +16,14 @@
 #include "pace.h"
 //#include "../../1306/pico-sdk/oled.h"
 
+//                                SHIELD
 #define spi		spi1
-#define	PIN_SCK		10
-#define	PIN_MOSI	11
-#define PIN_MISO 	12
-#define	PIN_CS 		15
+#define	PIN_SCK		10	// D5
+#define	PIN_MOSI	11	// D7
+#define PIN_MISO 	12	// D6
+#define	PIN_CS 		15	// D8
 
+#define SPK 19
 
 #define CMD_TIMEOUT 200 // number of tries before getting bored
 #define R1_IDLE_STATE (1<<0)
@@ -431,11 +433,9 @@ volatile signed char refill = 0; // the block that needs to be refilled
 
 
 unsigned int slice_num; // determined in play_music()
-#define SPK 19
 
 void onTimer() {
 	volatile static int pwm_counter = 0;
-	//pwm_set_gpio_level(SPK, dbuf[playing][bidx++]);
 	pwm_set_gpio_level(SPK, *(dbuf + 512*playing + bidx++));
 	if(bidx>=512) {
 		bidx = 0;
@@ -452,13 +452,11 @@ void play_music()
 {
 	int blocknum = start_block;
 	int status;
-       	//= readablock(blocknum, block0);
-	//dump_block(block0);
 	printf("\nplay music 2\n");
 
 	status = pace_config_pwm_irq(&slice_num, SPK, 16000, 255, onTimer);
 	if(status) printf("pwm config error\n");
-	//int playchan = playing;
+	gpio_set_drive_strength(SPK, GPIO_DRIVE_STRENGTH_12MA); // boost its power output (doesn't help much)
 	int count = 0;
 	printf("Entering while loop\n");
 	volatile unsigned char refilled = 0;
