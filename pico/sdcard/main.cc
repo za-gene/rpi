@@ -451,11 +451,13 @@ void dump_partition(u8 block0[512])
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
 
+/*
 // you'll need to fill in these values
 constexpr int filesize = 2212397; // in bytes
 constexpr int start_block = 2'050'048; // in blocks (512b per block)
 
 constexpr int endblock = start_block + 1 + filesize/512;
+*/
 
 //u8 dbuf[2][512];
 uint8_t dbuf[512*2];
@@ -479,46 +481,68 @@ void onTimer() {
 	pwm_clear_irq(slice_num);
 }
 
-void play_music()
+void play_song()
 {
-#if 0
-	int blocknum = start_block;
-	int status;
-	printf("\nplay music 2\n");
+	char filename[] = "song.raw";
+	printf("PLAY FILE: %s\n", filename);
+	auto outfile{canfile(filename)};
+	File file(outfile.c_str());
+	if(!file.found()) {
+		printf("ERR: file not found: %s\n", filename);
+		return;
+	}
+	printf("File found. Should be good to go.\n");
 
-	status = pace_config_pwm_irq(&slice_num, SPK, 16000, 255, onTimer);
+	/*
+	uint8_t block[512];
+	while(int n = file.read(block)) {
+		for(int i = 0; i< n; i++) putchar(block[i]);
+	}
+	*/
+
+	int status = pace_config_pwm_irq(&slice_num, SPK, 16000, 255, onTimer);
 	if(status) printf("pwm config error\n");
 	gpio_set_drive_strength(SPK, GPIO_DRIVE_STRENGTH_12MA); // boost its power output (doesn't help much)
-	int count = 0;
+	//int blocknum = start_block;
+
+	//int count = 0;
 	printf("Entering while loop\n");
 	volatile unsigned char refilled = 0;
 	int num_fails = 0;
 	while(1) {
 		volatile unsigned char _refill = refill;
 		if(refilled == _refill) continue;
-		//printf("W");
-		//if(refill<0) continue;
-		//printf("R");
+		file.read(dbuf + 512*_refill);
 
-		//status = readablock(blocknum, dbuf[refill]);
-		status = readablock(blocknum, dbuf + 512*_refill);
-		if(status) {
-			printf("Error reading block, failure number %d\n", ++num_fails);
-			if(num_fails == 10) {
-				printf("Too many block fails. Returning\n");
-				return;
-			}
-		}
+		//status = readablock(blocknum, dbuf + 512*_refill);
+		//if(status) {
+		//	printf("Error reading block, failure number %d\n", ++num_fails);
+		//	if(num_fails == 10) {
+		//		printf("Too many block fails. Returning\n");
+		//		return;
+		//	}
+		//}
 
-		blocknum++;
-		if(blocknum == endblock) blocknum = start_block;
+		//blocknum++;
+		//if(blocknum == endblock) blocknum = start_block;
 		refilled = _refill;
-		//if((count++ % 10 ) == 0) printf(".");
 	}
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
+
+void type_file(const char* filename)
+{
+	printf("TYPE FILE: %s\n", filename);
+	auto outfile{canfile(filename)};
+	File file(outfile.c_str());
+	if(!file.found()) 
+		printf("ERR: file not found: %s\n", filename);
+	uint8_t block[512];
+	while(int n = file.read(block)) {
+		for(int i = 0; i< n; i++) putchar(block[i]);
+	}
+}
 
 int main() 
 {
@@ -551,7 +575,9 @@ int main()
 	fat32_init();
 	fat32_type_partition_table();
 	fat32_list_root();
-	play_music();
+	type_file("readme.txt");
+
+	play_song();
 
 	
 	printf("sd card 5\n");
