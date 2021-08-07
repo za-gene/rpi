@@ -9,6 +9,8 @@ pico_sdk_init()
 
 add_executable(app
 	main.cc
+	fat32.cc
+	sdcard.cc
 	#../pi.cc
 	)
 

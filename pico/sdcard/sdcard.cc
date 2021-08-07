@@ -13,14 +13,9 @@
 #include "hardware/spi.h"
 //#include "tusb.h" // if you want to use tud_cdc_connected()
 
-#include "fat32.h"
-
 #include "pace.h"
 //#include "../../1306/pico-sdk/oled.h"
 
-#define SPK 19
-
-#if 0
 //                                SHIELD
 #define spi		spi1
 #define	PIN_SCK		10	// D5
@@ -28,6 +23,7 @@
 #define PIN_MISO 	12	// D6
 #define	PIN_CS 		15	// D8
 
+#define SPK 19
 
 #define CMD_TIMEOUT 200 // number of tries before getting bored
 #define R1_IDLE_STATE (1<<0)
@@ -360,6 +356,7 @@ void test_crc()
 	printf("test_crc end\n");
 }
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////
 // partition stuff
 
@@ -446,7 +443,6 @@ void dump_partition(u8 block0[512])
 }
 */
 
-#endif
 // partition end
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
@@ -458,7 +454,7 @@ constexpr int start_block = 2'050'048; // in blocks (512b per block)
 constexpr int endblock = start_block + 1 + filesize/512;
 
 //u8 dbuf[2][512];
-uint8_t dbuf[512*2];
+u8 dbuf[512*2];
 volatile int playing = 0, bidx = 0;
 volatile signed char refill = 0; // the block that needs to be refilled
 
@@ -481,7 +477,6 @@ void onTimer() {
 
 void play_music()
 {
-#if 0
 	int blocknum = start_block;
 	int status;
 	printf("\nplay music 2\n");
@@ -515,7 +510,6 @@ void play_music()
 		refilled = _refill;
 		//if((count++ % 10 ) == 0) printf(".");
 	}
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -528,27 +522,20 @@ int main()
 
 	//init_display(64, 6);
 	//init_spi();
-
-	/*
 	int status = init_card();
 	if(status) 
 		printf("Card init failed with status %d\n", status);
 	else
 		printf("Card init successfully\n");
-		*/
 
-	/*
 	u8 block[512];
 	u32 start = time_us_32();
 	status = readablock(0, block);
 	u32 took = time_us_32() - start;
 	printf("read block status returned: %d. Took %d us\n", status, took);
 	//dump_block(block);
-*/
-	//test_crc();
-	//fat32_type_partition_table();
 
-	fat32_init();
+	test_crc();
 	fat32_type_partition_table();
 	play_music();
 
@@ -575,5 +562,16 @@ int main()
 	}
 
 	return 0;
+}
+#endif
+
+void sdcard_init(void)
+{
+	init_card();
+}
+
+void sdcard_deinit(void)
+{
+	// nothing to do, really
 }
 
