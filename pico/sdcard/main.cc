@@ -70,7 +70,10 @@ void play_song()
 	while(1) {
 		volatile unsigned char _refill = refill;
 		if(refilled == _refill) continue;
-		file.read(dbuf + 512*_refill);
+		auto dst = dbuf + 512*_refill;
+		memset(dst, 0, 512);
+		int n = file.read(dst);
+		if(n<512) file.seek0(); // repeat the song
 		refilled = _refill;
 	}
 }

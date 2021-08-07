@@ -80,7 +80,6 @@ uint32_t next_cluster (uint32_t cluster)
 {
 	// RFE cache the fat_block to mitigate unecessary re-reading
 	//printf("CLUSTER=%d\n", cluster);
-#if 1
 	uint8_t fat_block[512];	
 	//printf("CLUSTER=%d\n", cluster);
 	uint32_t base_block = fat_begin_lba + (cluster*4)/512;
@@ -89,23 +88,6 @@ uint32_t next_cluster (uint32_t cluster)
 	//printf("base = %d, off = %d\n", base_block, offset);
 	uint32_t new_cluster = *(uint32_t*) (fat_block + offset);
 	//printf("next_cluster: old = %d, new = %d", cluster, new_cluster);
-#else
-	FILE* fp = fopen("/dev/loop0", "r");
-	uint32_t new_cluster;
-
-	uint32_t seek = fat_begin_lba * 512 + cluster*4;
-	uint32_t base_block = seek/512;
-	base_block = fat_begin_lba + cluster*4/512;
-	uint32_t offset = seek - base_block*512;
-	offset = (cluster*4) % 512;
-	printf("base = %d, off = %d\n", base_block, offset);
-
-	uint32_t works = fat_begin_lba*512 + cluster*4;
-	assert(base_block*512 + offset == works);
-	fseek(fp, works, SEEK_SET);
-	fread(&new_cluster, 4, 1, fp);
-	fclose(fp);
-#endif
 	return new_cluster;
 }
 
@@ -115,28 +97,6 @@ uint32_t block_cluster(uint32_t cluster_number)
 		return cluster_begin_lba + (cluster_number - 2) * sectors_per_cluster;
 }
 	
-#if 0
-/* print at most max_num_bytes from cluster
- * Returns number of bytes still unread. These will need to be obtained from the
- * next cluster in the chain
- */
-uint32_t type_cluster(uint32_t cluster, uint32_t max_num_bytes)
-{
-	uint8_t block[512];
-
-	for(int blockn = 0; blockn*sizeof(block)  < bytes_per_cluster; blockn++) {
-		//printf("\n\n** block %d\n", blockn);
-		readablock(block_cluster(cluster) + blockn, block);
-		for(int i = 0; i<sizeof(block); i++) {
-			if(max_num_bytes <=0) goto finis;
-			max_num_bytes--;
-			putchar(block[i]);
-		}
-	}
-finis:
-	return max_num_bytes;
-}
-#endif
 
 void fat32_init (void)
 {
@@ -238,12 +198,19 @@ bool find(bds_t& bds, const std::string& outfile)
 
 File::File(const char filename[12])
 {
-	bds_t bds;
-	m_found = find(bds, filename);
+	//bds_t bds0;
+	m_found = find(m_bds0, filename);
 	if(!m_found) return;
-	num_bytes_unread = bds.size;
-	cluster = bds.fcl;
+	seek0();
 	blocks_per_cluster = bytes_per_cluster/512;
+}
+
+// reset to beginning
+void File::seek0(void)
+{
+	num_bytes_unread = m_bds0.size;
+	cluster = m_bds0.fcl;
+	blockn = 0;
 }
 
 bool File::found()
