@@ -78,12 +78,34 @@ void fat32_type_partition_table()
 
 uint32_t next_cluster (uint32_t cluster)
 {
+	// RFE cache the fat_block to mitigate unecessary re-reading
+	//printf("CLUSTER=%d\n", cluster);
+#if 1
 	uint8_t fat_block[512];	
-	uint32_t offset = cluster*sizeof(uint32_t);
-	assert(offset <= 512-4);  // TODO: remove this limitation
-	readablock(fat_begin_lba, fat_block);
+	//printf("CLUSTER=%d\n", cluster);
+	uint32_t base_block = fat_begin_lba + (cluster*4)/512;
+	uint32_t offset = (cluster*sizeof(uint32_t))%512;
+	readablock(base_block, fat_block);
+	//printf("base = %d, off = %d\n", base_block, offset);
 	uint32_t new_cluster = *(uint32_t*) (fat_block + offset);
 	//printf("next_cluster: old = %d, new = %d", cluster, new_cluster);
+#else
+	FILE* fp = fopen("/dev/loop0", "r");
+	uint32_t new_cluster;
+
+	uint32_t seek = fat_begin_lba * 512 + cluster*4;
+	uint32_t base_block = seek/512;
+	base_block = fat_begin_lba + cluster*4/512;
+	uint32_t offset = seek - base_block*512;
+	offset = (cluster*4) % 512;
+	printf("base = %d, off = %d\n", base_block, offset);
+
+	uint32_t works = fat_begin_lba*512 + cluster*4;
+	assert(base_block*512 + offset == works);
+	fseek(fp, works, SEEK_SET);
+	fread(&new_cluster, 4, 1, fp);
+	fclose(fp);
+#endif
 	return new_cluster;
 }
 
