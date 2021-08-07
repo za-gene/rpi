@@ -29,9 +29,10 @@ volatile signed char refill = 0; // the block that needs to be refilled
 
 
 unsigned int slice_num; // determined in play_music()
+constexpr auto isr_multiplier = 3; // speed-up the timer to avoid audible clicks. doesn't help, though.
 
-void onTimer() {
-	volatile static int pwm_counter = 0;
+void set_pwm_level(void)
+{
 	pwm_set_gpio_level(SPK, *(dbuf + 512*playing + bidx++));
 	if(bidx>=512) {
 		bidx = 0;
@@ -39,7 +40,12 @@ void onTimer() {
 		playing = 1-playing;
 		//printf("refill = %d\n", refill
 	}
+}
 
+void onTimer() {
+	volatile static int pwm_counter = 0;
+	if((pwm_counter++ % isr_multiplier) == 0)
+		set_pwm_level();
 	pwm_clear_irq(slice_num);
 }
 
@@ -54,7 +60,7 @@ void play_song()
 		return;
 	}
 	printf("File found. Should be good to go.\n");
-	int status = pace_config_pwm_irq(&slice_num, SPK, 16000, 255, onTimer);
+	int status = pace_config_pwm_irq(&slice_num, SPK, 16000 * isr_multiplier, 255, onTimer);
 	if(status) printf("pwm config error\n");
 	gpio_set_drive_strength(SPK, GPIO_DRIVE_STRENGTH_12MA); // boost its power output (doesn't help much)
 
