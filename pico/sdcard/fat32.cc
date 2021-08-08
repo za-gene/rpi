@@ -185,11 +185,11 @@ bool Dir::read(bds_t& bds)
 		return true;
 	}
 }
-bool find(bds_t& bds, const std::string& outfile)
+bool find(bds_t& bds, const char* outfile)
 {
 	Dir dir;
 	while(dir.read(bds)) {
-		if(strncmp(outfile.c_str(),  bds.name,11)==0)
+		if(strncmp(outfile,  bds.name,11)==0)
 			return true;
 	}
 	return false;
@@ -269,27 +269,3 @@ void canfile(char dst[12], const char* src)
 
 }
 
-/*
-std::string canfile(const std::string& infile)
-{
-	//std::string infile{argv[1]};
-	std::size_t found = infile.find_first_of(".");
-	std::string pre, post;
-	if(found == std::string::npos) {
-		pre = infile.substr(0, std::min((size_t)8, infile.size()));
-		post = "   ";
-	} else {
-		pre = infile.substr(0, std::min((size_t)8, found));
-		post = infile.substr(found+1, 3);
-	}
-	while(pre.size() <8) pre += ' ';
-	while(post.size() <3) post += ' ';
-	std::string outfile(pre+post);
-	for(int i = 0; i< outfile.size(); i++) outfile[i] = toupper(outfile[i]);
-	//std::transform(outfile.begin(), outfile.end(), outfile.begin(), toupper);
-	assert(outfile.size() == 11);
-	return outfile;
-	//printf("pre     '%s', post='%s'\n", pre.c_str(), post.c_str());
-	//printf("outfile '%s'\n", outfile.c_str());
-}
-*/
