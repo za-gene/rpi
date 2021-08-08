@@ -251,13 +251,6 @@ int init_card()
 	else
 		printf("CS low. Good.\n");
 
-
-
-	//{
-	//	uint8_t b = 0xFF;
-	//	simple_write(&b, 1);
-	//}
-
 	// CMD0 go idle
 	int status;
 	for(int i = 0; i < 10; i++) { // repeated attempts
