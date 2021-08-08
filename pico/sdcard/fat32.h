@@ -64,4 +64,5 @@ void fat32_deinit(void);
 void fat32_list_root(void);
 uint32_t type_cluster(uint32_t cluster, uint32_t max_num_bytes);
 uint32_t next_cluster (uint32_t cluster);
-std::string canfile(const std::string& infile);
+//std::string canfile(const std::string& infile);
+void canfile(char dst[12], const char* src);

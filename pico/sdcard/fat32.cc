@@ -236,6 +236,40 @@ int File::read(uint8_t block[512])
 
 /* convert a file to its FAT32 8.3 format
  */
+
+void canfile(char dst[12], const char* src)
+{
+	int i;
+	for(i=0; i<12; i++) dst[i]=' ';
+	dst[11] = 0;
+
+	for(i=0; i< 8; i++) {
+		if(src[i] == 0) return;
+		if(src[i] == '.') break;
+		dst[i] = toupper(src[i]);
+	}
+
+	if(src[i]==0) return;
+
+	if(src[i] == '.') {
+		i++;
+	} else {
+		while(src[i] != '.' ) {
+			if(src[i] == 0) return;
+			i++;
+		}
+		i++;
+	}
+
+	for(int j = 0; j<3; j++) {
+		char c= toupper(src[j+i]);
+		if(c==0) return;
+		dst[j+8] = c;
+	}
+
+}
+
+/*
 std::string canfile(const std::string& infile)
 {
 	//std::string infile{argv[1]};
@@ -258,3 +292,4 @@ std::string canfile(const std::string& infile)
 	//printf("pre     '%s', post='%s'\n", pre.c_str(), post.c_str());
 	//printf("outfile '%s'\n", outfile.c_str());
 }
+*/
