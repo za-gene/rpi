@@ -23,7 +23,8 @@
 #define PIN_MISO 	12	// D6
 #define	PIN_CS 		15	// D8
 
-#define SPK 19
+//#define SPK 7
+//#define SPK 19
 
 #define CMD_TIMEOUT 200 // number of tries before getting bored
 #define R1_IDLE_STATE (1<<0)
@@ -443,10 +444,12 @@ void dump_partition(u8 block0[512])
 }
 */
 
+#endif
 // partition end
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
 
+#if 0
 // you'll need to fill in these values
 constexpr int filesize = 2212397; // in bytes
 constexpr int start_block = 2'050'048; // in blocks (512b per block)

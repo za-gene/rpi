@@ -1,1 +1,6 @@
-cd build; make
+#!/usr/bin/env bash
+
+#echo args are "$@"
+#exit 0
+
+cd build; make "$@"

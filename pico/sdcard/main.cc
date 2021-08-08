@@ -18,7 +18,8 @@
 #include "pace.h"
 //#include "../../1306/pico-sdk/oled.h"
 
-#define SPK 19
+#define SPK 7
+//#define SPK 19
 
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
