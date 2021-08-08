@@ -53,8 +53,9 @@ void play_song()
 {
 	char filename[] = "song.raw";
 	printf("PLAY FILE: %s\n", filename);
-	auto outfile{canfile(filename)};
-	File file(outfile.c_str());
+	char outfile[12];
+	canfile(outfile, filename);
+	File file(outfile);
 	if(!file.found()) {
 		printf("ERR: file not found: %s\n", filename);
 		return;
@@ -83,8 +84,9 @@ void play_song()
 void type_file(const char* filename)
 {
 	printf("TYPE FILE: %s\n", filename);
-	auto outfile{canfile(filename)};
-	File file(outfile.c_str());
+	char outfile[12];
+	canfile(outfile, filename);
+	File file(outfile);
 	if(!file.found()) 
 		printf("ERR: file not found: %s\n", filename);
 	uint8_t block[512];
