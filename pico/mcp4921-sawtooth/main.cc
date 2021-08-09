@@ -7,8 +7,7 @@
 
 #include "pi.h"
 
-
-#include "data.h"
+#include "../mcp4921/pico-hard-song-mcp4921/data.h"
 
 using u8 = uint8_t;
 using u16 = uint16_t;
@@ -50,9 +49,7 @@ int main()
 	gpio_set_dir(LED, GPIO_OUT);
 
 	int spi_speed = 1'200'000;
-	//spi_speed = 600'000;
 	spi_init(spi0, spi_speed);
-	//spi_set_slave(spi0, true);
 	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_CS,   GPIO_FUNC_SPI);
