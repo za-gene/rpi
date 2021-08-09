@@ -8,7 +8,7 @@
 
 #include "pi.h"
 
-#define TOGGLE 16
+#define HARE 16
 
 double framerate = 44100, saw_freq = 500;
 uint64_t period = 1'000'000/framerate;
@@ -51,15 +51,11 @@ void mcp4921_put(uint16_t vol)
 {
 	if(vol>4095) vol = 4095;
 	vol |= (0b11 <<12);
-	//vol1 = vol;
-#if 1
+	gpio_put(HARE, 1);
 	volatile uint16_t vol1 = vol; // volatile seems necessary
 	dma_channel_transfer_from_buffer_now(chan, &vol1, 1); // assume tfr happens fast enough
 	//dma_channel_wait_for_finish_blocking(chan);
-#else
-	spi_write16_blocking(spi0, (const uint16_t*) &vol1, 1);
-#endif
-
+	gpio_put(HARE, 0);
 }
 
 volatile float y = 0, dy;
@@ -70,13 +66,12 @@ static void alarm_0_irq()
 	mcp4921_put(y);
 	y += dy;
 	if(y>4095) y=0;
-	pi_gpio_toggle(TOGGLE);
 }
 
 int main() 
 {
 	stdio_init_all();
-	pi_gpio_init(TOGGLE, OUTPUT);
+	pi_gpio_init(HARE, OUTPUT);
 	dy = 4095 * saw_freq / framerate;
 	mcp4921_init();
 	pi_alarm_init(0, alarm_0_irq, period);
