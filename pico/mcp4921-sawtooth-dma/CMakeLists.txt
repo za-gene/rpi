@@ -22,13 +22,13 @@ target_link_libraries(app
 	pi
 	#pico_stdlib 
 	#harware_adc
-	#hardware_clocks
+	hardware_dma
 	#hardware_flash
 	#hardware_gpio
 	#hardware_i2c
 	#hardware_irq
 	#hardware_pwm
-	#hardware_spi
+	hardware_spi
 	#hardware_timer
 	)
 
