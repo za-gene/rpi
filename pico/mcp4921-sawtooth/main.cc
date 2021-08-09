@@ -25,7 +25,7 @@ void mcp4921_init(void)
 #define	PIN_MOSI	3
 #define PIN_MISO 	4
 #define	PIN_CS 		5
-	int spi_speed = 2'000'000;
+	int spi_speed = 18'000'000;
 	spi_init(spi0, spi_speed);
 	spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
