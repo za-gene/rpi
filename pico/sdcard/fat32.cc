@@ -167,11 +167,23 @@ void fat32_list_root (void)
 	while(dir.read(bds)) 
 		printf("%-11.11s %8d\n", bds.name, bds.size);
 }
+void Dir::init_cluster(uint32_t dir_cluster)
+{
+	readablock(block_cluster(dir_cluster), (uint8_t*) bdss);
+}
+
+Dir::Dir(uint32_t dir_cluster)
+{
+	if(dir_cluster==0)
+		dir_cluster = root_dir_first_cluster;
+	init_cluster(dir_cluster);
+}
 
 Dir::Dir()
 {
-	readablock(block_cluster(root_dir_first_cluster), (uint8_t*) bdss);
+	init_cluster(root_dir_first_cluster);
 }
+
 
 bool Dir::read(bds_t& bds) 
 {

@@ -37,9 +37,11 @@ class Dir
 {
 	public:
 		Dir(); 
+		Dir(uint32_t dir_cluster);
 		bool read(bds_t& bds);
 	private:
 		bds_t bdss[16];
+		void init_cluster(uint32_t dir_cluster);
 		static_assert(sizeof(bdss) == 512);
 		int i = 0;
 };
