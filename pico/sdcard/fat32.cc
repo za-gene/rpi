@@ -169,7 +169,8 @@ void fat32_list_root (void)
 }
 void Dir::init_cluster(uint32_t dir_cluster)
 {
-	readablock(block_cluster(dir_cluster), (uint8_t*) bdss);
+	m_fat_cluster = block_cluster(dir_cluster);
+	readablock(m_fat_cluster, (uint8_t*) bdss);
 }
 
 Dir::Dir(uint32_t dir_cluster)
@@ -188,7 +189,19 @@ Dir::Dir()
 bool Dir::read(bds_t& bds) 
 {
 	while(1) {
-		if(i==16) return false;
+		/* there's something about bits 7-31 of the current cluster tells
+		 * you which sectors to read from the FAT, and bits 0-6 tell you which
+		 * of the 128 integers in that sector is the number of the next cluster
+		 * of the file (or if all ones, that the current cluster is the last).
+		 * Not really sure what all that means, so I'm ignoring as at 2021-08-10
+		 */
+		if(i==16)  {
+			// next sector
+			sector_block_num++;
+			if(sector_block_num == sectors_per_cluster) return false; // TODO should read another cluster
+			readablock(m_fat_cluster + sector_block_num, (uint8_t*) bdss);
+			i = 0;
+		}
 		bds = bdss[i++];
 		uint8_t type = bds.name[0]; // first byte determines validity
 		if(type == 0xE5) continue; // skip entry. It is an empty slot

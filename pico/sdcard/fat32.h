@@ -43,13 +43,15 @@ class Dir
 		bds_t bdss[16];
 		void init_cluster(uint32_t dir_cluster);
 		static_assert(sizeof(bdss) == 512);
+		int sector_block_num = 0;
 		int i = 0;
+		uint32_t m_fat_cluster;
 };
 
 class File {
 	public:
 		File(const char filename[12]);
-		int read(uint8_t block[512]);
+		int read(uint8_t sector_block[512]);
 		bool found();
 		void seek0(void);
 	private:
