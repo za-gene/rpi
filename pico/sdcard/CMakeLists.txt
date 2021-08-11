@@ -9,9 +9,6 @@ pico_sdk_init()
 
 add_executable(app
 	main.cc
-	fat32.cc
-	sdcard.cc
-	#../pi.cc
 	)
 
 #pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
@@ -21,7 +18,7 @@ add_subdirectory(.. build)
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(app 
-    pi
+	pi
 	#pico_stdlib 
 	#harware_adc
 	#hardware_clocks
