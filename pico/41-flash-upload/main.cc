@@ -148,13 +148,13 @@ void may_use_sdcard(void)
 	char datafile[12];
 	canfile(datafile, "flash.dat");
 	File file(datafile);
-	uint8_t block[512];
+	//uint8_t block[512];
 	//erase_flash(file.size());
 	unsigned char crc = 0;
 	puts("Reading file");
 
 
-	uint8_t page[4096];
+	uint8_t page[4096]; // I say page, but I mean sector
 	uint32_t offset = FLASH_TARGET_OFFSET;
 	int nread = 0;
 
@@ -172,13 +172,13 @@ void may_use_sdcard(void)
 
 		// write page to flash 
 		uint32_t ints = save_and_disable_interrupts();
-		flash_range_erase(FLASH_TARGET_OFFSET+offset, 4096);
+		flash_range_erase(offset, 4096);
 		flash_range_program(offset, page, 4096);
 		restore_interrupts(ints);
 		offset += 4096;
 	}
 	puts("File was written. Contents are:");
-	uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
+	//uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
 
 
 	printf("\nCRC on file: %d\n", crc_file);
