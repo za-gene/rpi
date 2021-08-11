@@ -259,6 +259,11 @@ int File::read(uint8_t block[512])
 	return bytes_read;
 }
 
+uint32_t File::size(void)
+{
+	return m_bds0.size;
+}
+
 /* convert a file to its FAT32 8.3 format
  */
 

@@ -60,6 +60,7 @@ class File {
 		uint32_t cluster, blocks_per_cluster;
 		uint32_t blockn = 0;
 		bds_t m_bds0; // info about the start of the file
+		uint32_t size(void);
 };
 
 void fat32_init(void);
