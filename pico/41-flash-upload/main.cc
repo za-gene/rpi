@@ -24,20 +24,20 @@
 #define ADDRESS (XIP_BASE+ FLASH_TARGET_OFFSET)
 static_assert(FLASH_PAGE_SIZE == 256);
 /*
-void write_flash_data(uint32_t page, const uint8_t* data) // data must be of size 4096 or more
-{
-	//puts("Doing flash_range_program");
-	uint32_t ints = save_and_disable_interrupts();
-	//flash_range_erase(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, FLASH_PAGE_SIZE); // takes too long
-	flash_range_program(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, data, FLASH_PAGE_SIZE);
-	restore_interrupts(ints);
-	//puts("Should be flashed now");
+   void write_flash_data(uint32_t page, const uint8_t* data) // data must be of size 4096 or more
+   {
+//puts("Doing flash_range_program");
+uint32_t ints = save_and_disable_interrupts();
+//flash_range_erase(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, FLASH_PAGE_SIZE); // takes too long
+flash_range_program(FLASH_TARGET_OFFSET + page*FLASH_PAGE_SIZE, data, FLASH_PAGE_SIZE);
+restore_interrupts(ints);
+//puts("Should be flashed now");
 }
 */
 
 
 /* acknowledge that transmitter can proceed
- */
+*/
 void ack(void)
 {
 	putchar('A');
@@ -58,18 +58,18 @@ void incoming(void)
 		size += (c << (i*8));
 	}
 
-	
+
 	char msg[80];
 	sprintf(msg, "size %d\n", size);
 	ssd1306_print(msg);
 	//show_scr();
-	
+
 	// erase SECTORS
 	static_assert(FLASH_SECTOR_SIZE == 4096);
 	int erasure_size = ceil(size/FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
-        uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_TARGET_OFFSET, erasure_size); // takes too long
-        restore_interrupts(ints);
+	uint32_t ints = save_and_disable_interrupts();
+	flash_range_erase(FLASH_TARGET_OFFSET, erasure_size); // takes too long
+	restore_interrupts(ints);
 	ack();
 
 	// read chunks of data
@@ -133,9 +133,9 @@ void erase_flash(uint32_t size)
 	// erase SECTORS
 	static_assert(FLASH_SECTOR_SIZE == 4096);
 	int erasure_size = ceil(size/FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
-        uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_TARGET_OFFSET, erasure_size); // takes too long
-        restore_interrupts(ints);
+	uint32_t ints = save_and_disable_interrupts();
+	flash_range_erase(FLASH_TARGET_OFFSET, erasure_size); // takes too long
+	restore_interrupts(ints);
 }
 
 
@@ -149,36 +149,33 @@ void may_use_sdcard(void)
 	canfile(datafile, "flash.dat");
 	File file(datafile);
 	uint8_t block[512];
-	erase_flash(file.size());
+	//erase_flash(file.size());
 	unsigned char crc = 0;
-	uint32_t offset = FLASH_TARGET_OFFSET;
 	puts("Reading file");
-	while(int n = file.read(block)) {
-		puts("block read:");
-                uart_write_blocking(uart0, (const uint8_t *) block, 512);
-		puts("\n--- Now writing block to flash");
 
-		//crc = crc8_dallas_chunk(crc, block, n);
+
+	uint8_t page[4096];
+	uint32_t offset = FLASH_TARGET_OFFSET;
+	int nread = 0;
+
+	while(nread < file.size()) {
+		// read a page from file
+		for(int i = 0; i< 4096/512; i++) {
+			nread += file.read(page + i*512);
+		}
+		if(nread<4096) memset(page + nread, 0, 4096-nread); // kindly fill the remainder with 0
+
+		// write page to flash 
 		uint32_t ints = save_and_disable_interrupts();
-        	flash_range_erase(FLASH_TARGET_OFFSET, 4096); // takes too long
-		flash_range_program(offset, block, 512);
+		flash_range_erase(FLASH_TARGET_OFFSET, 4096);
+		flash_range_program(offset, page, 4096);
 		restore_interrupts(ints);
-		puts("Block was written");
-		uart_write_blocking(uart0, (const uint8_t *) ADDRESS, 512); break;
-		offset += 512;
+		offset += 4096;
 	}
-	printf("crc=%d\n", (int) crc);
-	printf("size=%d\n", file.size());
-	
-	printf("CRC on flash: %d\n", crc8_dallas((const unsigned char*) ADDRESS, file.size()));
-	/*
-	crc = 0;
-	offset = 0;
-	uint32_t num_unread = file.size();
-	//while(num_read > 0) {
+	puts("File was written. Contents are:");
+	uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
 
-	//	flash_range_
-*/
+	printf("\nCRC on flash: %d\n", crc8_dallas((const unsigned char*) ADDRESS, file.size()));
 
 	while(1);
 }
@@ -187,7 +184,7 @@ int main()
 {
 	stdio_init_all();
 	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
-	
+
 	printf("ADDRESS = %d\n", ADDRESS);
 	printf("XIP_BASE = %d\n", XIP_BASE);
 	printf("FLASH_TARGET_OFFSET = %d\n", FLASH_TARGET_OFFSET);
