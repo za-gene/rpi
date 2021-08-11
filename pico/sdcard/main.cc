@@ -14,8 +14,9 @@
 //#include "tusb.h" // if you want to use tud_cdc_connected()
 
 #include "fat32.h"
-
+#include "mcp4921-dma.h"
 #include "pace.h"
+#include "pi.h"
 //#include "../../1306/pico-sdk/oled.h"
 
 #if 1
@@ -64,7 +65,7 @@ void sound_init(void)
 #define ALARM 0
 #define DELAY (1'000'000/16'000)
 
-void onTimer()
+void sound_set_level()
 {
 	pi_alarm_rearm(ALARM, DELAY);
 	uint8_t vol = *(dbuf + 512*playing + bidx++);
@@ -82,18 +83,21 @@ void onTimer()
 
 void sound_init(void)
 {
-	pi_alarm_init(ALARM, onTimer, DELAY);
+	pi_alarm_init(ALARM, sound_set_level, DELAY);
 	mcp4921_dma_init();
 }
 
 
-#endif
-
+/*
 void onTimer() {
 	sound_set_level();
 	//volatile static int pwm_counter = 0;
 	//if((pwm_counter++ % isr_multiplier) == 0)
 }
+*/
+
+#endif
+
 
 void play_song()
 {
@@ -122,6 +126,7 @@ void play_song()
 		refilled = _refill;
 	}
 }
+
 
 ////////////////////////////////////////////////////////////////////////////
 
