@@ -46,7 +46,7 @@ print("txt len: ", len(txt))
 with serial.Serial('/dev/ttyACM0', 115200, timeout=5) as ser:
     def rack() :
         c = ser.read(1)
-        print(c)
+        #print(c)
         if(c != b'A'): print("Bad acknowledgement")
 
     ser.write(b'T')
@@ -74,7 +74,11 @@ with serial.Serial('/dev/ttyACM0', 115200, timeout=5) as ser:
     #rxlen2 = struct.unpack('>l', rxlen1)[0]
     #print(rxlen2)
     rx2 = ser.read(rx1)
-    print(rx2)
+
+    fp = open("ptx.out", "wb")
+    fp.write(rx2)
+    fp.close()
+
     crc_in = zlib.crc32(rx2)
     if(crc_in == crc_out):
         print("Checksums match")
