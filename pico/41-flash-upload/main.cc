@@ -8,6 +8,10 @@
 #include "hardware/irq.h"
 #include "hardware/sync.h"
 #include <math.h>
+
+
+#include "crc8.h"
+#include "fat32.h"
 #include "pi.h"
 #include "ssd1306.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
@@ -128,6 +132,22 @@ int main()
 {
 	stdio_init_all();
 	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
+	
+	fat32_init();
+
+	char datafile[12];
+	canfile(datafile, "flash.dat");
+	File file(datafile);
+	uint8_t block[512];
+	unsigned char crc = 0;
+	while(int n = file.read(block)) {
+		crc = crc8_dallas_chunk(crc, block, n);
+	}
+	printf("crc=%d\n", (int) crc);
+
+
+
+	while(1);
 
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED
