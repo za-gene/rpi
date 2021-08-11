@@ -158,12 +158,17 @@ void may_use_sdcard(void)
 	uint32_t offset = FLASH_TARGET_OFFSET;
 	int nread = 0;
 
+	unsigned char crc_file = 0;
 	while(nread < file.size()) {
 		// read a page from file
+		int num_bytes_in_page_read = 0;
 		for(int i = 0; i< 4096/512; i++) {
-			nread += file.read(page + i*512);
+			num_bytes_in_page_read += file.read(page + i*512);
 		}
-		if(nread<4096) memset(page + nread, 0, 4096-nread); // kindly fill the remainder with 0
+		if(num_bytes_in_page_read<4096) 
+			memset(page + num_bytes_in_page_read, 0, 4096-num_bytes_in_page_read); // kindly fill the remainder with 0
+		crc_file = crc8_dallas_chunk(crc_file, page, num_bytes_in_page_read);
+		nread += num_bytes_in_page_read;
 
 		// write page to flash 
 		uint32_t ints = save_and_disable_interrupts();
@@ -173,9 +178,11 @@ void may_use_sdcard(void)
 		offset += 4096;
 	}
 	puts("File was written. Contents are:");
-	uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
+	//uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
 
-	printf("\nCRC on flash: %d\n", crc8_dallas((const unsigned char*) ADDRESS, file.size()));
+
+	printf("\nCRC on file: %d\n", crc_file);
+	printf("CRC on flash: %d\n", crc8_dallas((const unsigned char*) ADDRESS, file.size()));
 
 	while(1);
 }
