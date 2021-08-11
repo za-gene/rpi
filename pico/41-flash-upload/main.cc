@@ -172,13 +172,13 @@ void may_use_sdcard(void)
 
 		// write page to flash 
 		uint32_t ints = save_and_disable_interrupts();
-		flash_range_erase(FLASH_TARGET_OFFSET, 4096);
+		flash_range_erase(FLASH_TARGET_OFFSET+offset, 4096);
 		flash_range_program(offset, page, 4096);
 		restore_interrupts(ints);
 		offset += 4096;
 	}
 	puts("File was written. Contents are:");
-	//uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
+	uart_write_blocking(uart0, (const uint8_t *) ADDRESS, file.size());
 
 
 	printf("\nCRC on file: %d\n", crc_file);
