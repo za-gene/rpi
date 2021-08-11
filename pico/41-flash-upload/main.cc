@@ -129,6 +129,7 @@ static void alarm_0_irq()
 }
 void erase_flash(uint32_t size)
 {
+	return;
 	// erase SECTORS
 	static_assert(FLASH_SECTOR_SIZE == 4096);
 	int erasure_size = ceil(size/FLASH_SECTOR_SIZE) * FLASH_SECTOR_SIZE;
@@ -140,7 +141,7 @@ void erase_flash(uint32_t size)
 
 void may_use_sdcard(void)
 {
-	return;
+	//return;
 
 	fat32_init();
 
@@ -151,17 +152,25 @@ void may_use_sdcard(void)
 	erase_flash(file.size());
 	unsigned char crc = 0;
 	uint32_t offset = FLASH_TARGET_OFFSET;
+	puts("Reading file");
 	while(int n = file.read(block)) {
-		crc = crc8_dallas_chunk(crc, block, n);
+		puts("block read:");
+                uart_write_blocking(uart0, (const uint8_t *) block, 512);
+		puts("\n--- Now writing block to flash");
+
+		//crc = crc8_dallas_chunk(crc, block, n);
 		uint32_t ints = save_and_disable_interrupts();
+        	flash_range_erase(FLASH_TARGET_OFFSET, 4096); // takes too long
 		flash_range_program(offset, block, 512);
 		restore_interrupts(ints);
+		puts("Block was written");
+		uart_write_blocking(uart0, (const uint8_t *) ADDRESS, 512); break;
 		offset += 512;
 	}
 	printf("crc=%d\n", (int) crc);
 	printf("size=%d\n", file.size());
 	
-	printf("CRC on flash: %d\n", crc8_dallas((const unsigned char*) FLASH_TARGET_OFFSET, file.size()));
+	printf("CRC on flash: %d\n", crc8_dallas((const unsigned char*) ADDRESS, file.size()));
 	/*
 	crc = 0;
 	offset = 0;
@@ -179,6 +188,14 @@ int main()
 	stdio_init_all();
 	// while(!tud_cdc_connected()) sleep_ms(250); // wait for usb serial 
 	
+	printf("ADDRESS = %d\n", ADDRESS);
+	printf("XIP_BASE = %d\n", XIP_BASE);
+	printf("FLASH_TARGET_OFFSET = %d\n", FLASH_TARGET_OFFSET);
+	printf("FLASH_PAGE_SIZE = %d\n", FLASH_PAGE_SIZE); // 256
+	printf("FLASH_SECTOR_SIZE = %d\n", FLASH_SECTOR_SIZE); // 4096
+	//printf(" = %d\n", );
+
+
 	may_use_sdcard();
 #define BTN  14 // GPIO number, not physical pin
 #define LED  25 // GPIO of built-in LED

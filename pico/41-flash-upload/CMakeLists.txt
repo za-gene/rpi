@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
 include("../picomc.cmake")
@@ -13,7 +13,7 @@ add_executable(app
 	)
 
 #pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
-#pico_enable_stdio_uart(app 1) # set to 1 if you stdio over GP0 and GP1
+pico_enable_stdio_uart(app 1) # set to 1 if you stdio over GP0 and GP1
 
 add_subdirectory(.. build)
 
