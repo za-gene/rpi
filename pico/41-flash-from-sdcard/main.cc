@@ -45,7 +45,7 @@ void ack(void)
 
 uint32_t size = 0;
 
-void incoming(void)
+void incomingXXX(void)
 {
 	uint8_t data[FLASH_PAGE_SIZE];
 	char c;
@@ -91,7 +91,7 @@ void incoming(void)
 	//show_scr();
 }
 
-void outgoing(void)
+void outgoingXXX(void)
 {
 	//printf("%"
 	ssd1306_print("Sending contents\n");
@@ -127,7 +127,7 @@ static void alarm_0_irq()
 	show_scr();
 	//printf("Alarm IRQ fired %d\n", i++);
 }
-void erase_flash(uint32_t size)
+void erase_flashXXX(uint32_t size)
 {
 	return;
 	// erase SECTORS
@@ -213,7 +213,7 @@ int main()
 	init_display(64, 4);
 
 	pi_alarm_init(ALARM, alarm_0_irq, DELAY);
-
+#if 0
 	ssd1306_print("transfer prog\n");
 	//show_scr();
 	int i = 0;
@@ -225,14 +225,9 @@ int main()
 			case 'T' : incoming(); break;
 			case 'R' : outgoing(); break;
 		}
-		/*
-		   gpio_put(LED, 1);
-		   sleep_ms(100);
-		   gpio_put(LED, 0);
-		   sleep_ms(1000);	
-		   */
-	}
 
+	}
+#endif
 	return 0;
 }
 
