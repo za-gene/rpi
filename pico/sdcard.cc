@@ -290,7 +290,8 @@ int init_card()
 	if(CMD_T1(16, 512, 0x15) != 0) return SDCMD16;
 	printf("CMD16 set block size to 512 successfully\n");
 
-	spi_speed = 1'000'000; // go for it!
+	spi_speed = 1'000'000; // go for it! Known working: 1MHz, 2MHz, 4MHz, 8MHz, 16MHz
+	spi_speed = 16'000'000;
 	spi_set_baudrate(spi, spi_speed);
 
 	return 0;
