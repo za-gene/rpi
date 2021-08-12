@@ -1,4 +1,4 @@
-# Copy a file from sdcard to flash area
+# Copy a file from serial to flash area
 
 See if we can do some file transfers over serial
 
@@ -17,7 +17,6 @@ it's a pain in the arse, whatever the problem is.
 
 ## Status
 
-2021-08-12	Working.
+2021-08-12	Started.
 
-2021-07-26	Started.
 

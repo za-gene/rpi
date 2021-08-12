@@ -27,6 +27,8 @@ see also: function reset_addressing().
 */
 
 //#include <cstdint>
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
@@ -368,6 +370,24 @@ void ssd1306_print(const char* str)
 		str++;
 	}
 }
+
+void ssd1306_puts(const char* str)
+{
+	ssd1306_print(str);
+	ssd1306_putchar('\n');
+}
+
+void ssd1306_printf(const char *format, ...)
+{
+	char str[512];
+	va_list ap;
+	va_start(ap, format);
+	vsnprintf(str, sizeof(str), format, ap);
+	va_end(ap);
+	str[511] = 0;
+	ssd1306_print(str);
+}
+
 
 /** @brief Print at a stated cursor position
 
