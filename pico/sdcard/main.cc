@@ -88,13 +88,6 @@ void sound_init(void)
 }
 
 
-/*
-void onTimer() {
-	sound_set_level();
-	//volatile static int pwm_counter = 0;
-	//if((pwm_counter++ % isr_multiplier) == 0)
-}
-*/
 
 #endif
 
