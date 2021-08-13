@@ -30,7 +30,7 @@ $(LIB_CRUNKY) : $(CRUNKY_OBJS)
 all : $(IMG)
 
 clean :
-	rm -f *.o *.bin *.hex *.elf *.list *.img *.a $(BUILT)
+	rm -f *.o *.bin *.hex *.elf *.dis *.img *.a $(BUILT)
 
 
 %.o : %.c
