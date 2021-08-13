@@ -1,6 +1,6 @@
 #include <mini_uart.h>
 #include <stdio.h>
-#include <timers.h>
+//#include <timers.h>
 #include <string.h>
 
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 void* xmalloc(size_t size)
 {
 	void* addr = malloc(size);
-	assert(addr);
+	assert(addr); // will eventually cause a panic. 94 steps in my case.
 	//printf("xmalloc:heap:%x:addr:%X\n", heap, addr);
 	if((addr == NULL) && size) {
 		printf("xmalloc:panic allocating %d bytes\n", size);
@@ -28,7 +28,7 @@ void* xmalloc(size_t size)
 
 void kernel_main(void)
 {
-	uart_init_as_stdio(115200);
+	mini_uart_init_as_stdio();
 
 	puts("\nmalloc test");
 	char* str1 = xmalloc(100);

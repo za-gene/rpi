@@ -11,6 +11,37 @@ const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock fr
 
 
 ///////////////////////////////////////////////////////////////////////
+// MEMORY STUFF
+
+void *memset(void* s, int c, size_t n)
+{
+	while(n--) *((uint8_t*) s+n) = c;
+	return s;
+}
+
+void bzero(void* s, size_t n)
+{
+	memset(s, 0, n);
+}
+
+char* strcpy(char* dest, const char* src)
+{
+	char* ret = dest;
+	while(*dest++ = *src++);
+	return ret;
+}
+
+
+/* Note that this is a seriously underspecified implementation.
+ * You can't free memory, for example
+ */
+void *malloc(size_t size)
+{
+	extern void* _sbrk(int incr);
+	void* addr =  _sbrk(size);
+	if(addr == (void*)-1) return 0;
+	return addr;
+}
 
 ///////////////////////////////////////////////////////////////////////
 // STDIO
