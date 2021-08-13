@@ -36,6 +36,7 @@ void set_getchar(fn_getchar fn);
 
 void put32 (u32, u32);
 u32 get32 (u32);
+int newline(void);
 
 #define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
 // 0x40000000 on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi 

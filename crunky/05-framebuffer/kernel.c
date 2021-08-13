@@ -1,5 +1,6 @@
 #include <lfb.h>
-#include <yastdio.h>
+#include <basal.h>
+#include <stdio.h>
 
 void kernel_main()
 {

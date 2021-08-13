@@ -12,6 +12,7 @@ CR_OBJS += vectors.o
 #CR_OBJS += nanolib-impl.o
 CR_OBJS += bcm2835.o
 #CR_OBJS += fat.o
+#CR_OBJS += stdio.o
 CR_OBJS += timers.o
 #CR_OBJS += sd.o
 

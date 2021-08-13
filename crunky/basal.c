@@ -29,7 +29,7 @@ void set_putchar(fn_putchar fn)
 int putchar(int c)
 {
 	if(!basal_putchar) return EOF;
-    if(c == '\n') basal_putchar('\r');
+	if(c == '\n') basal_putchar('\r');
 	return basal_putchar(c);
 }
 
@@ -37,11 +37,11 @@ int putchar(int c)
 
 fn_getchar basal_getchar = 0; // _getchar_nada;
 
-int getchar()
+int getchar(void)
 {
-	
+
 	if(!basal_getchar) return EOF;
-		return basal_getchar();
+	return basal_getchar();
 }
 
 void set_getchar(fn_getchar fn)
@@ -51,14 +51,14 @@ void set_getchar(fn_getchar fn)
 
 
 /*
-int getchar()
-{
-	return _getchar();
-}
-*/
+   int getchar()
+   {
+   return _getchar();
+   }
+   */
 
 
-int newline()
+int newline(void)
 {
 	return putchar('\n');
 }
@@ -74,6 +74,13 @@ int print_string(const char *s)
 }
 
 
+int puts(const char *s)
+{
+	print_string(s);
+	newline();
+	return 1;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -83,68 +90,68 @@ int print_string(const char *s)
 // ARM EABI unsigned integer division bit modulus support for GCC
 u64 __aeabi_uidivmod(u32 value, u32 divisor)
 {
-  u64 answer = 0;
-  int bit;
+	u64 answer = 0;
+	int bit;
 
-  // Bitwise divide algorithm, loop MSB order for 32 bits
-  for (bit = 31; bit >= 0; --bit)
-  {
-    // If this bit is set in the divisor
-    if ((divisor << bit) >> bit == divisor)
-    {
-      if (value >= divisor << bit)
-      {
-        value -= divisor << bit;
-        answer |= 1 << bit;
-        if (value == 0)
-          break;
-      }
-    }
-  }
+	// Bitwise divide algorithm, loop MSB order for 32 bits
+	for (bit = 31; bit >= 0; --bit)
+	{
+		// If this bit is set in the divisor
+		if ((divisor << bit) >> bit == divisor)
+		{
+			if (value >= divisor << bit)
+			{
+				value -= divisor << bit;
+				answer |= 1 << bit;
+				if (value == 0)
+					break;
+			}
+		}
+	}
 
-  // Add remainder into the high order bits before returning answer
-  answer |= (u64)value << 32;
-  return answer;
+	// Add remainder into the high order bits before returning answer
+	answer |= (u64)value << 32;
+	return answer;
 }
 
 u64 __aeabi_uldivmod(u64 value, u64 divisor)
 {
-  u64 answer = 0;
-  int bit;
+	u64 answer = 0;
+	int bit;
 
-  // Bitwise divide algorithm, loop MSB order for 32 bits
-  for (bit = 31; bit >= 0; --bit)
-  {
-    // If this bit is set in the divisor
-    if ((divisor << bit) >> bit == divisor)
-    {
-      if (value >= divisor << bit)
-      {
-        value -= divisor << bit;
-        answer |= 1 << bit;
-        if (value == 0)
-          break;
-      }
-    }
-  }
+	// Bitwise divide algorithm, loop MSB order for 32 bits
+	for (bit = 31; bit >= 0; --bit)
+	{
+		// If this bit is set in the divisor
+		if ((divisor << bit) >> bit == divisor)
+		{
+			if (value >= divisor << bit)
+			{
+				value -= divisor << bit;
+				answer |= 1 << bit;
+				if (value == 0)
+					break;
+			}
+		}
+	}
 
-  // Add remainder into the high order bits before returning answer
-  answer |= (u64)value << 32;
-  return answer;
+	// Add remainder into the high order bits before returning answer
+	answer |= (u64)value << 32;
+	return answer;
 }
 
 // ARM EABI unsigned integer division support for GCC
 u32 __aeabi_uidiv(u32 value, u32 divisor)
 {
-  // Use the division modulus, ignoring/truncating the remainder
-  return __aeabi_uidivmod(value, divisor);
+	// Use the division modulus, ignoring/truncating the remainder
+	return __aeabi_uidivmod(value, divisor);
 }
 
 // ARM EABI unsigned integer division support for GCC
 int __aeabi_idiv(int value, int divisor)
 {
-  // Use the division modulus, ignoring/truncating the remainder
-  return __aeabi_uidivmod(value, divisor);
+	// Use the division modulus, ignoring/truncating the remainder
+	return __aeabi_uidivmod(value, divisor);
 }
 
 
