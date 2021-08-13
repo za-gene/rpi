@@ -39,6 +39,7 @@ partition. You should see at least some dumping out of the contents of the file.
 * [arch](arch.md) - architecture-specific information
 * [interrupts](interrupts.md)
 * [malloc](malloc.md) - also discusses the heap
+* [qemu](qemu.md) - notes on minimising the number of chickens that need to be sacrificed to get qemu working
 * [usb](usb) - it's not easy, that's for sure.
 
 ## Links to libraries
@@ -52,3 +53,7 @@ partition. You should see at least some dumping out of the contents of the file.
 * [keyboard](https://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/os/input01.html#keyboards) - possible implementation of reading keyboard. Using assembler.
 * [Raspberry Pi IoT In C - Almost Realtime Linux ](https://www.iot-programmer.com/index.php/books/22-raspberry-pi-and-the-iot-in-c/chapters-raspberry-pi-and-the-iot-in-c/33-raspberry-pi-iot-in-c-almost-realtime-linux?showall=1) book
 * [VMWos](http://www.deater.net/weave/vmwprod/vmwos/) - homebrew OS for RPi
+
+## Status
+
+2021-08-13	mailbox doesn't seem correctly configured for Pi0.
