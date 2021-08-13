@@ -23,8 +23,8 @@
  *
  */
 
-//#include <gpio.h>
-//#include <mini_uart.h>
+#include <stdio.h>
+#include <mini_uart.h>
 
 
 /*  GIMP header image file format (RGB)  */
@@ -460,12 +460,12 @@ void lfb_showpicture()
 }
 void kernel_main()
 {
-	//uart_init(9600);
-	//uart_puts("Homer demo\r\n");
+	mini_uart_init_as_stdio();
+	puts("Homer demo");
 	lfb_init();
-	//uart_puts("Init finished\r\n");
+	puts("Init finished");
 	lfb_showpicture();
-	//uart_puts("Show finished\r\n");
+	puts("Show finished");
 
 	while(1);
 }
