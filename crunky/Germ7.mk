@@ -5,16 +5,16 @@ VPATH=$(CRUNKY)
 AOPS = --warn --fatal-warnings 
 #COPS =  -nostdlib -nostartfiles -ffreestanding -I$(CRUNKY)
 
-CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
-          mbox.o memory.o mini_uart.o \
-          nanolib-impl.o \
-          sd.o uart0.o \
-          timers.o 
+#CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \	  
+#          mbox.o memory.o mini_uart.o \
+#          nanolib-impl.o \
+#          sd.o uart0.o \
+#          timers.o 
 
-CR_OBJS += vectors.o
-CR_OBJS += bcm2835.o
-CR_OBJS += fat.o
-CR_OBJS += tat.o
+#CR_OBJS += vectors.o
+#CR_OBJS += bcm2835.o
+#CR_OBJS += fat.o
+#CR_OBJS += tat.o
 
 
 
@@ -42,25 +42,21 @@ clean :
 LINKER = $(CRUNKY)/linker.ld
 
 
-NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard
-NEWLIB += -lstdc++_nano  -lsupc++_nano
-#NEWLIB += -lstdc++
-#NEWLIB += -lsupc++
-#NEWLIB += -lsupc++
-NEWLIB += -lc_nano
-#NEWLIB += -lg
-NEWLIB += -lg_nano
-GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
+#NEWLIB = -L/usr/lib/arm-none-eabi/newlib/hard
+#NEWLIB += -lstdc++_nano  -lsupc++_nano
+#NEWLIB += -lc_nano
+#NEWLIB += -lg_nano
+#GCCLIB = -L/usr/lib/gcc/arm-none-eabi/7.3.1/hard -lgcc
 
-LD_CRUNKY = -L$(CRUNKY) -lcrunky -m
+#LD_CRUNKY = -L$(CRUNKY) -lcrunky -m
+LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
-#LIBS = $(NEWLIB) $(LD_CRUNKY) $(GCCLIB) -lm
-#LIBS = $(LD_CRUNKY) $(NEWLIB) $(GCCLIB) -lm
-LIBS =  $(NEWLIB) $(GCCLIB) -lm
+#LIBS =  $(NEWLIB) $(GCCLIB) -lm
 
 $(ELF) : $(LINKER) $(CR_OBJS) $(OBJS)  $(LIBUSPI) 
-	$(LD)    $(CR_OBJS) $(OBJS) -T $(LINKER)  $(LIBS) -o $@
-	$(OBJDUMP) -D $@ > $(KERNEL).list
+	#$(LD)    $(CR_OBJS) $(OBJS) -T $(LINKER)  $(LIBS) -o $@
+	$(LD)    $(OBJS) -T $(LINKER)  $(LIBS) $(LD_CRUNKY) -o $@
+	$(OBJDUMP) -D $@ > $(KERNEL).dis
 
 $(IMG) : $(ELF)
 	$(OBJCOPY) $(ELF) -O binary $@

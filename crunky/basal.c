@@ -79,7 +79,7 @@ int print_string(const char *s)
 ///////////////////////////////////////////////////////////////////////
 // MATHS
 
-#if 0
+#if 1
 // ARM EABI unsigned integer division bit modulus support for GCC
 u64 __aeabi_uidivmod(u32 value, u32 divisor)
 {
