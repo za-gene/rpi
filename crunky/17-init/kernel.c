@@ -1,4 +1,4 @@
-#include <mini_uart.h>
+//#include <mini_uart.h>
 #include <stdio.h>
 
 static int var = 42;
@@ -7,7 +7,7 @@ int *p_var = &(var);
 void kernel_main(void)
 {
 	//uart_init(9600);
-	uart_init_as_stdio(115200);
+	//uart_init_as_stdio(115200);
 	puts("init test");
 	printf("var=%d\n", *p_var);
 
