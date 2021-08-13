@@ -78,8 +78,9 @@ void uart_init ( int baud )
 	put32(AUX_MU_CNTL_REG,3);               //Finally, enable transmitter and receiver
 }
 
-void uart_init_as_stdio(int baud)
+void mini_uart_init_as_stdio()
 {
+	int baud = 115200;
 	uart_init(baud);
 	set_putchar(uart_send);
 	set_getchar(uart_recv);

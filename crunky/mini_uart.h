@@ -21,7 +21,7 @@ extern "C" {
 
 
 void uart_init(int baud);
-void uart_init_as_stdio(int baud);
+void mini_uart_init_as_stdio();
 int uart_recv();
 int uart_send(int c);
 void uart_puts(char* str);
