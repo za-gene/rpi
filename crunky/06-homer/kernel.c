@@ -460,7 +460,7 @@ void lfb_showpicture()
 }
 void kernel_main()
 {
-	mini_uart_init_as_stdio();
+	//mini_uart_init_as_stdio();
 	puts("Homer demo");
 	lfb_init();
 	puts("Init finished");

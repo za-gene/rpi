@@ -1,4 +1,5 @@
-#include <mini_uart.h>
+//#include <mini_uart.h>
+//#include <uart0.h>
 #include <stdio.h>
 //#include <timers.h>
 #include <string.h>
@@ -28,7 +29,8 @@ void* xmalloc(size_t size)
 
 void kernel_main(void)
 {
-	mini_uart_init_as_stdio();
+	//mini_uart_init_as_stdio();
+	//uart0_init_as_stdio();
 
 	puts("\nmalloc test");
 	char* str1 = xmalloc(100);

@@ -15,7 +15,9 @@ Exclude config.txt.
 
 ## STATUS
 
-2021-01-21 Pi0 confirmed working
+2021-08-13	Pi0 confirmed working
+
+2021-01-21 	Pi0 confirmed working
 
 
 ## REFERENCES

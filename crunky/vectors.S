@@ -69,6 +69,7 @@ reset:
     ;@msr cpsr_c, r0
     
     bl zero_bss
+	bl uart0_init_as_stdio
     bl kernel_main
 hang: b hang
 

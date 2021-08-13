@@ -55,7 +55,7 @@ LD_CRUNKY = -L$(CRUNKY) -lcrunky
 
 $(ELF) : $(LINKER) $(CR_OBJS) $(OBJS)  $(LIBUSPI) 
 	#$(LD)    $(CR_OBJS) $(OBJS) -T $(LINKER)  $(LIBS) -o $@
-	$(LD)    $(OBJS) -T $(LINKER)  $(LIBS) $(LD_CRUNKY) -o $@
+	$(LD)    $(OBJS) $(CRUNKY)/vectors.o -T $(LINKER)  $(LIBS) $(LD_CRUNKY) -o $@
 	$(OBJDUMP) -D $@ > $(KERNEL).dis
 
 $(IMG) : $(ELF)
