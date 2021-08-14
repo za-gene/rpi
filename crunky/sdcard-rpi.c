@@ -37,19 +37,16 @@
  * debugging, or else reading will fail
  */
 
-static int debug = 0;
+static int debug = 1;
 
 void wait_usec(int i)
 {
 	delay_us(i);
 }
 
-void sd_uart_puts(char* str)
+static void sd_uart_puts(char* str)
 {
-	if(debug==1) {
-		wait_usec(100);
-	       	return;
-	}
+	if(debug==0) return;
 	printf("%s\n", str);
 
 }
@@ -58,19 +55,14 @@ void sd_uart_puts(char* str)
 /**
  * Display a binary value in hexadecimal
  */
-void sd_uart_hex(unsigned int d) 
+static void sd_uart_hex(unsigned int d) 
 {
-	if(debug==1) {
-		wait_usec(100);
-		return;
-	}
+	if(debug==0) return;
 	unsigned int n;
 	int c;
 	for(c=28;c>=0;c-=4) {
-		// get highest tetrad
-		n=(d>>c)&0xF;
-		// 0-9 => '0'-'9', 10-15 => 'A'-'F'
-		n+=n>9?0x37:0x30;
+		n=(d>>c)&0xF; // get highest tetrad
+		n+=n>9?0x37:0x30; // 0-9 => '0'-'9', 10-15 => 'A'-'F'
 		putchar(n);
 	}
 }
