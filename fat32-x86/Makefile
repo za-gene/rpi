@@ -1,29 +1,34 @@
-CXXFLAGS = -g -std=c++17
+CFLAGS = -g -I../pico
+CXXFLAGS = $(CFLAGS) -std=c++17
 #CXXFLAGS += -fsanitize=address
 #LDFLAGS = -lasan
+VPATH = ../pico
+
 
 BINS = part32 dir32 type32 can tree32
-OBJS = fat32.o part32.o dir32.o type32.o sdcard.o can.o
+OBJS = part32.o dir32.o type32.o can.o
+
+COMMON = fat32.o sdcard-x86.o
 
 all : $(BINS)
 
-tree32 : tree32.o fat32.o sdcard.o
+tree32 : tree32.o $(COMMON)
 	g++ $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-can : can.o fat32.o sdcard.o
+can : can.o $(COMMON)
 	g++ $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-type32 : type32.o fat32.o sdcard.o
+type32 : type32.o $(COMMON)
 	g++ $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-dir32 : dir32.o fat32.o sdcard.o
+dir32 : dir32.o $(COMMON)
 	g++ $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-part32 : part32.o fat32.o sdcard.o
+part32 : part32.o $(COMMON)
 	g++ $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 %.o : %.cc
 	g++ $(CXXFLAGS) -c $< -o $@
 
 clean :
-	rm -rf $(BINS) $(OBJS)
+	rm -rf $(BINS) *.o
