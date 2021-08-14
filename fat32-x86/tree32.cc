@@ -33,8 +33,10 @@ void pindent(int indent)
 void dir_recurse(uint32_t cluster, int indent)
 {
 	bds_t bds;
-	Dir dir(cluster);
-	while(dir.read(bds)) {
+	//Dir dir(cluster);
+	dir32_t dir;
+	dir32_init_cluster(&dir, cluster);
+	while(dir32_read(&dir, &bds)) {
 		bool isdir = (bds.attr & BDS_ATTR_DIR);
 		pindent(indent);
 		printf("%-11.11s %8d %8d ", bds.name, bds.size, bds.fcl);

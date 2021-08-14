@@ -189,6 +189,7 @@ Dir::Dir()
 
 void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster)
 {
+	if(dir_cluster==0) dir_cluster = root_dir_first_cluster;
 	dir->m_fat_cluster = block_cluster(dir_cluster);
 	readablock(dir->m_fat_cluster, (uint8_t*) dir->bdss);
 }
