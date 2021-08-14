@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-static FILE* fp = nullptr;
+static FILE* fp = 0;
 
 int readablock (int blocknum, uint8_t block[512])
 {

@@ -1,7 +1,13 @@
 #pragma once
 
 #include <inttypes.h>
-//#include <string>
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 
 // partition table entry
 typedef struct __attribute__((__packed__))  {
@@ -18,8 +24,6 @@ typedef struct __attribute__((__packed__))  {
 typedef pte_t ptable_t[4];
 static_assert(sizeof(ptable_t)  == 4*sizeof(pte_t));
 
-inline ptable_t part_tab; // partition table
-static_assert(sizeof(part_tab) == 4 *sizeof(pte_t));
 
 typedef struct __attribute__((__packed__))  bds_t {
 	char name[11];
@@ -34,18 +38,19 @@ static_assert(sizeof(bds_t) == 32);
 
 
 typedef struct {
-	bds_t bdss[16];
-	static_assert(sizeof(bdss) == 512);
-	int sector_block_num = 0;
-	int i = 0;
+	bds_t bdss[16]; // total size is 512
+	int sector_block_num;
+	int i;
 	uint32_t m_fat_cluster;
 } dir32_t;
+//static_assert(sizeof(dir32_t.bdss) == 512);
 
 void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster);
 void dir32_init_root(dir32_t* dir);
 bool dir32_read(dir32_t* dir, bds_t* bds);
 bool dir32_find(bds_t* bds, const char* canfile);
 
+/*
 class Dir
 {
 	public:
@@ -60,13 +65,14 @@ class Dir
 		int i = 0;
 		uint32_t m_fat_cluster;
 };
+*/
 
 typedef struct {
 	bool m_found;
-	uint32_t num_bytes_unread = 0;
+	uint32_t num_bytes_unread;
 	uint32_t cluster;
 	uint32_t blocks_per_cluster;
-	uint32_t blockn = 0;
+	uint32_t blockn;
 	bds_t m_bds0; // info about the start of the file
 } file32_t;
 
@@ -76,7 +82,7 @@ bool file32_found(file32_t* file);
 int file32_read(file32_t* file, uint8_t block[512]);
 
 
-
+/*
 class File {
 	public:
 		File(const char filename[12]);
@@ -91,6 +97,7 @@ class File {
 		uint32_t blockn = 0;
 		bds_t m_bds0; // info about the start of the file
 };
+*/
 
 void fat32_init(void);
 void fat32_type_partition_table(void);
@@ -99,3 +106,8 @@ void fat32_list_root(void);
 uint32_t type_cluster(uint32_t cluster, uint32_t max_num_bytes);
 uint32_t next_cluster (uint32_t cluster);
 void canfile(char dst[12], const char* src);
+
+#ifdef __cplusplus
+}
+#endif
+

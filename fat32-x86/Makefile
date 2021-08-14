@@ -30,5 +30,8 @@ part32 : part32.o $(COMMON)
 %.o : %.cc
 	g++ $(CXXFLAGS) -c $< -o $@
 
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean :
 	rm -rf $(BINS) *.o

@@ -1,13 +1,9 @@
-//#include <algorithm>
 #include <assert.h>
+#include <ctype.h>
 #include <inttypes.h>
-//#include <ctype.h>
-//#include <cstring>
+//#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <iostream>
-
-using namespace std;
 
 #include "fat32.h"
 
@@ -24,6 +20,9 @@ extern void sdcard_deinit(void);
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 // partition 
+
+ptable_t part_tab; // partition table
+static_assert(sizeof(part_tab) == 4 *sizeof(pte_t));
 
 typedef struct { u8 id; const char* desc; } part_names_t;
 
@@ -169,6 +168,8 @@ void fat32_list_root (void)
 	while(dir32_read(&dir, &bds)) 
 		printf("%-11.11s %8d\n", bds.name, bds.size);
 }
+
+/*
 void Dir::init_cluster(uint32_t dir_cluster)
 {
 	m_fat_cluster = block_cluster(dir_cluster);
@@ -186,14 +187,17 @@ Dir::Dir()
 {
 	init_cluster(root_dir_first_cluster);
 }
+*/
 
-void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster)
+void dir32_init_cluster (dir32_t* dir, uint32_t dir_cluster)
 {
 	if(dir_cluster==0) dir_cluster = root_dir_first_cluster;
+	dir->sector_block_num = 0;
+	dir->i = 0;
 	dir->m_fat_cluster = block_cluster(dir_cluster);
 	readablock(dir->m_fat_cluster, (uint8_t*) dir->bdss);
 }
-void dir32_init_root(dir32_t* dir)
+void dir32_init_root (dir32_t* dir)
 {
 	dir32_init_cluster(dir, root_dir_first_cluster);
 }
@@ -222,6 +226,8 @@ bool dir32_read(dir32_t* dir, bds_t* bds)
 		return true;
 	}
 }
+
+#if 0
 bool Dir::read(bds_t& bds) 
 {
 	while(1) {
@@ -246,6 +252,8 @@ bool Dir::read(bds_t& bds)
 		return true;
 	}
 }
+#endif
+
 bool dir32_find(bds_t* bds, const char* canfile)
 {
 	dir32_t dir;
@@ -257,6 +265,8 @@ bool dir32_find(bds_t* bds, const char* canfile)
 	}
 	return false;
 }
+
+/*
 bool find(bds_t& bds, const char* outfile)
 {
 	Dir dir;
@@ -266,18 +276,19 @@ bool find(bds_t& bds, const char* outfile)
 	}
 	return false;
 }
+*/
 
-
-void file32_init(file32_t* file, const char canfile[12])
+void file32_init (file32_t* file, const char canfile[12])
 {
 	file->num_bytes_unread = 0;
 	file->blockn = 0;
-	file->m_found = find(file->m_bds0, canfile);
+	file->m_found = dir32_find(&(file->m_bds0), canfile);
 	if(!file->m_found) return;
 	file32_seek0(file);
 	file->blocks_per_cluster = bytes_per_cluster/512;
 }
 
+/*
 File::File(const char filename[12])
 {
 	//bds_t bds0;
@@ -286,6 +297,7 @@ File::File(const char filename[12])
 	seek0();
 	blocks_per_cluster = bytes_per_cluster/512;
 }
+*/
 
 // reset to beginning
 void file32_seek0(file32_t* file)
@@ -295,6 +307,7 @@ void file32_seek0(file32_t* file)
 	file->blockn = 0;
 }
 
+/*
 // reset to beginning
 void File::seek0(void)
 {
@@ -302,17 +315,19 @@ void File::seek0(void)
 	cluster = m_bds0.fcl;
 	blockn = 0;
 }
-
+*/
 
 bool file32_found(file32_t* file)
 {
 	return file->m_found;
 }
 
+/*
 bool File::found()
 {
 	return m_found;
 }
+*/
 
 int file32_read(file32_t* file, uint8_t block[512])
 {
@@ -325,10 +340,13 @@ int file32_read(file32_t* file, uint8_t block[512])
 	}
 	readablock(block_cluster(file->cluster) + file->blockn, block);
 	file->blockn++;
-	uint32_t bytes_read = std::min(file->num_bytes_unread, (uint32_t) 512);
+	#define min(a,b) (((a) < (b)) ? (a) : (b))
+	uint32_t bytes_read = min(file->num_bytes_unread, (uint32_t) 512);
 	file->num_bytes_unread -=  bytes_read;
 	return bytes_read;
 }
+
+/*
 int File::read(uint8_t block[512])
 {
 	if(!m_found) return 0;
@@ -349,6 +367,7 @@ uint32_t File::size(void)
 {
 	return m_bds0.size;
 }
+*/
 
 /* convert a file to its FAT32 8.3 format
  */
