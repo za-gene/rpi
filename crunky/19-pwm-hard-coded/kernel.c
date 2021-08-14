@@ -17,6 +17,7 @@
 
 void kernel_main(void)
 {
+	puts("\nPlaying hard-coded PWM audio");
 	bcm2835_init();
 
 	// Set the output pin to Alt Fun 5, to allow PWM channel 0 to be output there

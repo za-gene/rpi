@@ -18,7 +18,7 @@ AOPS = --warn --fatal-warnings
 
 
 
-MNTDIR = $(shell ls /media/pi)
+MNTDIR = $(shell ls /media/$(USER) | head -1)
 
 
 
