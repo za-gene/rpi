@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+Mount SD card via loopback
+-h	This help
+-x	Unmount
+etc
+EOF
+}
+
+function do_unmount {
+	sudo umount /dev/sdd1 # probably unecessary
+	sudo losetup -d /dev/loop0
+}
+
+while getopts "hx" arg; do
+	case $arg in
+	    	h) print_help ; exit ;;
+		x) do_unmount ; exit ;;
+		?) echo "Invalid option" ; exit 1 ;;
+	esac
+done	
+
+
+
+sudo umount /dev/sdd1
+sudo losetup /dev/loop0 /dev/sdd
+#touch sdd.img
+#sudo mount -o loop sdd.img /dev/sdd
