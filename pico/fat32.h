@@ -80,6 +80,7 @@ void file32_init(file32_t* file, const char canfile[12]);
 void file32_seek0(file32_t* file);
 bool file32_found(file32_t* file);
 int file32_read(file32_t* file, uint8_t block[512]);
+void file32_type(const char* rawfilename);
 
 
 /*

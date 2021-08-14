@@ -346,6 +346,20 @@ int file32_read(file32_t* file, uint8_t block[512])
 	return bytes_read;
 }
 
+void file32_type(const char* rawfilename)
+{
+	char outfile[12];
+	canfile(outfile, rawfilename);
+	file32_t file;
+	file32_init(&file, outfile);
+	//File file(outfile);
+	if(!file32_found(&file)) puts("ERR: file not found");
+	uint8_t block[512];
+	int n;
+	while(n = file32_read(&file, block)) {
+		for(int i = 0; i< n; i++) putchar(block[i]);
+	}
+}
 /*
 int File::read(uint8_t block[512])
 {
