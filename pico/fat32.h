@@ -81,6 +81,7 @@ void file32_seek0(file32_t* file);
 bool file32_found(file32_t* file);
 int file32_read(file32_t* file, uint8_t block[512]);
 void file32_type(const char* rawfilename);
+uint32_t file32_size(file32_t* file);
 
 
 /*

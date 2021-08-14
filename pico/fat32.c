@@ -307,6 +307,11 @@ void file32_seek0(file32_t* file)
 	file->blockn = 0;
 }
 
+uint32_t file32_size(file32_t* file)
+{
+	return file->m_bds0.size;
+}
+
 /*
 // reset to beginning
 void File::seek0(void)
