@@ -1,5 +1,4 @@
 #include <bcm2835.h>
-#include <mini_uart.h>
 #include <stdio.h>
 #include <timers.h>
 
@@ -9,20 +8,10 @@ void init_7219();
 
 void kernel_main(void)
 {
-	uart_init_as_stdio(115200);
 	puts("\nzeroseg example");
 	bcm2835_init();
 	bcm2835_spi_begin();
 	init_7219();
-
-	/*
-	// the following are defaults
-	bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
-	bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
-	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_65536);
-	bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
-	bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
-	*/
 
 	int idx =0;
 	while (1) {
