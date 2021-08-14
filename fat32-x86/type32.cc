@@ -22,10 +22,12 @@ int main(int argc, char** argv)
 	fat32_init();
 	char outfile[12];
 	canfile(outfile, argv[1]);
-	File file(outfile);
-	if(!file.found()) puts("ERR: file not found");
+	file32_t file;
+	file32_init(&file, outfile);
+	//File file(outfile);
+	if(!file32_found(&file)) puts("ERR: file not found");
 	uint8_t block[512];
-	while(int n = file.read(block)) {
+	while(int n = file32_read(&file, block)) {
 		for(int i = 0; i< n; i++) putchar(block[i]);
 	}
 

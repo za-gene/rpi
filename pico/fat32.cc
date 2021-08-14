@@ -246,6 +246,17 @@ bool Dir::read(bds_t& bds)
 		return true;
 	}
 }
+bool dir32_find(bds_t* bds, const char* canfile)
+{
+	dir32_t dir;
+	dir32_init_root(&dir);
+	//Dir dir;
+	while(dir32_read(&dir, bds)) {
+		if(strncmp(canfile,  bds->name,11)==0)
+			return true;
+	}
+	return false;
+}
 bool find(bds_t& bds, const char* outfile)
 {
 	Dir dir;
@@ -257,6 +268,16 @@ bool find(bds_t& bds, const char* outfile)
 }
 
 
+void file32_init(file32_t* file, const char canfile[12])
+{
+	file->num_bytes_unread = 0;
+	file->blockn = 0;
+	file->m_found = find(file->m_bds0, canfile);
+	if(!file->m_found) return;
+	file32_seek0(file);
+	file->blocks_per_cluster = bytes_per_cluster/512;
+}
+
 File::File(const char filename[12])
 {
 	//bds_t bds0;
@@ -267,6 +288,14 @@ File::File(const char filename[12])
 }
 
 // reset to beginning
+void file32_seek0(file32_t* file)
+{
+	file->num_bytes_unread = file->m_bds0.size;
+	file->cluster = file->m_bds0.fcl;
+	file->blockn = 0;
+}
+
+// reset to beginning
 void File::seek0(void)
 {
 	num_bytes_unread = m_bds0.size;
@@ -274,11 +303,32 @@ void File::seek0(void)
 	blockn = 0;
 }
 
+
+bool file32_found(file32_t* file)
+{
+	return file->m_found;
+}
+
 bool File::found()
 {
 	return m_found;
 }
 
+int file32_read(file32_t* file, uint8_t block[512])
+{
+	if(!file->m_found) return 0;
+	if(file->num_bytes_unread == 0) return 0;
+	if(file->blockn == file->blocks_per_cluster) {
+		//puts("-- READING CLUSTER");
+		file->cluster = next_cluster(file->cluster);
+		file->blockn = 0;
+	}
+	readablock(block_cluster(file->cluster) + file->blockn, block);
+	file->blockn++;
+	uint32_t bytes_read = std::min(file->num_bytes_unread, (uint32_t) 512);
+	file->num_bytes_unread -=  bytes_read;
+	return bytes_read;
+}
 int File::read(uint8_t block[512])
 {
 	if(!m_found) return 0;

@@ -44,6 +44,7 @@ typedef struct {
 void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster);
 void dir32_init_root(dir32_t* dir);
 bool dir32_read(dir32_t* dir, bds_t* bds);
+bool dir32_find(bds_t* bds, const char* canfile);
 
 class Dir
 {
@@ -59,6 +60,22 @@ class Dir
 		int i = 0;
 		uint32_t m_fat_cluster;
 };
+
+typedef struct {
+	bool m_found;
+	uint32_t num_bytes_unread = 0;
+	uint32_t cluster;
+	uint32_t blocks_per_cluster;
+	uint32_t blockn = 0;
+	bds_t m_bds0; // info about the start of the file
+} file32_t;
+
+void file32_init(file32_t* file, const char canfile[12]);
+void file32_seek0(file32_t* file);
+bool file32_found(file32_t* file);
+int file32_read(file32_t* file, uint8_t block[512]);
+
+
 
 class File {
 	public:
