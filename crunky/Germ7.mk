@@ -18,6 +18,7 @@ AOPS = --warn --fatal-warnings
 
 
 
+MNTDIR = $(shell ls /media/pi)
 
 
 
@@ -67,5 +68,6 @@ $(HEX) : $(ELF)
 flash : install
 
 install:
+	#echo $(MNTDIR)
 	#cp $(IMG) /media/pi/50BD-6FEC
-	cp $(IMG) /media/pi/boot
+	cp $(IMG) /media/pi/$(MNTDIR)

@@ -31,6 +31,12 @@ char* strcpy(char* dest, const char* src)
 	return ret;
 }
 
+void *memcpy(void *dest, const void *src, size_t n)
+{
+	char *d = dest;
+	while(n--) *d++ = *(char*)src++;
+	return dest;
+}
 
 /* Note that this is a seriously underspecified implementation.
  * You can't free memory, for example
@@ -41,6 +47,34 @@ void *malloc(size_t size)
 	void* addr =  _sbrk(size);
 	if(addr == (void*)-1) return 0;
 	return addr;
+}
+
+
+/* taken from
+ * https://stackoverflow.com/questions/32560167/strncmp-implementation
+ */
+int strncmp( const char * s1, const char * s2, size_t n )
+{
+	while ( n && *s1 && ( *s1 == *s2 ) )
+	{
+		++s1;
+		++s2;
+		--n;
+	}
+	if ( n == 0 )
+	{
+		return 0;
+	}
+	else
+	{
+		return ( *(unsigned char *)s1 - *(unsigned char *)s2 );
+	}
+}
+
+int toupper(int c)
+{
+	if(('a' <= c) && (c <= 'z')) return c -32;
+	return c;
 }
 
 ///////////////////////////////////////////////////////////////////////

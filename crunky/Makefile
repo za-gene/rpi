@@ -1,5 +1,6 @@
 include Settings.mk
 
+VPATH = ../pico # need for fat32
 
 # a special case because it is the interrupt table
 VEC_O = $(CRUNKY)/vectors.o
@@ -11,11 +12,12 @@ CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
 #CR_OBJS += vectors.o
 CR_OBJS += nanolib-impl.o
 CR_OBJS += bcm2835.o
-#CR_OBJS += fat.o
 #CR_OBJS += stdio.o
 CR_OBJS += timers.o
 #CR_OBJS += sd.o
 CR_OBJS += tinyprintf.o
+CR_OBJS += fat32.o
+CR_OBJS += sdcard-rpi.o
 
 
 CR_LIB = libcrunky.a

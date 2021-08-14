@@ -22,7 +22,7 @@ typedef struct __attribute__((__packed__))  {
 } pte_t;
 
 typedef pte_t ptable_t[4];
-static_assert(sizeof(ptable_t)  == 4*sizeof(pte_t));
+//static_assert(sizeof(ptable_t)  == 4*sizeof(pte_t));
 
 
 typedef struct __attribute__((__packed__))  bds_t {
@@ -34,7 +34,7 @@ typedef struct __attribute__((__packed__))  bds_t {
 	uint16_t fcl; // first cluster low
 	uint32_t size; // file saize
 } bds_t; // byte directory structure
-static_assert(sizeof(bds_t) == 32);
+//static_assert(sizeof(bds_t) == 32);
 
 
 typedef struct {

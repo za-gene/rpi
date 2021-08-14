@@ -3,19 +3,23 @@
 function print_help {
 cat <<EOF
 Mount SD card via loopback
+-d DEV	Device. Default is sdd
 -h	This help
 -x	Unmount
 etc
 EOF
 }
 
+DEV=/dev/sdd
+
 function do_unmount {
-	sudo umount /dev/sdd1 # probably unecessary
+	#sudo umount /dev/sdd1 # probably unecessary
 	sudo losetup -d /dev/loop0
 }
 
-while getopts "hx" arg; do
+while getopts "d:hx" arg; do
 	case $arg in
+		d) DEV=/dev/$OPTARG ;;
 	    	h) print_help ; exit ;;
 		x) do_unmount ; exit ;;
 		?) echo "Invalid option" ; exit 1 ;;
@@ -23,8 +27,10 @@ while getopts "hx" arg; do
 done	
 
 
+echo "dev = $DEV"
+#exit
 
-sudo umount /dev/sdd1
-sudo losetup /dev/loop0 /dev/sdd
+sudo umount ${DEV}1
+sudo losetup /dev/loop0 ${DEV}
 #touch sdd.img
 #sudo mount -o loop sdd.img /dev/sdd

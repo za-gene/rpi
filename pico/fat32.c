@@ -22,7 +22,7 @@ extern void sdcard_deinit(void);
 // partition 
 
 ptable_t part_tab; // partition table
-static_assert(sizeof(part_tab) == 4 *sizeof(pte_t));
+//static_assert(sizeof(part_tab) == 4 *sizeof(pte_t));
 
 typedef struct { u8 id; const char* desc; } part_names_t;
 
@@ -129,7 +129,7 @@ void fat32_init (void)
 		char stuff3[462]; // bunch of other stuff that's likely to be irrelevant
 		u16 sig; // signature. Always 0xAA55
 	} volid;
-	static_assert(sizeof(volid) == 512);
+	//static_assert(sizeof(volid) == 512);
 
 
 	status = readablock(partition_lba_begin , block);
@@ -383,6 +383,15 @@ uint32_t File::size(void)
 }
 */
 
+
+// C seems to complain about regular toupper()
+
+char toupper_a(char c)
+{
+	if(('a' <= c) && (c <= 'z')) return c -32;
+	return c;
+}
+
 /* convert a file to its FAT32 8.3 format
  */
 
@@ -395,7 +404,7 @@ void canfile(char dst[12], const char* src)
 	for(i=0; i< 8; i++) {
 		if(src[i] == 0) return;
 		if(src[i] == '.') break;
-		dst[i] = toupper(src[i]);
+		dst[i] = toupper_a(src[i]);
 	}
 
 	if(src[i]==0) return;
@@ -411,7 +420,7 @@ void canfile(char dst[12], const char* src)
 	}
 
 	for(int j = 0; j<3; j++) {
-		char c= toupper(src[j+i]);
+		char c= toupper_a(src[j+i]);
 		if(c==0) return;
 		dst[j+8] = c;
 	}

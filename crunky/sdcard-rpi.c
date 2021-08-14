@@ -27,22 +27,43 @@
 #include <stdio.h>
 #include <gpio.h>
 #include <timers.h>
-#include <sd.h>
+//#include <sd.h>
 
-void sd_uart_puts(char* str)
-{
-	printf("%s\n", str);
-}
+#define SD_OK                0
+#define SD_TIMEOUT          -1
+#define SD_ERROR            -2
+
+/* for some bizarre reason, it seems to be necessary turn on
+ * debugging, or else reading will fail
+ */
+
+static int debug = 0;
 
 void wait_usec(int i)
 {
 	delay_us(i);
 }
 
+void sd_uart_puts(char* str)
+{
+	if(debug==1) {
+		wait_usec(100);
+	       	return;
+	}
+	printf("%s\n", str);
+
+}
+
+
 /**
  * Display a binary value in hexadecimal
  */
-void sd_uart_hex(unsigned int d) {
+void sd_uart_hex(unsigned int d) 
+{
+	if(debug==1) {
+		wait_usec(100);
+		return;
+	}
 	unsigned int n;
 	int c;
 	for(c=28;c>=0;c-=4) {
@@ -240,9 +261,11 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 	return sd_err!=SD_OK || c!=num? 0 : num*512;
 }
 
-int sd_readablock(unsigned int lba, unsigned char *buffer)
+int readablock(unsigned int lba, unsigned char *buffer)
 {
-    return sd_readblock(lba, buffer, 1);
+    int status = sd_readblock(lba, buffer, 1);
+    if(status == 0) return -1; // an error
+    return 0;
 }
 
 /**
@@ -322,7 +345,9 @@ int sd_clk(unsigned int f)
 /**
  * initialize EMMC to read SDHC card
  */
-int sd_init()
+
+
+int sdcard_init1()
 {
 	//long r,cnt,ccs=0;
 	int64_t r,cnt,ccs=0;
@@ -428,3 +453,14 @@ int sd_init()
 	sd_scr[0]|=ccs;
 	return SD_OK;
 }
+
+void sdcard_init(void)
+{
+	int status = sdcard_init1(); // perhaps needs some nice handling
+}
+
+void sdcard_deinit(void)
+{
+	// should probably do something
+}
+

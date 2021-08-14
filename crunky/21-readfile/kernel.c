@@ -1,9 +1,10 @@
-#include <mini_uart.h>
+//#include <mini_uart.h>
 #include <stdio.h>
-#include <sd.h>
-#include <fat.h>
+//#include <sd.h>
+#include <../pico/fat32.h>
 
 
+#if 0
 void uart_send_1(char c) { putchar(c); }
 
 /**
@@ -47,11 +48,12 @@ void uart_dump_1(void *ptr)
 	}
 }
 
-void kernel_main(void)
+
+void kernel_mainXXX(void)
 {
 	unsigned int cluster;
 	//uart_init(9600);
-	uart_init_as_stdio(115200);
+	//uart_init_as_stdio(115200);
 	// initialize EMMC and detect SD card type
 	if(sd_init()==SD_OK) {
 		// read the master boot record and find our partition
@@ -72,4 +74,13 @@ void kernel_main(void)
 
 	puts("Done. Hanging.");
 	while(1);
+}
+#endif
+
+void kernel_main(void)
+{
+	puts("\nTyping file readme.txt ...");
+	fat32_init();
+	file32_type("readme.txt");
+	puts("\n... Typing finished. Hanging.");
 }
