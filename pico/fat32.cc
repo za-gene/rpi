@@ -163,8 +163,10 @@ void fat32_list_root (void)
 {
 	puts("Directory contents:");
 	bds_t bds;
-	Dir dir;
-	while(dir.read(bds)) 
+	dir32_t dir;
+	dir32_init_root(&dir);
+	//Dir dir;
+	while(dir32_read(&dir, &bds)) 
 		printf("%-11.11s %8d\n", bds.name, bds.size);
 }
 void Dir::init_cluster(uint32_t dir_cluster)
@@ -185,7 +187,40 @@ Dir::Dir()
 	init_cluster(root_dir_first_cluster);
 }
 
+void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster)
+{
+	dir->m_fat_cluster = block_cluster(dir_cluster);
+	readablock(dir->m_fat_cluster, (uint8_t*) dir->bdss);
+}
+void dir32_init_root(dir32_t* dir)
+{
+	dir32_init_cluster(dir, root_dir_first_cluster);
+}
 
+bool dir32_read(dir32_t* dir, bds_t* bds) 
+{
+	while(1) {
+		/* there's something about bits 7-31 of the current cluster tells
+		 * you which sectors to read from the FAT, and bits 0-6 tell you which
+		 * of the 128 integers in that sector is the number of the next cluster
+		 * of the file (or if all ones, that the current cluster is the last).
+		 * Not really sure what all that means, so I'm ignoring as at 2021-08-10
+		 */
+		if(dir->i==16)  {
+			// next sector
+			dir->sector_block_num++;
+			if(dir->sector_block_num == sectors_per_cluster) return false; // TODO should read another cluster
+			readablock(dir->m_fat_cluster + dir->sector_block_num, (uint8_t*) dir->bdss);
+			dir->i = 0;
+		}
+		*bds = dir->bdss[dir->i++];
+		uint8_t type = bds->name[0]; // first byte determines validity
+		if(type == 0xE5) continue; // skip entry. It is an empty slot
+		if(bds->attr & 0b10) continue; // skip hidden. LFNs are hidden
+		if(type == 0) return false;
+		return true;
+	}
+}
 bool Dir::read(bds_t& bds) 
 {
 	while(1) {

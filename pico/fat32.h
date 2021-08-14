@@ -33,6 +33,18 @@ typedef struct __attribute__((__packed__))  bds_t {
 static_assert(sizeof(bds_t) == 32);
 
 
+typedef struct {
+	bds_t bdss[16];
+	static_assert(sizeof(bdss) == 512);
+	int sector_block_num = 0;
+	int i = 0;
+	uint32_t m_fat_cluster;
+} dir32_t;
+
+void dir32_init_cluster(dir32_t* dir, uint32_t dir_cluster);
+void dir32_init_root(dir32_t* dir);
+bool dir32_read(dir32_t* dir, bds_t* bds);
+
 class Dir
 {
 	public:
