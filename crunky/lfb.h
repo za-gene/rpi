@@ -42,6 +42,8 @@ unsigned char* lfb_buffer();
 unsigned int lfb_width();
 unsigned int lfb_height();
 unsigned int isrgb();
+int lfb_num_chars_in_col();
+int lfb_num_chars_in_row();
 
 #ifdef __cplusplus
 }

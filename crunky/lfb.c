@@ -23,7 +23,9 @@
  *
  */
 
-//#include <yastdio.h>
+
+#include <stdio.h>
+#include <string.h>
 #include <basal.h>
 #include <lfb.h>
 
@@ -43,7 +45,8 @@ typedef struct {
 	unsigned int width;
 	unsigned char glyphs;
 } __attribute__((packed)) psf_t;
-extern volatile unsigned char _binary_font_psf_start;
+extern volatile unsigned char _binary_font_psf_start; // fixed width
+psf_t *font = 0;
 
 /* Scalable Screen Font (https://gitlab.com/bztsrc/scalable-font2) */
 typedef struct {
@@ -65,6 +68,8 @@ extern volatile unsigned char _binary_font_sfn_start;
 
 unsigned int width, height, pitch, g_isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
+int g_x =10, g_y = 10; // cursor position in terms of pixels
+int bytesperline;
 
 unsigned int lfb_pitch() { return pitch; }
 unsigned char* lfb_buffer() { return lfb; }
@@ -72,10 +77,18 @@ unsigned int lfb_width() { return width; }
 unsigned int lfb_height() { return height; }
 unsigned int isrgb() { return g_isrgb; }
 
+
+int lfb_num_chars_in_col () { return lfb_width() / font->width; }
+int lfb_num_chars_in_row () { return lfb_height() / font->height; }
+
+
 #define WIDTH 1920
 #define HEIGHT 1080
 void lfb_init()
 {
+	font = (psf_t*)&_binary_font_psf_start;
+	bytesperline=(font->width+7)/8;
+
 	mbox[0] = 35*4;
 	mbox[1] = MBOX_REQUEST;
 
@@ -167,45 +180,9 @@ void lfb_showpicture()
  */
 void lfb_print(int x, int y, char *s)
 {
-	// get our font
-	psf_t *font = (psf_t*)&_binary_font_psf_start;
-	// draw next character if it's not zero
-	while(*s) {
-		// get the offset of the glyph. Need to adjust this to support unicode table
-		unsigned char *glyph = (unsigned char*)&_binary_font_psf_start +
-			font->headersize + (*((unsigned char*)s)<font->numglyph?*s:0)*font->bytesperglyph;
-		// calculate the offset on screen
-		int offs = (y * pitch) + (x * 4);
-		// variables
-		int i,j, line,mask, bytesperline=(font->width+7)/8;
-		// handle carrige return
-		if(*s == '\r') {
-			x = 0;
-		} else
-			// new line
-			if(*s == '\n') {
-				x = 0; y += font->height;
-			} else {
-				// display a character
-				for(j=0;j<font->height;j++){
-					// display one row
-					line=offs;
-					mask=1<<(font->width-1);
-					for(i=0;i<font->width;i++){
-						// if bit set, we use white color, otherwise black
-						*((unsigned int*)(lfb + line))=((int)*glyph) & mask?0xFFFFFF:0;
-						mask>>=1;
-						line+=4;
-					}
-					// adjust to next line
-					glyph+=bytesperline;
-					offs+=pitch;
-				}
-				x += (font->width+1);
-			}
-		// next character
-		s++;
-	}
+	g_x = x;
+	g_y = y;
+	while(*s) fbputchar(*s++);
 }
 
 /**
@@ -266,26 +243,25 @@ void lfb_proprint(int x, int y, char *s)
 }
 
 
-int g_x =10, g_y = 10;
 int fbputchar(int  c)
 {
 	char s[1];
 	s[0] = (char) c;
-	psf_t *font = (psf_t*)&_binary_font_psf_start; 
+	//psf_t *font = (psf_t*)&_binary_font_psf_start; 
 	// get the offset of the glyph. Need to adjust this to support unicode table
 	unsigned char *glyph = (unsigned char*)&_binary_font_psf_start +
 		font->headersize + (*((unsigned char*)s)<font->numglyph?*s:0)*font->bytesperglyph;
 	// calculate the offset on screen 
 	int offs = (g_y * pitch) + (g_x * 4);
 	// variables
-	int i,j, line,mask, bytesperline=(font->width+7)/8;
+	int i,j, line,mask;
 	// handle carriage return
 	if(*s == '\r') {
 		g_x = 0;
 	} else
 		// new line
 		if(*s == '\n') { 
-			g_x = 0; g_y += font->height;
+			fbnewline();
 		} else {
 			// display a character
 			for(j=0;j<font->height;j++){
@@ -316,8 +292,23 @@ void fbprint(char* str)
 
 void fbnewline()
 {
-	//fbprint("\r\n");
-	fbprint("\n");
+	// TODO close, but still a little buggy
+	//fbprint("\n");
+	int fh = font->height;
+	g_x = 0; 
+	g_y += fh;
+#define NROWS 40 // basically a guess for now
+	if(g_y <= fh*NROWS) return;
+	//fbprint("fbnewline called");
+	int offset = WIDTH*fh*4;
+	int bytes_to_copy = NROWS*offset;
+	//printf("offset %d, bytes_to_copy %d", offset, bytes_to_copy);
+	//while(1);
+
+
+	memcpy(lfb, lfb+ offset, bytes_to_copy);
+	// TODO clear last line
+	g_y -= fh;
 }
 
 int fbputs(char* str)
