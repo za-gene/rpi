@@ -424,7 +424,7 @@ abort:;
 
 void crunky_putf(void* unused, char c)
 {
-    putchar(c);
+	putchar(c);
 }
 
 #if TINYPRINTF_DEFINE_TFP_PRINTF
@@ -450,7 +450,7 @@ int printf(const char *fmt, ...)
 	va_start(va, fmt);
 	tfp_format(stdout_putp, stdout_putf, fmt, va);
 	va_end(va);
-    return 1; // Not actually right according to standard implementation
+	return 1; // Not actually right according to standard implementation
 }
 #endif
 
