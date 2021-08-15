@@ -212,19 +212,28 @@ int sd_cmd(unsigned int code, unsigned int arg)
 	}
 	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg); // for some reason, this needs to be here
 	*EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
-	if(code==CMD_SEND_OP_COND) wait_usec(1000); else
-		if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
-	if((r=sd_int(INT_CMD_DONE))) {sd_uart_puts("ERROR: failed to send EMMC command\n");sd_err=r;return 0;}
+	if(code==CMD_SEND_OP_COND) wait_usec(1000);
+	if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
+	if((r=sd_int(INT_CMD_DONE))) {
+		sd_uart_puts("ERROR: failed to send EMMC command\n");
+		sd_err=r;
+		return 0;
+	}
 	r=*EMMC_RESP0;
-	if(code==CMD_GO_IDLE || code==CMD_APP_CMD) return 0; else
-		if(code==(CMD_APP_CMD|CMD_RSPNS_48)) return r&SR_APP_CMD; else
-			if(code==CMD_SEND_OP_COND) return r; else
-				if(code==CMD_SEND_IF_COND) return r==arg? SD_OK : SD_ERROR; else
-					if(code==CMD_ALL_SEND_CID) {r|=*EMMC_RESP3; r|=*EMMC_RESP2; r|=*EMMC_RESP1; return r; } else
-						if(code==CMD_SEND_REL_ADDR) {
-							sd_err=(((r&0x1fff))|((r&0x2000)<<6)|((r&0x4000)<<8)|((r&0x8000)<<8))&CMD_ERRORS_MASK;
-							return r&CMD_RCA_MASK;
-						}
+	if(code==CMD_GO_IDLE || code==CMD_APP_CMD) return 0;
+	if(code==(CMD_APP_CMD|CMD_RSPNS_48)) return r&SR_APP_CMD;
+	if(code==CMD_SEND_OP_COND) return r;
+	if(code==CMD_SEND_IF_COND) return r==arg? SD_OK : SD_ERROR; 
+	if(code==CMD_ALL_SEND_CID) {
+		r|=*EMMC_RESP3; 
+		r|=*EMMC_RESP2; 
+		r|=*EMMC_RESP1; 
+		return r; 
+	} 
+	if(code==CMD_SEND_REL_ADDR) {
+		sd_err=(((r&0x1fff))|((r&0x2000)<<6)|((r&0x4000)<<8)|((r&0x8000)<<8))&CMD_ERRORS_MASK;
+		return r&CMD_RCA_MASK;
+	}
 	return r&CMD_ERRORS_MASK;
 	// make gcc happy
 	return 0;
