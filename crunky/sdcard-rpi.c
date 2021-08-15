@@ -38,7 +38,7 @@
  * debugging, or else reading will fail
  */
 
-static int debug = 1;
+static int debug = 0;
 
 void wait_usec(int i)
 {
