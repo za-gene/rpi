@@ -8,21 +8,6 @@
 void uart_send_1(char c) { putchar(c); }
 
 /**
- * Display a binary value in hexadecimal
- */
-void uart_hex_1(unsigned int d) {
-	unsigned int n;
-	int c;
-	for(c=28;c>=0;c-=4) {
-		// get highest tetrad
-		n=(d>>c)&0xF;
-		// 0-9 => '0'-'9', 10-15 => 'A'-'F'
-		n+=n>9?0x37:0x30;
-		uart_send(n);
-	}
-}
-
-/**
  * Dump memory
  */
 void uart_dump_1(void *ptr)
@@ -49,39 +34,20 @@ void uart_dump_1(void *ptr)
 }
 
 
-void kernel_mainXXX(void)
-{
-	unsigned int cluster;
-	//uart_init(9600);
-	//uart_init_as_stdio(115200);
-	// initialize EMMC and detect SD card type
-	if(sd_init()==SD_OK) {
-		// read the master boot record and find our partition
-		if(fat_getpartition()) {
-			// find out file in root directory entries
-			cluster=fat_getcluster("TEST    TXT");
-			if(cluster==0)
-				cluster=fat_getcluster("KERNEL  IMG");
-			if(cluster) {
-				// read into memory
-				uart_dump_1(fat_readfile(cluster));
-			}
-		} else {
-			puts("FAT partition not found???\n");
-		}
-	}
-
-
-	puts("Done. Hanging.");
-	while(1);
-}
 #endif
+
+void type_readme()
+{
+	puts("\nTyping file readme.txt ...");
+	fat32_init();
+	file32_type("readme.txt");
+}
 
 void kernel_main(void)
 {
 	//lfb_init_as_stdout();
-	puts("\nTyping file readme.txt ...");
-	fat32_init();
-	file32_type("readme.txt");
+	//type_readme();
+	extern void sdcard_init(void);
+	sdcard_init();
 	puts("\n... Typing finished. Hanging.");
 }
