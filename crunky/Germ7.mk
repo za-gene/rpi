@@ -71,3 +71,6 @@ install:
 	#echo $(MNTDIR)
 	#cp $(IMG) /media/pi/50BD-6FEC
 	cp $(IMG) /media/pi/$(MNTDIR)
+
+eject:
+	umount /media/pi/$(MNTDIR)

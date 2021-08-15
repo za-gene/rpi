@@ -194,12 +194,19 @@ int sd_cmd(unsigned int code, unsigned int arg)
 	sd_err=SD_OK;
 	if(code&CMD_NEED_APP) {
 		r=sd_cmd(CMD_APP_CMD|(sd_rca?CMD_RSPNS_48:0),sd_rca);
-		if(sd_rca && !r) { sd_uart_puts("ERROR: failed to send SD APP command\n"); sd_err=SD_ERROR;return 0;}
+		if(sd_rca && !r) { 
+			sd_uart_puts("ERROR: failed to send SD APP command\n"); 
+			sd_err=SD_ERROR;
+			return 0;
+		}
 		code &= ~CMD_NEED_APP;
 	}
-	if(sd_status(SR_CMD_INHIBIT)) { sd_uart_puts("ERROR: EMMC busy\n"); sd_err= SD_TIMEOUT;return 0;}
-	//sd_uart_puts("EMMC: Sending command ");sd_uart_hex(code);sd_uart_puts(" arg ");sd_uart_hex(arg);sd_uart_puts("\n");
-	printf("EMMC: Sending command  0x%x arg 0x%x\n");
+	if(sd_status(SR_CMD_INHIBIT)) { 
+		sd_uart_puts("ERROR: EMMC busy\n"); 
+		sd_err= SD_TIMEOUT;
+		return 0;
+	}
+	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg);
 	*EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000); else
 		if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
@@ -227,7 +234,7 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 {
 	int r,c=0,d;
 	if(num<1) num=1;
-	sd_uart_puts("sd_readblock lba ");sd_uart_hex(lba);sd_uart_puts(" num ");sd_uart_hex(num);sd_uart_puts("\n");
+	printf("\nsd_readblock: lba = 0x%x, num = 0x%x\n", lba, num);
 	if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
 	unsigned int *buf=(unsigned int *)buffer;
 	if(sd_scr[0] & SCR_SUPP_CCS) {
