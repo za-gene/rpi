@@ -55,6 +55,10 @@ static void sd_uart_puts(const char *fmt, ...)
 	puts("");
 }
 
+static void sd_error_puts(const char *str)
+{
+	puts(str);
+}
 
 /**
  * Display a binary value in hexadecimal
@@ -237,14 +241,14 @@ int sd_cmd(unsigned int code, unsigned int arg)
 	if(code&CMD_NEED_APP) {
 		r=sd_cmd(CMD_APP_CMD|(sd_rca?CMD_RSPNS_48:0),sd_rca);
 		if(sd_rca && !r) { 
-			sd_uart_puts("ERROR: failed to send SD APP command\n"); 
+			sd_error_puts("ERROR: failed to send SD APP command\n"); 
 			sd_err=SD_ERROR;
 			return 0;
 		}
 		code &= ~CMD_NEED_APP;
 	}
 	if(sd_status(SR_CMD_INHIBIT)) { 
-		sd_uart_puts("ERROR: EMMC busy\n"); 
+		sd_error_puts("ERROR: EMMC busy\n"); 
 		sd_err= SD_TIMEOUT;
 		return 0;
 	}
@@ -254,7 +258,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
 	if(code==CMD_SEND_OP_COND) wait_usec(1000);
 	if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
 	if((r=sd_int(INT_CMD_DONE))) {
-		sd_uart_puts("ERROR: failed to send EMMC command\n");
+		sd_error_puts("ERROR: failed to send EMMC command\n");
 		sd_err=r;
 		return 0;
 	}
@@ -305,7 +309,11 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 			sd_cmd(CMD_READ_SINGLE,(lba+c)*512);
 			if(sd_err) return 0;
 		}
-		if((r=sd_int(INT_READ_RDY))){sd_uart_puts("\rERROR: Timeout waiting for ready to read\n");sd_err=r;return 0;}
+		if((r=sd_int(INT_READ_RDY))){
+			sd_error_puts("\rERROR: Timeout waiting for ready to read\n");
+			sd_err=r;
+			return 0;
+		}
 		for(d=0;d<128;d++) buf[d] = *EMMC_DATA;
 		c++; buf+=128;
 	}
@@ -347,11 +355,19 @@ int sd_writeblock(unsigned char *buffer, unsigned int lba, unsigned int num)
 			sd_cmd(CMD_WRITE_SINGLE,(lba+c)*512);
 			if(sd_err) return 0;
 		}
-		if((r=sd_int(INT_WRITE_RDY))){sd_uart_puts("\rERROR: Timeout waiting for ready to write\n");sd_err=r;return 0;}
+		if((r=sd_int(INT_WRITE_RDY))){
+			sd_error_puts("\rERROR: Timeout waiting for ready to write\n");
+			sd_err=r;
+			return 0;
+		}
 		for(d=0;d<128;d++) *EMMC_DATA = buf[d];
 		c++; buf+=128;
 	}
-	if((r=sd_int(INT_DATA_DONE))){sd_uart_puts("\rERROR: Timeout waiting for data done\n");sd_err=r;return 0;}
+	if((r=sd_int(INT_DATA_DONE))){
+		sd_error_puts("\rERROR: Timeout waiting for data done\n");
+		sd_err=r;
+		return 0;
+	}
 	if( num > 1 && !(sd_scr[0] & SCR_SUPP_SET_BLKCNT) && (sd_scr[0] & SCR_SUPP_CCS)) sd_cmd(CMD_STOP_TRANS,0);
 	return sd_err!=SD_OK || c!=num? 0 : num*512;
 }
@@ -365,7 +381,7 @@ int sd_clk(unsigned int f)
 	int cnt = 100000;
 	while((*EMMC_STATUS & (SR_CMD_INHIBIT|SR_DAT_INHIBIT)) && cnt--) wait_usec(1);
 	if(cnt<=0) {
-		sd_uart_puts("ERROR: timeout waiting for inhibit flag\n");
+		sd_error_puts("ERROR: timeout waiting for inhibit flag\n");
 		return SD_ERROR;
 	}
 
@@ -388,7 +404,7 @@ int sd_clk(unsigned int f)
 	*EMMC_CONTROL1 |= C1_CLK_EN; wait_usec(10);
 	cnt=10000; while(!(*EMMC_CONTROL1 & C1_CLK_STABLE) && cnt--) wait_usec(10);
 	if(cnt<=0) {
-		sd_uart_puts("ERROR: failed to get stable clock\n");
+		sd_error_puts("ERROR: failed to get stable clock\n");
 		return SD_ERROR;
 	}
 	return SD_OK;
@@ -424,7 +440,7 @@ int sdcard_init1()
 	*EMMC_CONTROL0 = 0; *EMMC_CONTROL1 |= C1_SRST_HC;
 	cnt=10000; do{wait_usec(10);} while( (*EMMC_CONTROL1 & C1_SRST_HC) && cnt-- );
 	if(cnt<=0) {
-		sd_uart_puts("ERROR: failed to reset EMMC\n");
+		sd_error_puts("ERROR: failed to reset EMMC\n");
 		return SD_ERROR;
 	}
 	sd_uart_puts("EMMC: reset OK\n");
@@ -454,7 +470,7 @@ int sdcard_init1()
 		sd_uart_hex(r);
 		sd_uart_puts("\n");
 		if(sd_err!=SD_TIMEOUT && sd_err!=SD_OK ) {
-			sd_uart_puts("ERROR: EMMC ACMD41 returned error\n");
+			sd_error_puts("ERROR: EMMC ACMD41 returned error\n");
 			return sd_err;
 		}
 	}
