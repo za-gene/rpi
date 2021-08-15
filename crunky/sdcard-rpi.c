@@ -114,6 +114,42 @@ static void sd_uart_hex(unsigned int d)
 #define CMD_SEND_OP_COND    (0x29020000|CMD_NEED_APP)
 #define CMD_SEND_SCR        (0x33220010|CMD_NEED_APP)
 
+#define  CMDDESC(x) {x, #x}
+typedef struct {
+	int num;
+	char* desc;
+} command_t;
+
+static command_t command_table[] = {
+	CMDDESC(CMD_GO_IDLE),
+	CMDDESC(CMD_ALL_SEND_CID),
+	CMDDESC(CMD_SEND_REL_ADDR),
+	CMDDESC(CMD_CARD_SELECT),
+	CMDDESC(CMD_SEND_IF_COND),
+	CMDDESC(CMD_STOP_TRANS),
+	CMDDESC(CMD_READ_SINGLE),
+	CMDDESC(CMD_READ_MULTI),
+	CMDDESC(CMD_SET_BLOCKCNT),
+	CMDDESC(CMD_WRITE_SINGLE),
+	CMDDESC(CMD_WRITE_MULTI),
+	CMDDESC(CMD_APP_CMD),
+	CMDDESC(CMD_SET_BUS_WIDTH),
+	CMDDESC(CMD_SEND_OP_COND),
+	CMDDESC(CMD_SEND_SCR)
+};
+
+char unknown_command[] = "UNKNOWN";
+
+char* describe_cmd(int num) 
+{
+	for(int i = 0; i< sizeof(command_table)/sizeof(command_t); i++) {
+		if(command_table[i].num == num) return command_table[i].desc;
+	}
+	return unknown_command;
+}
+	
+
+
 // STATUS register settings
 #define SR_READ_AVAILABLE   0x00000800
 #define SR_WRITE_AVAILABLE  0x00000400
@@ -212,7 +248,8 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		sd_err= SD_TIMEOUT;
 		return 0;
 	}
-	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg); // for some reason, this needs to be here
+	if(code==0x29020000) puts("EMMC: this printf statement needs to be here"); // or it won't work
+	sd_uart_puts("EMMC: Sending command 0x%x (%s), arg 0x%x\n", code, describe_cmd(code), arg);
 	*EMMC_INTERRUPT=*EMMC_INTERRUPT; EMMC_ARG1=arg; EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000);
 	if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);

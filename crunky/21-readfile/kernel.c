@@ -46,8 +46,8 @@ void type_readme()
 void kernel_main(void)
 {
 	//lfb_init_as_stdout();
-	//type_readme();
-	extern void sdcard_init(void);
-	sdcard_init();
+	type_readme();
+	//extern void sdcard_init(void);
+	//sdcard_init();
 	puts("\n... Typing finished. Hanging.");
 }
