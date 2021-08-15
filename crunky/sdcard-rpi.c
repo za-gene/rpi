@@ -75,8 +75,8 @@ static void sd_uart_hex(unsigned int d)
 
 #define EMMC_ARG2           ((volatile unsigned int*)(PBASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(PBASE+0x00300004))
-#define EMMC_ARG1           ((volatile unsigned int*)(PBASE+0x00300008))
-#define EMMC_CMDTM          ((volatile unsigned int*)(PBASE+0x0030000C))
+#define EMMC_ARG1           REG(PBASE+0x00300008)
+#define EMMC_CMDTM          REG(PBASE+0x0030000C)
 #define EMMC_RESP0          REG(PBASE+0x00300010)
 #define EMMC_RESP1          REG(PBASE+0x00300014)
 #define EMMC_RESP2          REG(PBASE+0x00300018)
@@ -213,7 +213,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		return 0;
 	}
 	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg); // for some reason, this needs to be here
-	*EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
+	*EMMC_INTERRUPT=*EMMC_INTERRUPT; EMMC_ARG1=arg; EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000);
 	if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
 	if((r=sd_int(INT_CMD_DONE))) {
