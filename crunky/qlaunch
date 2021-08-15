@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+Description here
+etc
+EOF
+}
+ 
+
+case $1 in
+    h) print_help ; exit ;;
+esac
+
+qemu-system-arm -M raspi0 -serial stdio -serial null -bios kernel.img \
+	-drive format=raw,file=$HOME/disk.img
+
