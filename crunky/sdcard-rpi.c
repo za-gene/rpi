@@ -71,14 +71,16 @@ static void sd_uart_hex(unsigned int d)
 	}
 }
 
+//#define REG(addr) (*(volatile unsigned int*)(PBASE+addr))
+
 #define EMMC_ARG2           ((volatile unsigned int*)(PBASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(PBASE+0x00300004))
 #define EMMC_ARG1           ((volatile unsigned int*)(PBASE+0x00300008))
 #define EMMC_CMDTM          ((volatile unsigned int*)(PBASE+0x0030000C))
-#define EMMC_RESP0          ((volatile unsigned int*)(PBASE+0x00300010))
-#define EMMC_RESP1          ((volatile unsigned int*)(PBASE+0x00300014))
-#define EMMC_RESP2          ((volatile unsigned int*)(PBASE+0x00300018))
-#define EMMC_RESP3          ((volatile unsigned int*)(PBASE+0x0030001C))
+#define EMMC_RESP0          REG(PBASE+0x00300010)
+#define EMMC_RESP1          REG(PBASE+0x00300014)
+#define EMMC_RESP2          REG(PBASE+0x00300018)
+#define EMMC_RESP3          REG(PBASE+0x0030001C)
 #define EMMC_DATA           ((volatile unsigned int*)(PBASE+0x00300020))
 #define EMMC_STATUS         ((volatile unsigned int*)(PBASE+0x00300024))
 #define EMMC_CONTROL0       ((volatile unsigned int*)(PBASE+0x00300028))
@@ -219,15 +221,15 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		sd_err=r;
 		return 0;
 	}
-	r=*EMMC_RESP0;
+	r=EMMC_RESP0;
 	if(code==CMD_GO_IDLE || code==CMD_APP_CMD) return 0;
 	if(code==(CMD_APP_CMD|CMD_RSPNS_48)) return r&SR_APP_CMD;
 	if(code==CMD_SEND_OP_COND) return r;
 	if(code==CMD_SEND_IF_COND) return r==arg? SD_OK : SD_ERROR; 
 	if(code==CMD_ALL_SEND_CID) {
-		r|=*EMMC_RESP3; 
-		r|=*EMMC_RESP2; 
-		r|=*EMMC_RESP1; 
+		r|=EMMC_RESP3; 
+		r|=EMMC_RESP2; 
+		r|=EMMC_RESP1; 
 		return r; 
 	} 
 	if(code==CMD_SEND_REL_ADDR) {
