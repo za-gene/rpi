@@ -25,12 +25,15 @@ void kernel_main()
 	pinfo(lfb_pitch());
 	pinfo(lfb_pitch());
 	pinfo(lfb_num_chars_in_col());
-	pinfo(lfb_num_chars_in_row());
+	pinfo(lfb_font_height());
+	pinfo(lfb_font_width());
 
 	int i = 0;
-	while(1) {
+	while(i<20) {
+		puts("*************************");
 		printf("Count = %d\n", i++);
 		delay_ms(250);
 	}
+	puts("I'm bored. Bye.");
 
 }

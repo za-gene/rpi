@@ -68,7 +68,7 @@ extern volatile unsigned char _binary_font_sfn_start;
 
 unsigned int width, height, pitch, g_isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
-int g_x =10, g_y = 10; // cursor position in terms of pixels
+int g_x =0, g_y = 0; // cursor position in terms of pixels
 int bytesperline;
 
 unsigned int lfb_pitch() { return pitch; }
@@ -80,7 +80,8 @@ unsigned int isrgb() { return g_isrgb; }
 
 int lfb_num_chars_in_col () { return lfb_width() / font->width; }
 int lfb_num_chars_in_row () { return lfb_height() / font->height; }
-
+int lfb_font_height () { return font->height; }
+int lfb_font_width () { return font->width; }
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -292,22 +293,22 @@ void fbprint(char* str)
 
 void fbnewline()
 {
-	// TODO close, but still a little buggy
 	//fbprint("\n");
 	int fh = font->height;
 	g_x = 0; 
 	g_y += fh;
 #define NROWS 40 // basically a guess for now
-	if(g_y <= fh*NROWS) return;
+	if(g_y < fh*NROWS) return;
 	//fbprint("fbnewline called");
 	int offset = WIDTH*fh*4;
-	int bytes_to_copy = NROWS*offset;
+	int bytes_to_copy = (NROWS-0)*offset;
 	//printf("offset %d, bytes_to_copy %d", offset, bytes_to_copy);
 	//while(1);
 
 
 	memcpy(lfb, lfb+ offset, bytes_to_copy);
-	// TODO clear last line
+	memset(lfb + offset + bytes_to_copy, WIDTH*fh*4, 0);
+
 	g_y -= fh;
 }
 

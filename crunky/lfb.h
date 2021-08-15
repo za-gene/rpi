@@ -44,6 +44,8 @@ unsigned int lfb_height();
 unsigned int isrgb();
 int lfb_num_chars_in_col();
 int lfb_num_chars_in_row();
+int lfb_font_height();
+int lfb_font_width();
 
 #ifdef __cplusplus
 }

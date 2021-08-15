@@ -1,4 +1,4 @@
-//#include <mini_uart.h>
+#include <lfb.h>
 #include <stdio.h>
 //#include <sd.h>
 #include <../pico/fat32.h>
@@ -79,6 +79,7 @@ void kernel_mainXXX(void)
 
 void kernel_main(void)
 {
+	//lfb_init_as_stdout();
 	puts("\nTyping file readme.txt ...");
 	fat32_init();
 	file32_type("readme.txt");
