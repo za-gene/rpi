@@ -26,6 +26,7 @@
 #include <basal.h>
 #include <stdio.h>
 #include <gpio.h>
+#include <stdarg.h>
 #include <timers.h>
 //#include <sd.h>
 
@@ -44,11 +45,14 @@ void wait_usec(int i)
 	delay_us(i);
 }
 
-static void sd_uart_puts(char* str)
+static void sd_uart_puts(const char *fmt, ...)
 {
 	if(debug==0) return;
-	printf("%s\n", str);
-
+	va_list va;
+        va_start(va, fmt);
+        printf(fmt, va);
+        va_end(va);
+	puts("");
 }
 
 
@@ -206,7 +210,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		sd_err= SD_TIMEOUT;
 		return 0;
 	}
-	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg);
+	printf("EMMC 1: Sending command  0x%x arg 0x%x\n", code, arg); // for some reason, this needs to be here
 	*EMMC_INTERRUPT=*EMMC_INTERRUPT; *EMMC_ARG1=arg; *EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000); else
 		if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
@@ -234,7 +238,7 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 {
 	int r,c=0,d;
 	if(num<1) num=1;
-	printf("\nsd_readblock: lba = 0x%x, num = 0x%x\n", lba, num);
+	//printf("\nsd_readblock: lba = 0x%x, num = 0x%x\n", lba, num);
 	if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
 	unsigned int *buf=(unsigned int *)buffer;
 	if(sd_scr[0] & SCR_SUPP_CCS) {
