@@ -59,8 +59,20 @@ void wait_msec(unsigned int n)
 
 /**
  * Get System Timer's counter
+ *
+ * Pi has a system timer and an ARM timer. 
+ *
+ * System timer:
+ * - part of the GPU
+ * - should be your preferred timer
+ *
+ * ARM timer
+ * - part of the ARM CPU
+ * - based on an ARM AP904
+ * - derived from system clock. Can have a variable clock rate (e.g. based on power mode). Not
+ *   necessarily a problem, because on an embedded system it should be running at 250MHz by default.
  */
-uint64_t get_system_timer()
+uint64_t get_system_time()
 {
     u32 h=-1, l;
     // we must read MMIO area as two separate 32 bit reads
@@ -83,10 +95,10 @@ uint64_t get_system_timer()
  */
 void delay_us(uint64_t n)
 {
-    uint64_t us=get_system_timer();
+    uint64_t us=get_system_time();
     // we must check if it's non-zero, because qemu does not emulate
     // system timer, and returning constant zero would mean infinite loop
-    if(us) while(get_system_timer() -us < n);
+    if(us) while(get_system_time() -us < n);
 }
 
 void delay_ms(int ms)
