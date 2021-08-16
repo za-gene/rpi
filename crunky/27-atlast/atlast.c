@@ -8,11 +8,13 @@
    */
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <SPIFFS.h> // ESP file system
 
 #ifdef ALIGNMENT
 #include <memory.h>
@@ -41,7 +43,7 @@
 #define DOUBLE			      /* Double word primitives (2DUP) */
 #define EVALUATE		      /* The EVALUATE primitive */
 //#define FILEIO			      /* File I/O primitives */
-#define MATH			      /* Math functions */
+//#define MATH			      /* Math functions */
 #define MEMMESSAGE		      /* Print message for stack/heap errors */
 #define PROLOGUE		      /* Prologue processing and auto-init */
 #define PROLOGUEDEBUG
@@ -95,6 +97,9 @@ extern atl_int atl_redef;	      /* Allow redefinition of words without
 					 issuing the "not unique" warning. */
 extern atl_int atl_errline;	      /* Line number where last atl_load()
 					 errored or zero if no error. */
+
+extern void serial_print(const char* str);
+extern void serial_newline(void);
 
 /*  ATL_EVAL return status codes  */
 
@@ -248,7 +253,7 @@ void stakover(), rstakover(), heapover(), badpointer(),
 #endif
 
 /* Functions called by exported extensions. */
-extern void atl_primdef(), atl_error();
+//extern void atl_primdef(), atl_error();
 extern dictword *atl_lookup(), *atl_vardef();
 extern stackitem *atl_body();
 extern int atl_exec();
@@ -370,6 +375,8 @@ extern char *atl_fgetsp();
 extern void atl_init(), atl_mark(atl_statemark*mp), atl_unwind(atl_statemark*), atl_break();
 extern int atl_eval(char *), atl_load();
 extern void atl_memstat();
+void dmsg(const char* str1, const char* str2);
+
 #ifdef MATH
 #include <math.h>
 #endif
@@ -566,6 +573,11 @@ STATIC void notcomp(), divzero();
 STATIC void pwalkback();
 #endif
 
+void serial_println(const char* str)
+{
+	serial_print(str);
+	serial_newline();
+}
 
 /*  ALLOC  --  Allocate memory and error upon exhaustion.  */
 
@@ -741,7 +753,6 @@ static int token(char** cp)
 			//if (sscanf(tokbuf, "%f%c", &tokreal, &tc) == 1) return TokReal;
 			tokreal = strtof(tokbuf, &tcp);
 			if (*tcp == 0) { 
-				//Serial.println("Encountered real");
 				return TokReal; }
 #endif
 		}
@@ -1672,9 +1683,7 @@ prim P_fdot()			      /* Print floating point top of stack */
 	//V printf("%f ", REAL0);
 	char str[30];
 	snprintf(str, 30, "%f ", (atl_real) REAL0);
-	Serial.print(str);
-
-	//write30("%g ", REAL0);
+	serial_print(str);
 	Realpop;
 }
 
@@ -1767,6 +1776,29 @@ prim P_tan()			      /* Tangent */
 
 #ifdef CONIO
 
+void write_long(long  v)
+{  
+	char str[30];
+	snprintf(str, 30, base == 16 ? "%lX" : "%ld ", v);
+	V serial_print(str);
+}
+
+
+void writing(char *str) 
+{
+	serial_print(str);  
+}
+
+void write30(const char* fmt, ...)
+{
+	static char str[80];
+	va_list arglist;
+	va_start(arglist, fmt);
+	vsnprintf(str, sizeof(str), fmt, arglist);
+	va_end(arglist);
+	serial_print(str);
+}
+
 prim P_dot()			      /* Print top of stack, pop it */
 {
 	Sl(1);
@@ -1775,12 +1807,6 @@ prim P_dot()			      /* Print top of stack, pop it */
 	Pop;
 }
 
-void write_long(long  v){  
-
-	char str[30];
-	snprintf(str, 30, base == 16 ? "%lX" : "%ld ", v);
-	V writing(str);
-}
 
 prim P_question()		      /* Print value at address */
 {
@@ -3040,154 +3066,7 @@ prim P_fwdresolve()		      /* Emit forward jump offset */
 
 prim P_hi()
 {
-	writeln("Hello yourself");
-}
-
-prim P_pinm() {
-	Sl(2);
-	pinMode(S1, S0);
-	Pop2;
-}
-prim P_digw() {
-	Sl(2);
-	digitalWrite(S1, S0);
-	Pop2;
-}
-prim P_digr() {
-	Sl(1);
-	stackitem s = digitalRead(S0);
-	S0 = s;
-}
-prim P_delay_ms() {
-	Sl(1);
-	delay(S0);
-	Pop;
-}
-
-prim P_keyq() {
-	Push = Serial.available();
-}
-
-// https://github.com/espressif/arduino-esp32/blob/master/libraries/SPIFFS/examples/SPIFFS_Test/SPIFFS_Test.ino
-prim P_testfs() {
-	writeln("Testing the file system");
-	int res;
-
-	writeln("Formatting. Make take awhile");
-	res = SPIFFS.format();
-	if(!res) {
-		writeln("Error formatting SPIFFS");
-	}
-
-	res = SPIFFS.begin();
-	if(!res) {
-		writeln("Error mounting SPIFFS");
-		return;
-	}
-
-	File file = SPIFFS.open("/hello.txt", "w");
-	if(!file) {
-		writeln("Error opening file for writing");
-		return;
-	}
-
-	int nbytes = file.print("hello world");
-	if(nbytes == 0) {
-		writeln("Error writing to file");
-		return;
-	}
-
-	file.close();
-
-	file = SPIFFS.open("/hello.txt", "r");
-	if(!file) {
-		writeln("Error opening file for reading");
-		return;
-	}
-
-	writeln("Contents of file are:");
-	while(file.available()) {
-		Serial.write(file.read());
-	}
-
-	file.close();
-
-	writeln("\nFinished testfs");
-
-}
-
-prim P_usecs() {
-	Push = micros();
-}
-
-prim P_msecs() {
-	Push = millis();
-}
-
-prim P_format() { Push = SPIFFS.format(); }
-
-prim P_fallot()
-{
-	hptr += sizeof(File);
-}
-
-prim P_fopen() 
-{ 
-	Sl(3); 
-	Hpc(S1);
-	Hpc(S2);
-	File* f = (File*) S0;
-
-	//char* filename = S1;
-	//char* mode = S0;
-	Serial.println("About the open");
-	*f = SPIFFS.open((char*) S2, (char*) S1); 
-	Serial.println("Phew");
-	Pop;
-	Pop;
-	S0 = (stackitem) &f;
-}
-
-prim P_favail()
-{
-	Sl(1);
-	File* f = (File*) S0;
-	S0 = f->available();
-}
-
-prim P_freadc()
-{
-	Sl(1);
-	//spiffs_t* sp;
-	//spiffs_check(sp);
-
-	File* f = (File*) S0;
-	S0 = f->read();
-}
-
-prim P_fwritec()
-{
-	Sl(2);
-	File* f = (File*) S0;
-	Pop;
-	S0 = f->write(S1);
-}
-
-prim P_fclose() 
-{ 
-	Sl(1); 
-	File* f = (File*) S0; 
-	f->close();
-	Pop;
-	//Push = f.close(); 
-}
-
-prim P_dacw()
-{
-	Sl(2);
-	dacWrite(S0, S1);
-	Pop;
-	Pop;
+	serial_println("Hello yourself");
 }
 
 prim P_info()
@@ -3202,7 +3081,7 @@ prim P_info()
 
 prim P_char()
 {
-	Serial.println("TODO: implement CHAR");
+	serial_println("TODO: implement CHAR");
 
 }
 
@@ -3212,7 +3091,7 @@ prim P_emit()
 	char str[2];
 	str[0] = (char) S0;
 	str[1] = 0;
-	Serial.print(str);
+	serial_print(str);
 	Pop;
 }
 
@@ -3221,15 +3100,8 @@ prim P_emit()
 /*  Table of primitive words  */
 
 static struct primfcn primt[] = {
+	{"0HI", P_hi},
 	{"0INFO", P_info},
-	{"0DACW", P_dacw},
-	{"0FALLOT", P_fallot},
-	{"0FORMAT", P_format},
-	{"0FOPEN", P_fopen},
-	{"0FCLOSE", P_fclose},
-	{"0FWRITEC", P_fwritec},
-	{"0FREADC", P_freadc},
-	{"0FAVAIL", P_favail},
 	{"0CHAR", P_char},
 	{"0EMIT", P_emit},
 	{"0+", P_plus},
@@ -3506,17 +3378,6 @@ static struct primfcn primt[] = {
 	{"0EVALUATE", P_evaluate},
 #endif /* EVALUATE */
 
-	// mcarter added for Arduino
-	{"0HI", P_hi},
-	{"0PINM", P_pinm},
-	{"0DIGW", P_digw},
-	{"0DIGR", P_digr},
-	{"0DELAY-MS", P_delay_ms},
-	{"0KEY?", P_keyq},
-	{"0TESTFS", P_testfs},
-	{"0USECS", P_usecs},
-	{"0MSECS", P_msecs},
-
 
 
 	{NULL, (codeptr) 0}
@@ -3738,7 +3599,7 @@ static void exword(dictword *wp)
     ensure that the length allocated agrees with the lengths
     given by the atl_... cells.  */
 
-void Cconst(stackitem &cell, char* name) {
+void Cconst(stackitem cell, char* name) {
 	cell = (stackitem) lookup(name);
 	if (cell != 0) return;
 	dmsg("Cconst fatal", name);
@@ -3775,7 +3636,8 @@ void atl_init()
 		   save their compile addresses in static variables. */
 
 
-		//#define Cconst(cell, name)  cell = (stackitem) lookup(name); if(cell==0)abort()
+//#define Cconst(cell, name)  cell = (stackitem) lookup(name); if(cell==0)abort()
+//#define Cconst(cell, name)  if((cell = (stackitem) lookup(name))==0)abort()
 		Cconst(s_exit, "EXIT");
 		Cconst(s_lit, "(LIT)");
 		Cconst(s_flit, "(FLIT)");
@@ -4151,6 +4013,16 @@ void dmsg(const char* str1, const char* str2)
 	//flush();
 }
 
+void report(char* s1, char* s2) 
+{
+	writing("Report:");
+	writing(s1);
+	writing(":'");
+	writing(s2);
+	writing("' ");
+}
+
+
 /*  ATL_EVAL  --  Evaluate a string containing ATLAST words.  */
 
 int atl_eval(char *sp)
@@ -4205,8 +4077,8 @@ int atl_eval(char *sp)
 								di = NULL;
 							}
 							if (strcmp(dw->wname + 1, tokbuf) == 0) {
-								Serial.println("Found token:");
-								Serial.println(tokbuf);
+								serial_println("Found token:");
+								serial_println(tokbuf);
 								break;
 							}
 							dw = dw->wnext;
@@ -4391,92 +4263,3 @@ int atl_eval(char *sp)
 	}
 	return evalstat;
 }
-
-#define FALSE  0
-#define TRUE  1
-
-/*
-   int mcu_fgets(char* buffer, len)
-   {
-   Serial.readBytes(buffer, len)
-   }
-   */
-
-void write30(const char* fmt, ...)
-{
-	static char str[80];
-	va_list arglist;
-	va_start(arglist, fmt);
-	vsnprintf(str, sizeof(str), fmt, arglist);
-	va_end(arglist);
-	Serial.print(str);
-}
-
-void writing(char *str) {
-	Serial.print(str);  
-}
-void writeln(char *str) {
-	Serial.print(str);
-	P_cr();
-}
-
-void report(char* s1, char* s2) {
-	writing("Report:");
-	writing(s1);
-	writing(":'");
-	writing(s2);
-	writing("' ");
-}
-char t[132];
-
-int readln()
-{
-	t[0] = 0;
-	int n = 0;
-	for (;;) {
-		if (Serial.available() > 0) {
-			int b = Serial.read();
-			if(b == '\r') {Serial.print('\r'); b = '\n'; }
-			t[n++] = b;
-			//Serial.print((char) b);
-			if (b == '\n') goto eoi;
-			//n = Serial.readBytes(t, 132);
-			//t[n] = 0;
-			//if (n > 0) {
-			//  Serial.print("input: ");
-			//  Serial.println(t);
-		}
-		}
-eoi:
-		t[n] = 0;
-		//Serial.print("input: ");
-		//Serial.println(t);
-		return n - 1;
-	}
-
-	void setup() {
-		Serial.begin(115200);
-		//Serial.println("atlast started 2");
-		int fname = FALSE, defmode = FALSE;
-		//FILE *ifp;
-
-		Serial.print("Mounting SPIFFS:");
-		if(SPIFFS.begin())
-			Serial.print("success\n");
-		else {
-			Serial.print("failure\n");
-			Serial.println("Have you formatted it?");
-		}
-
-		while (TRUE) {
-			if (readln() != 0) {
-				V atl_eval(t);      
-			}
-			V writeln("\n  ok");
-		}
-	}
-
-
-	void loop() {
-
-	}
