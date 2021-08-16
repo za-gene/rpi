@@ -3,6 +3,7 @@
 #include <timers.h>
 #include <sdcard-rpi.h>
 
+#include "../pico/crc8.h"
 #include "../pico/fat32.h"
 
 
@@ -48,6 +49,9 @@ void kernel_main()
 	hare_start("read 4096 bytes");
 	sd_readblock(0, buffer, 4096/512);
 	hare_stop();
+
+	int crc = crc8_dallas(buffer, 4096);
+	printf("crc8 of last read is %d\n", crc);
 
 	puts("That's me done");
 	puts("I'm just going to hang now");
