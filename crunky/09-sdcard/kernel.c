@@ -27,6 +27,24 @@ void sd_test2(void)
 	fat32_list_root();
 }
 
+void sd_test3(void)
+{
+	fat32_init();
+	char outfile[12];
+	canfile(outfile, "song.raw");
+	file32_t file;
+	file32_init(&file, outfile);
+	//File file(outfile);
+	if(!file32_found(&file)) puts("ERR: file not found");
+	uint8_t block[512];
+	int n;
+	puts("");
+	hare_start("reading song.raw");
+	while(n = file32_read(&file, block)); // just read, don't do anything
+	hare_stop();
+	printf("filesize: %d\n", file32_size(&file));
+}
+
 
 void kernel_main()
 {
@@ -52,6 +70,8 @@ void kernel_main()
 
 	int crc = crc8_dallas(buffer, 4096);
 	printf("crc8 of last read is %d\n", crc);
+
+	sd_test3();
 
 	puts("That's me done");
 	puts("I'm just going to hang now");

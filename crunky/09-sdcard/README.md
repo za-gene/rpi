@@ -2,6 +2,17 @@
 
 
 
+## Test 2 of speed 2021-08-16
+
+Reading a 2,212,397b file.
+
+On qemu, took 513,485us. That's 0.23us/b, or 119us for block of 512b.
+
+On an sdcard with pi0, took 1,394,085us. That's 0.63us/b, or 323us for 512b.
+
+QEMU is 2.7X faster than an actual sdcard.
+
+
 ## Test 1 of speed 2021-08-16
 
 
