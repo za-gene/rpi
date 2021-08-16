@@ -50,7 +50,7 @@
 #define REAL			      /* Floating point numbers */
 #define SHORTCUTA		      /* Shortcut integer arithmetic words */
 #define SHORTCUTC		      /* Shortcut integer comparison */
-#define STRING			      /* String functions */
+//#define STRING			      /* String functions */
 //#define SYSTEM			      /* System command function */
 #ifndef NOMEMCHECK
 #define TRACE			      /* Execution tracing */
