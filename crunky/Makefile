@@ -5,10 +5,11 @@ VPATH = ../pico # need for fat32
 # a special case because it is the interrupt table
 VEC_O = $(CRUNKY)/vectors.o
 
-CR_OBJS = basal.o interrupts.o gpio.o lfb.o font.psf.o font.sfn.o \
+CR_OBJS = basal.o interrupts.o gpio.o \
 	  mbox.o memory.o mini_uart.o \
 	  uart0.o 
 
+CR_OBJS += lfb.o font.psf.o
 #CR_OBJS += vectors.o
 CR_OBJS += nanolib-impl.o
 CR_OBJS += bcm2835.o
