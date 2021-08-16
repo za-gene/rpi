@@ -23,6 +23,8 @@
  *
  */
 
+#include <stdio.h>
+
 #include <basal.h>
 #include <timers.h>
 #include <gpio.h>
@@ -123,3 +125,18 @@ void init_arm_timer(u32 freq)
 	ARM_TIMER_CTL |= (1<<7) // enable timer
 		| (1<<5); // enable timer interrupts
 }
+
+static uint64_t hare_start_time;
+void hare_start(const char* s)
+{
+	printf("HARE: %s", s);
+	hare_start_time = get_system_time();
+}
+
+void hare_stop(void)
+{
+	uint64_t elapsed = get_system_time() - hare_start_time;
+	printf(" took %d us\n", (uint32_t) elapsed);
+
+}
+

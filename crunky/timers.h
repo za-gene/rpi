@@ -34,6 +34,9 @@ uint64_t get_system_time();
 void delay_ms(int ms);
 void delay_s(int secs);
 void init_arm_timer(u32 freq); // see xemaple/04-timer-interrupts for usage
+void hare_start(const char* s);
+void hare_stop(void);
+
 
 
 
