@@ -1,17 +1,18 @@
 #include <stdint.h>
 #include <memory.h>
 
-/*
+
+
 void *memcpy(void *dest, const void *src, size_t n)
 {
-	char *d = (char*)dest;
-	const char *s = (const char*) src;
-	if(n>0)
-		while(n--) *d++ = *s++;
+#if 0 // GCC builtin doesn't seem to work
+	return __builtin_memcpy(dest, src, n);
+#else
+	char *d = dest;
+	while(n--) *d++ = *(char*)src++;
 	return dest;
+#endif
 }
-*/
-
 
 extern uintptr_t __heap_start__[];
 extern uintptr_t __heap_end__[];

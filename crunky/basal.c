@@ -31,12 +31,6 @@ char* strcpy(char* dest, const char* src)
 	return ret;
 }
 
-void *memcpy(void *dest, const void *src, size_t n)
-{
-	char *d = dest;
-	while(n--) *d++ = *(char*)src++;
-	return dest;
-}
 
 /* Note that this is a seriously underspecified implementation.
  * You can't free memory, for example

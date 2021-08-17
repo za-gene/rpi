@@ -6,7 +6,7 @@ VPATH = ../pico # need for fat32
 VEC_O = $(CRUNKY)/vectors.o
 
 CR_OBJS = basal.o interrupts.o gpio.o \
-	  mbox.o memory.o mini_uart.o \
+	  mbox.o mini_uart.o \
 	  uart0.o 
 
 CR_OBJS += lfb.o font.psf.o
@@ -20,6 +20,8 @@ CR_OBJS += tinyprintf.o
 CR_OBJS += fat32.o
 CR_OBJS += sdcard-rpi.o
 CR_OBJS += crc8.o
+
+CR_OBJS += string.o
 
 
 CR_LIB = libcrunky.a
