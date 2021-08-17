@@ -38,8 +38,12 @@ void put32 (u32, u32);
 u32 get32 (u32);
 int newline(void);
 
-#define GPU_MEM_BASE  0xC0000000 // L2 cache disabled, depending on Pi
-// 0x40000000 on the Pi Zero, Pi Zero W, and the first generation of the Raspberry Pi 
+#if (RPI == 0) || (RPI == 1)
+#define GPU_MEM_BASE  (uint32_t)0x40000000
+#else
+#define GPU_MEM_BASE  (uint32_t)0xC0000000 // L2 cache disabled, depending on Pi
+#endif
+
 
 #define REG(addr) (*(volatile u32*)(addr))
 
