@@ -36,8 +36,11 @@ typedef struct {
 #define DMA_BASE 0x7E007000 // ?? At least that's what BCM2835 docs says
 //#define DMA_BASE 0x007000 
 
+// see pages 47 and 58
+#define DMA_INT_STATUS 	REG(DMA_BASE+0xFE0)
+#define DMA_ENABLE 	REG(DMA_BASE+0xFF0)
+
 /* DMA CS Control and Status bits */
-#define DMA_ENABLE (0xFF0 / 4)
 #define DMA_CHANNEL_RESET (1 << 31)
 #define DMA_CHANNEL_ABORT (1 << 30)
 #define DMA_WAIT_ON_WRITES (1 << 28)
@@ -75,9 +78,11 @@ void kernel_main(void)
 
 	char dest[size];
 	dest[0] = 0;
+	
 
 	//goto skip;
 	const int dma_channel = 0;
+	DMA_ENABLE |= (1<<dma_channel);
 	//volatile dma_cb_t *cb = (volatile dma_cb_t*)(DMA_BASE +0x8 +dma_channel * 0x100); // but channel 15 is special
 	volatile dma_cb_t cb;
 	//dma_cb_t cb;
@@ -100,6 +105,7 @@ void kernel_main(void)
 	cr->cs = DMA_INTERRUPT_STATUS | DMA_END_FLAG;
 	// now enable it
 	cr->cb_addr = DMA_PHYS_TO_BUS(&cb);
+	cr->cb_addr = (uint32_t)&cb;
 	//cr->cb_addr = &cb;
 	cr->cs |= DMA_WAIT_ON_WRITES | DMA_ACTIVE;
 
