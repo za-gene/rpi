@@ -25,6 +25,17 @@ aarch64-linux-gnu-objdump -D kernel8.elf | less
 arm-none-eabi-objdump -D kernel.elf 
 ```
 
+## ctype headers
+
+Including the standard `ctype.h` header give wierd errors about
+```
+kernel.c:(.text+0x98): undefined reference to `_ctype_'
+
+```
+
+Include the `ctype1.h` library instead.
+
+
 ## FAT32 and SD
 
 Adapted from https://github.com/bztsrc/raspi3-tutorial

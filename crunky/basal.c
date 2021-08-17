@@ -3,10 +3,22 @@
 #include <stdio.h>
 
 #include <basal.h>
+
 //#include <tinyprintf.h>
 
 
 const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
+
+int islower(int c)
+{
+	return (('a' <= c ) && (c <= 'z'));
+}
+
+
+int isupper(int c)
+{
+	return (('A' <= c ) && (c <= 'Z'));
+}
 
 
 
