@@ -24,8 +24,8 @@ bool file32_is_canonical(const char *filename)
 
 	while(*filename) {
 		char c = *filename;
-		if(!((char)isupper(c) || c == ' ')) return false;;
-		*filename++;
+		if(!(isupper(c) || c == ' ')) return false;;
+		filename++;
 	}
 	return true;
 }
@@ -35,7 +35,10 @@ uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found)
 	fat32_init();
 	file32_t file;
 	char cooked_name[12];
-	canfile(cooked_name, filename);
+	if(file32_is_canonical(filename))
+		strcpy(cooked_name, filename);
+	else
+		canfile(cooked_name, filename);
 	file32_init(&file, cooked_name);
 	*len = file32_size(&file);
 	return malloc(*len);
