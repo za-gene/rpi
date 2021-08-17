@@ -51,6 +51,7 @@ unsigned char *lfb;                         /* raw frame buffer address */
 int g_x =0, g_y = 0; // cursor position in terms of pixels
 int bytesperline;
 
+/*
 unsigned int lfb_pitch() { return pitch; }
 unsigned char* lfb_buffer() { return lfb; }
 unsigned int lfb_width() { return width; }
@@ -62,9 +63,29 @@ int lfb_num_chars_in_col () { return lfb_width() / font->width; }
 int lfb_num_chars_in_row () { return lfb_height() / font->height; }
 int lfb_font_height () { return font->height; }
 int lfb_font_width () { return font->width; }
+*/
+
+#define pinfo(x) printf(#x " = %d\n", x)
+
+void lfb_print_info(void)
+{
+	pinfo(width);
+	pinfo(height);
+	pinfo(pitch);
+	pinfo(bytesperline);
+
+	if(font) {
+		pinfo(font->bytesperglyph);
+		pinfo(font->height);
+		pinfo(font->width);
+	}
+}
+
+
+
 
 #define WIDTH 1920
-#define HEIGHT 1080
+#define HEIGHT 1080 // 2021-08-17 confirmed correct
 void lfb_init()
 {
 	font = (psf_t*)&_binary_font_psf_start;
@@ -193,7 +214,7 @@ void fbprint(char* str)
 		fbputchar(*str++);
 }
 
-void fbnewline()
+void fbnewline (void)
 {
 	//fbprint("\n");
 	int fh = font->height;

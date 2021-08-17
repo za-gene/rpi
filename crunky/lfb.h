@@ -36,7 +36,10 @@ void lfb_proprint(int x, int y, char *s);
 int fbputchar(int c);
 void fbprint(char* str);
 int fbputs(char* str);
-void fbnewline();
+void fbnewline(void);
+void lfb_print_info(void);
+
+
 unsigned int lfb_pitch();
 unsigned char* lfb_buffer();
 unsigned int lfb_width();
