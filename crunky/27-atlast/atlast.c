@@ -587,7 +587,8 @@ static char *alloc(unsigned int size)
 
 	/* printf("\nAlloc %u", size); */
 	if (cp == NULL) {
-		V fprintf(stderr, "\n\nOut of memory!  %u bytes requested.\n", size);
+		//V fprintf(stderr, "\n\nOut of memory!  %u bytes requested.\n", size);
+		V printf("\n\nOut of memory!  %u bytes requested.\n", size);
 		abort();
 	}
 	return cp;
@@ -595,8 +596,15 @@ static char *alloc(unsigned int size)
 
 /*  UCASE  --  Force letters in string to upper case.  */
 
-static void ucase(char* c)
+static void ucase(char* s)
 {
+	// mcarter 2021-08-17 changed the code a bit to eliminate "undefined reference to `_ctype_'"
+#if 1
+	while(*s){
+		if(('a' <= *s) && (*s <= 'z'))  *s -= 32;
+		s++;
+	}
+#else
 	char ch;
 
 	while ((ch = *c) != EOS) {
@@ -604,6 +612,7 @@ static void ucase(char* c)
 			*c = toupper(ch);
 		c++;
 	}
+#endif
 }
 
 /*  TOKEN  --  Scan a token and return its type.  */

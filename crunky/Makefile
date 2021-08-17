@@ -21,7 +21,9 @@ CR_OBJS += fat32.o
 CR_OBJS += sdcard-rpi.o
 CR_OBJS += crc8.o
 
-CR_OBJS += string.o
+
+# C-Lib
+CR_OBJS += stdlib.o string.o
 
 
 CR_LIB = libcrunky.a

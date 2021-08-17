@@ -1,7 +1,57 @@
 #include <stdint.h>
 #include <memory.h>
 
+/*
+ * source:
+ * https://stackoverflow.com/questions/14367727/how-does-strchr-implementation-work
+ */
+char *strchr(const char *s, int c) 
+{
+	while (*s != (char) c) {
+		if (!*s++) {
+			return NULL;
+		}
+	}
+	return (char *)s;
+}
 
+
+/*
+ * source:
+ * https://stackoverflow.com/questions/34873209/implementation-of-strcmp
+ */
+int strcmp(const char *s1, const char *s2 )
+{
+	int i = 0;
+	int flag = 0;
+	while (flag == 0)
+	{
+		if (s1[i] > s2[i])
+		{
+			flag = 1;
+		}
+		else if (s1[i] < s2[i])
+		{
+			flag = -1;
+		}
+
+		if (s1[i] == '\0')
+		{
+			break;
+		}
+
+		i++;
+	}
+	return flag;
+}
+
+
+size_t strlen(const char *s)
+{
+	size_t n = 0;
+	while(*s) n++;
+	return n;
+}
 
 void *memcpy(void *dest, const void *src, size_t n)
 {
@@ -47,10 +97,10 @@ extern uintptr_t __bss_end__[];
 /* Zero the BSS section 4-bytes at a time */
 void zero_bss(void)
 {
-    uint32_t *memloc = (uint32_t*)__bss_start__;
+	uint32_t *memloc = (uint32_t*)__bss_start__;
 
-    while (memloc < (uint32_t*)__bss_end__)
-        *memloc++ = 0;
+	while (memloc < (uint32_t*)__bss_end__)
+		*memloc++ = 0;
 }
 
 

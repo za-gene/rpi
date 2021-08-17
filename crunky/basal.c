@@ -43,6 +43,10 @@ void *malloc(size_t size)
 	return addr;
 }
 
+void free(void *ptr)
+{
+	// distinctly lacking!
+}
 
 /* taken from
  * https://stackoverflow.com/questions/32560167/strncmp-implementation
@@ -213,5 +217,9 @@ int __aeabi_idiv(int value, int divisor)
 	return __aeabi_uidivmod(value, divisor);
 }
 
+int __aeabi_idivmod(int value, int divisor)
+{
+	return value - (value/divisor)*divisor;
+}
 
 #endif
