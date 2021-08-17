@@ -34,7 +34,7 @@ typedef struct {
 
 
 #define DMA_BASE 0x7E007000 // ?? At least that's what BCM2835 docs says
-//#define DMA_BASE 0x007000 // ?? At least that's what BCM2835 docs says
+//#define DMA_BASE 0x007000 
 
 /* DMA CS Control and Status bits */
 #define DMA_ENABLE (0xFF0 / 4)
@@ -61,7 +61,9 @@ typedef struct {
  * See basal.h for the DMA region
  */
 
-#define BUS_DMA_MEM(addr) ((uint32_t)addr | GPU_MEM_BASE)
+#define DMA_BUS_TO_PHYS(addr) ((uint32_t)(addr) & ~GPU_MEM_BASE)
+#define DMA_PHYS_TO_BUS(addr) ((uint32_t)(addr) | GPU_MEM_BASE)
+#define DMA_PERF_TO_BUS(x) ((uint32_t)(x) | 0x7E000000) // prolly for pi 3, not 0
 
 void kernel_main(void)
 {
@@ -74,14 +76,14 @@ void kernel_main(void)
 	char dest[size];
 	dest[0] = 0;
 
-//	goto skip;
+	//goto skip;
 	const int dma_channel = 0;
 	//volatile dma_cb_t *cb = (volatile dma_cb_t*)(DMA_BASE +0x8 +dma_channel * 0x100); // but channel 15 is special
 	volatile dma_cb_t cb;
 	//dma_cb_t cb;
 	cb.ti = DMA_CB_SRC_INC | DMA_CB_DEST_INC;
-	cb.src = BUS_DMA_MEM(src);
-	cb.dest = BUS_DMA_MEM(dest);
+	cb.src = DMA_PHYS_TO_BUS(src);
+	cb.dest = DMA_PHYS_TO_BUS(dest);
 	cb.tfr_len = size;
 	cb.stride = 0;
 	cb.next_cb = 0;
@@ -97,7 +99,7 @@ void kernel_main(void)
 	cr->cb_addr = 0;
 	cr->cs = DMA_INTERRUPT_STATUS | DMA_END_FLAG;
 	// now enable it
-	cr->cb_addr = (uint32_t)&cb;
+	cr->cb_addr = DMA_PHYS_TO_BUS(&cb);
 	//cr->cb_addr = &cb;
 	cr->cs |= DMA_WAIT_ON_WRITES | DMA_ACTIVE;
 
