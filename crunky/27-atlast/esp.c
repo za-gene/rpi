@@ -64,8 +64,7 @@ prim P_fclose()
 }
 
 void writeln(char *str) {
-	Serial.print(str);
-	P_cr();
+	serial_println(str);
 }
 
 char t[132];
@@ -75,9 +74,9 @@ int readln()
 	t[0] = 0;
 	int n = 0;
 	for (;;) {
-		if (Serial.available() > 0) {
-			int b = Serial.read();
-			if(b == '\r') {Serial.print('\r'); b = '\n'; }
+		if(serial_available() > 0) {
+			int b = serial_read();
+			if(b == '\r') {serial_newline(); b = '\n'; }
 			t[n++] = b;
 			if (b == '\n') goto eoi;
 		}
@@ -106,7 +105,7 @@ void setup() {
 		if (readln() != 0) {
 			V atl_eval(t);      
 		}
-		V writeln("\n  ok");
+		V serial_println("\n  ok");
 	}
 }
 
