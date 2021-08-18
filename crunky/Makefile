@@ -23,7 +23,7 @@ CR_OBJS += crc8.o
 
 
 # C-Lib
-CR_OBJS += ctype.o stdlib.o string.o
+CR_OBJS += ctype.o stdlib.o string.o strtoul.o
 
 
 CR_LIB = libcrunky.a

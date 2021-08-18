@@ -8,6 +8,7 @@
 
 
 const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock freq. Pi 3
+int __errno = 0;
 
 
 
