@@ -1,5 +1,6 @@
 /* infrastructural support */
 
+#include <limits.h> // needed for INT_MAX
 #include <stdio.h>
 
 #include <basal.h>
@@ -156,6 +157,17 @@ int puts(const char *s)
 	return 1;
 }
 
+
+
+/*
+ * Source:
+ * https://github.com/torvalds/linux/blob/master/lib/vsprintf.c
+ */
+int vsprintf(char *str, const char *format, va_list ap)
+{
+	//char scratch[218];
+	return vsnprintf(str, INT_MAX, format, ap);
+}
 
 
 ///////////////////////////////////////////////////////////////////////

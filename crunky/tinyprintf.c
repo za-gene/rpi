@@ -454,6 +454,7 @@ int printf(const char *fmt, ...)
 }
 #endif
 
+#define TINYPRINTF_DEFINE_TFP_SPRINTF 1
 #if TINYPRINTF_DEFINE_TFP_SPRINTF
 struct _vsnprintf_putcf_data
 {
@@ -470,7 +471,7 @@ static void _vsnprintf_putcf(void *p, char c)
 	data->num_chars ++;
 }
 
-int tfp_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+int vsnprintf(char *str, size_t size, const char *format, va_list ap)
 {
 	struct _vsnprintf_putcf_data data;
 
@@ -490,7 +491,7 @@ int tfp_vsnprintf(char *str, size_t size, const char *format, va_list ap)
 	return data.num_chars;
 }
 
-int tfp_snprintf(char *str, size_t size, const char *format, ...)
+int snprintf(char *str, size_t size, const char *format, ...)
 {
 	va_list ap;
 	int retval;
