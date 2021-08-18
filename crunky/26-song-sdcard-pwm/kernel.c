@@ -18,6 +18,7 @@
 uint8_t* song;
 uint32_t len;
 
+#if 0
 bool file32_is_canonical(const char *filename)
 {
 	if(strlen(filename) != 11) return false;
@@ -59,6 +60,7 @@ uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found)
 	while(file32_read(&file, data + offset)) offset += 512;
 	return data;
 }
+#endif
 
 void test1(void)
 {

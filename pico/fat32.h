@@ -50,22 +50,6 @@ void dir32_init_root(dir32_t* dir);
 bool dir32_read(dir32_t* dir, bds_t* bds);
 bool dir32_find(bds_t* bds, const char* canfile);
 
-/*
-class Dir
-{
-	public:
-		Dir(); 
-		Dir(uint32_t dir_cluster);
-		bool read(bds_t& bds);
-	private:
-		bds_t bdss[16];
-		void init_cluster(uint32_t dir_cluster);
-		static_assert(sizeof(bdss) == 512);
-		int sector_block_num = 0;
-		int i = 0;
-		uint32_t m_fat_cluster;
-};
-*/
 
 typedef struct {
 	bool m_found;
@@ -82,14 +66,18 @@ bool file32_found(file32_t* file);
 int file32_read(file32_t* file, uint8_t block[512]);
 void file32_type(const char* rawfilename);
 uint32_t file32_size(file32_t* file);
+bool file32_is_canonical(const char *filename);
+uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found);
 
 void fat32_init(void);
 void fat32_type_partition_table(void);
 void fat32_deinit(void);
 void fat32_list_root(void);
+void fat32_soft_init(void);
 uint32_t type_cluster(uint32_t cluster, uint32_t max_num_bytes);
 uint32_t next_cluster (uint32_t cluster);
 void canfile(char dst[12], const char* src);
+
 
 #ifdef __cplusplus
 }
