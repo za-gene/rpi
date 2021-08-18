@@ -47,7 +47,7 @@
 #define MEMMESSAGE		      /* Print message for stack/heap errors */
 #define PROLOGUE		      /* Prologue processing and auto-init */
 #define PROLOGUEDEBUG
-#define REAL			      /* Floating point numbers */
+//#define REAL			      /* Floating point numbers */
 #define SHORTCUTA		      /* Shortcut integer arithmetic words */
 #define SHORTCUTC		      /* Shortcut integer comparison */
 //#define STRING			      /* String functions */
@@ -3993,6 +3993,7 @@ int atl_prologue(char *sp)
 		{"TEMPSTRN ", &atl_ntempstr}
 	};
 
+#if 0 // what does this do, anyway?
 	if (strncmp(sp, "\\ *", 3) == 0) {
 		int i;
 		char *vp = sp + 3, *ap;
@@ -4012,6 +4013,7 @@ int atl_prologue(char *sp)
 			}
 		}
 	}
+#endif
 	//dmsg("prologue", "0");
 	return 0;
 }
