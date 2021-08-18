@@ -49,7 +49,7 @@ int strcmp(const char *s1, const char *s2 )
 size_t strlen(const char *s)
 {
 	size_t n = 0;
-	while(*s) n++;
+	while(*s++) n++;
 	return n;
 }
 

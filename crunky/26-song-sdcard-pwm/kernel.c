@@ -30,9 +30,20 @@ bool file32_is_canonical(const char *filename)
 	return true;
 }
 
+bool fats32_initialised = false;
+
+void fat32_soft_init(void)
+{
+	if(fats32_initialised) return;
+	fats32_initialised = true;
+	fat32_init();
+}
+
 uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found)
 {
-	fat32_init();
+	*len = 0;
+	*found = false;
+	fat32_soft_init();
 	file32_t file;
 	char cooked_name[12];
 	if(file32_is_canonical(filename))
@@ -40,14 +51,58 @@ uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found)
 	else
 		canfile(cooked_name, filename);
 	file32_init(&file, cooked_name);
+	*found = file32_found(&file);
+	if(!*found) return 0;
 	*len = file32_size(&file);
-	return malloc(*len);
+	char* data = malloc(*len);
+	size_t offset = 0;
+	while(file32_read(&file, data + offset)) offset += 512;
+	return data;
 }
 
+void test1(void)
+{
+	bool found;
+
+	printf("strlen=%d\n", strlen("foo"));
+	void test(const char *name) {
+		printf("%s:%c\n", name, file32_is_canonical(name) ? 'y' : 'n');
+	}
+
+	test("readme.txt");
+	test("README  TXT");
+	test("REA.ME  TXT");
+
+
+	void print(char* data, size_t len)
+	{
+		for(size_t i = 0; i< len; i++)
+			putchar(*(data+i));
+	}
+	//uint8_t* foo1 = file32_slurp("lorem.txt", &len, &found);
+	uint8_t* foo1 = file32_slurp("readme.txt", &len, &found);
+	//uint8_t* foo1 = file32_slurp("LOREM   TXT", &len, &found);
+	printf("found?%c\n", found? 'y' : 'n');
+	print(foo1, len);
+
+	uint8_t* foo2 = file32_slurp("readme.txt", &len, &found);
+	printf("found?%c\n", found? 'y' : 'n');
+	print(foo2, len);
+
+	uint8_t* foo3 = file32_slurp("yuk.txt", &len, &found);
+	printf("found?%c\n", found? 'y' : 'n');
+	print(foo2, len);
+	
+	puts("bye");
+
+
+	return;
+
+
+}
 void kernel_main(void)
 {
 	puts("\nPlaying song with PWM audio");
-
 	bool found;
 	song = file32_slurp("song.raw", &len, &found);
 	printf("Song %s\n", found ? "found" : "unfound");

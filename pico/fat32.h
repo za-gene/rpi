@@ -83,24 +83,6 @@ int file32_read(file32_t* file, uint8_t block[512]);
 void file32_type(const char* rawfilename);
 uint32_t file32_size(file32_t* file);
 
-
-/*
-class File {
-	public:
-		File(const char filename[12]);
-		int read(uint8_t sector_block[512]);
-		bool found();
-		void seek0(void);
-		uint32_t size(void);
-	private:
-		bool m_found = false;
-		uint32_t num_bytes_unread = 0;
-		uint32_t cluster, blocks_per_cluster;
-		uint32_t blockn = 0;
-		bds_t m_bds0; // info about the start of the file
-};
-*/
-
 void fat32_init(void);
 void fat32_type_partition_table(void);
 void fat32_deinit(void);
