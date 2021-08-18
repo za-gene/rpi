@@ -1,5 +1,18 @@
 #include <ctype.h>
 
+int isspace(int c)
+{
+	if((c == '\f') || (c == '\n') || (c == '\r') || (c == '\t') || (c == '\v'))
+		return 1;
+	else
+		return 0;
+}
+
+int isdigit(int c)
+{
+	return (('0' <=c) && (c<='9'));
+}
+
 
 int toupper(int c)
 {
