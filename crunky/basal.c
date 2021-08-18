@@ -11,6 +11,21 @@ const u32 apb_clock_freq = 250000000; // 250MHz Advanced Peripheral Bus clock fr
 
 
 
+/** setup stuff that gets called before your kernel
+ */
+
+extern void zero_bss(void);
+extern void uart0_init_as_stdio(void);
+extern void bcm2835_init(void);
+
+void premain(void)
+{
+	zero_bss();
+	uart0_init_as_stdio();
+	bcm2835_init();
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // MEMORY STUFF
 

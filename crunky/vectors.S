@@ -68,9 +68,8 @@ reset:
     ;@mov r0,#0x53
     ;@msr cpsr_c, r0
     
-    bl zero_bss
-	bl uart0_init_as_stdio
-    bl kernel_main
+	bl premain
+	bl kernel_main
 hang: b hang
 
 .globl put32

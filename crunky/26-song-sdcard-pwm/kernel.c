@@ -18,49 +18,6 @@
 uint8_t* song;
 uint32_t len;
 
-#if 0
-bool file32_is_canonical(const char *filename)
-{
-	if(strlen(filename) != 11) return false;
-
-	while(*filename) {
-		char c = *filename;
-		if(!(isupper(c) || c == ' ')) return false;;
-		filename++;
-	}
-	return true;
-}
-
-bool fats32_initialised = false;
-
-void fat32_soft_init(void)
-{
-	if(fats32_initialised) return;
-	fats32_initialised = true;
-	fat32_init();
-}
-
-uint8_t* file32_slurp(const char *filename, uint32_t *len, bool *found)
-{
-	*len = 0;
-	*found = false;
-	fat32_soft_init();
-	file32_t file;
-	char cooked_name[12];
-	if(file32_is_canonical(filename))
-		strcpy(cooked_name, filename);
-	else
-		canfile(cooked_name, filename);
-	file32_init(&file, cooked_name);
-	*found = file32_found(&file);
-	if(!*found) return 0;
-	*len = file32_size(&file);
-	char* data = malloc(*len);
-	size_t offset = 0;
-	while(file32_read(&file, data + offset)) offset += 512;
-	return data;
-}
-#endif
 
 void test1(void)
 {
@@ -110,9 +67,6 @@ void kernel_main(void)
 	printf("Song %s\n", found ? "found" : "unfound");
 	assert(song);
 
-
-
-	bcm2835_init();
 
 	// Set the output pin to Alt Fun 5, to allow PWM channel 0 to be output there
 	bcm2835_gpio_fsel(PIN, BCM2835_GPIO_FSEL_ALT5);
