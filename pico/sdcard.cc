@@ -163,6 +163,7 @@ int CMD_T1(int cmd, int arg, int crc)
 	return status;
 }
 
+// NB the len is only ever of size 4
 int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 {
 	Trans t;
