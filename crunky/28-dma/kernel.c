@@ -23,7 +23,7 @@ typedef struct {
     uint32_t cb_addr; // DMA Channel Control Block Address
 } dma_cr_t;
 
-
+/*
 // DMA Memory Handle
 typedef struct {
     void *virtual_addr; // Virutal base address of the page
@@ -31,9 +31,16 @@ typedef struct {
     uint32_t mb_handle; // Used by mailbox property interface
     uint32_t size;
 } dma_mh_t;
+*/
 
 
-#define DMA_BASE 0x7E007000 // ?? At least that's what BCM2835 docs says
+/* According to:
+ * https://github.com/AZO234/RaspberryPi_BareMetal/blob/master/rp_framebuffer_dma1/rp_baremetal.h
+ * which seems correct
+ */
+#define DMA_BASE (PBASE+0x7000) 
+// The following settings appear to be wrong
+//#define DMA_BASE 0x7E007000 // ?? At least that's what BCM2835 docs says
 //#define DMA_BASE 0x007000 
 
 // see pages 47 and 58
@@ -70,7 +77,7 @@ typedef struct {
 
 void kernel_main(void)
 {
-	puts("DMA test: currently fails");
+	puts("\nDMA test: memory to memory");
 
 	char src[] = "hello";
 	int size = sizeof(src);
@@ -84,11 +91,13 @@ void kernel_main(void)
 	const int dma_channel = 0;
 	DMA_ENABLE |= (1<<dma_channel);
 	//volatile dma_cb_t *cb = (volatile dma_cb_t*)(DMA_BASE +0x8 +dma_channel * 0x100); // but channel 15 is special
-	volatile dma_cb_t cb;
+	volatile __attribute__ ((aligned (32)))  dma_cb_t cb;
 	//dma_cb_t cb;
 	cb.ti = DMA_CB_SRC_INC | DMA_CB_DEST_INC;
 	cb.src = DMA_PHYS_TO_BUS(src);
+	//cb.src = src;
 	cb.dest = DMA_PHYS_TO_BUS(dest);
+	//cb.dest = dest;
 	cb.tfr_len = size;
 	cb.stride = 0;
 	cb.next_cb = 0;
@@ -104,13 +113,17 @@ void kernel_main(void)
 	cr->cb_addr = 0;
 	cr->cs = DMA_INTERRUPT_STATUS | DMA_END_FLAG;
 	// now enable it
-	cr->cb_addr = DMA_PHYS_TO_BUS(&cb);
+	//cr->cb_addr = DMA_PHYS_TO_BUS(&cb);
 	cr->cb_addr = (uint32_t)&cb;
 	//cr->cb_addr = &cb;
-	cr->cs |= DMA_WAIT_ON_WRITES | DMA_ACTIVE;
+	//cr->cs |= DMA_WAIT_ON_WRITES | DMA_ACTIVE;
+	cr->cs = 0x1;
 
-skip:
-	delay_ms(250);
+//skip:
+	//delay_ms(250);
+	while((cr->cs & 0x2) == 0); // wait for transfer complete
+	cr->cs = 0x2; // clear end of transfer
+
 	printf("dest=%s\n", dest);
 	puts("that's all folks");
 
