@@ -53,7 +53,7 @@ size_t strlen(const char *s)
 	return n;
 }
 
-void *memcpy(void *dest, const void *src, size_t n)
+void __attribute__((optimize("O3"))) *memcpy(void *dest, const void *src, size_t n)
 {
 #if 0 // GCC builtin doesn't seem to work
 	return __builtin_memcpy(dest, src, n);

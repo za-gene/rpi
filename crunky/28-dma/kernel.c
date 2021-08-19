@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 #include <gpio.h>
 #include <stdio.h>
 #include <timers.h>
@@ -75,18 +78,15 @@ typedef struct {
 #define DMA_PHYS_TO_BUS(addr) ((uint32_t)(addr) | GPU_MEM_BASE)
 #define DMA_PERF_TO_BUS(x) ((uint32_t)(x) | 0x7E000000) // prolly for pi 3, not 0
 
-void kernel_main(void)
+void time_transfer(char* dest, char* src, size_t size)
 {
-	puts("\nDMA test: memory to memory");
+	printf("* time_transfer size %d\n", size);
 
-	char src[] = "hello";
-	int size = sizeof(src);
-	printf("size = %d\n", size);
+	hare_start("using memcpy");
+	memcpy(dest, src, size);
+	hare_stop();
 
-	char dest[size];
-	dest[0] = 0;
-	
-
+	hare_start("Using DMA");
 	//goto skip;
 	const int dma_channel = 0;
 	DMA_ENABLE |= (1<<dma_channel);
@@ -123,12 +123,32 @@ void kernel_main(void)
 	//delay_ms(250);
 	while((cr->cs & 0x2) == 0); // wait for transfer complete
 	cr->cs = 0x2; // clear end of transfer
+	hare_stop();
+}
 
+void kernel_main(void)
+{
+	puts("\nDMA test: memory to memory");
+
+	char src[] = "hello";
+	int size = sizeof(src);
+	printf("size = %d\n", size);
+
+	char dest[size];
+	dest[0] = 0;
+	
+	time_transfer(dest, src, size);
 	printf("dest=%s\n", dest);
+
+	const int large = 1000000; // 1MB
+	uint8_t* dest1 = malloc(large);
+	assert(dest1);
+	uint8_t* src1 = malloc(large);
+	assert(src1);
+	time_transfer(dest1, src1, large);
+
+
 	puts("that's all folks");
-
-
-
 
 
 	const int bcm_pin = 26;
