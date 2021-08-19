@@ -107,7 +107,10 @@ void fat32_init (void)
 	//ptable_t part_tab;
 	memcpy(part_tab, block + 0x1BE, sizeof(ptable_t));
 	//dump_partition(part_tab);
-	assert(part_tab[0].sid == 0x0b); // need first partition to be W95 FAT32
+	/* partition type 0xb (W95 FAT32) is know to work. Not sure about sid 0xc  - actually think it doesn't work*/
+	uint8_t sid = part_tab[0].sid;
+	assert(sid == 0x0b);
+	assert((sid == 0x0b) || (sid == 0x0c)); // need first partition to be W95 FAT32
 	//puts("Partition layout as expected");
 
 
@@ -227,32 +230,6 @@ bool dir32_read(dir32_t* dir, bds_t* bds)
 	}
 }
 
-#if 0
-bool Dir::read(bds_t& bds) 
-{
-	while(1) {
-		/* there's something about bits 7-31 of the current cluster tells
-		 * you which sectors to read from the FAT, and bits 0-6 tell you which
-		 * of the 128 integers in that sector is the number of the next cluster
-		 * of the file (or if all ones, that the current cluster is the last).
-		 * Not really sure what all that means, so I'm ignoring as at 2021-08-10
-		 */
-		if(i==16)  {
-			// next sector
-			sector_block_num++;
-			if(sector_block_num == sectors_per_cluster) return false; // TODO should read another cluster
-			readablock(m_fat_cluster + sector_block_num, (uint8_t*) bdss);
-			i = 0;
-		}
-		bds = bdss[i++];
-		uint8_t type = bds.name[0]; // first byte determines validity
-		if(type == 0xE5) continue; // skip entry. It is an empty slot
-		if(bds.attr & 0b10) continue; // skip hidden. LFNs are hidden
-		if(type == 0) return false;
-		return true;
-	}
-}
-#endif
 
 bool dir32_find(bds_t* bds, const char* canfile)
 {
@@ -266,38 +243,23 @@ bool dir32_find(bds_t* bds, const char* canfile)
 	return false;
 }
 
-/*
-bool find(bds_t& bds, const char* outfile)
-{
-	Dir dir;
-	while(dir.read(bds)) {
-		if(strncmp(outfile,  bds.name,11)==0)
-			return true;
-	}
-	return false;
-}
-*/
 
-void file32_init (file32_t* file, const char canfile[12])
+void file32_init (file32_t* file, const char *filename)
 {
+        char cooked_name[12];
+        if(file32_is_canonical(filename))
+                strcpy(cooked_name, filename);
+        else
+                canfile(cooked_name, filename);
+
 	file->num_bytes_unread = 0;
 	file->blockn = 0;
-	file->m_found = dir32_find(&(file->m_bds0), canfile);
+	file->m_found = dir32_find(&(file->m_bds0), cooked_name);
 	if(!file->m_found) return;
 	file32_seek0(file);
 	file->blocks_per_cluster = bytes_per_cluster/512;
 }
 
-/*
-File::File(const char filename[12])
-{
-	//bds_t bds0;
-	m_found = find(m_bds0, filename);
-	if(!m_found) return;
-	seek0();
-	blocks_per_cluster = bytes_per_cluster/512;
-}
-*/
 
 // reset to beginning
 void file32_seek0(file32_t* file)
@@ -312,27 +274,12 @@ uint32_t file32_size(file32_t* file)
 	return file->m_bds0.size;
 }
 
-/*
-// reset to beginning
-void File::seek0(void)
-{
-	num_bytes_unread = m_bds0.size;
-	cluster = m_bds0.fcl;
-	blockn = 0;
-}
-*/
 
 bool file32_found(file32_t* file)
 {
 	return file->m_found;
 }
 
-/*
-bool File::found()
-{
-	return m_found;
-}
-*/
 
 int file32_read(file32_t* file, uint8_t block[512])
 {

@@ -309,7 +309,7 @@ int block_cmd(int cmd, int blocknum, u8 block[512])
 	return 0;
 }
 
-int readablock (int blocknum, u8 block[512])
+extern "C" int readablock (int blocknum, u8 block[512])
 {
 	if(block_cmd(17, blocknum, block) != 0)
 		return SDBLOCK;
@@ -353,7 +353,7 @@ void test_crc()
 	printf("test_crc end\n");
 }
 
-void sdcard_init(void)
+extern "C" void sdcard_init(void)
 {
 	init_card();
 }

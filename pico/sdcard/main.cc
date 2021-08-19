@@ -1,5 +1,5 @@
 /* File released into the Public Domain. Fill yer boots ;)
- */
+*/
 
 #include <stdio.h>
 #include <string.h>
@@ -36,6 +36,7 @@ volatile signed char refill = 0; // the block that needs to be refilled
 unsigned int slice_num; // determined in play_music()
 constexpr auto isr_multiplier = 1; // speed-up the timer to avoid audible clicks. doesn't help, though.
 
+//#define USE_PWM
 #ifdef USE_PWM
 
 void onTimer(void)
@@ -71,12 +72,12 @@ void sound_set_level()
 	uint8_t vol = *(dbuf + 512*playing + bidx++);
 	uint16_t vol16 = ((uint16_t) vol ) << 4;
 	mcp4921_dma_put(vol16);
-        if(bidx>=512) {
-                bidx = 0;
-                refill = playing;
-                playing = 1-playing;
-                //printf("refill = %d\n", refill
-        }
+	if(bidx>=512) {
+		bidx = 0;
+		refill = playing;
+		playing = 1-playing;
+		//printf("refill = %d\n", refill
+	}
 
 	//printf("Alarm IRQ fired %d\n", i++);
 }
@@ -96,10 +97,9 @@ void play_song()
 {
 	char filename[] = "song.raw";
 	printf("PLAY FILE: %s\n", filename);
-	char outfile[12];
-	canfile(outfile, filename);
-	File file(outfile);
-	if(!file.found()) {
+	file32_t file;
+	file32_init(&file, filename);
+	if(!file32_found(&file)) {
 		printf("ERR: file not found: %s\n", filename);
 		return;
 	}
@@ -114,8 +114,8 @@ void play_song()
 		if(refilled == _refill) continue;
 		auto dst = dbuf + 512*_refill;
 		memset(dst, 0, 512);
-		int n = file.read(dst);
-		if(n<512) file.seek0(); // repeat the song
+		int n = file32_read(&file, dst);
+		if(n<512) file32_seek0(&file); // repeat the song
 		refilled = _refill;
 	}
 }
@@ -123,16 +123,16 @@ void play_song()
 
 ////////////////////////////////////////////////////////////////////////////
 
+
 void type_file(const char* filename)
 {
 	printf("TYPE FILE: %s\n", filename);
-	char outfile[12];
-	canfile(outfile, filename);
-	File file(outfile);
-	if(!file.found()) 
+	file32_t file;
+	file32_init(&file, filename);
+	if(!file32_found(&file)) 
 		printf("ERR: file not found: %s\n", filename);
 	uint8_t block[512];
-	while(int n = file.read(block)) {
+	while(int n = file32_read(&file, block)) {
 		for(int i = 0; i< n; i++) putchar(block[i]);
 	}
 }
@@ -148,7 +148,7 @@ int main()
 
 	play_song();
 
-	
+
 	printf("sd card 5\n");
 
 #define BTN  14 // GPIO number, not physical pin

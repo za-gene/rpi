@@ -7,9 +7,9 @@ add_library(pi INTERFACE)
 
 target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/blinkt.cc
-	${CMAKE_CURRENT_LIST_DIR}/crc8.cc
+	${CMAKE_CURRENT_LIST_DIR}/crc8.c
 	${CMAKE_CURRENT_LIST_DIR}/debounce.cc
-	${CMAKE_CURRENT_LIST_DIR}/fat32.cc
+	${CMAKE_CURRENT_LIST_DIR}/fat32.c
 	${CMAKE_CURRENT_LIST_DIR}/ledmat.cc
 	${CMAKE_CURRENT_LIST_DIR}/mcp4921-dma.cc
 	${CMAKE_CURRENT_LIST_DIR}/notes.c
