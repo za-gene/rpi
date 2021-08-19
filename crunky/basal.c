@@ -2,6 +2,7 @@
 
 #include <limits.h> // needed for INT_MAX
 #include <stdio.h>
+#include <stdarg.h>
 
 #include <basal.h>
 
@@ -14,7 +15,7 @@ int __errno = 0;
 
 
 /** setup stuff that gets called before your kernel
- */
+*/
 
 extern void zero_bss(void);
 extern void uart0_init_as_stdio(void);
@@ -49,6 +50,21 @@ char* strcpy(char* dest, const char* src)
 	return ret;
 }
 
+
+/*
+ * source:
+ * https://stackoverflow.com/questions/2488563/strcat-implementation
+ */
+char *strcat(char *dest, const char *src)
+{
+	size_t i,j;
+	for (i = 0; dest[i] != '\0'; i++)
+		;
+	for (j = 0; src[j] != '\0'; j++)
+		dest[i+j] = src[j];
+	dest[i+j] = '\0';
+	return dest;
+}
 
 /* Note that this is a seriously underspecified implementation.
  * You can't free memory, for example
@@ -168,6 +184,18 @@ int vsprintf(char *str, const char *format, va_list ap)
 	//char scratch[218];
 	return vsnprintf(str, INT_MAX, format, ap);
 }
+
+
+int sprintf(char *str, const char *format, ...)
+{
+	int res;
+	va_list ap;
+	va_start(ap, format);
+	res= snprintf(str, INT_MAX, format, ap);
+	va_end(ap);
+	return res;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////

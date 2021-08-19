@@ -50,7 +50,7 @@
 //#define REAL			      /* Floating point numbers */
 #define SHORTCUTA		      /* Shortcut integer arithmetic words */
 #define SHORTCUTC		      /* Shortcut integer comparison */
-//#define STRING			      /* String functions */
+#define STRING			      /* String functions */
 //#define SYSTEM			      /* System command function */
 #ifndef NOMEMCHECK
 #define TRACE			      /* Execution tracing */
@@ -3211,9 +3211,9 @@ static struct primfcn primt[] = {
 	{"0STRFORM", P_strform},
 #ifdef REAL
 	{"0FSTRFORM", P_fstrform},
+	{"0STRREAL", P_strreal},
 #endif
 	{"0STRINT", P_strint},
-	{"0STRREAL", P_strreal},
 #endif /* STRING */
 
 #ifdef REAL
@@ -3649,7 +3649,9 @@ void atl_init()
 //#define Cconst(cell, name)  if((cell = (stackitem) lookup(name))==0)abort()
 		Cconst(s_exit, "EXIT");
 		Cconst(s_lit, "(LIT)");
+#ifdef REAL
 		Cconst(s_flit, "(FLIT)");
+#endif
 		Cconst(s_strlit, "(STRLIT)");
 		Cconst(s_dotparen, ".(");
 		Cconst(s_qbranch, "?BRANCH");
@@ -3764,6 +3766,8 @@ void atl_init()
 		}
 #endif /* FILEIO */
 
+
+#if 0
 		//init_arduino
 		// words for Arduino
 		char *arduino[] = {
@@ -3785,7 +3789,7 @@ void atl_init()
 			//P_evaluate();
 			line++;
 		}
-
+#endif
 
 
 
