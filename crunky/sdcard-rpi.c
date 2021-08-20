@@ -38,7 +38,7 @@
  * debugging, or else reading will fail
  */
 
-static int debug = 0;
+static int debug = 1;
 
 void wait_usec(int i)
 {
@@ -94,6 +94,10 @@ static void sd_uart_hex(unsigned int d)
 #define EMMC_INT_EN         ((volatile unsigned int*)(PBASE+0x00300038))
 #define EMMC_CONTROL2       ((volatile unsigned int*)(PBASE+0x0030003C))
 #define EMMC_SLOTISR_VER    ((volatile unsigned int*)(PBASE+0x003000FC))
+
+#define R1_IDLE_STATE 		(1<<0)
+#define R1_ILLEGAL_COMMAND	(1<<2)
+
 
 // command flags
 #define CMD_NEED_APP        0x80000000
@@ -225,8 +229,13 @@ int sd_int(unsigned int mask)
 	unsigned int r, m=mask | INT_ERROR_MASK;
 	int cnt = 1000000; while(!(*EMMC_INTERRUPT & m) && cnt--) wait_usec(1);
 	r=*EMMC_INTERRUPT;
-	if(cnt<=0 || (r & INT_CMD_TIMEOUT) || (r & INT_DATA_TIMEOUT) ) { *EMMC_INTERRUPT=r; return SD_TIMEOUT; } else
-		if(r & INT_ERROR_MASK) { *EMMC_INTERRUPT=r; return SD_ERROR; }
+	if(cnt<=0 || (r & INT_CMD_TIMEOUT) || (r & INT_DATA_TIMEOUT) ) { 
+		*EMMC_INTERRUPT=r; 
+		return SD_TIMEOUT; 
+	} else if(r & INT_ERROR_MASK) { 
+		*EMMC_INTERRUPT=r; 
+		return SD_ERROR; 
+	}
 	*EMMC_INTERRUPT=mask;
 	return 0;
 }
@@ -253,8 +262,12 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		return 0;
 	}
 	if(code==0x29020000) puts("EMMC: this printf statement needs to be here"); // or it won't work
-	sd_uart_puts("EMMC: Sending command 0x%x (%s), arg 0x%x\n", code, describe_cmd(code), arg);
-	*EMMC_INTERRUPT=*EMMC_INTERRUPT; EMMC_ARG1=arg; EMMC_CMDTM=code;
+	if(code != CMD_READ_SINGLE)
+		sd_uart_puts("EMMC: Sending command 0x%x (%s), arg 0x%x\n", code, describe_cmd(code), arg);
+	//*EMMC_INTERRUPT=*EMMC_INTERRUPT; 
+	*EMMC_INTERRUPT= 1; // changed by mcarter 2021-08-20
+	EMMC_ARG1=arg; 
+	EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000);
 	if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_usec(100);
 	if((r=sd_int(INT_CMD_DONE))) {
@@ -454,6 +467,47 @@ int sdcard_init1()
 	sd_cmd(CMD_GO_IDLE,0);
 	if(sd_err) return sd_err;
 
+	// determine card version
+	u32 response;
+	puts("detemine card version");
+	puts("  wait for ready");
+	if(sd_status(SR_CMD_INHIBIT)) { 
+		sd_error_puts("ERROR: EMMC busy\n"); 
+		sd_err= SD_TIMEOUT;
+		return 0;
+	}
+	puts("  in ready in state");
+	//*EMMC_INTERRUPT=*EMMC_INTERRUPT;
+	*EMMC_INTERRUPT= 1;
+	EMMC_ARG1 = 0x1AA; // CMD8
+	//EMMC_ARG1 = 8; // CMD8
+	//EMMC_ARG1 = CMD_SEND_IF_COND; // CMD8
+	EMMC_CMDTM = CMD_SEND_IF_COND;
+	//EMMC_CMDTM=(0x40 | 8) <<24; // CMD8
+	//EMMC_CMDTM=8 ; // CMD8
+	wait_usec(100);
+	puts("  wait for cmd done");
+	if((r=sd_int(INT_CMD_DONE))) {
+		sd_error_puts("ERROR: failed to send EMMC command\n");
+		sd_err=r;
+		return 0;
+	}
+	puts("  cmd is done");
+	response = EMMC_RESP0;
+	printf("  response= %d, r=%d\n", response, r);
+	int card_version = -1; 
+	if(r == R1_IDLE_STATE)
+		card_version = 2;
+	else if(r == (R1_IDLE_STATE | R1_ILLEGAL_COMMAND))
+		card_version = 1;
+	printf("Card version% %d\n", card_version);
+
+	printf("finished determinging card version");
+
+
+
+
+	
 	sd_cmd(CMD_SEND_IF_COND,0x000001AA);
 	if(sd_err) return sd_err;
 	cnt=6; r=0; while(!(r&ACMD41_CMD_COMPLETE) && cnt--) {
@@ -506,10 +560,14 @@ int sdcard_init1()
 	}
 	if(r!=2) return SD_TIMEOUT;
 	if(sd_scr[0] & SCR_SD_BUS_WIDTH_4) {
+		puts("setting bus width");
 		sd_cmd(CMD_SET_BUS_WIDTH,sd_rca|2);
 		if(sd_err) return sd_err;
 		*EMMC_CONTROL0 |= C0_HCTL_DWITDH;
+	} else {
+		puts("no need to set bus width");
 	}
+
 	// add software flag
 	sd_uart_puts("EMMC: supports ");
 	if(sd_scr[0] & SCR_SUPP_SET_BLKCNT)

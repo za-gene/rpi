@@ -23,6 +23,11 @@
  *
  */
 
+/* In a default configuration:
+ * width 1920, height 1080, pitch 7680, bytes per line 1
+ * font: bytes per glyph 16, height 16, width 8
+ * should get 67.5 rows and 240 cols
+ */
 
 #include <stdio.h>
 #include <string.h>
