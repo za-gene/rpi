@@ -276,6 +276,13 @@ int init_card()
 	u8 cmd8_response[4];
 	status = CMD_T2(8, 0x01aa, 0x87, cmd8_response, sizeof(cmd8_response));
 	printf("\nCMD8 card status %d\n", status);
+	int card_type = -1;
+	if(status == R1_IDLE_STATE) {
+		card_type = 2;
+	} else if ( status == (R1_IDLE_STATE | R1_ILLEGAL_COMMAND)) {
+		card_type = 1;
+	}
+	printf("SD card type is %d (only 2 is handled correctly)\n", card_type);
 	if(status != R1_IDLE_STATE) 
 		return SDCMD8;
 
