@@ -128,8 +128,11 @@ int wait_for_response()
 
 }
 
-int call_cmd(int cmd, int arg, int crc)
+int call_cmd(int cmd, int arg, int crc, bool fussy)
 {
+	int status = wait_for_ready();
+	if(fussy && status) return status;
+
 	uint8_t buf[6];
 	encode_cmd(cmd, arg, crc, buf);
 	spi_write_blocking(spi, buf, sizeof(buf));
@@ -139,43 +142,25 @@ int call_cmd(int cmd, int arg, int crc)
 int CMD_T1(int cmd, int arg, int crc)
 {
 	TRANSACT();
-	//Trans t;
-	int status;
-	//if(wait_for_ready()) return SDTOUT;
-	wait_for_ready();
-	status = call_cmd(cmd, arg, crc);
-	if(status <0) return SDROUT;
-
-	return status;
+	return call_cmd(cmd, arg, crc, false);
 }
 
 // NB the len is only ever of size 4
 int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 {
-	//Trans t;
 	TRANSACT();
-	//if(wait_for_ready()) return SDTOUT;
-	int status = wait_for_ready();
-	if(status) return SDTOUT;
-
-	status = call_cmd(cmd, arg, crc);
-	if(status <0) return SDROUT;
+	int status = call_cmd(cmd, arg, crc, true);
+	if(status<0) return status;
 
 	spi_read_blocking(spi, 0xFF, output, len);
-
 	return status;
 }
 
 int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 {
 	TRANSACT();
-	//Trans t;
-	//if(wait_for_ready()) return SDTOUT;
-	int status = wait_for_ready();
-	if(status) return SDTOUT;
-
-	status = call_cmd(cmd, arg, crc);
-	if(status<0) return SDROUT;
+	int status = call_cmd(cmd, arg, crc, true);
+	if(status<0) return status;
 
 	u8 buf[6];
 	buf[0] = 0xFF;
