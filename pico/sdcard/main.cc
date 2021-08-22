@@ -85,6 +85,7 @@ void sound_set_level()
 void sound_init(void)
 {
 	pi_alarm_init(ALARM, sound_set_level, DELAY);
+	//irq_set_priority(PWM_IRQ_WRAP, PICO_HIGHEST_IRQ_PRIORITY); // doesn't seem to help
 	mcp4921_dma_init();
 }
 
