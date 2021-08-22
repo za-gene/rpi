@@ -39,9 +39,13 @@
 #define SDBLOCK -8 // bad read of block
 #define SDCDV   -9 // implementation limitation on cdv. 
 
-void cs_low() {	gpio_put(PIN_CS, 0); }
+int cs_low(void) 
+{	
+	gpio_put(PIN_CS, 0); 
+	return 1;
+}
 
-void cs_high() { gpio_put(PIN_CS, 1); }
+void cs_high(void) { gpio_put(PIN_CS, 1); }
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -62,6 +66,16 @@ int wait_for_ready()
 
 }
 
+void end_transaction(volatile int* unused)
+{
+	cs_high();
+	uint8_t b = 0xFF;
+	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
+}
+
+#define TRANSACT() volatile int transaction __attribute__((__cleanup__(end_transaction))) = cs_low()
+
+/*
 class Trans {
 	public:
 		Trans();
@@ -79,7 +93,7 @@ Trans::~Trans()
 	uint8_t b = 0xFF;
 	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
 }
-
+*/
 
 u8 crc_table[256];
 
@@ -153,7 +167,8 @@ int call_cmd(int cmd, int arg, int crc)
 
 int CMD_T1(int cmd, int arg, int crc)
 {
-	Trans t;
+	TRANSACT();
+	//Trans t;
 	int status;
 	//if(wait_for_ready()) return SDTOUT;
 	wait_for_ready();
@@ -166,7 +181,8 @@ int CMD_T1(int cmd, int arg, int crc)
 // NB the len is only ever of size 4
 int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 {
-	Trans t;
+	//Trans t;
+	TRANSACT();
 	//if(wait_for_ready()) return SDTOUT;
 	int status = wait_for_ready();
 	if(status) return SDTOUT;
@@ -181,7 +197,8 @@ int CMD_T2 (int cmd, int arg, int crc, u8* output, int len)
 
 int CMD_T3 (int cmd, int arg, int crc, u8* output, int len)
 {
-	Trans t;
+	TRANSACT();
+	//Trans t;
 	//if(wait_for_ready()) return SDTOUT;
 	int status = wait_for_ready();
 	if(status) return SDTOUT;
