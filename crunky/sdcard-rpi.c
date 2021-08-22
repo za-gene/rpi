@@ -208,8 +208,10 @@ char* describe_cmd(int num)
 #define ACMD41_CMD_CCS      0x40000000
 #define ACMD41_ARG_HC       0x51ff8000
 
-//unsigned long sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv;
-uint64_t sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv;
+unsigned long sd_scr[2], sd_ocr, sd_err, sd_hv; // unsigned long is of size 4
+//uint64_t sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv; // grr no, not uint64_t
+//uint64_t sd_rca;
+unsigned long sd_rca;
 
 /**
  * Wait for data or command ready
@@ -227,7 +229,9 @@ int sd_status(unsigned int mask)
 int sd_int(unsigned int mask)
 {
 	unsigned int r, m=mask | INT_ERROR_MASK;
-	int cnt = 1000000; while(!(*EMMC_INTERRUPT & m) && cnt--) wait_usec(1);
+	int cnt = 1000000; 
+	//cnt *=10; // mcarter boosted, but didn't help
+	while(!(*EMMC_INTERRUPT & m) && cnt--) wait_usec(1);
 	r=*EMMC_INTERRUPT;
 	if(cnt<=0 || (r & INT_CMD_TIMEOUT) || (r & INT_DATA_TIMEOUT) ) { 
 		*EMMC_INTERRUPT=r; 
@@ -264,8 +268,8 @@ int sd_cmd(unsigned int code, unsigned int arg)
 	if(code==0x29020000) puts("EMMC: this printf statement needs to be here"); // or it won't work
 	if(code != CMD_READ_SINGLE)
 		sd_uart_puts("EMMC: Sending command 0x%x (%s), arg 0x%x\n", code, describe_cmd(code), arg);
-	//*EMMC_INTERRUPT=*EMMC_INTERRUPT; 
-	*EMMC_INTERRUPT= 1; // changed by mcarter 2021-08-20
+	*EMMC_INTERRUPT=*EMMC_INTERRUPT; 
+	//*EMMC_INTERRUPT= 1; // changed by mcarter 2021-08-20
 	EMMC_ARG1=arg; 
 	EMMC_CMDTM=code;
 	if(code==CMD_SEND_OP_COND) wait_usec(1000);
@@ -430,8 +434,10 @@ int sd_clk(unsigned int f)
 
 int sdcard_init1()
 {
-	//long r,cnt,ccs=0;
-	int64_t r,cnt,ccs=0;
+	printf("sizeof(unsigned long)=%d\n", sizeof(unsigned long));
+	printf("sizeof(int)=%d\n", sizeof(int));
+	long r,cnt,ccs=0;
+	//int64_t r,cnt,ccs=0;
 	// GPIO_CD
 	r=GPFSEL4; r&=~(7<<(7*3)); GPFSEL4=r;
 	GPPUD=2; wait_cycles(150); GPPUDCLK1=(1<<15); wait_cycles(150); GPPUD=0; GPPUDCLK1=0;
@@ -448,7 +454,13 @@ int sdcard_init1()
 	wait_cycles(150); GPPUD=0; GPPUDCLK1=0;
 
 	sd_hv = (*EMMC_SLOTISR_VER & HOST_SPEC_NUM) >> HOST_SPEC_NUM_SHIFT;
-	sd_uart_puts("EMMC: GPIO set up\n");
+	//alternate way
+	sd_hv = *EMMC_SLOTISR_VER;
+	sd_hv >>=16;
+	sd_hv &= 0xFF;
+	sd_uart_puts("EMMC: GPIO set up. Card version is %d", sd_hv);
+	sd_uart_hex(sd_hv);
+	sd_uart_puts("Number above is card version"); // I think there's something wrong my printing
 	// Reset the card.
 	*EMMC_CONTROL0 = 0; *EMMC_CONTROL1 |= C1_SRST_HC;
 	cnt=10000; do{wait_usec(10);} while( (*EMMC_CONTROL1 & C1_SRST_HC) && cnt-- );
@@ -467,6 +479,7 @@ int sdcard_init1()
 	sd_cmd(CMD_GO_IDLE,0);
 	if(sd_err) return sd_err;
 
+#if 0
 	// determine card version
 	u32 response;
 	puts("detemine card version");
@@ -503,7 +516,7 @@ int sdcard_init1()
 	printf("Card version% %d\n", card_version);
 
 	printf("finished determinging card version");
-
+#endif
 
 
 
