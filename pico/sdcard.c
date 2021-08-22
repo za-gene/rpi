@@ -51,6 +51,9 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 
+#define kHz 1000
+#define MHz 1000000
+
 int cdv = 512; // card is byte addressing, set to 1 if addresses are per block
 
 
@@ -58,7 +61,7 @@ int wait_for_ready()
 {
 	u8 dst;
 	uint32_t start = time_us_32();
-	while(time_us_32() - start < 300'000) {
+	while(time_us_32() - start < 300 * kHz) {
 		spi_read_blocking(spi, 0xFF, &dst, 1);
 		if(dst == 0xFF) return 0;
 	}
@@ -228,8 +231,8 @@ int init_card_v2()
 		sleep_ms(50);
 		CMD_T2(58, 0, 0xFD, ocr, sizeof(ocr));
 		CMD_T1(55, 0, 0x65);
-		constexpr int arg = 0x40000000;
-		static_assert((arg>0) && (sizeof(int)>=4));
+		const int arg = 0x40000000;
+		//static_assert((arg>0) && (sizeof(int)>=4));
 		if(CMD_T1(41, arg, 0x77) == 0) {
 			CMD_T2(58, 0, 0xFD, ocr, sizeof(ocr));
 			if((ocr[0] & 0x40) != 0) cdv = 1;
@@ -246,10 +249,10 @@ int init_card()
 	//init_crc_table();
 
 	// standard spi stuff
-	int spi_speed = 1'200'000;
-	spi_speed = 600'000; // works
+	int spi_speed = 1200 * kHz;
+	spi_speed = 600 *kHz; // works
 	//spi_speed = 250'000;
-	spi_speed = 100'000; // slow to get initialisation
+	spi_speed = 100 * kHz; // slow to get initialisation
 	spi_init(spi, spi_speed);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
@@ -315,9 +318,9 @@ int init_card()
 	if(CMD_T1(16, 512, 0x15) != 0) return SDCMD16;
 	printf("CMD16 set block size to 512 successfully\n");
 
-	spi_speed = 1'000'000; // go for it! Known working: 1MHz, 2MHz, 4MHz, 8MHz, 16MHz, 24MHz
+	spi_speed = 1 * MHz; // go for it! Known working: 1MHz, 2MHz, 4MHz, 8MHz, 16MHz, 24MHz
 	// Corruptions:  32MHz
-	spi_speed = 24'000'000;
+	spi_speed = 24*MHz;
 	spi_set_baudrate(spi, spi_speed);
 
 	return 0;
@@ -333,7 +336,7 @@ int block_cmd(int cmd, int blocknum, u8 block[512])
 	return 0;
 }
 
-extern "C" int readablock (int blocknum, u8 block[512])
+int readablock (int blocknum, u8 block[512])
 {
 	if(block_cmd(17, blocknum, block) != 0)
 		return SDBLOCK;
@@ -377,7 +380,7 @@ void test_crc()
 	printf("test_crc end\n");
 }
 
-extern "C" void sdcard_init(void)
+void sdcard_init(void)
 {
 	init_card();
 }

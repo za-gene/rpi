@@ -18,7 +18,7 @@ target_sources(pi INTERFACE
 	${CMAKE_CURRENT_LIST_DIR}/picol.c
 	${CMAKE_CURRENT_LIST_DIR}/pulse.cc
 	${CMAKE_CURRENT_LIST_DIR}/rotary.cc
-	${CMAKE_CURRENT_LIST_DIR}/sdcard.cc
+	${CMAKE_CURRENT_LIST_DIR}/sdcard.c
 	${CMAKE_CURRENT_LIST_DIR}/ssd1306.cc
 )
 
