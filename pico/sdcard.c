@@ -1,20 +1,11 @@
 /* File released into the Public Domain. Fill yer boots ;)
  */
 
+#include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
-#include "pico/stdlib.h"
-//#include "hardware/adc.h"
-//#include "hardware/clocks.h"
-//#include "hardware/flash.h"
-#include "hardware/gpio.h"
-//#include "hardware/irq.h"
-#include "hardware/pwm.h"
-#include "hardware/spi.h"
-//#include "tusb.h" // if you want to use tud_cdc_connected()
 
-#include "pace.h"
-//#include "../../1306/pico-sdk/oled.h"
+#include "hardware/gpio.h"
+#include "hardware/spi.h"
 
 //                                SHIELD
 #define spi		spi1
@@ -22,9 +13,6 @@
 #define	PIN_MOSI	11	// D7
 #define PIN_MISO 	12	// D6
 #define	PIN_CS 		15	// D8
-
-//#define SPK 7
-//#define SPK 19
 
 #define CMD_TIMEOUT 200 // number of tries before getting bored
 #define R1_IDLE_STATE (1<<0)
@@ -77,26 +65,6 @@ void end_transaction(volatile int* unused)
 }
 
 #define TRANSACT() volatile int transaction __attribute__((__cleanup__(end_transaction))) = cs_low()
-
-/*
-class Trans {
-	public:
-		Trans();
-		~Trans();
-};
-
-Trans::Trans()
-{
-	cs_low();
-}
-
-Trans::~Trans()
-{
-	cs_high();
-	uint8_t b = 0xFF;
-	spi_write_blocking(spi, &b, 1); // just spin our wheels so that the card can complete its operation
-}
-*/
 
 u8 crc_table[256];
 
@@ -246,9 +214,7 @@ int init_card()
 {
 	sleep_ms(1); // give card time to power up
 
-	//init_crc_table();
-
-	// standard spi stuff
+	// spi pin setup
 	int spi_speed = 1200 * kHz;
 	spi_speed = 600 *kHz; // works
 	//spi_speed = 250'000;
