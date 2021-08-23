@@ -32,6 +32,8 @@ const int top = 1023;
 
 void my_pwm_wrap_isr()
 {
+	pwm_clear_irq(slice_num); 
+	
 	//const int time_scale = f_pwm / 8000;
 	const int vol_scale = (top+1)/256;
 	static int i = 0;
@@ -43,8 +45,7 @@ void my_pwm_wrap_isr()
 	int new_level = v*vol_scale;
 	pwm_set_gpio_level(SPK, new_level);
 
-	//pin16.toggle();
-	pwm_clear_irq(slice_num); 
+
 }
 
 int main() 

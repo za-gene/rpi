@@ -32,6 +32,7 @@ void pwm_isr()
 {
 	static i32 m = 0;
 	const i32 M_scaled = M * dm_scale;
+	pwm_clear_irq(slice_num); // reset the irq so that it will fire in future
 
 	i32 index = m / dm_scale;
 	pwm_set_gpio_level(SPK, sin_table[index]);
@@ -39,7 +40,7 @@ void pwm_isr()
 	m += dm;
 	if(m>=M_scaled) m = m - M_scaled;
 
-	pwm_clear_irq(slice_num); // reset the irq so that it will fire in future
+
 }
 
 int main() 
