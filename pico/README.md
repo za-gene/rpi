@@ -3,6 +3,7 @@
 ## Technical notes
 
 * [boot](boot.md) - booting into program mode
+* [dma](dma.md)
 * [gpio](gpio.md)
 * [interrupts](interrupts.txt)
 * [pwm](pwm.md)
