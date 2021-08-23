@@ -34,65 +34,45 @@ volatile signed char refill = 0; // the block that needs to be refilled
 
 
 unsigned int slice_num; // determined in play_music()
-constexpr auto isr_multiplier = 1; // speed-up the timer to avoid audible clicks. doesn't help, though.
+//constexpr auto isr_multiplier = 1; // speed-up the timer to avoid audible clicks. doesn't help, though.
 
-#define USE_PWM
-#ifdef USE_PWM
-
-void sound_set_level(void)
-{
-	//pi_alarm_rearm(ALARM, DELAY);
-	pwm_set_gpio_level(SPK, *(dbuf + 512*playing + bidx++));
-	if(bidx>=512) {
-		bidx = 0;
-		refill = playing;
-		playing = 1-playing;
-		//printf("refill = %d\n", refill
-	}
-	//set_pwm_level();
-	pwm_clear_irq(slice_num);
-}
-
-void sound_init(void)
-{
-	int status = pace_config_pwm_irq(&slice_num, SPK, 16000 * isr_multiplier, 255, sound_set_level);
-	if(status) printf("pwm config error\n");
-	gpio_set_drive_strength(SPK, GPIO_DRIVE_STRENGTH_12MA); // boost its power output (doesn't help much)
-}
-
-
-
-#else // use MCP4921
+const bool use_pwm = 1;
 
 #define ALARM 0
 #define DELAY (1'000'000/16'000)
+
+
 
 void sound_set_level()
 {
 	pi_alarm_rearm(ALARM, DELAY);
 	uint8_t vol = *(dbuf + 512*playing + bidx++);
-	uint16_t vol16 = ((uint16_t) vol ) << 4;
-	mcp4921_dma_put(vol16);
+	if(use_pwm) {
+		pwm_set_gpio_level(SPK, vol);
+	} else {
+		uint16_t vol16 = ((uint16_t) vol ) << 4;
+		mcp4921_dma_put(vol16);
+	}
+
 	if(bidx>=512) {
 		bidx = 0;
 		refill = playing;
 		playing = 1-playing;
-		//printf("refill = %d\n", refill
 	}
-
-	//printf("Alarm IRQ fired %d\n", i++);
 }
 
 void sound_init(void)
 {
 	pi_alarm_init(ALARM, sound_set_level, DELAY);
 	//irq_set_priority(PWM_IRQ_WRAP, PICO_HIGHEST_IRQ_PRIORITY); // doesn't seem to help
-	mcp4921_dma_init();
+	if(use_pwm)
+		pace_config_pwm(&slice_num, SPK, 16000, 255);
+	else
+		mcp4921_dma_init();
 }
 
 
 
-#endif
 
 
 void play_song()

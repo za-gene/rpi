@@ -15,8 +15,7 @@ float pace_pwm_divider(int freq, int top)
 	return f_sys / scale;
 }
 
-int pace_config_pwm_irq(unsigned int* slice_num, unsigned int gpio, int freq, int top, 
-		irq_handler_t pwm_irq_wrap_handler)
+int pace_config_pwm(unsigned int* slice_num, unsigned int gpio, int freq, int top)
 {
 	//int result = 0; // indicates success
 	// no need for gpio_init() or gpio_set_dir(), just use:
@@ -30,7 +29,13 @@ int pace_config_pwm_irq(unsigned int* slice_num, unsigned int gpio, int freq, in
 	pwm_set_clkdiv(*slice_num, divider);
 	pwm_set_wrap(*slice_num, top);
 	pwm_set_enabled(*slice_num, true);
+	return 0;
+}
 
+int pace_config_pwm_irq(unsigned int* slice_num, unsigned int gpio, int freq, int top, 
+		irq_handler_t pwm_irq_wrap_handler)
+{
+	if(pace_config_pwm(slice_num, gpio, freq, top)) return 1;
 	pwm_clear_irq(*slice_num);
 	pwm_set_irq_enabled(*slice_num, true);
 	irq_set_exclusive_handler(PWM_IRQ_WRAP, pwm_irq_wrap_handler);

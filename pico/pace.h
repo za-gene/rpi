@@ -24,6 +24,7 @@ float pace_pwm_divider(int freq, int top);
  */
 int pace_config_pwm_irq(unsigned int* slice_num, unsigned int gpio, int freq, int top, irq_handler_t pwm_irq_wrap_handler);
 
+int pace_config_pwm(unsigned int* slice_num, unsigned int gpio, int freq, int top);
 
 #ifdef __cplusplus
 }
