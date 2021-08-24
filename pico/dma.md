@@ -18,7 +18,7 @@ DREQ DREQ Channel     DREQ DREQ Channel     DREQ DREQ Channel     DREQ DREQ Chan
 
 [Source](https://people.ece.cornell.edu/land/courses/ece4760/RP2040/index_rp2040_testing.html)
 
-E.g. TREQ source 25 (DREQ_PWM_WRAP1) is used to trigger DMA channel 0 (I think he means 1).
+E.g. TREQ source 25 (DREQ\_PWM\_WRAP1) is used to trigger DMA channel 0 (I think he means 1).
 
 
 `void channel_config_set_dreq(ma_channel_config *c, uint dreq)`

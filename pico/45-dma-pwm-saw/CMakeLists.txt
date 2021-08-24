@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 #set(CMAKE_BUILD_TYPE Debug)
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
+#set(PARAM_ASSERTIONS_ENABLE_ALL 1)
 
 include("../picomc.cmake")
 project(app C CXX ASM)
@@ -21,7 +22,7 @@ add_subdirectory(.. build)
 target_link_libraries(app 
 	pi
 	#pico_stdlib 
-	#harware_adc
+	#hardware_dma
 	#hardware_clocks
 	#hardware_flash
 	#hardware_gpio

@@ -21,7 +21,7 @@ add_subdirectory(.. build)
 target_link_libraries(app 
 	pi
 	#pico_stdlib 
-	#harware_adc
+	#hardware_adc
 	#hardware_clocks
 	#hardware_flash
 	#hardware_gpio
