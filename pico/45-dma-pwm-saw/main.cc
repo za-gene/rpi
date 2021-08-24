@@ -3,7 +3,7 @@
 //#define PARAM_ASSERTIONS_ENABLE_ALL 1
 #include "pico/stdlib.h"
 #include <assert.h>
-//#include "hardware/clocks.h"
+#include "hardware/clocks.h"
 //#include "hardware/flash.h"
 #include "hardware/gpio.h"
 //#include "hardware/irq.h"
@@ -11,12 +11,13 @@
 #include "hardware/dma.h"
 // #include "tusb.h" // if you want to use tud_cdc_connected()
 
-#include "pi.h"
-#include "pace.h"
+//#include "pi.h"
+//#include "pace.h"
 
 #define SPK 19
 
-#define NSAMPS 256 // also TOP+1
+#define TOP 255
+#define NSAMPS 256
 uint32_t table[NSAMPS];
 unsigned int slice_num;
 int dma_chan;
@@ -42,7 +43,14 @@ int main()
 	pinfo(PWM_CH0_CC_A_LSB);
 	pinfo(PWM_CH0_CC_B_LSB);
 	const int freq = 500 * NSAMPS; // 500Hz sawtooth
-	int status = pace_config_pwm(&slice_num, SPK, freq,255);
+	//int status = pace_config_pwm(&slice_num, SPK, freq,255);
+	gpio_set_function(SPK, GPIO_FUNC_PWM);
+	slice_num = pwm_gpio_to_slice_num(SPK);
+	float divider = (float) clock_get_hz(clk_sys) /(TOP+1)/freq;
+	printf("divider=%f\n", divider); // comes out at 3
+	pwm_set_clkdiv(slice_num, divider);
+	pwm_set_wrap(slice_num, TOP);
+	pwm_set_enabled(slice_num, true);
 	//pwm_set_enabled(slice_num, false); // does disabling help? No.
 	pinfo(slice_num); // apparently SPK 19 is slice 1
 	//printf("GPIO on consistent channel?: %s\n", pwm_gpio_to_channel(SPK)  == 0 ? "GOOD" : "BAD");
@@ -70,27 +78,6 @@ int main()
 		dma_channel_wait_for_finish_blocking(dma_chan);
 		//dma_channel_start(dma_chan);
 	}
-
-
-#define BTN  14 // GPIO number, not physical pin
-#define LED  25 // GPIO of built-in LED
-	gpio_init(BTN);
-	gpio_set_dir(BTN, GPIO_IN);
-	gpio_pull_up(BTN);
-	// gpio_get() gets state of pin
-
-	gpio_init(LED);
-	gpio_set_dir(LED, GPIO_OUT);
-
-	int i = 0;
-	for(;;) {
-		//printf("Hello number %d\n", i++);
-		gpio_put(LED, 1);
-		sleep_ms(100);
-		gpio_put(LED, 0);
-		sleep_ms(1000);		
-	}
-
 	return 0;
 }
 
