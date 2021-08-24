@@ -61,6 +61,7 @@ int main()
 	dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
 	channel_config_set_transfer_data_size(&cfg, DMA_SIZE_32);
 	channel_config_set_read_increment(&cfg, true);
+	channel_config_set_dreq(&cfg, DREQ_PWM_WRAP0 + slice_num); // write data at pwm frequency
 	//channel_config_set_write_increment(&cfg, false);
 	dma_channel_configure(
 			dma_chan,          // Channel to be configured
@@ -70,7 +71,6 @@ int main()
 			NSAMPS, // Number of transfers
 			false           // Start immediately?
 			);
-	channel_config_set_dreq(&cfg, DREQ_PWM_WRAP0 + slice_num); // write data at pwm frequency
 	//dma_channel_start(dma_chan); // didn't help
 
 	while(1) {
