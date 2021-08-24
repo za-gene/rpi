@@ -16,9 +16,12 @@
 
 #define SPK 19
 
-uint32_t table[256];
+#define NSAMPS 256 // also TOP+1
+uint32_t table[NSAMPS];
 unsigned int slice_num;
 int dma_chan;
+
+#define pinfo(x) printf("%s = %u\n", #x, x);
 
 int main() 
 {
@@ -28,18 +31,20 @@ int main()
 
 	// fill in table
 	const int pwm_chan = pwm_gpio_to_channel(SPK);
-	const int pwm_channel_shift = pwm_chan == 0 ?  0 : 16;
-	for(int i = 0; i< 256; i++) {
-		table[i] = (i << pwm_channel_shift);
+	//const int pwm_channel_shift = pwm_chan == 0 ?  0 : 16;
+	for(int i = 0; i< NSAMPS; i++) {
+		table[i] = i << (pwm_chan ? PWM_CH0_CC_B_LSB : PWM_CH0_CC_A_LSB);
 	}
 	printf("channel is: %d\n", pwm_chan); 
 
 	// set up pwm
-	printf("count_of(table)=%d\n", count_of(table));
-	const int freq = 500 * count_of(table); // 500Hz sawtooth
+	pinfo(count_of(table));
+	pinfo(PWM_CH0_CC_A_LSB);
+	pinfo(PWM_CH0_CC_B_LSB);
+	const int freq = 500 * NSAMPS; // 500Hz sawtooth
 	int status = pace_config_pwm(&slice_num, SPK, freq,255);
 	//pwm_set_enabled(slice_num, false); // does disabling help? No.
-	printf("slice num:%d\n", slice_num); // apparently SPK 19 is slice 1
+	pinfo(slice_num); // apparently SPK 19 is slice 1
 	//printf("GPIO on consistent channel?: %s\n", pwm_gpio_to_channel(SPK)  == 0 ? "GOOD" : "BAD");
 	pwm_set_irq_enabled(slice_num, true); // Necessary? Yes
 	//irq_set_enabled(PWM_IRQ_WRAP, true);// Necessary? Seems to cause problem
@@ -54,14 +59,14 @@ int main()
 			&cfg,            // The configuration we just created
 			&pwm_hw->slice[slice_num].cc,           // The initial write address
 			table,           // The initial read address
-			256, // Number of transfers
+			NSAMPS, // Number of transfers
 			false           // Start immediately?
 			);
 	channel_config_set_dreq(&cfg, DREQ_PWM_WRAP0 + slice_num); // write data at pwm frequency
 	//dma_channel_start(dma_chan); // didn't help
 
 	while(1) {
-		dma_channel_transfer_from_buffer_now(dma_chan, table, 256);
+		dma_channel_transfer_from_buffer_now(dma_chan, table, NSAMPS);
 		dma_channel_wait_for_finish_blocking(dma_chan);
 		//dma_channel_start(dma_chan);
 	}
