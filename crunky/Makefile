@@ -18,7 +18,8 @@ CR_OBJS += timers.o
 #CR_OBJS += sd.o
 CR_OBJS += tinyprintf.o
 CR_OBJS += fat32.o
-CR_OBJS += sdcard-rpi.o
+#CR_OBJS += sdcard-rpi.o
+CR_OBJS += sd.o
 CR_OBJS += crc8.o
 
 
