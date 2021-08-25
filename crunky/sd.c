@@ -23,10 +23,122 @@
  *
  */
 
+//#include <basal.h>
+#include <stdio.h>
+//#include <gpio.h>
+#include <stdarg.h>
+#include <timers.h>
+
 #include "gpio.h"
-#include "uart.h"
-#include "delays.h"
+//#nclude include "uart.h"
+//#include "delays.h"
+
 #include "sd.h"
+
+#define MMIO_BASE 0x20000000 // For RPi0
+
+/* for some bizarre reason, it seems to be necessary turn on
+ * debugging, or else reading will fail
+ */
+
+static int debug = 1;
+
+#define wait_msec delay_ms
+/*
+void wait_msec(int i)
+{
+	delay_ms(i);
+}
+*/
+
+static void sd_uart_puts(const char *fmt, ...)
+{
+	if(debug==0) return;
+	va_list va;
+        va_start(va, fmt);
+        printf(fmt, va);
+        va_end(va);
+	puts("");
+}
+
+static void sd_error_puts(const char *str)
+{
+	puts(str);
+}
+
+
+#define uart_puts puts
+#define uart_send putchar
+
+#undef GPPUD
+#undef GPPUDCLK1
+#undef GPFSEL0
+#undef GPFSEL1
+#undef GPFSEL2
+#undef GPFSEL3
+#undef GPFSEL4
+#undef GPFSEL5
+#undef GPPUDCLK0
+#undef GPHEN0
+#undef GPHEN1
+#undef GPEDS0
+#undef GPEDS1
+#undef GPLEV0
+#undef GPLEV1
+#undef GPCLR0
+#undef GPSET0
+#undef GPSET1
+
+void uart_hex(unsigned int d) {
+    unsigned int n;
+    int c;
+    for(c=28;c>=0;c-=4) {
+        // get highest tetrad
+        n=(d>>c)&0xF;
+        // 0-9 => '0'-'9', 10-15 => 'A'-'F'
+        n+=n>9?0x37:0x30;
+        uart_send(n);
+    }
+}
+
+int readablock(unsigned int lba, unsigned char *buffer)
+{
+    int status = sd_readblock(lba, buffer, 1);
+    if(status == 0) return -1; // an error
+    return 0;
+}
+
+int sd_init();
+
+int sdcard_init(void)
+{
+	return sd_init(); // perhaps needs some nice handling
+}
+
+void sdcard_deinit(void)
+{
+	// should probably do something
+}
+
+#define GPFSEL0         ((volatile unsigned int*)(MMIO_BASE+0x00200000))
+#define GPFSEL1         ((volatile unsigned int*)(MMIO_BASE+0x00200004))
+#define GPFSEL2         ((volatile unsigned int*)(MMIO_BASE+0x00200008))
+#define GPFSEL3         ((volatile unsigned int*)(MMIO_BASE+0x0020000C))
+#define GPFSEL4         ((volatile unsigned int*)(MMIO_BASE+0x00200010))
+#define GPFSEL5         ((volatile unsigned int*)(MMIO_BASE+0x00200014))
+#define GPSET0          ((volatile unsigned int*)(MMIO_BASE+0x0020001C))
+#define GPSET1          ((volatile unsigned int*)(MMIO_BASE+0x00200020))
+#define GPCLR0          ((volatile unsigned int*)(MMIO_BASE+0x00200028))
+#define GPLEV0          ((volatile unsigned int*)(MMIO_BASE+0x00200034))
+#define GPLEV1          ((volatile unsigned int*)(MMIO_BASE+0x00200038))
+#define GPEDS0          ((volatile unsigned int*)(MMIO_BASE+0x00200040))
+#define GPEDS1          ((volatile unsigned int*)(MMIO_BASE+0x00200044))
+#define GPHEN0          ((volatile unsigned int*)(MMIO_BASE+0x00200064))
+#define GPHEN1          ((volatile unsigned int*)(MMIO_BASE+0x00200068))
+#define GPPUD           ((volatile unsigned int*)(MMIO_BASE+0x00200094))
+#define GPPUDCLK0       ((volatile unsigned int*)(MMIO_BASE+0x00200098))
+#define GPPUDCLK1       ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
+
 
 #define EMMC_ARG2           ((volatile unsigned int*)(MMIO_BASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(MMIO_BASE+0x00300004))
