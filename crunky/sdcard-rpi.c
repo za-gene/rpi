@@ -210,10 +210,10 @@ char* describe_cmd(int num)
 #define ACMD41_CMD_CCS      0x40000000
 #define ACMD41_ARG_HC       0x51ff8000
 
-unsigned long sd_scr[2], sd_ocr, sd_err, sd_hv; // unsigned long is of size 4
-//uint64_t sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv; // grr no, not uint64_t
-//uint64_t sd_rca;
-unsigned long sd_rca;
+//unsigned long sd_scr[2], sd_ocr, sd_err, sd_hv; // unsigned long is of size 4
+uint64_t sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv; // grr no, not uint64_t
+uint64_t sd_rca;
+//unsigned long sd_rca;
 
 /**
  * Wait for data or command ready
@@ -328,6 +328,7 @@ int sd_readblock(unsigned int lba, unsigned char *buffer, unsigned int num)
 			sd_cmd(CMD_READ_SINGLE,(lba+c)*512);
 			if(sd_err) return 0;
 		}
+		wait_usec(1000); // mcarter 2021-08-21 to avoid timeout. didn't help
 		if((r=sd_int(INT_READ_RDY))){
 			sd_error_puts("\rERROR: Timeout waiting for ready to read\n");
 			sd_err=r;
@@ -438,8 +439,8 @@ int sdcard_init1()
 {
 	printf("sizeof(unsigned long)=%d\n", sizeof(unsigned long));
 	printf("sizeof(int)=%d\n", sizeof(int));
-	long r,cnt,ccs=0;
-	//int64_t r,cnt,ccs=0;
+	//long r,cnt,ccs=0;
+	int64_t r,cnt,ccs=0;
 	// GPIO_CD
 	r=GPFSEL4; r&=~(7<<(7*3)); GPFSEL4=r;
 	GPPUD=2; wait_cycles(150); GPPUDCLK1=(1<<15); wait_cycles(150); GPPUD=0; GPPUDCLK1=0;
