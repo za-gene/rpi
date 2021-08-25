@@ -151,7 +151,9 @@ char unknown_command[] = "UNKNOWN";
 char* describe_cmd(int num) 
 {
 	for(int i = 0; i< sizeof(command_table)/sizeof(command_t); i++) {
-		if(command_table[i].num == num) return command_table[i].desc;
+		int table_num = command_table[i].num;
+		if((table_num == num) || (table_num == (num|CMD_NEED_APP))) 
+			return command_table[i].desc;
 	}
 	return unknown_command;
 }
