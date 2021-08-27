@@ -10,7 +10,24 @@ extern "C" {
 
 
 void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us);
-void pi_alarm_rearm(int alarm_num, uint64_t delay_us);
+
+// declaring it static inline seems to fix the fluttering problems
+static inline void pi_alarm_rearm(int alarm_num, uint64_t delay_us)
+{
+	// Clear the alarm irq
+	hw_clear_bits(&timer_hw->intr, 1u << alarm_num);
+
+	//uint32_t delay_us = 2 * 1'000'000; // 2 secs
+	// Alarm is only 32 bits so if trying to delay more
+	// than that need to be careful and keep track of the upper
+	// bits
+	uint64_t target = timer_hw->timerawl + delay_us;
+
+	// Write the lower 32 bits of the target time to the alarm which
+	// will arm it
+	timer_hw->alarm[alarm_num] = (uint32_t) target;
+
+}
 
 
 typedef enum {INPUT, OUTPUT, INPUT_PULLUP} pi_gpio_mode_e;

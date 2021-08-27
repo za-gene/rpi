@@ -75,15 +75,14 @@ uint8_t __not_in_flash_func(get_vol)()
 void __not_in_flash_func(sound_set_level)()
 {
 	pi_alarm_rearm(ALARM, DELAY);
-	//uint8_t vol = *(dbuf + 512*playing + bidx++);
-	uint8_t vol = get_vol();
+	static volatile uint8_t vol = 0; // helps to stagger? possibly
 	if(use_pwm) {
 		pwm_set_gpio_level(SPK, vol);
 	} else {
 		uint16_t vol16 = ((uint16_t) vol ) << 4;
 		mcp4921_dma_put(vol16);
 	}
-
+	vol = get_vol();
 }
 
 void sound_init(void)
