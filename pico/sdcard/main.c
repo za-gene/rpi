@@ -33,13 +33,13 @@
 unsigned int slice_num; // determined in play_music()
 //constexpr auto isr_multiplier = 1; // speed-up the timer to avoid audible clicks. doesn't help, though.
 
-const bool use_pwm = 1;
+const bool use_pwm = 0;
 
 #define ALARM 0
-#define DELAY (1'000'000/16'000)
+#define DELAY (1000000/16000)
 
 
-uint8_t dbuf[512*2];
+volatile uint8_t dbuf[512*2];
 volatile int dbuf_offset = -1; // either -1: don't do anything; 0: offset 0; 512: offset 512
 
 void song_buffer_poll(file32_t *file)
@@ -47,17 +47,18 @@ void song_buffer_poll(file32_t *file)
 	if(dbuf_offset == -1) return;
 	//volatile unsigned char _refill = refill;
 	//if(refilled == _refill) continue;
-	auto dst = dbuf + dbuf_offset;
-	memset(dst, 0, 512);
-	int n = file32_read(file, dst);
+	volatile uint8_t* dst = dbuf + dbuf_offset;
+	//memset(dst, 0, 512);
+	int n = file32_read(file, (uint8_t*) dst);
 	if(n<512) {		
+		for(int i=n; i< 512; i++) *(dst+i) = 0;
 		file32_seek0(file); // repeat the song
 	}
 	//refilled = _refill;
 	dbuf_offset = -1;
 }
 
-uint8_t get_vol()
+uint8_t __not_in_flash_func(get_vol)()
 {
 	volatile static int playing = 0, bidx = 0;
 	//volatile signed char refill = 0; // the block that needs to be refilled
@@ -71,7 +72,7 @@ uint8_t get_vol()
 	return vol;
 }
 
-void sound_set_level()
+void __not_in_flash_func(sound_set_level)()
 {
 	pi_alarm_rearm(ALARM, DELAY);
 	//uint8_t vol = *(dbuf + 512*playing + bidx++);
@@ -132,7 +133,8 @@ void type_file(const char* filename)
 	if(!file32_found(&file)) 
 		printf("ERR: file not found: %s\n", filename);
 	uint8_t block[512];
-	while(int n = file32_read(&file, block)) {
+	int n;
+	while(n = file32_read(&file, block)) {
 		for(int i = 0; i< n; i++) putchar(block[i]);
 	}
 }

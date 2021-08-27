@@ -3,6 +3,7 @@
 #include "hardware/timer.h"
 
 #include "pi.h"
+i2c_inst_t *pi_i2c_default_port = &i2c0_inst;
 
 void pi_alarm_rearm(int alarm_num, uint64_t delay_us)
 {
@@ -43,7 +44,7 @@ void pi_gpio_init(uint gpio, pi_gpio_mode_e mode)
 	switch(mode) {
 		case INPUT_PULLUP:
 			gpio_pull_up(gpio);
-			[[fallthrough]];
+			//[[fallthrough]];
 		case INPUT:
 			gpio_set_dir(gpio, GPIO_IN);
 			break;
@@ -87,7 +88,7 @@ void pi_i2c_init(int sda)
 //////////////////////////////////////////////////////////////////////////
 // MAX7219
 
-auto max7219_cs = 14;
+int max7219_cs = 14;
 
 void pi_max7219_init(void)
 {
@@ -149,13 +150,15 @@ void pi_spi_init_std(void)
 //#define PIN_CS          15
 
 
-	auto spi_speed = 100'000; // slow to get initialisation
+	int spi_speed = 100000; // slow to get initialisation
 	spi_init(spi, spi_speed);
 	gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
 	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
 }
 
+
+#ifdef __clplusplus
 GpioOut::GpioOut(uint gpio)
 {
 	gpio_init(gpio);
@@ -171,4 +174,4 @@ void GpioOut::off(void)
 {
 	gpio_put(m_gpio, false);
 }
-
+#endif // __clplusplus

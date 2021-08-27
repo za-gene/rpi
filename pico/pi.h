@@ -13,12 +13,12 @@ void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us);
 void pi_alarm_rearm(int alarm_num, uint64_t delay_us);
 
 
-enum pi_gpio_mode_e {INPUT, OUTPUT, INPUT_PULLUP};
+typedef enum {INPUT, OUTPUT, INPUT_PULLUP} pi_gpio_mode_e;
 void pi_gpio_init(uint gpio, pi_gpio_mode_e mode);
 int pi_gpio_is_high(uint gpio);
 void pi_gpio_toggle(uint gpio);
 
-inline auto pi_i2c_default_port = &i2c0_inst;
+extern i2c_inst_t *pi_i2c_default_port;
 void pi_i2c_init(int sda);
 
 void pi_max7219_init(void);

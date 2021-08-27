@@ -8,7 +8,7 @@ project(app C CXX ASM)
 pico_sdk_init()
 
 add_executable(app
-	main.cc
+	main.c
 	)
 
 #pico_enable_stdio_usb(app 0) # set to 1 if you want stdio over usb
