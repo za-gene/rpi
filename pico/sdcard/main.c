@@ -33,7 +33,7 @@
 unsigned int slice_num; // determined in play_music()
 //constexpr auto isr_multiplier = 1; // speed-up the timer to avoid audible clicks. doesn't help, though.
 
-const bool use_pwm = 0;
+const bool use_pwm = 1;
 
 #define ALARM 0
 #define DELAY (1000000/16000)
