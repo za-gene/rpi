@@ -28,9 +28,6 @@
 ////////////////////////////////////////////////////////////////////////////
 // play sd card
 
-uint8_t dbuf[512*2];
-volatile int playing = 0, bidx = 0;
-volatile signed char refill = 0; // the block that needs to be refilled
 
 
 unsigned int slice_num; // determined in play_music()
@@ -42,11 +39,43 @@ const bool use_pwm = 1;
 #define DELAY (1'000'000/16'000)
 
 
+uint8_t dbuf[512*2];
+volatile int dbuf_offset = -1; // either -1: don't do anything; 0: offset 0; 512: offset 512
+
+void song_buffer_poll(file32_t *file)
+{
+	if(dbuf_offset == -1) return;
+	//volatile unsigned char _refill = refill;
+	//if(refilled == _refill) continue;
+	auto dst = dbuf + dbuf_offset;
+	memset(dst, 0, 512);
+	int n = file32_read(file, dst);
+	if(n<512) {		
+		file32_seek0(file); // repeat the song
+	}
+	//refilled = _refill;
+	dbuf_offset = -1;
+}
+
+uint8_t get_vol()
+{
+	volatile static int playing = 0, bidx = 0;
+	//volatile signed char refill = 0; // the block that needs to be refilled
+	uint8_t vol = *(dbuf + 512*playing + bidx++);
+	if(bidx>=512) {
+		bidx = 0;
+		dbuf_offset = 512*playing;
+		//refill = playing;
+		playing = 1-playing;
+	}
+	return vol;
+}
 
 void sound_set_level()
 {
 	pi_alarm_rearm(ALARM, DELAY);
-	uint8_t vol = *(dbuf + 512*playing + bidx++);
+	//uint8_t vol = *(dbuf + 512*playing + bidx++);
+	uint8_t vol = get_vol();
 	if(use_pwm) {
 		pwm_set_gpio_level(SPK, vol);
 	} else {
@@ -54,11 +83,6 @@ void sound_set_level()
 		mcp4921_dma_put(vol16);
 	}
 
-	if(bidx>=512) {
-		bidx = 0;
-		refill = playing;
-		playing = 1-playing;
-	}
 }
 
 void sound_init(void)
@@ -89,16 +113,10 @@ void play_song()
 	sound_init();
 
 	printf("Entering while loop\n");
-	volatile unsigned char refilled = 0;
+	//volatile unsigned char refilled = 0;
 	int num_fails = 0;
 	while(1) {
-		volatile unsigned char _refill = refill;
-		if(refilled == _refill) continue;
-		auto dst = dbuf + 512*_refill;
-		memset(dst, 0, 512);
-		int n = file32_read(&file, dst);
-		if(n<512) file32_seek0(&file); // repeat the song
-		refilled = _refill;
+		song_buffer_poll(&file);
 	}
 }
 
