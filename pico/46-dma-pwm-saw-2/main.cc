@@ -81,7 +81,8 @@ int main()
 		);
 
 	dma_channel_set_irq0_enabled(dma_chan,true);
-	irq_set_exclusive_handler(DMA_IRQ_0,dma_handler);
+	//irq_set_exclusive_handler(DMA_IRQ_0,dma_handler);
+	irq_add_shared_handler(DMA_IRQ_0, dma_handler, 0x20); // set its priority fairly high
 	irq_set_enabled(DMA_IRQ_0,true);
 	dma_handler(); // kick off
 	//dma_channel_start(dma_chan); // helps?
