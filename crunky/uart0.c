@@ -70,7 +70,13 @@ void uart0_init()
 	mbox[8] = MBOX_TAG_LAST;
 	mbox_call(MBOX_CH_PROP);
 
-	/* map UART0 to GPIO pins */
+  
+#if 1
+    // TX AND RX pins setup
+    gpio_sel(14, ALTFN0);
+    gpio_sel(15, ALTFN0);
+#else
+	// map UART0 to GPIO pins 
 	r=GPFSEL1;
 	r&=~((7<<12)|(7<<15)); // gpio14, gpio15
 	r|=(4<<12)|(4<<15);    // alt0
@@ -80,6 +86,8 @@ void uart0_init()
 	GPPUDCLK0 = (1<<14)|(1<<15);
 	r=150; while(r--) { asm volatile("nop"); }
 	GPPUDCLK0 = 0;        // flush GPIO setup
+#endif
+
 
 	UART0_ICR = 0x7FF;    // clear interrupts
 	UART0_IBRD = 2;       // 115200 baud
