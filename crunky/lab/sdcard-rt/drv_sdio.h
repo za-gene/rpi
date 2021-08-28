@@ -12,13 +12,15 @@
 #ifndef __DRV_SDIO_H__
 #define __DRV_SDIO_H__
 
-#include <rtthread.h>
-#include <rtdevice.h>
-#include <drivers/mmcsd_core.h>
+//#include <rtthread.h>
+//#include <rtdevice.h>
+//#include <drivers/mmcsd_core.h>
 
-#include "board.h"
+//#include "board.h"
 
-#define MMC0_BASE_ADDR     0x3F300000
+//#define MMC0_BASE_ADDR     0x3F300000
+
+#include "drv_sdio_shim.h"
 
 /* Struct for Intrrrupt Information */
 #define SDXC_CmdDone       BIT(0)
