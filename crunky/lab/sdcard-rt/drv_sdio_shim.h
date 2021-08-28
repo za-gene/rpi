@@ -1,6 +1,8 @@
 #pragma once
 
 #include <inttypes.h>
+#include <stddef.h>
+#include <timers.h>
 
 typedef uint8_t rt_uint8_t;
 typedef int32_t rt_int32_t;
@@ -36,4 +38,10 @@ typedef rt_base_t                       rt_err_t;       /**< Type for error numb
 
 
 
+#define DELAY_MICROS delay_us
 #define INIT_DEVICE_EXPORT(x)
+
+void rt_free(void *rmem);
+void *rt_memset(void *s, int c, size_t n);
+
+
