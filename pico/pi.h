@@ -34,6 +34,9 @@ static inline void pi_alarm_rearm(int alarm_num, uint32_t delay_us)
 
 typedef enum {INPUT, OUTPUT, INPUT_PULLUP} pi_gpio_mode_e;
 void pi_gpio_init(uint gpio, pi_gpio_mode_e mode);
+void pi_gpio_high(uint gpio);
+void pi_gpio_low(uint gpio);
+void pi_gpio_out(uint gpio);
 int pi_gpio_is_high(uint gpio);
 void pi_gpio_toggle(uint gpio);
 

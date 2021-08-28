@@ -19,7 +19,7 @@ static void alarm_0_irq()
 	//show_scr();
 }
 
-
+#define PIN 17
 
 int main()
 {
@@ -37,7 +37,8 @@ int main()
 	fill_scr(0); // empty the screen
 
 
-	GpioOut pin(17); // used to test speed of writing
+	pi_gpio_out(PIN);
+	//GpioOut pin(17); // used to test speed of writing
 
 	sleep_ms(2000);
 	fill_scr(0);
@@ -60,9 +61,10 @@ int main()
 	pi_alarm_init(ALARM, alarm_0_irq, DELAY);
 
 	for(;;) {
-		pin.on();
+		pi_gpio_high(PIN);
 		ssd1306_display_cell();
-		pin.off();
+		pi_gpio_low(PIN);
+		//pin.off();
 		sleep_ms(1);
 	}
 

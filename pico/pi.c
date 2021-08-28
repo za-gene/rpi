@@ -46,7 +46,15 @@ int pi_gpio_is_high(uint gpio)
 	if(gpio_get(gpio) == 0) return 0;
 	return 1;
 }
+void pi_gpio_high(uint gpio) {gpio_put(gpio, 1);}
 
+void pi_gpio_low(uint gpio) {gpio_put(gpio, 0);}
+
+void pi_gpio_out(uint gpio)
+{
+	pi_gpio_init(gpio, OUTPUT);
+}
+	
 void pi_gpio_toggle(uint gpio)
 {
 	gpio_put(gpio, !gpio_get(gpio));
