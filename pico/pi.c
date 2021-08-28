@@ -7,7 +7,7 @@ i2c_inst_t *pi_i2c_default_port = &i2c0_inst;
 
 
 
-void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint64_t delay_us)
+void pi_alarm_init(uint alarm_num, irq_handler_t callback, uint32_t delay_us)
 {
 	hw_set_bits(&timer_hw->inte, 1u << alarm_num); // enable interrupt for alarm
 	int irq_num = 0;
