@@ -105,21 +105,24 @@ static int _uart0_send(int c)
 	return c;
 }
 
+static void uart0_newline(void)
+{
+	_uart0_send('\r');
+	_uart0_send('\n');
+}
 
 /**
  * Send a character
  */
 static int uart0_send(int c) {
 	_uart0_send(c);
-	if(c=='\n') _uart0_send('\r');
+	if(c=='\n' || c=='\r') uart0_newline();
 	return c;
 }
 
 int uart0_putchar(int c)
 {
-	uart0_send(c);
-	if(c == '\n') uart0_send('\r');
-	return c;
+	return uart0_send(c);
 }
 
 /**
@@ -145,7 +148,7 @@ void uart0_puts(char *s) {
 		//if(*s=='\n') uart0_send('\r');
 		uart0_send(*s++);
 	}
-	uart0_send('\n');
+	uart0_newline();
 }
 
 /**
