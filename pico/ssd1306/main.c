@@ -4,10 +4,10 @@
 #include "pi.h"
 
 
-extern "C" const uint8_t splash1_data[];
+const uint8_t splash1_data[];
 
 #define ALARM 0
-#define DELAY (2*1'000'000)
+#define DELAY (2*1000000)
 
 static void alarm_0_irq() 
 {

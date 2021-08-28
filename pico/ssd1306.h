@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SET_CONTRAST 0x81
 #define SET_ENTIRE_ON 0xA4
 #define SET_NORM_INV 0xA6
@@ -37,3 +41,8 @@ void ssd1306_putchar(char c);
 void ssd1306_send_data(uint8_t* data, int nbytes);
 void ssd1306_write_cmd(uint8_t cmd);
 void ssd1306_display_cell(void);
+
+#ifdef __cplusplus
+}
+#endif
+

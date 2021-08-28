@@ -1,13 +1,14 @@
 cd build
 
-# quit without confimation
+# quit without confirmation
 define hook-quit
-	set confirm off
+    set confirm off 
 end
 
+set pagination off
 file app.elf
 target remote localhost:3333
 load
 monitor reset init
-echo Running...\n
+echo RUNNING...\n
 c

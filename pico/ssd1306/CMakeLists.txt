@@ -8,7 +8,7 @@ project(app C CXX ASM)
 pico_sdk_init()
 
 add_executable(app
-	main.cc splash.cc
+	main.c splash.c
 	#../pi.cc
 	)
 

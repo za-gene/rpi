@@ -36,14 +36,14 @@ see also: function reset_addressing().
 #include "ssd1306.h"
 
 
-extern "C" const uint8_t ssd1306_font6x8[];
+const uint8_t ssd1306_font6x8[];
 
 
 //typedef uint8_t uint8_t;
 
 //#define I2C_PORT i2c0
 
-auto i2c_port = &i2c0_inst;
+i2c_inst_t *i2c_port = &i2c0_inst;
 
 //#define OLED_128x32
 
@@ -73,6 +73,13 @@ struct {
 */
 
 void write_cmd(uint8_t cmd);
+
+void write_cmd_pair(uint8_t cmd, uint8_t value)
+{
+	write_cmd(cmd);
+	write_cmd(value);
+}
+
 
 void fill_scr(uint8_t v)
 {
@@ -207,6 +214,9 @@ void init_display(int h, int sda)
 {
 	init_i2c(sda);
 	height = h;
+	//uint8_t pin_cfg_height = (height == 32 ? 0x02 : 0x12);
+	write_cmd_pair(SET_COM_PIN_CFG, height == 32 ? 0x02 : 0x12);
+	write_cmd_pair(SET_MUX_RATIO /* 0xA8 */, height - 1);
 
 	static uint8_t cmds[] = {
 		SET_DISP | 0x00,  // display off 0x0E | 0x00
@@ -218,8 +228,8 @@ void init_display(int h, int sda)
 		SET_DISP_START_LINE | 0x00, // 0x40
 		SET_SEG_REMAP | 0x01,  //# column addr 127 mapped to SEG0
 
-		SET_MUX_RATIO, // 0xA8
-		(uint8_t)(height - 1),
+		//SET_MUX_RATIO, // 0xA8
+		//(uint8_t)(height - 1),
 
 		SET_COM_OUT_DIR | 0x08,  //# scan from COM[N] to COM0  (0xC0 | val)
 		SET_DISP_OFFSET, // 0xD3
@@ -228,7 +238,7 @@ void init_display(int h, int sda)
 		//SET_COM_PIN_CFG, // 0xDA
 		//0x02 if self.width > 2 * self.height else 0x12,
 		//width > 2*height ? 0x02 : 0x12,
-		SET_COM_PIN_CFG, (uint8_t)(height == 32 ? 0x02 : 0x12),
+		//SET_COM_PIN_CFG, pin_cfg_height,
 
 		//# timing and driving scheme
 		SET_DISP_CLK_DIV, // 0xD5
@@ -458,7 +468,7 @@ void setCursory(int y)
 
 
 /* Standard ASCII 6x8 font */
-extern "C" const uint8_t ssd1306_font6x8[]=
+const uint8_t ssd1306_font6x8[]=
 {
   0x00, 0x06, 0x08, 0x20,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sp
