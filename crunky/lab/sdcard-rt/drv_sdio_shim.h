@@ -112,6 +112,8 @@ struct rt_mmcsd_req {
 	struct rt_mmcsd_cmd   *stop;
 };
 
+rt_uint32_t __rt_fls(rt_uint32_t val);
+
 // see components/drivers/include/drivers/mmcsd_host.h
 #define MMCSD_BUS_WIDTH_4       2
 struct rt_mmcsd_io_cfg {
@@ -200,6 +202,7 @@ struct rt_mmcsd_host {
 
 	void *private_data;
 };
+void mmcsd_req_complete(struct rt_mmcsd_host *host);
 
 
 #define DELAY_MICROS delay_us
@@ -212,4 +215,6 @@ struct rt_mmcsd_host {
 void rt_free(void *rmem);
 void *rt_memset(void *s, int c, size_t n);
 
+
+int raspi_sdmmc_init(void);
 

@@ -1,9 +1,14 @@
 #include <gpio.h>
 #include <timers.h>
 
+#include "drv_sdio.h"
+
 
 void kernel_main(void)
 {
+	rt_err_t err = raspi_sdmmc_init();
+	printf("err = %d, (RT_EOK=%d, RT_EIO=%d)\n", err, RT_EOK, RT_EIO);
+
 	const int bcm_pin = 26;
 	gpio_sel(bcm_pin, OUTPUT); // set its pin mode to OUTPUT
 	u32 delay = 250;
