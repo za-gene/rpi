@@ -15,6 +15,11 @@ Maybe it has something to do with interrupts, but
 it's a pain in the arse, whatever the problem is.
 
 
+## Links
+
+* [Using flash memory](https://kevinboone.me/picoflash.html?i=1)
+
+
 ## Status
 
 2021-08-12	Started.
