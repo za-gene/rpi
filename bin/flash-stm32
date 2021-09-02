@@ -9,15 +9,16 @@ cat <<EOF
 EOF
 }
 
+FOPTS="--connect-under-reset write"
 function do_flash_file {
 	echo "Flashing $1"
-	st-flash write $1 0x8000000
+	st-flash $FOPTS $1 0x8000000
 }
 
 function do_flash {
 	BIN=`ls -t *bin | head -n 1`
 	echo "Flashing $BIN"
-	st-flash write $BIN 0x8000000
+	st-flash $FOPTS $BIN 0x8000000
 }
 
 while getopts "f:hix" arg; do
