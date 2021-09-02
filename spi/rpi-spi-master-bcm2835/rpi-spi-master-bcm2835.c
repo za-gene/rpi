@@ -32,6 +32,7 @@ int main()
 	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_65536);
 	bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
 	bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+	int count = 0;
 
 
 
@@ -39,7 +40,7 @@ int main()
 		// Send a byte to the slave and simultaneously read a byte back from the slave
 		// If you tie MISO to MOSI, you should read back what was sent
 		uint8_t data = bcm2835_spi_transfer(0x23); // 0x23 is just a random number
-		printf("Read from SPI: %d\n", data);
+		printf("Read number %d from SPI: %d\n", count++, data);
 		sleep(1);
 
 	}
