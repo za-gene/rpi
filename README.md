@@ -20,6 +20,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 ## General
 
 * [audio](audio)
+* [bcm2835](bcm2835.md)
 * [circuits](circuits.md) - various electrical circuits
 * [debounce](debounce) a button
 * [linking](linking)
@@ -46,7 +47,7 @@ My Arduino, ATTiny85, ESP8266/32, RPi (Raspberry Pi) and STM32 (blue pill) proje
 * [blinkt](blinkt)
 * [crunky](crunky): start of a unikernel for Raspberry Pi 3
 * [dev01](dev01): meditation timer
-* [dev02](dev02): projects for the DEV02 home-made board: green_red and mhz85
+* [dev02](dev02): projects for the DEV02 home-made board: green\_red and mhz85
 * dev03 WITHDRAWN
 * dev04 WITHDRAWN
 * [dev05](dev05): ATTiny85 programmer for the Pi

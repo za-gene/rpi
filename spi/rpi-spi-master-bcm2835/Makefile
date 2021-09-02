@@ -1,4 +1,4 @@
-BIN = spi
+BIN = app
 
 $(BIN) : rpi-spi-master-bcm2835.c
 	gcc $< -o $@ -lbcm2835
