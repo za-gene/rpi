@@ -15,15 +15,18 @@ typedef uint16_t u16;
 
 mcp4921 mcp;
 
-#define SAMPLES 64
-u16 sines[SAMPLES];
+#define SCALE	16
+#define SAMPLES (4096/SCALE)
+//u16 sines[SAMPLES];
 
 
 int main()
 {
 
 	// initialise
-	const double hi = 4095, freq = 440;
+	const double freq = 200;
+
+	/*
 	double lo = 1.0/3.3 * hi; // 1V
 	lo = 0;
 	for (int i = 0; i < SAMPLES; i++) {
@@ -32,11 +35,14 @@ int main()
 		sines[i] = v;
 		printf("%d %d\n", i, sines[i]);
 	}
+	*/
 
+	int delay = 1'000'000 / freq / SAMPLES;
+	printf("delay=%d\n", delay);	
 	while(1)  {
 		for (int i = 0; i < SAMPLES; i++) {
-			mcp.write(sines[i]);
-			bcm2835_delayMicroseconds(1e6/freq/SAMPLES);
+			mcp.write(i*SCALE);
+			bcm2835_delayMicroseconds(delay);
 		}
 	}
 
