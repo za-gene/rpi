@@ -2,6 +2,13 @@
 
 Produce a sawtooth wave using latches.
 
+## IMPORTANT!!!
+
+The function `bcm2835_gpio_ren()` causes the Pi to freeze.
+To fix the issue, add the following line to `/boot/config.txt`:
+```
+dtoverlay=gpio-no-irq
+```
 
 ## NEWS
 
