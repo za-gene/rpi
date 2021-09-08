@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [[ "$PWD" =~ "stm32f4" ]]; then
+	echo "Start openocd for stm32f4"
+	openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+fi
+
+
+exit 0
+
+if [ ! -f /tmp/openocd ]; then
+	# dtach -n /tmp/openocd -z openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg
+    #dtach -n /tmp/openocd -z  sudo openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -s tcl
+    sudo openocd -f interface/picoprobe.cfg -f target/rp2040.cfg -s tcl
+
+fi
+
+gdb-multiarch
