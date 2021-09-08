@@ -31,7 +31,9 @@ mcp4921::~mcp4921()
 void mcp4921::write(uint16_t value)
 {
 	if(value>4095) value=4095;
-	value |= 0b0011000000000000;
+	const uint16_t cmd = 0b0111 << 12; // I usually use 0b0011 << 12
+	//value |= 0b0011000000000000;
+	value |= cmd;
 	char buf[2];
 	buf[0] = value >>8;
 	buf[1] = value & 0xff;

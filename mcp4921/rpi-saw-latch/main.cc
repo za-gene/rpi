@@ -67,9 +67,9 @@ int main()
 			mcp.write(y*4095);
 			y += dy;
 			if(y>=1) y = 0;
+			//bcm2835_delayMicroseconds(1);		
 			//if(++i >= SAMPLES) i = 0;
 		}
-		bcm2835_delayMicroseconds(1);
 	}
 
 	return 0;
