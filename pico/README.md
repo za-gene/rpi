@@ -1,5 +1,14 @@
 # Pico
 
+## Setup
+
+Define the `PICOMC` environment variable. For example, add this
+to `.bashrc`:
+```
+export PICOMC=/home/$USER/repos/rpi/pico
+```
+
+
 ## Technical notes
 
 * [boot](boot.md) - booting into program mode
