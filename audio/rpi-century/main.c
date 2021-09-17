@@ -30,17 +30,22 @@ int main()
 	bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
 	bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_65536);
+	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);
 	bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
-	bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
-	int count = 0;
+	//bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+	int count = 1;
 
 
 
 	while(1) {
-		// Send a byte to the slave and simultaneously read a byte back from the slave
-		// If you tie MISO to MOSI, you should read back what was sent
-		uint8_t data = bcm2835_spi_transfer(0x23); // 0x23 is just a random number
-		printf("Read number %d from SPI: %d\n", count++, data);
+		//usleep(3000);
+		//printf("Sending %d\n", count);
+		uint8_t rx = bcm2835_spi_transfer(count);
+		printf("Received %d\n", rx);
+		//if((rx&1)==0) continue;
+		count++;
+		if(count == 100) count = 1;
+		//printf("Read number %d from SPI: %d\n", count++, data);
 		sleep(1);
 
 	}
