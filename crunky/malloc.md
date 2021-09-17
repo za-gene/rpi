@@ -82,3 +82,7 @@ void* _sbrk(int incr)
         return (void*) prev_heap_end;
 }
 ```
+
+## Links to other sites
+
+* [kmalloc.c](https://github.com/emeryberger/Malloc-Implementations/blob/master/allocators/kmalloc/kmalloc.c) - and other implementations

@@ -56,6 +56,7 @@ partition. You should see at least some dumping out of the contents of the file.
 ## Links to libraries
 
 * [bcm2835](https://www.airspayce.com/mikem/bcm2835/) v1.68 used
+* [strtoul.c](http://cvsweb.netbsd.org/bsdweb.cgi/src/external/bsd/nvi/dist/clib/strtoul.c?rev=1.2.8.2&content-type=text/x-cvsweb-markup) and other NetBSD functions
 * [tinyprintf](https://github.com/cjlano/tinyprintf.git). Doesn't handle floats
 
 ## Links to other sites
