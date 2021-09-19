@@ -5,6 +5,8 @@
 
 #include <bcm2835.h>
 
+typedef uint8_t u8;
+
 void intHandler(int dummy)
 {
 	puts("Exiting");
@@ -13,6 +15,13 @@ void intHandler(int dummy)
 	exit(0);
 }
 
+
+void cmd(u8 type, u8 channel)
+{
+	u8 b = 0b10000000;
+	b = b | (type<<4) | channel;
+	bcm2835_spi_writenb(&b, 1);
+}
 
 int main()
 {
@@ -40,8 +49,10 @@ int main()
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32768); //works
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_16384);
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_8192); // works
-	const int mhz = 1000 * 1000;
-	bcm2835_spi_set_speed_hz(1*mhz);
+	const int khz = 1000 ;
+	const int mhz = khz * khz;
+	int speed = 500 * khz;
+	bcm2835_spi_set_speed_hz(speed);
 	bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
 	//bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
 	uint8_t tx = 1, rx;
@@ -50,32 +61,16 @@ int main()
 	// send note 440 Hz
 	uint8_t b;
 	for(int i = 0; i< 8; i++) {
-		b = 0b10010000;
-		bcm2835_spi_writenb(&b, 1 ); // note on
-		//bcm2835_delay(2); 
-		b = 73;
+		cmd(1, 0); // note on
+		//b = 0b10010000;
+		//bcm2835_spi_writenb(&b, 1 ); // note on
+		b = 69;
 		bcm2835_spi_writenb(&b, 1 ); // note on
 		bcm2835_delay(500); 
-		b = 0b10000000;
-		bcm2835_spi_writenb(&b, 1 ); // note on
+		cmd(0, 0); //off
 		bcm2835_delay(500); 
 	}
 	return 0;
-
-
-
-	while(1) {
-		//printf("Sending %d\n", count);
-		while(1) {
-			//usleep(1);
-			bcm2835_delayMicroseconds(10);
-			rx = bcm2835_spi_transfer(tx);
-			//break;
-			if(rx != 0) break;
-		}
-		tx++;
-		if(tx==100) tx = 1;
-	}
 
 	return 0;
 }
