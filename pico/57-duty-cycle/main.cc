@@ -19,6 +19,7 @@ typedef uint32_t u32;
 #define DELAY (1'000'000/ 10'000)
 
 #define DUTY_PIN 27
+#define LED	25
 
 bool do_counting = true;
 u32 ticks = 0, ups = 0;
@@ -38,10 +39,12 @@ int main()
 
 	init_display(64, 4);
 	pi_gpio_init(DUTY_PIN, INPUT);
+	pi_gpio_init(LED, OUTPUT);
 	pi_alarm_init(ALARM, alarm_0_irq, DELAY);
 
 	char msg[100];
 	for(;;) {
+		pi_gpio_toggle(LED);		
 		do_counting = false;
 		double duty = (double)ups * 100.0 / (double) ticks;
 		clear_scr();
