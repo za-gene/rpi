@@ -33,6 +33,10 @@ void pi_gpio_init(uint gpio, pi_gpio_mode_e mode)
 		case INPUT:
 			gpio_set_dir(gpio, GPIO_IN);
 			break;
+		case INPUT_PULLDOWN:
+			gpio_pull_down(gpio);
+			gpio_set_dir(gpio, GPIO_IN);
+			break;
 		case OUTPUT:
 			gpio_set_dir(gpio, GPIO_OUT);
 			break;
